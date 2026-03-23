@@ -1,943 +1,1228 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>面试官指南：实现反函数</title>
+<title>interview-algorithm-question.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
 <style>
-  :root {
-    --bg: #f8f9fa;
-    --surface: #ffffff;
-    --card: #eef2f7;
-    --accent: #d63031;
-    --accent2: #6c5ce7;
-    --text: #2d3436;
-    --text-muted: #636e72;
-    --green: #00a676;
-    --yellow: #e17a00;
-    --red: #d63031;
-    --blue: #0984e3;
-    --border: #dfe6e9;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
-    padding-bottom: 80px;
-  }
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-  /* ===== NAV BAR (sticky top) ===== */
-  .navbar {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 8px 24px;
-    display: flex; flex-wrap: wrap; gap: 6px;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-  }
-  .navbar .brand {
-    font-weight: 700; font-size: 14px; color: var(--accent);
-    margin-right: 12px; white-space: nowrap;
-  }
-  .nav-btn {
-    font-size: 12px; padding: 4px 10px;
-    border: 1px solid var(--border); border-radius: 6px;
-    background: var(--surface); color: var(--text-muted);
-    cursor: pointer; transition: all .2s; white-space: nowrap;
-  }
-  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
-  .nav-btn.stuck { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .nav-btn.followup { background: var(--accent2); color: #fff; border-color: var(--accent2); }
-  .nav-btn.section { background: var(--card); color: var(--blue); border-color: var(--blue); }
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
 
-  /* ===== FLOATING QUICK-JUMP PANEL ===== */
-  .quick-panel {
-    position: fixed; right: 20px; top: 70px; z-index: 99;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px;
-    width: 220px;
-    box-shadow: 0 4px 20px rgba(0,0,0,.1);
-    max-height: calc(100vh - 90px);
-    overflow-y: auto;
-    transition: transform .3s;
-  }
-  .quick-panel.collapsed { transform: translateX(240px); }
-  .panel-toggle {
-    position: fixed; right: 20px; top: 70px; z-index: 100;
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--accent); color: #fff; border: none;
-    font-size: 18px; cursor: pointer;
-    display: none;
-    align-items: center; justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15);
-  }
-  .quick-panel.collapsed ~ .panel-toggle { display: flex; }
-  .quick-panel h4 {
-    font-size: 13px; color: var(--accent); margin-bottom: 8px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .quick-panel h4 button {
-    background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; line-height: 1;
-  }
-  .qp-group { margin-bottom: 10px; }
-  .qp-group-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .qp-link {
-    display: block; font-size: 12px; padding: 4px 8px; margin: 2px 0;
-    color: var(--text); text-decoration: none;
-    border-radius: 4px; transition: background .15s;
-  }
-  .qp-link:hover { background: var(--card); }
-  .qp-link.red { border-left: 3px solid var(--red); }
-  .qp-link.purple { border-left: 3px solid var(--accent2); }
-  .qp-link.blue { border-left: 3px solid var(--blue); }
-  .qp-link.green { border-left: 3px solid var(--green); }
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
 
-  /* ===== MAIN CONTENT ===== */
-  .container {
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 24px 40px 24px 40px;
-  }
-  @media (min-width: 1200px) {
-    .container { padding-right: 280px; }
-  }
-  @media (max-width: 1199px) {
-    .quick-panel { display: none; }
-    .panel-toggle { display: none !important; }
-  }
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
 
-  h1 { font-size: 28px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
-  h2 {
-    font-size: 22px; color: var(--blue);
-    margin: 40px 0 16px;
-    padding: 12px 16px;
-    background: var(--surface);
-    border-left: 4px solid var(--blue);
-    border-radius: 0 8px 8px 0;
-  }
-  h3 { font-size: 17px; color: var(--green); margin: 24px 0 10px; }
-  h4 { font-size: 15px; color: var(--yellow); margin: 16px 0 8px; }
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
 
-  p, li { font-size: 14px; margin-bottom: 8px; }
-  ul, ol { padding-left: 24px; }
-  strong { color: #1a1a2e; }
+body.showEditorSelection .code-line {
+	position: relative;
+}
 
-  blockquote {
-    border-left: 3px solid var(--accent2);
-    background: #f0edfa;
-    padding: 12px 16px;
-    margin: 10px 0;
-    border-radius: 0 8px 8px 0;
-    font-size: 14px;
-    color: var(--text);
-  }
-  blockquote.interviewer-note {
-    border-left-color: var(--yellow);
-    background: #fef6e8;
-  }
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    margin: 12px 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
-  }
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
 
-  /* collapsible */
-  details {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    margin: 10px 0;
-  }
-  details > summary {
-    cursor: pointer;
-    padding: 12px 16px;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--text);
-    list-style: none;
-    display: flex; align-items: center; gap: 8px;
-  }
-  details > summary::before {
-    content: '▸'; display: inline-block; transition: transform .2s;
-  }
-  details[open] > summary::before { transform: rotate(90deg); }
-  details > summary::-webkit-details-marker { display: none; }
-  details > .detail-body { padding: 0 16px 16px; }
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
 
-  /* tables */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0;
-    font-size: 13px;
-  }
-  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
-  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
-  tr:hover td { background: #f0f7ff; }
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
 
-  /* hint chips */
-  .hint-chip {
-    display: inline-block;
-    padding: 2px 8px; border-radius: 4px;
-    font-size: 11px; font-weight: 700;
-    margin-right: 4px;
-  }
-  .hint-light { background: #d4edda; color: #155724; }
-  .hint-medium { background: #fff3cd; color: #856404; }
-  .hint-heavy { background: #f8d7da; color: #721c24; }
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
 
-  /* code blocks */
-  pre {
-    background: #f6f8fa;
-    border: 1px solid #d0d7de;
-    border-radius: 8px;
-    padding: 14px 18px;
-    overflow-x: auto;
-    font-size: 13px;
-    line-height: 1.5;
-    margin: 10px 0;
-  }
-  code {
-    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-    font-size: 13px;
-    color: #24292f;
-  }
-  :not(pre) > code {
-    background: #e8f0fe;
-    padding: 1px 5px;
-    border-radius: 3px;
-    color: #0550ae;
-  }
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
 
-  /* evaluation badges */
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; margin-right: 4px; }
-  .badge-fail { background: #fdd; color: #a00; font-weight: 700; }
-  .badge-weak { background: #fff3cd; color: #7a5800; font-weight: 700; }
-  .badge-pass { background: #d4edda; color: #155724; font-weight: 700; }
-  .badge-strong { background: #e8dff5; color: #5b21b6; font-weight: 700; }
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
 
-  /* flow chart */
-  .flow-chart {
-    background: #f6f8fa;
-    border: 1px solid #d0d7de;
-    border-radius: 8px;
-    padding: 16px 20px;
-    font-family: 'Cascadia Code', monospace;
-    font-size: 13px;
-    line-height: 1.6;
-    white-space: pre;
-    overflow-x: auto;
-  }
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
 
-  /* scroll to top */
-  .scroll-top {
-    position: fixed; bottom: 24px; right: 24px; z-index: 99;
-    width: 40px; height: 40px; border-radius: 50%;
-    background: var(--accent); color: #fff; border: none;
-    font-size: 20px; cursor: pointer;
-    opacity: 0; transition: opacity .3s;
-    box-shadow: 0 2px 10px rgba(0,0,0,.15);
-  }
-  .scroll-top.show { opacity: 1; }
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
 
-  .version-tabs { display: flex; gap: 4px; margin: 12px 0 0; }
-  .vtab {
-    padding: 6px 14px; border-radius: 6px 6px 0 0;
-    background: var(--card); color: var(--text-muted);
-    border: 1px solid var(--border); border-bottom: none; cursor: pointer; font-size: 13px;
-  }
-  .vtab.active { background: var(--surface); color: var(--accent); font-weight: 600; border-color: var(--border); }
-  .version-content { display: none; }
-  .version-content.active { display: block; }
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
 
-  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
 
-  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 11px; margin-right: 4px; }
-  .tag-time { background: #e8f0fe; color: #0550ae; }
-  .tag-diff-1 { background: #d4edda; color: #155724; }
-  .tag-diff-2 { background: #fff3cd; color: #7a5800; }
-  .tag-diff-3 { background: #fdd; color: #a00; }
-  .tag-diff-4 { background: #e8dff5; color: #5b21b6; }
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
 </style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
 </head>
 <body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h2 id="%E9%A2%98%E9%9D%A2--problem-statement">题面 / Problem Statement</h2>
+<p><strong>English:</strong></p>
+<blockquote>
+<p>You are given a black-box function <code>f(x)</code> that maps non-negative integers to non-negative integers. <code>f</code> is <strong>strictly monotonically increasing</strong> (i.e., for any $a &lt; b$, $f(a) &lt; f(b)$).</p>
+<p>You can only call <code>f(x)</code> — you cannot inspect its implementation.</p>
+<p><strong>Task:</strong> Implement its inverse function <code>g(y)</code> — given a value <code>y</code>, return the integer <code>x</code> such that <code>f(x) = y</code>. You may assume that for every input <code>y</code>, a valid <code>x</code> always exists.</p>
+</blockquote>
+<p><strong>中文:</strong></p>
+<blockquote>
+<p>给定一个黑盒函数 <code>f(x)</code>，它将非负整数映射到非负整数。<code>f</code> <strong>严格单调递增</strong>（即对于任意 $a &lt; b$，有 $f(a) &lt; f(b)$）。</p>
+<p>你只能调用 <code>f(x)</code>，不能查看其内部实现。</p>
+<p><strong>任务：</strong> 实现它的反函数 <code>g(y)</code> —— 给定一个值 <code>y</code>，返回整数 <code>x</code> 使得 <code>f(x) = y</code>。你可以假设对于每一个输入的 <code>y</code>，合法的 <code>x</code> 一定存在。</p>
+</blockquote>
+<h3 id="%E7%89%88%E6%9C%AC%E4%B8%80%E9%9D%A2%E8%AF%95%E5%8F%A3%E8%AF%AD%E7%89%88%E6%8E%A8%E8%8D%90%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8-version-1-conversational-recommended-for-interview">版本一：面试口语版（推荐直接使用）/ Version 1: Conversational (Recommended for Interview)</h3>
+<p><strong>English:</strong></p>
+<blockquote>
+<p>&quot;Alright, here's the problem. Imagine you have a function <code>f</code> — you can call it with any non-negative integer, and it gives you back a non-negative integer. You can't look inside it, it's a black box. The one thing you <em>do</em> know is that it's strictly increasing — so if you feed it a bigger number, you always get a bigger result. No ties, no going backwards.</p>
+<p>Now, what I need you to do is write the <em>reverse</em> of that function. I'll give you some output value <code>y</code>, and you need to figure out: what input <code>x</code> did it come from? In other words, find <code>x</code> such that <code>f(x) = y</code>.</p>
+<p>You can assume there's always a valid answer — I won't give you a <code>y</code> that doesn't match any <code>x</code>. Sound good? Go ahead.&quot;</p>
+</blockquote>
+<p><strong>中文:</strong></p>
+<blockquote>
+<p>&quot;好，我来说一下题目。假设你有一个函数 <code>f</code>，你可以给它传入任何非负整数，它会返回一个非负整数。你看不到它的内部实现，它是一个黑盒。但你知道一件事：它是严格递增的——也就是说你给的数越大，它返回的结果就一定越大。不会有相等，也不会有倒退。</p>
+<p>现在我需要你做的是：写一个'反向'的函数。我给你一个输出值 <code>y</code>，你要找出它是从哪个输入 <code>x</code> 来的。换句话说，找到 <code>x</code> 使得 <code>f(x) = y</code>。</p>
+<p>你可以假设答案一定存在——我不会给你一个不对应任何 <code>x</code> 的 <code>y</code>。清楚了吗？那就开始吧。&quot;</p>
+</blockquote>
+<h3 id="%E7%89%88%E6%9C%AC%E4%BA%8C%E6%9C%80%E7%AE%80%E5%8C%96%E8%A7%A3%E9%87%8A%E7%89%88%E5%80%99%E9%80%89%E4%BA%BA%E4%B8%8D%E7%90%86%E8%A7%A3%E6%9C%AF%E8%AF%AD%E6%97%B6%E4%BD%BF%E7%94%A8-version-2-plain-language-explanation-use-when-candidate-struggles-with-terminology">版本二：最简化解释版（候选人不理解术语时使用）/ Version 2: Plain-Language Explanation (Use When Candidate Struggles with Terminology)</h3>
+<p><strong>English:</strong></p>
+<blockquote>
+<p>&quot;Let me break it down more simply. Forget the math jargon for a moment.</p>
+<p>Think of <code>f</code> as a machine. You put in a number, it spits out a number. You can't open the machine to see how it works. All you know is one rule: <strong>if you put in a bigger number, you always get a bigger number out.</strong> It never stays the same, and it never goes down.</p>
+<p>For example, let's say:</p>
+<ul>
+<li>You put in <code>3</code>, the machine gives you <code>10</code>.</li>
+<li>You put in <code>5</code>, it gives you <code>17</code>.</li>
+<li>You put in <code>8</code>, it gives you <code>25</code>.</li>
+</ul>
+<p>See? Bigger input, bigger output. Every time.</p>
+<p>Now here's your task: <strong>I'm going to give you an output, and you have to figure out what input produced it.</strong> Like if I say 'the machine output <code>17</code>', you should tell me the input was <code>5</code>. That's it.</p>
+<p>You're writing a function that takes the output and finds the input. And don't worry — I promise there's always exactly one right answer.&quot;</p>
+</blockquote>
+<p><strong>中文:</strong></p>
+<blockquote>
+<p>&quot;我换个更简单的方式说。先不管那些数学术语。</p>
+<p>你把 <code>f</code> 想象成一台机器。你往里面塞一个数字，它会吐出一个数字。你看不到机器里面怎么运作的。你唯一知道的一条规则是：<strong>如果你塞进去的数字更大，它吐出来的数字也一定更大。</strong> 不会相同，也不会变小。</p>
+<p>举个例子：</p>
+<ul>
+<li>你塞进去 <code>3</code>，机器吐出 <code>10</code>。</li>
+<li>你塞进去 <code>5</code>，它吐出 <code>17</code>。</li>
+<li>你塞进去 <code>8</code>，它吐出 <code>25</code>。</li>
+</ul>
+<p>看到了吧？输入越大，输出就越大。每次都是这样。</p>
+<p>现在你的任务是：<strong>我告诉你一个输出结果，你要倒推出是哪个输入产生了它。</strong> 比如我说'机器输出了 <code>17</code>'，你要告诉我输入是 <code>5</code>。就这么简单。</p>
+<p>你要写一个函数，接收这个输出值，找到对应的输入值。放心——答案一定存在，而且只有一个。&quot;</p>
+</blockquote>
+<hr>
+<h2 id="%E5%80%99%E9%80%89%E4%BA%BA%E5%8D%A1%E5%A3%B3%E6%83%85%E5%86%B5%E5%8F%8A%E6%8F%90%E7%A4%BA%E7%AD%96%E7%95%A5--sticking-points--hints">候选人卡壳情况及提示策略 / Sticking Points &amp; Hints</h2>
+<h3 id="%E5%8D%A1%E5%A3%B3-0%E4%B8%8D%E7%90%86%E8%A7%A3%E9%A2%98%E7%9B%AE%E4%B8%AD%E7%9A%84%E6%95%B0%E5%AD%A6%E6%A6%82%E5%BF%B5--stuck-0-doesnt-understand-the-math-concepts-in-the-problem">卡壳 0：不理解题目中的数学概念 / Stuck 0: Doesn't understand the math concepts in the problem</h3>
+<p><strong>表现 / Symptom：</strong> 候选人对&quot;单调递增&quot;或&quot;反函数&quot;的概念感到困惑，无法理解题意。/ Candidate is confused by &quot;monotonically increasing&quot; or &quot;inverse function&quot; and can't understand the problem.</p>
+<p><strong>解释&quot;单调递增&quot; / Explaining &quot;monotonically increasing&quot;：</strong></p>
+<blockquote>
+<p>&quot;It simply means: the bigger the input, the bigger the output. If you put in a larger <code>x</code>, you always get a larger <code>f(x)</code>. It never goes down. For example, <code>f(x) = 2x + 1</code> — as x grows, f(x) always grows.&quot;</p>
+<p>&quot;简单来说就是：输入越大，输出也越大。如果你给一个更大的 <code>x</code>，<code>f(x)</code> 的结果一定更大，永远不会变小。比如 <code>f(x) = 2x + 1</code>，x 越大，f(x) 就越大。&quot;</p>
+</blockquote>
+<p><strong>解释&quot;反函数&quot; / Explaining &quot;inverse function&quot;：</strong></p>
+<blockquote>
+<p>&quot;Think of it as 'reversing' the function. If <code>f(5) = 13</code>, then the inverse function <code>g(13)</code> should return <code>5</code>. You're given the output and need to find the original input.&quot;</p>
+<p>&quot;可以理解为'反过来'。如果 <code>f(5) = 13</code>，那反函数 <code>g(13)</code> 就应该返回 <code>5</code>。也就是给你一个输出值，让你找到原来的输入。&quot;</p>
+</blockquote>
+<blockquote>
+<p><strong>面试官注意 / Interviewer Note：</strong> 这个解释<strong>不算提示</strong>，不应影响对候选人算法能力的评分。题目中的数学术语可能对非英语母语的候选人造成理解障碍，澄清概念是公平的。但如果候选人在理解概念后仍然长时间没有思路，则按卡壳 1 处理。</p>
+<p><strong>Interviewer Note:</strong> This clarification <strong>does not count as a hint</strong> and should not affect the candidate's algorithm evaluation. Math terminology may be a language barrier for non-native English speakers; clarifying concepts is fair. However, if the candidate still has no idea after understanding the concepts, proceed to Stuck 1.</p>
+</blockquote>
+<hr>
+<h3 id="%E5%8D%A1%E5%A3%B3-1%E5%AE%8C%E5%85%A8%E6%B2%A1%E6%80%9D%E8%B7%AF%E4%B8%8D%E7%9F%A5%E9%81%93%E7%94%A8%E4%BB%80%E4%B9%88%E7%AE%97%E6%B3%95--stuck-1-no-idea-what-algorithm-to-use">卡壳 1：完全没思路，不知道用什么算法 / Stuck 1: No idea what algorithm to use</h3>
+<p><strong>表现 / Symptom：</strong> 沉默，或者直接写暴力遍历。/ Silent, or jumps straight to brute-force linear scan.</p>
+<table>
+<thead>
+<tr>
+<th>提示等级 / Hint Level</th>
+<th>提示内容 / Hint Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hint 1（轻度 / Light）</strong></td>
+<td>&quot;What property of <code>f</code> makes this problem easier than searching in an unsorted collection?&quot;</td>
+</tr>
+<tr>
+<td><strong>Hint 2（中度 / Medium）</strong></td>
+<td>&quot;If I told you x is somewhere between 0 and 1000, how would you find it efficiently?&quot;</td>
+</tr>
+<tr>
+<td><strong>Hint 3（重度 / Heavy）</strong></td>
+<td>&quot;Think about binary search. The function is monotonically increasing — what does that remind you of?&quot;</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E5%8D%A1%E5%A3%B3-2%E7%9F%A5%E9%81%93%E4%BA%8C%E5%88%86%E4%BD%86%E4%B8%8D%E7%9F%A5%E9%81%93%E4%B8%8A%E7%95%8C%E4%BB%8E%E5%93%AA%E6%9D%A5--stuck-2-knows-binary-search-but-cant-determine-the-upper-bound">卡壳 2：知道二分，但不知道上界从哪来 / Stuck 2: Knows binary search, but can't determine the upper bound</h3>
+<p><strong>表现 / Symptom：</strong> 写出了二分的框架，但 <code>high = ???</code> 空着或者随便填了个大常数。/ Writes the binary search skeleton, but leaves <code>high = ???</code> blank or hardcodes a large constant.</p>
+<table>
+<thead>
+<tr>
+<th>提示等级 / Hint Level</th>
+<th>提示内容 / Hint Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hint 1（轻度 / Light）</strong></td>
+<td>&quot;Given that f maps non-negative integers to non-negative integers and is strictly increasing, what can you say about the relationship between <code>f(x)</code> and <code>x</code>?&quot;</td>
+</tr>
+<tr>
+<td><strong>Hint 2（中度 / Medium）</strong></td>
+<td>&quot;If f(0) &gt;= 0 and f(1) must be strictly greater than f(0), and all values are integers... what's the minimum possible value of f(1)? f(2)? f(n)?&quot;</td>
+</tr>
+<tr>
+<td><strong>Hint 3（重度 / Heavy）</strong></td>
+<td>&quot;Can you prove that f(x) &gt;= x? If so, what does that tell you about the upper bound for x given y?&quot;</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E5%8D%A1%E5%A3%B3-3%E7%94%A8%E4%BA%86%E5%80%8D%E5%A2%9E%E6%96%B9%E6%A1%88%E8%A2%AB%E8%BF%BD%E9%97%AE%E8%83%BD%E5%90%A6%E6%9B%B4%E7%9B%B4%E6%8E%A5--stuck-3-used-doubling-asked-if-theres-a-more-direct-way">卡壳 3：用了倍增方案，被追问能否更直接 / Stuck 3: Used doubling, asked if there's a more direct way</h3>
+<p><strong>表现 / Symptom：</strong> 写出了完整的倍增 + 二分，但面试官追问有没有更简单的方式。/ Wrote a complete doubling + binary search solution, but interviewer asks if there's a simpler approach.</p>
+<table>
+<thead>
+<tr>
+<th>提示等级 / Hint Level</th>
+<th>提示内容 / Hint Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hint 1</strong></td>
+<td>&quot;Your exponential search works great. But since we know f maps integers to integers and is strictly increasing, is there a mathematical argument that x can never be larger than y?&quot;</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E5%8D%A1%E5%A3%B3-4%E7%94%A8%E4%BA%86-high--y%E8%A2%AB%E8%BF%BD%E9%97%AE%E6%9C%89%E6%B2%A1%E6%9C%89%E6%9B%B4%E9%AB%98%E6%95%88%E7%9A%84%E6%96%B9%E5%BC%8F--stuck-4-used-high--y-asked-if-theres-a-more-efficient-way">卡壳 4：用了 high = y，被追问有没有更高效的方式 / Stuck 4: Used high = y, asked if there's a more efficient way</h3>
+<p><strong>表现 / Symptom：</strong> 写出了正确的 [0, y] 二分，但面试官追问性能。/ Wrote a correct [0, y] binary search, but interviewer probes on performance.</p>
+<table>
+<thead>
+<tr>
+<th>提示等级 / Hint Level</th>
+<th>提示内容 / Hint Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hint 1</strong></td>
+<td>&quot;Your solution is O(log y). But imagine f(x) = 2^x and y = 1,000,000. The actual x is only 20. Can you find x in O(log 20) instead of O(log 1,000,000)?&quot;</td>
+</tr>
+<tr>
+<td><strong>Hint 2</strong></td>
+<td>&quot;What if you don't start with high = y, but instead grow high from 1 by doubling until f(high) &gt;= y?&quot;</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="%E6%8B%93%E5%B1%95%E8%BF%BD%E9%97%AE--follow-up-questions">拓展追问 / Follow-up Questions</h2>
+<p>以下是在候选人完成主题后可以使用的追问问题，按难度递增排列。面试官可根据剩余时间和候选人表现选择性使用。
+Below are follow-up questions to use after the candidate completes the main problem, ordered by increasing difficulty. Interviewers can selectively use them based on remaining time and candidate performance.</p>
+<hr>
+<h3 id="%E8%BF%BD%E9%97%AE-1%E7%AD%94%E6%A1%88%E4%B8%8D%E4%BF%9D%E8%AF%81%E5%AD%98%E5%9C%A8--follow-up-1-answer-not-guaranteed-to-exist">追问 1：答案不保证存在 / Follow-up 1: Answer Not Guaranteed to Exist</h3>
+<p><strong>提问 / Question：</strong></p>
+<blockquote>
+<p>&quot;What if I remove the guarantee that a valid <code>x</code> always exists? How would you modify your solution to return <code>-1</code> or <code>null</code> when no <code>x</code> satisfies <code>f(x) = y</code>?&quot;</p>
+</blockquote>
+<p><strong>推荐提问时点 / When to ask：</strong>
+候选人很快写完了主题，剩余时间较多时用来快速填补。/ Candidate finishes the main problem quickly; use to fill remaining time. (~1-2 min)</p>
+<p><strong>标准答案 / Expected Answer：</strong>
+当前的二分代码其实已经天然处理了这个情况——<code>while</code> 循环正常结束时 <code>low &gt; high</code>，说明没找到。只需把 <code>throw new Error(...)</code> 改为 <code>return -1</code> 或 <code>return null</code> 即可。
+The current binary search code already handles this naturally — when the <code>while</code> loop terminates with <code>low &gt; high</code>, it means no match was found. Simply change <code>throw new Error(...)</code> to <code>return -1</code> or <code>return null</code>.</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// 只需修改最后一行 / Only change the last line:</span>
+<span class="hljs-comment">// throw new Error("No valid x found");</span>
+<span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;  <span class="hljs-comment">// or return null;</span>
+</div></code></pre>
+<p><strong>考察点 / What it tests：</strong>
+候选人是否真正理解自己写的代码的终止条件，而不是机械地套模板。
+Whether the candidate truly understands their own code's termination condition, rather than mechanically applying a template.</p>
+<p><strong>评价标准 / How to evaluate：</strong></p>
+<table>
+<thead>
+<tr>
+<th>候选人反应 / Candidate Response</th>
+<th>评价 / Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>立刻回答&quot;改 throw 为 return -1 就行&quot; / Immediately says &quot;just change throw to return -1&quot;</td>
+<td>✅ 理解透彻 / Thorough understanding</td>
+</tr>
+<tr>
+<td>想了一会儿，重新审视循环终止条件后答对 / Thinks for a moment, reviews loop termination, then answers correctly</td>
+<td>✅ 可以接受 / Acceptable</td>
+</tr>
+<tr>
+<td>试图加一堆额外的 if 判断来处理 / Tries to add many extra if-checks</td>
+<td>⚠️ 不够理解自己代码的逻辑 / Doesn't fully understand their own code logic</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="%E8%BF%BD%E9%97%AE-2%E5%A4%9A%E6%AC%A1%E8%B0%83%E7%94%A8-gy-%E7%9A%84%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96--follow-up-2-optimizing-for-multiple-gy-calls">追问 2：多次调用 g(y) 的场景优化 / Follow-up 2: Optimizing for Multiple g(y) Calls</h3>
+<p><strong>提问 / Question：</strong></p>
+<blockquote>
+<p>&quot;If <code>g</code> is going to be called millions of times with different <code>y</code> values, but <code>f</code> never changes, how would you optimize?&quot;</p>
+</blockquote>
+<p><strong>推荐提问时点 / When to ask：</strong>
+候选人在主题中展现了工程思维（比如主动提到 f 调用开销），想进一步探索其系统设计能力时。/ Candidate showed engineering mindset during the main problem (e.g., mentioned f call cost); use to further explore system design thinking. (~2-3 min)</p>
+<p><strong>标准答案 / Expected Answer：</strong>
+有几种优化策略，由浅到深：
+Several optimization strategies, from simple to advanced:</p>
+<ol>
+<li>
+<p><strong>缓存已知结果 / Cache known results：</strong> 用一个 <code>Map&lt;y, x&gt;</code> 缓存每次 g(y) 的返回值，命中则 O(1) 返回。/ Use a <code>Map&lt;y, x&gt;</code> to cache each g(y) result; cache hit returns in O(1).</p>
+</li>
+<li>
+<p><strong>缓存 f 的中间调用 / Cache intermediate f calls：</strong> 二分过程中调用的每个 <code>f(mid)</code> 都存入缓存。后续调用 g 时，可以先在缓存中查找已知的 <code>(x, f(x))</code> 对来缩小搜索区间。/ Store every <code>f(mid)</code> called during binary search. Subsequent g calls can use cached <code>(x, f(x))</code> pairs to narrow the search range.</p>
+</li>
+<li>
+<p><strong>预构建查找表 / Pre-build lookup table：</strong> 如果知道 x 的大致范围，预先调用 f 构建一个有序数组，后续每次 g(y) 直接在数组上二分，不再调用 f。/ If x's approximate range is known, pre-call f to build a sorted array; subsequent g(y) calls binary search the array without calling f.</p>
+</li>
+</ol>
+<p><strong>考察点 / What it tests：</strong>
+系统设计意识——能否从&quot;解决一个问题&quot;跳跃到&quot;设计一个高效的服务&quot;。
+System design awareness — can the candidate leap from &quot;solving one problem&quot; to &quot;designing an efficient service.&quot;</p>
+<p><strong>评价标准 / How to evaluate：</strong></p>
+<table>
+<thead>
+<tr>
+<th>候选人反应 / Candidate Response</th>
+<th>评价 / Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>提到结果缓存 (Map) / Mentions result caching (Map)</td>
+<td>✅ SDE2 水平 / SDE2 level</td>
+</tr>
+<tr>
+<td>提到缓存中间 f 调用来缩小后续搜索范围 / Mentions caching intermediate f calls to narrow future searches</td>
+<td>🌟 Senior 思维 / Senior-level thinking</td>
+</tr>
+<tr>
+<td>提到预构建查找表 / Mentions pre-building a lookup table</td>
+<td>🌟 系统设计能力强 / Strong system design</td>
+</tr>
+<tr>
+<td>完全没有思路 / No idea at all</td>
+<td>⚠️ 缺乏工程优化意识 / Lacks engineering optimization awareness</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="%E8%BF%BD%E9%97%AE-3%E9%9D%9E%E4%B8%A5%E6%A0%BC%E9%80%92%E5%A2%9E%E6%9C%89%E9%87%8D%E5%A4%8D%E5%80%BC%E6%89%BE%E6%9C%80%E5%B0%8F-x--follow-up-3-non-strictly-increasing-with-duplicates-find-smallest-x">追问 3：非严格递增（有重复值），找最小 x / Follow-up 3: Non-Strictly Increasing (with Duplicates), Find Smallest x</h3>
+<p><strong>提问 / Question：</strong></p>
+<blockquote>
+<p>&quot;What if <code>f</code> is non-decreasing instead of strictly increasing? That means <code>f(a) &lt;= f(b)</code> for <code>a &lt; b</code>, and multiple <code>x</code> values could map to the same <code>y</code>. How would you return the <strong>smallest</strong> such <code>x</code>?&quot;</p>
+</blockquote>
+<p><strong>推荐提问时点 / When to ask：</strong>
+候选人二分写得很熟练，想测试其对二分查找变体（找左边界 / lower bound）的掌握度。/ Candidate writes binary search fluently; use to test mastery of binary search variants (lower bound). (~3-5 min)</p>
+<p><strong>标准答案 / Expected Answer：</strong>
+这是经典的&quot;找左边界的二分&quot;（lower bound binary search）。关键修改：当 <code>f(mid) === y</code> 时，<strong>不立刻返回</strong>，而是继续向左搜索（<code>high = mid - 1</code>），最后返回 <code>low</code>。
+This is the classic &quot;lower bound binary search.&quot; Key change: when <code>f(mid) === y</code>, <strong>don't return immediately</strong>; instead keep searching left (<code>high = mid - 1</code>), and return <code>low</code> at the end.</p>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">g</span>(<span class="hljs-params">f, y</span>) </span>{
+    <span class="hljs-keyword">let</span> low = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">let</span> high = y;
+    <span class="hljs-keyword">let</span> result = <span class="hljs-number">-1</span>;
 
-<!-- ===== TOP NAV ===== -->
-<nav class="navbar">
-  <span class="brand">🎯 面试导航</span>
-  <button class="nav-btn section" onclick="jump('problem')">📋 题面</button>
-  <button class="nav-btn stuck" onclick="jump('stuck0')">卡壳0</button>
-  <button class="nav-btn stuck" onclick="jump('stuck1')">卡壳1</button>
-  <button class="nav-btn stuck" onclick="jump('stuck2')">卡壳2</button>
-  <button class="nav-btn stuck" onclick="jump('stuck3')">卡壳3</button>
-  <button class="nav-btn stuck" onclick="jump('stuck4')">卡壳4</button>
-  <button class="nav-btn followup" onclick="jump('followup1')">追问1</button>
-  <button class="nav-btn followup" onclick="jump('followup2')">追问2</button>
-  <button class="nav-btn followup" onclick="jump('followup3')">追问3</button>
-  <button class="nav-btn followup" onclick="jump('followup4')">追问4</button>
-  <button class="nav-btn section" onclick="jump('checkpoints')">🔍 考察节点</button>
-  <button class="nav-btn section" onclick="jump('solution')">💡 标准答案</button>
-  <button class="nav-btn section" onclick="jump('rubric')">📊 评判标准</button>
-  <button class="nav-btn section" onclick="jump('flowchart')">🗺️ 流程图</button>
-</nav>
+    <span class="hljs-keyword">while</span> (low &lt;= high) {
+        <span class="hljs-keyword">const</span> mid = <span class="hljs-built_in">Math</span>.floor((low + high) / <span class="hljs-number">2</span>);
+        <span class="hljs-keyword">const</span> val = f(mid);
 
-<!-- ===== RIGHT PANEL ===== -->
-<div class="quick-panel" id="quickPanel">
-  <h4>
-    快速跳转 Quick Jump
-    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
-  </h4>
-
-  <div class="qp-group">
-    <div class="qp-group-title">🚨 候选人卡壳了？</div>
-    <a class="qp-link red" href="#stuck0">卡壳 0 — 不理解数学概念</a>
-    <a class="qp-link red" href="#stuck1">卡壳 1 — 完全没思路</a>
-    <a class="qp-link red" href="#stuck2">卡壳 2 — 不知道上界</a>
-    <a class="qp-link red" href="#stuck3">卡壳 3 — 倍增→更直接？</a>
-    <a class="qp-link red" href="#stuck4">卡壳 4 — high=y→更高效？</a>
-  </div>
-
-  <div class="qp-group">
-    <div class="qp-group-title">💬 拓展追问</div>
-    <a class="qp-link purple" href="#followup1">追问 1 — 答案不存在</a>
-    <a class="qp-link purple" href="#followup2">追问 2 — 多次调用优化</a>
-    <a class="qp-link purple" href="#followup3">追问 3 — 非递减左边界</a>
-    <a class="qp-link purple" href="#followup4">追问 4 — 并行异步</a>
-  </div>
-
-  <div class="qp-group">
-    <div class="qp-group-title">📖 参考</div>
-    <a class="qp-link blue" href="#problem">题面</a>
-    <a class="qp-link blue" href="#checkpoints">关键考察节点</a>
-    <a class="qp-link green" href="#solution">标准答案</a>
-    <a class="qp-link green" href="#rubric">评判标准</a>
-    <a class="qp-link green" href="#flowchart">速查流程图</a>
-  </div>
-</div>
-<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
-
-<!-- ===== MAIN ===== -->
-<div class="container">
-
-<h1>🎯 前端 SDE2 电话面试算法题：实现反函数</h1>
-
-<!-- ==================== PROBLEM ==================== -->
-<h2 id="problem">📋 题面 / Problem Statement</h2>
-
-<div class="version-tabs">
-  <button class="vtab active" onclick="showVersion('formal')">📄 正式版</button>
-  <button class="vtab" onclick="showVersion('conversational')">🗣️ 口语版（推荐）</button>
-  <button class="vtab" onclick="showVersion('plain')">🧸 最简化版</button>
-</div>
-
-<div id="version-formal" class="version-content active card">
-  <h4>English:</h4>
-  <blockquote>
-    You are given a black-box function <code>f(x)</code> that maps non-negative integers to non-negative integers. <code>f</code> is <strong>strictly monotonically increasing</strong> (i.e., for any a &lt; b, f(a) &lt; f(b)).<br><br>
-    You can only call <code>f(x)</code> — you cannot inspect its implementation.<br><br>
-    <strong>Task:</strong> Implement its inverse function <code>g(y)</code> — given a value <code>y</code>, return the integer <code>x</code> such that <code>f(x) = y</code>. You may assume that for every input <code>y</code>, a valid <code>x</code> always exists.
-  </blockquote>
-  <h4>中文:</h4>
-  <blockquote>
-    给定一个黑盒函数 <code>f(x)</code>，它将非负整数映射到非负整数。<code>f</code> <strong>严格单调递增</strong>（即对于任意 a &lt; b，有 f(a) &lt; f(b)）。<br><br>
-    你只能调用 <code>f(x)</code>，不能查看其内部实现。<br><br>
-    <strong>任务：</strong>实现它的反函数 <code>g(y)</code> —— 给定一个值 <code>y</code>，返回整数 <code>x</code> 使得 <code>f(x) = y</code>。你可以假设对于每一个输入的 <code>y</code>，合法的 <code>x</code> 一定存在。
-  </blockquote>
-</div>
-
-<div id="version-conversational" class="version-content card">
-  <p style="color:var(--green);font-weight:600;margin-bottom:8px;">🗣️ 推荐面试时直接用这个版本念给候选人</p>
-  <h4>English:</h4>
-  <blockquote>
-    "Alright, here's the problem. Imagine you have a function <code>f</code> — you can call it with any non-negative integer, and it gives you back a non-negative integer. You can't look inside it, it's a black box. The one thing you <em>do</em> know is that it's strictly increasing — so if you feed it a bigger number, you always get a bigger result. No ties, no going backwards.<br><br>
-    Now, what I need you to do is write the <em>reverse</em> of that function. I'll give you some output value <code>y</code>, and you need to figure out: what input <code>x</code> did it come from? In other words, find <code>x</code> such that <code>f(x) = y</code>.<br><br>
-    You can assume there's always a valid answer — I won't give you a <code>y</code> that doesn't match any <code>x</code>. Sound good? Go ahead."
-  </blockquote>
-  <h4>中文:</h4>
-  <blockquote>
-    "好，我来说一下题目。假设你有一个函数 <code>f</code>，你可以给它传入任何非负整数，它会返回一个非负整数。你看不到它的内部实现，它是一个黑盒。但你知道一件事：它是严格递增的——也就是说你给的数越大，它返回的结果就一定越大。不会有相等，也不会有倒退。<br><br>
-    现在我需要你做的是：写一个'反向'的函数。我给你一个输出值 <code>y</code>，你要找出它是从哪个输入 <code>x</code> 来的。换句话说，找到 <code>x</code> 使得 <code>f(x) = y</code>。<br><br>
-    你可以假设答案一定存在——我不会给你一个不对应任何 <code>x</code> 的 <code>y</code>。清楚了吗？那就开始吧。"
-  </blockquote>
-</div>
-
-<div id="version-plain" class="version-content card">
-  <p style="color:var(--yellow);font-weight:600;margin-bottom:8px;">🧸 当候选人不理解 "单调递增"、"反函数" 等术语时使用</p>
-  <h4>English:</h4>
-  <blockquote>
-    "Let me break it down more simply. Forget the math jargon for a moment.<br><br>
-    Think of <code>f</code> as a machine. You put in a number, it spits out a number. You can't open the machine to see how it works. All you know is one rule: <strong>if you put in a bigger number, you always get a bigger number out.</strong> It never stays the same, and it never goes down.<br><br>
-    For example, let's say:<br>
-    &bull; You put in <code>3</code>, the machine gives you <code>10</code>.<br>
-    &bull; You put in <code>5</code>, it gives you <code>17</code>.<br>
-    &bull; You put in <code>8</code>, it gives you <code>25</code>.<br><br>
-    See? Bigger input, bigger output. Every time.<br><br>
-    Now here's your task: <strong>I'm going to give you an output, and you have to figure out what input produced it.</strong> Like if I say 'the machine output <code>17</code>', you should tell me the input was <code>5</code>. That's it.<br><br>
-    You're writing a function that takes the output and finds the input. And don't worry — I promise there's always exactly one right answer."
-  </blockquote>
-  <h4>中文:</h4>
-  <blockquote>
-    "我换个更简单的方式说。先不管那些数学术语。<br><br>
-    你把 <code>f</code> 想象成一台机器。你往里面塞一个数字，它会吐出一个数字。你看不到机器里面怎么运作的。你唯一知道的一条规则是：<strong>如果你塞进去的数字更大，它吐出来的数字也一定更大。</strong> 不会相同，也不会变小。<br><br>
-    举个例子：<br>
-    &bull; 你塞进去 <code>3</code>，机器吐出 <code>10</code>。<br>
-    &bull; 你塞进去 <code>5</code>，它吐出 <code>17</code>。<br>
-    &bull; 你塞进去 <code>8</code>，它吐出 <code>25</code>。<br><br>
-    看到了吧？输入越大，输出就越大。每次都是这样。<br><br>
-    现在你的任务是：<strong>我告诉你一个输出结果，你要倒推出是哪个输入产生了它。</strong> 比如我说'机器输出了 <code>17</code>'，你要告诉我输入是 <code>5</code>。就这么简单。<br><br>
-    你要写一个函数，接收这个输出值，找到对应的输入值。放心——答案一定存在，而且只有一个。"
-  </blockquote>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== STICKING POINTS ==================== -->
-<h2 id="sticking-points">🚨 候选人卡壳情况及提示策略 / Sticking Points &amp; Hints</h2>
-
-<!-- Stuck 0 -->
-<div id="stuck0">
-<details>
-  <summary>🤔 卡壳 0：不理解题目中的数学概念 / Stuck 0: Doesn't understand the math concepts</summary>
-  <div class="detail-body">
-    <p><strong>表现 / Symptom：</strong>候选人对"单调递增"或"反函数"的概念感到困惑，无法理解题意。</p>
-
-    <h4>解释"单调递增" / Explaining "monotonically increasing"：</h4>
-    <blockquote>
-      "It simply means: the bigger the input, the bigger the output. If you put in a larger <code>x</code>, you always get a larger <code>f(x)</code>. It never goes down. For example, <code>f(x) = 2x + 1</code> — as x grows, f(x) always grows."<br><br>
-      "简单来说就是：输入越大，输出也越大。如果你给一个更大的 <code>x</code>，<code>f(x)</code> 的结果一定更大，永远不会变小。比如 <code>f(x) = 2x + 1</code>，x 越大，f(x) 就越大。"
-    </blockquote>
-
-    <h4>解释"反函数" / Explaining "inverse function"：</h4>
-    <blockquote>
-      "Think of it as 'reversing' the function. If <code>f(5) = 13</code>, then the inverse function <code>g(13)</code> should return <code>5</code>. You're given the output and need to find the original input."<br><br>
-      "可以理解为'反过来'。如果 <code>f(5) = 13</code>，那反函数 <code>g(13)</code> 就应该返回 <code>5</code>。也就是给你一个输出值，让你找到原来的输入。"
-    </blockquote>
-
-    <blockquote class="interviewer-note">
-      <strong>⚠️ 面试官注意：</strong>这个解释<strong>不算提示</strong>，不应影响对候选人算法能力的评分。数学术语可能对非英语母语的候选人造成理解障碍，澄清概念是公平的。但如果候选人在理解概念后仍然长时间没有思路，则按卡壳 1 处理。
-    </blockquote>
-  </div>
-</details>
-</div>
-
-<!-- Stuck 1 -->
-<div id="stuck1">
-<details>
-  <summary>😶 卡壳 1：完全没思路 / Stuck 1: No idea what algorithm to use</summary>
-  <div class="detail-body">
-    <p><strong>表现 / Symptom：</strong>沉默，或者直接写暴力遍历。</p>
-    <table>
-      <tr><th>提示等级</th><th>提示内容 / Hint</th></tr>
-      <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"What property of <code>f</code> makes this problem easier than searching in an unsorted collection?"</td></tr>
-      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 2</td><td>"If I told you x is somewhere between 0 and 1000, how would you find it efficiently?"</td></tr>
-      <tr><td><span class="hint-chip hint-heavy">Heavy</span> Hint 3</td><td>"Think about binary search. The function is monotonically increasing — what does that remind you of?"</td></tr>
-    </table>
-  </div>
-</details>
-</div>
-
-<!-- Stuck 2 -->
-<div id="stuck2">
-<details>
-  <summary>📐 卡壳 2：知道二分，但不知道上界 / Stuck 2: Knows BS, can't determine upper bound</summary>
-  <div class="detail-body">
-    <p><strong>表现 / Symptom：</strong>写出了二分的框架，但 <code>high = ???</code> 空着或者随便填了个大常数。</p>
-    <table>
-      <tr><th>提示等级</th><th>提示内容 / Hint</th></tr>
-      <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"Given that f maps non-negative integers to non-negative integers and is strictly increasing, what can you say about the relationship between <code>f(x)</code> and <code>x</code>?"</td></tr>
-      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 2</td><td>"If f(0) >= 0 and f(1) must be strictly greater than f(0), and all values are integers... what's the minimum possible value of f(1)? f(2)? f(n)?"</td></tr>
-      <tr><td><span class="hint-chip hint-heavy">Heavy</span> Hint 3</td><td>"Can you prove that f(x) >= x? If so, what does that tell you about the upper bound for x given y?"</td></tr>
-    </table>
-  </div>
-</details>
-</div>
-
-<!-- Stuck 3 -->
-<div id="stuck3">
-<details>
-  <summary>🔄 卡壳 3：用了倍增，被追问能否更直接 / Stuck 3: Used doubling, asked for simpler</summary>
-  <div class="detail-body">
-    <p><strong>表现 / Symptom：</strong>写出了完整的倍增 + 二分，但面试官追问有没有更简单的方式。</p>
-    <table>
-      <tr><th>提示等级</th><th>提示内容 / Hint</th></tr>
-      <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"Your exponential search works great. But since we know f maps integers to integers and is strictly increasing, is there a mathematical argument that x can never be larger than y?"</td></tr>
-    </table>
-  </div>
-</details>
-</div>
-
-<!-- Stuck 4 -->
-<div id="stuck4">
-<details>
-  <summary>⚡ 卡壳 4：用了 high=y，被追问更高效 / Stuck 4: Used high=y, asked for more efficient</summary>
-  <div class="detail-body">
-    <p><strong>表现 / Symptom：</strong>写出了正确的 [0, y] 二分，但面试官追问性能。</p>
-    <table>
-      <tr><th>提示等级</th><th>提示内容 / Hint</th></tr>
-      <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"Your solution is O(log y). But imagine f(x) = 2^x and y = 1,000,000. The actual x is only 20. Can you find x in O(log 20) instead of O(log 1,000,000)?"</td></tr>
-      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 2</td><td>"What if you don't start with high = y, but instead grow high from 1 by doubling until f(high) >= y?"</td></tr>
-    </table>
-  </div>
-</details>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== FOLLOW-UPS ==================== -->
-<h2 id="followups">💬 拓展追问 / Follow-up Questions</h2>
-<p style="color:var(--text-muted);">候选人完成主题后，根据剩余时间和表现选择性使用。</p>
-
-<!-- Follow-up 1 -->
-<div id="followup1">
-<details>
-  <summary>
-    追问 1：答案不保证存在 / Answer Not Guaranteed
-    <span class="tag tag-time">1-2 min</span>
-    <span class="tag tag-diff-1">⭐ Easy</span>
-  </summary>
-  <div class="detail-body">
-    <h4>提问 / Question：</h4>
-    <blockquote>"What if I remove the guarantee that a valid <code>x</code> always exists? How would you modify your solution to return <code>-1</code> or <code>null</code> when no <code>x</code> satisfies <code>f(x) = y</code>?"</blockquote>
-
-    <h4>标准答案 / Expected Answer：</h4>
-    <p>当前的二分代码其实已经天然处理了这个情况——<code>while</code> 循环正常结束时 <code>low > high</code>，说明没找到。只需改最后一行：</p>
-    <pre><code>// throw new Error("No valid x found");
-return -1;  // or return null;</code></pre>
-
-    <h4>评价标准：</h4>
-    <table>
-      <tr><th>候选人反应</th><th>评价</th></tr>
-      <tr><td>立刻回答"改 throw 为 return -1 就行"</td><td>✅ 理解透彻</td></tr>
-      <tr><td>想了一会儿，审视终止条件后答对</td><td>✅ 可以接受</td></tr>
-      <tr><td>试图加一堆额外的 if 判断</td><td>⚠️ 不够理解自己代码的逻辑</td></tr>
-    </table>
-  </div>
-</details>
-</div>
-
-<!-- Follow-up 2 -->
-<div id="followup2">
-<details>
-  <summary>
-    追问 2：多次调用 g(y) 优化 / Optimizing for Multiple Calls
-    <span class="tag tag-time">2-3 min</span>
-    <span class="tag tag-diff-2">⭐⭐ Medium</span>
-  </summary>
-  <div class="detail-body">
-    <h4>提问 / Question：</h4>
-    <blockquote>"If <code>g</code> is going to be called millions of times with different <code>y</code> values, but <code>f</code> never changes, how would you optimize?"</blockquote>
-
-    <h4>标准答案 / Expected Answer：</h4>
-    <ol>
-      <li><strong>缓存已知结果：</strong>用 <code>Map&lt;y, x&gt;</code> 缓存每次 g(y) 的返回值，命中则 O(1)。</li>
-      <li><strong>缓存 f 的中间调用：</strong>二分过程中调用的每个 <code>f(mid)</code> 都存入缓存，后续缩小搜索区间。</li>
-      <li><strong>预构建查找表：</strong>如果知道 x 的大致范围，预先调用 f 构建有序数组，后续直接在数组上二分。</li>
-    </ol>
-
-    <h4>评价标准：</h4>
-    <table>
-      <tr><th>候选人反应</th><th>评价</th></tr>
-      <tr><td>提到结果缓存 (Map)</td><td>✅ SDE2 水平</td></tr>
-      <tr><td>提到缓存中间 f 调用来缩小搜索范围</td><td>🌟 Senior 思维</td></tr>
-      <tr><td>提到预构建查找表</td><td>🌟 系统设计能力强</td></tr>
-      <tr><td>完全没有思路</td><td>⚠️ 缺乏工程优化意识</td></tr>
-    </table>
-  </div>
-</details>
-</div>
-
-<!-- Follow-up 3 -->
-<div id="followup3">
-<details>
-  <summary>
-    追问 3：非严格递增，找最小 x / Non-Decreasing, Find Smallest x
-    <span class="tag tag-time">3-5 min</span>
-    <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
-  </summary>
-  <div class="detail-body">
-    <h4>提问 / Question：</h4>
-    <blockquote>"What if <code>f</code> is non-decreasing instead of strictly increasing? Multiple <code>x</code> values could map to the same <code>y</code>. How would you return the <strong>smallest</strong> such <code>x</code>?"</blockquote>
-
-    <h4>标准答案 / Expected Answer：</h4>
-    <p>经典的"找左边界的二分"（lower bound）。关键：当 <code>f(mid) === y</code> 时，<strong>不立刻返回</strong>，继续向左搜索。</p>
-    <pre><code>function g(f, y) {
-    let low = 0, high = y, result = -1;
-
-    while (low &lt;= high) {
-        const mid = Math.floor((low + high) / 2);
-        const val = f(mid);
-
-        if (val === y) {
-            result = mid;     // 记录候选答案
-            high = mid - 1;   // 继续向左找更小的 x
-        } else if (val &lt; y) {
-            low = mid + 1;
-        } else {
-            high = mid - 1;
+        <span class="hljs-keyword">if</span> (val === y) {
+            result = mid;     <span class="hljs-comment">// 记录候选答案 / Record candidate answer</span>
+            high = mid - <span class="hljs-number">1</span>;   <span class="hljs-comment">// 继续向左找更小的 x / Keep searching left for smaller x</span>
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (val &lt; y) {
+            low = mid + <span class="hljs-number">1</span>;
+        } <span class="hljs-keyword">else</span> {
+            high = mid - <span class="hljs-number">1</span>;
         }
     }
-    return result;
-}</code></pre>
 
-    <h4>评价标准：</h4>
-    <table>
-      <tr><th>候选人反应</th><th>评价</th></tr>
-      <tr><td>立刻写出 lower bound 变体，逻辑清晰</td><td>🌟 二分功底扎实</td></tr>
-      <tr><td>知道思路但代码有小 bug</td><td>✅ SDE2 可接受</td></tr>
-      <tr><td>完全不知道如何修改</td><td>⚠️ 只会最基础的二分</td></tr>
-    </table>
-  </div>
-</details>
-</div>
+    <span class="hljs-keyword">return</span> result;
+}
+</div></code></pre>
+<p><strong>考察点 / What it tests：</strong>
+对二分查找变体的掌握。&quot;找左边界&quot;是二分查找最重要的变种之一，在实际工程（数据库索引查找、范围查询等）中极其常见。
+Mastery of binary search variants. &quot;Finding the left boundary&quot; is one of the most important binary search variations, extremely common in real engineering (DB index lookups, range queries, etc.).</p>
+<p><strong>评价标准 / How to evaluate：</strong></p>
+<table>
+<thead>
+<tr>
+<th>候选人反应 / Candidate Response</th>
+<th>评价 / Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>立刻写出 lower bound 变体，逻辑清晰 / Immediately writes lower bound variant with clear logic</td>
+<td>🌟 二分功底扎实 / Solid binary search mastery</td>
+</tr>
+<tr>
+<td>知道思路（不立刻返回，继续向左），但代码细节有小 bug / Knows the approach (don't return immediately, keep going left) but has minor bugs</td>
+<td>✅ SDE2 可接受 / Acceptable for SDE2</td>
+</tr>
+<tr>
+<td>完全不知道如何修改 / No idea how to modify</td>
+<td>⚠️ 二分查找只会最基础的形式 / Only knows basic binary search form</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="%E8%BF%BD%E9%97%AE-4%E5%B9%B6%E8%A1%8C%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8-f%E5%89%8D%E7%AB%AF%E7%89%B9%E8%89%B2--follow-up-4-parallelasync-calls-to-f-frontend-specific">追问 4：并行/异步调用 f（前端特色） / Follow-up 4: Parallel/Async Calls to f (Frontend-Specific)</h3>
+<p><strong>提问 / Question：</strong></p>
+<blockquote>
+<p>&quot;What if <code>f(x)</code> is an async function (e.g., a network API call that returns a Promise)? And you can make multiple concurrent calls. How would you speed up the search?&quot;</p>
+</blockquote>
+<p><strong>推荐提问时点 / When to ask：</strong>
+针对前端候选人，测试其异步编程实战能力。候选人已展现出扎实的算法基础，想进一步考察前端特有的工程能力时使用。/ For frontend candidates, testing async programming skills. Use when the candidate has shown solid algorithm fundamentals and you want to further assess frontend-specific engineering ability. (~3-5 min)</p>
+<p><strong>标准答案 / Expected Answer：</strong>
+标准二分是串行的——每轮只调用一次 f，等结果回来才能决定下一步。如果 f 是异步的（如网络请求），可以<strong>一次并发多个调用来加速收敛</strong>：
+Standard binary search is sequential — one f call per round, waiting for the result before deciding the next step. If f is async (e.g., network call), we can <strong>parallelize multiple calls to speed up convergence</strong>:</p>
+<ol>
+<li>
+<p><strong>N 等分并发 / N-way parallel split：</strong> 将 [low, high] 等分为 N 段，同时调用 N-1 个分割点的 f 值（用 <code>Promise.all</code>），根据返回结果定位到 1/N 的子区间。每轮排除 (N-1)/N 的区间，而不是 1/2。
+Divide [low, high] into N segments, concurrently call f at N-1 split points (using <code>Promise.all</code>), and locate the 1/N sub-interval based on results. Each round eliminates (N-1)/N of the range instead of 1/2.</p>
+</li>
+<li>
+<p><strong>复杂度变化 / Complexity change：</strong> 每轮 N-1 次并发调用，区间缩小为 1/N，总轮数从 log₂(y) 降为 logₙ(y)。总调用次数为 (N-1) × logₙ(y)，但<strong>总轮数（延迟）</strong> 大幅降低。
+Each round has N-1 concurrent calls, range shrinks to 1/N, total rounds drop from log₂(y) to logₙ(y). Total call count is (N-1) × logₙ(y), but <strong>total rounds (latency)</strong> is significantly reduced.</p>
+</li>
+</ol>
+<pre class="hljs"><code><div><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">g</span>(<span class="hljs-params">f, y, concurrency = <span class="hljs-number">4</span></span>) </span>{
+    <span class="hljs-keyword">let</span> low = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">let</span> high = y;
 
-<!-- Follow-up 4 -->
-<div id="followup4">
-<details>
-  <summary>
-    追问 4：并行/异步调用 f（前端特色）/ Parallel Async Calls
-    <span class="tag tag-time">3-5 min</span>
-    <span class="tag tag-diff-4">⭐⭐⭐⭐ Advanced</span>
-  </summary>
-  <div class="detail-body">
-    <h4>提问 / Question：</h4>
-    <blockquote>"What if <code>f(x)</code> is an async function (e.g., a network API call)? And you can make multiple concurrent calls. How would you speed up the search?"</blockquote>
-
-    <h4>标准答案 / Expected Answer：</h4>
-    <p><strong>N 等分并发：</strong>将 [low, high] 等分为 N 段，同时调用 N-1 个分割点的 f 值（<code>Promise.all</code>），每轮排除 (N-1)/N 的区间。</p>
-    <pre><code>async function g(f, y, concurrency = 4) {
-    let low = 0, high = y;
-
-    while (low &lt; high) {
-        const points = [];
-        for (let i = 1; i &lt; concurrency; i++) {
-            points.push(low + Math.floor(
-                (high - low) * i / concurrency));
+    <span class="hljs-keyword">while</span> (low &lt; high) {
+        <span class="hljs-comment">// 生成 concurrency-1 个等分点 / Generate concurrency-1 split points</span>
+        <span class="hljs-keyword">const</span> points = [];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">1</span>; i &lt; concurrency; i++) {
+            points.push(low + <span class="hljs-built_in">Math</span>.floor((high - low) * i / concurrency));
         }
 
-        const results = await Promise.all(
-            points.map(p =&gt; f(p)));
+        <span class="hljs-comment">// 并发调用 / Concurrent calls</span>
+        <span class="hljs-keyword">const</span> results = <span class="hljs-keyword">await</span> <span class="hljs-built_in">Promise</span>.all(points.map(<span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> f(p)));
 
-        let found = false;
-        for (let i = 0; i &lt; results.length; i++) {
-            if (results[i] === y) return points[i];
-            if (results[i] &gt; y) {
-                high = points[i] - 1;
-                low = i &gt; 0 ? points[i-1] + 1 : low;
-                found = true;
-                break;
+        <span class="hljs-comment">// 根据结果定位子区间 / Locate sub-interval based on results</span>
+        <span class="hljs-keyword">let</span> found = <span class="hljs-literal">false</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; results.length; i++) {
+            <span class="hljs-keyword">if</span> (results[i] === y) <span class="hljs-keyword">return</span> points[i];
+            <span class="hljs-keyword">if</span> (results[i] &gt; y) {
+                high = points[i] - <span class="hljs-number">1</span>;
+                low = i &gt; <span class="hljs-number">0</span> ? points[i - <span class="hljs-number">1</span>] + <span class="hljs-number">1</span> : low;
+                found = <span class="hljs-literal">true</span>;
+                <span class="hljs-keyword">break</span>;
             }
         }
-        if (!found) {
-            low = points[points.length - 1] + 1;
-        }
-    }
-    return low;
-}</code></pre>
-
-    <h4>评价标准：</h4>
-    <table>
-      <tr><th>候选人反应</th><th>评价</th></tr>
-      <tr><td>提出 N 等分 + Promise.all，能解释 trade-off</td><td>🌟 前端工程能力极强</td></tr>
-      <tr><td>提出三分搜索但没泛化到 N 分</td><td>✅ 有并行思维，SDE2 达标</td></tr>
-      <tr><td>知道 async/await 但不确定如何应用</td><td>⚠️ 异步基础有，算法应用弱</td></tr>
-      <tr><td>完全没有并发优化的思路</td><td>⚠️ 异步思维不足</td></tr>
-    </table>
-  </div>
-</details>
-</div>
-
-<div class="card" style="margin-top:16px;">
-  <h4>追问使用建议汇总 / Follow-up Usage Summary</h4>
-  <table>
-    <tr><th>追问</th><th>耗时</th><th>适用场景</th><th>难度</th></tr>
-    <tr><td>1. 答案不存在</td><td>1-2 min</td><td>候选人快速完成，填补时间</td><td>⭐</td></tr>
-    <tr><td>2. 多次调用优化</td><td>2-3 min</td><td>展现了工程思维</td><td>⭐⭐</td></tr>
-    <tr><td>3. 非递减找左边界</td><td>3-5 min</td><td>二分熟练，测试变体</td><td>⭐⭐⭐</td></tr>
-    <tr><td>4. 并行异步调用</td><td>3-5 min</td><td>前端候选人，测异步</td><td>⭐⭐⭐⭐</td></tr>
-  </table>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== KEY CHECKPOINTS ==================== -->
-<h2 id="checkpoints">🔍 关键考察节点 / Key Checkpoints</h2>
-
-<div class="card">
-  <h4>节点 1：识别出二分查找（基础门槛）/ Recognizing Binary Search</h4>
-  <table>
-    <tr><th>考察内容</th><th>候选人应该意识到</th></tr>
-    <tr><td>为什么能用二分？</td><td>f 严格单调递增 → 搜索空间有序 → 可以用二分</td></tr>
-    <tr><td>如果写了线性扫描？</td><td>说明不具备基本的算法直觉</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <h4>节点 2：确定搜索上界 x ≤ y（核心区分度）/ Determining Upper Bound</h4>
-  <table>
-    <tr><th>考察内容</th><th>候选人应该意识到</th></tr>
-    <tr><td>为什么 high = y 是安全的？</td><td>f 是严格递增整数映射 → 归纳证明 f(x) ≥ x → x ≤ y</td></tr>
-    <tr><td>如果用了 <code>high = 1e9</code>？</td><td>可以工作但不够优雅，没有深入分析数学性质</td></tr>
-    <tr><td>如果用倍增 <code>high *= 2</code>？</td><td>更通用的方案，有扎实算法基础</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <h4>节点 3：倍增方案的优势认知（高阶思维）/ Doubling's Advantage</h4>
-  <table>
-    <tr><th>考察内容</th><th>候选人应该意识到</th></tr>
-    <tr><td>high = y 何时"浪费"？</td><td>f 增长极快时（如 f(x) = 2^x），y 远大于 x</td></tr>
-    <tr><td>倍增的优势</td><td>搜索范围 [x*/2, x*]，O(log x*) 而非 O(log y)</td></tr>
-    <tr><td>Trade-off</td><td>high=y 更简单；倍增更通用、f 增长快时更高效</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <h4>节点 4：边界条件处理（工程严谨性）/ Edge Cases</h4>
-  <table>
-    <tr><th>边界场景</th><th>正确处理方式</th></tr>
-    <tr><td><strong>y = 0</strong></td><td>标准二分自然处理，不需要特殊处理</td></tr>
-    <tr><td><strong>y = f(0) 且 f(0) > 0</strong></td><td>二分会自然找到 mid = 0</td></tr>
-    <tr><td><strong>x 很大</strong></td><td>JS 中无问题；Java/C++ 中 (low+high) 可能溢出，需用 low + (high-low)/2</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <h4>节点 5：f 调用次数优化（生产环境意识）/ Minimizing f Calls</h4>
-  <table>
-    <tr><th>考察内容</th><th>优秀的候选人会提到</th></tr>
-    <tr><td>f 可能很昂贵</td><td>网络请求、数据库查询、复杂计算</td></tr>
-    <tr><td>避免重复计算</td><td>把 f(mid) 存到变量再比较，不要调用两次</td></tr>
-    <tr><td>缓存/记忆化</td><td>多次调用 g 时，缓存 f 的历史结果</td></tr>
-  </table>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== MODEL SOLUTION ==================== -->
-<h2 id="solution">💡 标准答案 / Model Solution</h2>
-
-<div class="card">
-  <h4>核心思路 / Core Idea</h4>
-  <p><strong>中文：</strong>f 严格单调递增 → 搜索空间有序 → <strong>二分查找</strong>。关键在于确定二分的上界。</p>
-  <p><strong>English:</strong> f is strictly monotonically increasing → sorted search space → <strong>binary search</strong>. The key is determining the upper bound.</p>
-</div>
-
-<div class="card">
-  <h4>关键数学推导 / Key Mathematical Insight</h4>
-  <p>因为 f: Z≥0 → Z≥0 严格单调递增：</p>
-  <ul>
-    <li>f(0) ≥ 0</li>
-    <li>f(1) > f(0) ≥ 0 ⟹ f(1) ≥ 1</li>
-    <li>f(2) > f(1) ≥ 1 ⟹ f(2) ≥ 2</li>
-    <li>...</li>
-  </ul>
-  <p><strong>归纳结论：f(x) ≥ x 对所有 x ≥ 0 成立。</strong></p>
-  <p>因此若 f(x) = y，则 y ≥ x，即 <strong>x ≤ y</strong>。搜索范围确定为 [0, y]。</p>
-</div>
-
-<div class="card">
-  <h4>算法流程 / Algorithm Step-by-Step</h4>
-  <p><strong>第一步：</strong>根据 f(x) ≥ x，确定搜索范围 [0, y]。</p>
-  <p><strong>第二步：</strong>标准二分查找：</p>
-  <ol>
-    <li>设 lo = 0, hi = y</li>
-    <li>每轮计算 mid = floor((lo + hi) / 2)，调用 f(mid)</li>
-    <li>如果 f(mid) === y → 返回 mid；f(mid) &lt; y → lo = mid+1；f(mid) > y → hi = mid-1</li>
-    <li>重复直到找到答案</li>
-  </ol>
-
-  <h4>示例演练 / Walkthrough：</h4>
-  <p>假设 f(x) = 2x + 3，y = 13（答案 x = 5）</p>
-  <table>
-    <tr><th>轮次</th><th>lo</th><th>hi</th><th>mid</th><th>f(mid)</th><th>比较</th><th>操作</th></tr>
-    <tr><td>1</td><td>0</td><td>13</td><td>6</td><td>15</td><td>15 > 13</td><td>hi = 5</td></tr>
-    <tr><td>2</td><td>0</td><td>5</td><td>2</td><td>7</td><td>7 &lt; 13</td><td>lo = 3</td></tr>
-    <tr><td>3</td><td>3</td><td>5</td><td>4</td><td>11</td><td>11 &lt; 13</td><td>lo = 5</td></tr>
-    <tr><td>4</td><td>5</td><td>5</td><td>5</td><td>13</td><td>13 === 13</td><td>✅ 返回 5</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <h4>代码：写法一 — 迭代 (Iterative)</h4>
-  <pre><code>function g(f, y) {
-    let low = 0;
-    let high = y;   // Because f(x) >= x, so x <= y
-
-    while (low &lt;= high) {
-        const mid = Math.floor((low + high) / 2);
-        const result = f(mid);
-
-        if (result === y) {
-            return mid;
-        } else if (result &lt; y) {
-            low = mid + 1;
-        } else {
-            high = mid - 1;
+        <span class="hljs-keyword">if</span> (!found) {
+            low = points[points.length - <span class="hljs-number">1</span>] + <span class="hljs-number">1</span>;
         }
     }
 
-    throw new Error("No valid x found");
-}</code></pre>
-</div>
-
-<div class="card">
-  <h4>代码：写法二 — 递归 (Recursive)</h4>
-  <pre><code>function g(f, y, low = 0, high = y) {
-    if (low > high) throw new Error("No valid x found");
-
-    const mid = Math.floor((low + high) / 2);
-    const result = f(mid);
-
-    if (result === y) return mid;
-    if (result &lt; y) return g(f, y, mid + 1, high);
-    return g(f, y, low, mid - 1);
-}</code></pre>
-</div>
-
-<div class="card">
-  <h4>两种写法对比 / Comparison</h4>
-  <table>
-    <tr><th></th><th>迭代 (While)</th><th>递归 (Recursion)</th></tr>
-    <tr><td><strong>空间复杂度</strong></td><td>O(1)</td><td>O(log y) 调用栈</td></tr>
-    <tr><td><strong>可读性</strong></td><td>更直观，工程常见</td><td>更贴近数学定义</td></tr>
-    <tr><td><strong>栈溢出风险</strong></td><td>无</td><td>y 极大时可能爆栈</td></tr>
-    <tr><td><strong>尾递归优化</strong></td><td>N/A</td><td>JS 几乎不支持（仅 Safari）</td></tr>
-  </table>
-  <blockquote class="interviewer-note">
-    <strong>⚠️ 面试官注意：</strong>候选人写哪种都可以。如果写了递归版，追问："空间复杂度是多少？有没有栈溢出风险？" 如果候选人能主动说出迭代版更适合生产环境，这是加分项。
-  </blockquote>
-</div>
-
-<div class="card">
-  <h4>复杂度 / Complexity</h4>
-  <ul>
-    <li><strong>时间：</strong>O(log y)</li>
-    <li><strong>空间：</strong>O(1)（迭代）或 O(log y)（递归）</li>
-  </ul>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== RUBRIC ==================== -->
-<h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
-
-<div class="card">
-  <h4><span class="badge badge-fail">❌ Not Hire</span> 不通过</h4>
-  <table>
-    <tr><th>表现</th><th>原因</th></tr>
-    <tr><td>给了 Hint 3 后仍写不出二分</td><td>最基础的算法能力不达标</td></tr>
-    <tr><td>只写线性扫描且提示后仍不知优化</td><td>缺少基本算法思维</td></tr>
-    <tr><td>代码有死循环</td><td>二分查找基本功有缺陷</td></tr>
-    <tr><td>写了 <code>high = Infinity</code> 然后死循环</td><td>逻辑思维欠缺</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <h4><span class="badge badge-weak">⚠️ Lean No</span> 弱 SDE2 / 勉强边缘</h4>
-  <table>
-    <tr><th>表现</th><th>说明</th></tr>
-    <tr><td>1 个提示后写出二分，但用 <code>high = 1e9</code></td><td>知道二分但没深入分析约束</td></tr>
-    <tr><td>代码基本正确但有 off-by-one bug</td><td>写码不够严谨</td></tr>
-    <tr><td>没有主动思考任何边界情况</td><td>缺乏工程意识</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <h4><span class="badge badge-pass">✅ Hire as SDE2</span> 通过</h4>
-  <table>
-    <tr><th>表现</th><th>说明</th></tr>
-    <tr><td><strong>无提示</strong>写出二分</td><td>算法基本功过关</td></tr>
-    <tr><td>上界用了倍增<strong>或</strong>推导出 high = y</td><td>能独立解决无穷域问题</td></tr>
-    <tr><td>代码逻辑正确，无 bug</td><td>编码能力达标</td></tr>
-    <tr><td>追问下能理解另一种方案的优劣</td><td>能在引导下拓展思维</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <h4><span class="badge badge-strong">🌟 Strong Hire / Senior</span> 强通过</h4>
-  <table>
-    <tr><th>表现</th><th>说明</th></tr>
-    <tr><td>写代码前<strong>主动提问</strong>确认约束</td><td>Senior 级别的需求澄清意识</td></tr>
-    <tr><td><strong>无提示</strong>推导出 f(x) ≥ x，直接用 high = y</td><td>数学推理能力强</td></tr>
-    <tr><td><strong>同时</strong>知道倍增方案，能主动对比</td><td>全面的算法视野</td></tr>
-    <tr><td>主动提到溢出风险、f 调用缓存等</td><td>生产环境意识</td></tr>
-    <tr><td>代码一次写对，结构清晰</td><td>高质量编码能力</td></tr>
-    <tr><td>能主动分析并表述时间复杂度</td><td>理论基础扎实</td></tr>
-  </table>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== FLOW CHART ==================== -->
-<h2 id="flowchart">🗺️ 面试官速查流程图 / Quick Decision Flow</h2>
-
-<div class="flow-chart">候选人独立写出二分了吗？ / Did candidate write binary search independently?
-├── 否 / No → 给提示后写出来了吗？
-│        ├── 否 / No → <span class="badge badge-fail">❌ Not Hire</span>
-│        └── 是 / Yes → 上界怎么处理的？
-│                 ├── 硬编码常数 → <span class="badge badge-weak">⚠️ Lean No</span>
-│                 └── 倍增或 high=y → <span class="badge badge-weak">⚠️ Weak SDE2</span>
-├── 是 / Yes → 上界怎么处理的？
-│        ├── 硬编码常数 → <span class="badge badge-weak">⚠️ Weak SDE2</span>
-│        ├── 倍增 (一种方案) → <span class="badge badge-pass">✅ SDE2</span>
-│        ├── 推导出 high=y (一种方案) → <span class="badge badge-pass">✅ SDE2</span>
-│        └── 两种都知道且能对比 → <span class="badge badge-strong">🌟 Strong / Senior</span>
-└── 代码是否有 bug？
-         ├── 无 bug + 主动考虑边界 → 加分 ✅
-         └── 有 bug 但能在追问下修复 → 不扣分</div>
-
-</div><!-- end container -->
-
-<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
-
-<script>
-// Jump function
-function jump(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  // Open details if inside one
-  const details = el.querySelector('details') || el.closest('details');
-  if (details) details.open = true;
-  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    <span class="hljs-keyword">return</span> low;
 }
+</div></code></pre>
+<p><strong>考察点 / What it tests：</strong></p>
+<ul>
+<li>异步编程能力（Promise.all 的使用）/ Async programming skills (Promise.all usage)</li>
+<li>并发与效率的权衡思维（总调用次数增加 vs 总延迟降低）/ Concurrency vs efficiency trade-off thinking (more total calls vs less total latency)</li>
+<li>从串行算法到并行算法的思维转换 / Mental shift from sequential to parallel algorithms</li>
+</ul>
+<p><strong>评价标准 / How to evaluate：</strong></p>
+<table>
+<thead>
+<tr>
+<th>候选人反应 / Candidate Response</th>
+<th>评价 / Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>提出 N 等分 + Promise.all 的方案，并能解释延迟与调用次数的 trade-off / Proposes N-way split + Promise.all, explains latency vs call count trade-off</td>
+<td>🌟 前端工程能力极强 / Excellent frontend engineering ability</td>
+</tr>
+<tr>
+<td>提出&quot;同时调 f(1/3) 和 f(2/3)&quot;（三分搜索），但没有泛化到 N 分 / Proposes &quot;call f(1/3) and f(2/3) simultaneously&quot; (ternary search) but doesn't generalize to N</td>
+<td>✅ 有并行思维，SDE2 达标 / Has parallel thinking, SDE2 level</td>
+</tr>
+<tr>
+<td>知道要用 async/await 和 Promise.all 但不确定如何应用到二分 / Knows async/await and Promise.all but unsure how to apply to binary search</td>
+<td>⚠️ 异步基础有，但算法应用能力弱 / Has async basics but weak on algorithmic application</td>
+</tr>
+<tr>
+<td>完全没有并发优化的思路 / No idea about concurrent optimization</td>
+<td>⚠️ 对于前端候选人来说，异步思维不足 / For a frontend candidate, insufficient async thinking</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="%E8%BF%BD%E9%97%AE%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE%E6%B1%87%E6%80%BB--follow-up-usage-summary">追问使用建议汇总 / Follow-up Usage Summary</h3>
+<table>
+<thead>
+<tr>
+<th>追问 / Follow-up</th>
+<th>耗时 / Time</th>
+<th>适用场景 / When to use</th>
+<th>难度 / Difficulty</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 答案不存在 / Answer not guaranteed</strong></td>
+<td>1-2 min</td>
+<td>候选人快速完成主题，快速填补时间 / Candidate finishes quickly, fill remaining time</td>
+<td>⭐ 简单 / Easy</td>
+</tr>
+<tr>
+<td><strong>2. 多次调用优化 / Multiple calls optimization</strong></td>
+<td>2-3 min</td>
+<td>候选人展现了工程思维 / Candidate showed engineering mindset</td>
+<td>⭐⭐ 中等 / Medium</td>
+</tr>
+<tr>
+<td><strong>3. 非递减找左边界 / Non-decreasing lower bound</strong></td>
+<td>3-5 min</td>
+<td>候选人二分熟练，测试变体掌握 / Candidate fluent in BS, test variant mastery</td>
+<td>⭐⭐⭐ 较难 / Hard</td>
+</tr>
+<tr>
+<td><strong>4. 并行异步调用 / Parallel async calls</strong></td>
+<td>3-5 min</td>
+<td>前端候选人，测试异步实战能力 / Frontend candidate, test async skills</td>
+<td>⭐⭐⭐⭐ 高阶 / Advanced</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="%E5%85%B3%E9%94%AE%E8%80%83%E5%AF%9F%E8%8A%82%E7%82%B9--key-checkpoints">关键考察节点 / Key Checkpoints</h2>
+<p>以下是这道题中几个<strong>从易到难</strong>的关键思维节点，每一个节点都是对候选人能力的一次检验：
+Below are the key thinking checkpoints of this problem, ordered from easy to hard. Each checkpoint serves as a test of the candidate's ability:</p>
+<h3 id="%E8%8A%82%E7%82%B9-1%E8%AF%86%E5%88%AB%E5%87%BA%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E5%9F%BA%E7%A1%80%E9%97%A8%E6%A7%9B--checkpoint-1-recognizing-binary-search-baseline">节点 1：识别出二分查找（基础门槛） / Checkpoint 1: Recognizing Binary Search (Baseline)</h3>
+<table>
+<thead>
+<tr>
+<th>考察内容 / What to assess</th>
+<th>候选人应该意识到 / Candidate should realize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>为什么能用二分？/ Why can we use binary search?</td>
+<td>f 严格单调递增 → 搜索空间是有序的 → 可以用二分 / f is strictly increasing → search space is sorted → binary search applies</td>
+</tr>
+<tr>
+<td>如果写了线性扫描？/ What if they write a linear scan?</td>
+<td>说明不具备基本的算法直觉 / Indicates lack of basic algorithmic intuition</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E8%8A%82%E7%82%B9-2%E7%A1%AE%E5%AE%9A%E6%90%9C%E7%B4%A2%E4%B8%8A%E7%95%8Cx-%E2%89%A4-y%E6%A0%B8%E5%BF%83%E5%8C%BA%E5%88%86%E5%BA%A6--checkpoint-2-determining-upper-bound--x-%E2%89%A4-y-key-differentiator">节点 2：确定搜索上界——x ≤ y（核心区分度） / Checkpoint 2: Determining Upper Bound — x ≤ y (Key Differentiator)</h3>
+<table>
+<thead>
+<tr>
+<th>考察内容 / What to assess</th>
+<th>候选人应该意识到 / Candidate should realize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>为什么 high = y 是安全的？/ Why is high = y safe?</td>
+<td>因为 f 是整数到整数的严格递增映射，可以归纳证明 f(x) ≥ x，所以 x ≤ y / Since f is a strictly increasing integer-to-integer mapping, by induction f(x) ≥ x, thus x ≤ y</td>
+</tr>
+<tr>
+<td>如果候选人直接用一个很大的常数（如 <code>high = 1e9</code>）？/ What if they hardcode a large constant (e.g. <code>high = 1e9</code>)?</td>
+<td>可以工作但不够优雅；说明没有深入分析问题的数学性质 / Works but inelegant; shows lack of deeper mathematical analysis</td>
+</tr>
+<tr>
+<td>如果候选人用倍增（<code>high *= 2</code>）？/ What if they use doubling (<code>high *= 2</code>)?</td>
+<td>这是一种<strong>更通用</strong>的方案，说明有扎实的算法基础，但可以追问他是否还有更直接的方式 / A <strong>more general</strong> approach showing solid algorithm skills; follow up by asking if there's a more direct way</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E8%8A%82%E7%82%B9-3%E5%80%8D%E5%A2%9E%E6%96%B9%E6%A1%88%E7%9A%84%E4%BC%98%E5%8A%BF%E8%AE%A4%E7%9F%A5%E9%AB%98%E9%98%B6%E6%80%9D%E7%BB%B4--checkpoint-3-understanding-doublings-advantage-advanced-thinking">节点 3：倍增方案的优势认知（高阶思维） / Checkpoint 3: Understanding Doubling's Advantage (Advanced Thinking)</h3>
+<table>
+<thead>
+<tr>
+<th>考察内容 / What to assess</th>
+<th>候选人应该意识到 / Candidate should realize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>high = y 的方案在什么时候&quot;浪费&quot;？/ When is the high = y approach &quot;wasteful&quot;?</td>
+<td>当 f 增长极快时（如 f(x) = 2^x），y 远大于 x，搜索范围不紧凑 / When f grows very fast (e.g. f(x) = 2^x), y is much larger than x, making the search range loose</td>
+</tr>
+<tr>
+<td>倍增方案的优势 / Advantage of doubling</td>
+<td>搜索范围 [x*/2, x*]，复杂度 O(log x*) 而非 O(log y) / Search range [x*/2, x*], complexity O(log x*) instead of O(log y)</td>
+</tr>
+<tr>
+<td>两种方案的 trade-off</td>
+<td>high = y：更简单，利用了数学性质；倍增：更通用，当 f 增长快时更高效 / high = y: simpler, leverages math property; Doubling: more general, more efficient when f grows fast</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E8%8A%82%E7%82%B9-4%E8%BE%B9%E7%95%8C%E6%9D%A1%E4%BB%B6%E5%A4%84%E7%90%86%E5%B7%A5%E7%A8%8B%E4%B8%A5%E8%B0%A8%E6%80%A7--checkpoint-4-edge-case-handling-engineering-rigor">节点 4：边界条件处理（工程严谨性） / Checkpoint 4: Edge Case Handling (Engineering Rigor)</h3>
+<table>
+<thead>
+<tr>
+<th>边界场景 / Edge case</th>
+<th>正确处理方式 / Correct handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>y = 0</strong></td>
+<td>此时 high = 0，low = 0，循环只执行一次检查 f(0)。标准二分逻辑自然处理，<strong>不需要特殊处理</strong> / high = 0, low = 0, loop runs once checking f(0). Standard binary search handles it naturally, <strong>no special case needed</strong></td>
+</tr>
+<tr>
+<td><strong>y = f(0) 且 f(0) &gt; 0 / y = f(0) and f(0) &gt; 0</strong></td>
+<td>此时 x = 0，high = y &gt; 0，二分会自然找到 mid = 0 的位置。也能正确处理 / x = 0, high = y &gt; 0, binary search naturally finds mid = 0. Also handled correctly</td>
+</tr>
+<tr>
+<td><strong>x 很大 / x is very large</strong></td>
+<td>JavaScript 中 Number.MAX_SAFE_INTEGER 为 2^53 - 1；在 Java/C++ 中 (low + high) 可能溢出，需要写成 low + Math.floor((high - low) / 2) / In JS, Number.MAX_SAFE_INTEGER is 2^53 - 1; in Java/C++, (low + high) may overflow — use low + Math.floor((high - low) / 2) instead</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E8%8A%82%E7%82%B9-5f-%E8%B0%83%E7%94%A8%E6%AC%A1%E6%95%B0%E4%BC%98%E5%8C%96%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E6%84%8F%E8%AF%86--checkpoint-5-minimizing-f-calls-production-awareness">节点 5：f 调用次数优化（生产环境意识） / Checkpoint 5: Minimizing f Calls (Production Awareness)</h3>
+<table>
+<thead>
+<tr>
+<th>考察内容 / What to assess</th>
+<th>优秀的候选人会提到 / Strong candidates will mention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>f 的调用可能很昂贵 / f calls could be expensive</td>
+<td>网络请求、数据库查询、复杂计算 / Network requests, DB queries, heavy computation</td>
+</tr>
+<tr>
+<td>避免重复计算 / Avoid redundant calls</td>
+<td>把 f(mid) 存到变量中再做比较，而不是调用两次 / Store f(mid) in a variable instead of calling it twice</td>
+</tr>
+<tr>
+<td>缓存/记忆化 / Caching / memoization</td>
+<td>如果 g 会被多次调用，可以缓存 f 的历史结果 / If g is called multiple times, cache previous f results</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="%E6%A0%87%E5%87%86%E7%AD%94%E6%A1%88--model-solution">标准答案 / Model Solution</h2>
+<h3 id="%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF--core-idea">核心思路 / Core Idea</h3>
+<p><strong>中文：</strong> f 严格单调递增 → 搜索空间有序 → <strong>二分查找</strong>。关键在于确定二分的上界。</p>
+<p><strong>English:</strong> f is strictly monotonically increasing → the search space is sorted → <strong>binary search</strong>. The key is determining the upper bound.</p>
+<h3 id="%E5%85%B3%E9%94%AE%E6%95%B0%E5%AD%A6%E6%8E%A8%E5%AF%BC--key-mathematical-insight">关键数学推导 / Key Mathematical Insight</h3>
+<p>因为 f: Z≥0 → Z≥0 严格单调递增：</p>
+<ul>
+<li>f(0) ≥ 0</li>
+<li>f(1) &gt; f(0) ≥ 0 ⟹ f(1) ≥ 1 （整数，严格大于0）</li>
+<li>f(2) &gt; f(1) ≥ 1 ⟹ f(2) ≥ 2</li>
+<li>...</li>
+</ul>
+<p><strong>归纳结论：f(x) ≥ x 对所有 x ≥ 0 成立。</strong></p>
+<p>因此若 f(x) = y，则 y ≥ x，即 <strong>x ≤ y</strong>。搜索范围确定为 [0, y]。</p>
+<h3 id="%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E6%8F%8F%E8%BF%B0--algorithm-step-by-step">算法流程描述 / Algorithm Step-by-Step</h3>
+<p><strong>第一步：确定搜索范围。</strong>
+根据数学推导 f(x) ≥ x，可知 x ≤ y。因此搜索范围为 [0, y]。</p>
+<p><strong>第二步：在 [0, y] 上执行标准二分查找。</strong></p>
+<ol>
+<li>设 lo = 0, hi = y。</li>
+<li>每轮循环计算中点 mid = floor((lo + hi) / 2)，调用 f(mid) 获得结果 result。</li>
+<li>比较 result 与 y：
+<ul>
+<li>如果 result === y：找到答案，返回 mid。</li>
+<li>如果 result &lt; y：说明 mid 太小，答案在右半边，令 lo = mid + 1。</li>
+<li>如果 result &gt; y：说明 mid 太大，答案在左半边，令 hi = mid - 1。</li>
+</ul>
+</li>
+<li>重复步骤 2-3，直到 lo &gt; hi（此时区间为空）或找到答案。</li>
+</ol>
+<p><strong>示例演练 / Walkthrough：</strong> 假设 f(x) = 2x + 3，y = 13（答案 x = 5）。</p>
+<table>
+<thead>
+<tr>
+<th>轮次</th>
+<th>lo</th>
+<th>hi</th>
+<th>mid</th>
+<th>f(mid)</th>
+<th>与 y=13 比较</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>13</td>
+<td>6</td>
+<td>15</td>
+<td>15 &gt; 13</td>
+<td>hi = 5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0</td>
+<td>5</td>
+<td>2</td>
+<td>7</td>
+<td>7 &lt; 13</td>
+<td>lo = 3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+<td>5</td>
+<td>4</td>
+<td>11</td>
+<td>11 &lt; 13</td>
+<td>lo = 5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>13</td>
+<td>13 === 13</td>
+<td>✅ 返回 5</td>
+</tr>
+</tbody>
+</table>
+<p>共调用 f 四次，即找到答案。</p>
+<h3 id="%E4%BB%A3%E7%A0%81--code">代码 / Code</h3>
+<h4 id="%E5%86%99%E6%B3%95%E4%B8%80%E8%BF%AD%E4%BB%A3-iterative--while-loop">写法一：迭代 (Iterative / While Loop)</h4>
+<pre class="hljs"><code><div><span class="hljs-comment">/**
+ * <span class="hljs-doctag">@param <span class="hljs-type">{function}</span> <span class="hljs-variable">f</span></span> - Strictly monotonically increasing black-box function
+ *                       (non-negative integers → non-negative integers)
+ * <span class="hljs-doctag">@param <span class="hljs-type">{number}</span> <span class="hljs-variable">y</span></span>   - Target value. Guaranteed that a valid x exists.
+ * <span class="hljs-doctag">@returns <span class="hljs-type">{number}</span>   </span>- The integer x such that f(x) === y.
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">g</span>(<span class="hljs-params">f, y</span>) </span>{
+    <span class="hljs-keyword">let</span> low = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">let</span> high = y;   <span class="hljs-comment">// Because f(x) &gt;= x, so x &lt;= y</span>
 
-// Version tabs
-function showVersion(name) {
-  document.querySelectorAll('.version-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.vtab').forEach(el => el.classList.remove('active'));
-  document.getElementById('version-' + name).classList.add('active');
-  // find the clicked tab
-  const tabs = document.querySelectorAll('.vtab');
-  const map = { formal: 0, conversational: 1, plain: 2 };
-  tabs[map[name]].classList.add('active');
+    <span class="hljs-keyword">while</span> (low &lt;= high) {
+        <span class="hljs-keyword">const</span> mid = <span class="hljs-built_in">Math</span>.floor((low + high) / <span class="hljs-number">2</span>);
+        <span class="hljs-keyword">const</span> result = f(mid);
+
+        <span class="hljs-keyword">if</span> (result === y) {
+            <span class="hljs-keyword">return</span> mid;
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (result &lt; y) {
+            low = mid + <span class="hljs-number">1</span>;
+        } <span class="hljs-keyword">else</span> {
+            high = mid - <span class="hljs-number">1</span>;
+        }
+    }
+
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"No valid x found"</span>);
 }
+</div></code></pre>
+<h4 id="%E5%86%99%E6%B3%95%E4%BA%8C%E9%80%92%E5%BD%92-recursive">写法二：递归 (Recursive)</h4>
+<pre class="hljs"><code><div><span class="hljs-comment">/**
+ * <span class="hljs-doctag">@param <span class="hljs-type">{function}</span> <span class="hljs-variable">f</span></span> - Strictly monotonically increasing black-box function
+ *                       (non-negative integers → non-negative integers)
+ * <span class="hljs-doctag">@param <span class="hljs-type">{number}</span> <span class="hljs-variable">y</span></span>   - Target value. Guaranteed that a valid x exists.
+ * <span class="hljs-doctag">@param <span class="hljs-type">{number}</span> <span class="hljs-variable">low</span></span> - Lower bound of search range (default: 0).
+ * <span class="hljs-doctag">@param <span class="hljs-type">{number}</span> <span class="hljs-variable">high</span></span> - Upper bound of search range (default: y).
+ * <span class="hljs-doctag">@returns <span class="hljs-type">{number}</span>   </span>- The integer x such that f(x) === y.
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">g</span>(<span class="hljs-params">f, y, low = <span class="hljs-number">0</span>, high = y</span>) </span>{
+    <span class="hljs-keyword">if</span> (low &gt; high) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"No valid x found"</span>);
 
-// Scroll-to-top button visibility
-window.addEventListener('scroll', () => {
-  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
-});
+    <span class="hljs-keyword">const</span> mid = <span class="hljs-built_in">Math</span>.floor((low + high) / <span class="hljs-number">2</span>);
+    <span class="hljs-keyword">const</span> result = f(mid);
 
-// Keyboard shortcuts
-document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  const map = {
-    '0': 'stuck0', '1': 'stuck1', '2': 'stuck2', '3': 'stuck3', '4': 'stuck4',
-    'q': 'problem', 'a': 'solution', 'r': 'rubric', 'f': 'flowchart',
-  };
-  if (map[e.key]) { e.preventDefault(); jump(map[e.key]); }
-});
-</script>
+    <span class="hljs-keyword">if</span> (result === y) <span class="hljs-keyword">return</span> mid;
+    <span class="hljs-keyword">if</span> (result &lt; y) <span class="hljs-keyword">return</span> g(f, y, mid + <span class="hljs-number">1</span>, high);
+    <span class="hljs-keyword">return</span> g(f, y, low, mid - <span class="hljs-number">1</span>);
+}
+</div></code></pre>
+<h4 id="%E4%B8%A4%E7%A7%8D%E5%86%99%E6%B3%95%E5%AF%B9%E6%AF%94--comparison">两种写法对比 / Comparison</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>迭代 (While)</th>
+<th>递归 (Recursion)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>空间复杂度 / Space</strong></td>
+<td>O(1)</td>
+<td>O(log y)（调用栈 / call stack）</td>
+</tr>
+<tr>
+<td><strong>可读性 / Readability</strong></td>
+<td>更直观，工程中更常见 / More straightforward, common in production</td>
+<td>更贴近数学定义，函数式风格 / Closer to math definition, functional style</td>
+</tr>
+<tr>
+<td><strong>栈溢出风险 / Stack overflow risk</strong></td>
+<td>无 / None</td>
+<td>当 y 极大时可能爆栈（JS 默认栈深度约 1 万层）/ May overflow when y is very large (~10k stack depth in JS)</td>
+</tr>
+<tr>
+<td><strong>尾递归优化 / TCO</strong></td>
+<td>不适用 / N/A</td>
+<td>理论上可以，但 JS 引擎几乎都不支持（仅 Safari）/ Theoretically possible, but almost no JS engine supports it (Safari only)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>面试官注意 / Interviewer Note：</strong> 候选人写哪种都可以，不影响评分。如果写了递归版，可以追问：&quot;这个递归的空间复杂度是多少？有没有栈溢出的风险？&quot; 如果候选人能<strong>主动说出</strong>迭代版更适合生产环境（因为无栈溢出风险），这是加分项。</p>
+<p><strong>Interviewer Note:</strong> Either approach is acceptable. If the candidate writes the recursive version, a good follow-up is: &quot;What's the space complexity of this recursion? Is there a stack overflow risk?&quot; Bonus points if the candidate proactively mentions that the iterative version is more suitable for production (no stack overflow risk).</p>
+</blockquote>
+<h3 id="%E5%A4%8D%E6%9D%82%E5%BA%A6--complexity">复杂度 / Complexity</h3>
+<ul>
+<li><strong>时间复杂度 / Time：</strong> O(log y)，其中 y 是目标值 / where y is the target value</li>
+<li><strong>空间复杂度 / Space：</strong> O(1)（迭代 / iterative）或 O(log y)（递归 / recursive）</li>
+</ul>
+<hr>
+<h2 id="%E8%AF%84%E5%88%A4%E6%A0%87%E5%87%86--evaluation-rubric">评判标准 / Evaluation Rubric</h2>
+<h3 id="%E2%9D%8C-not-hire%E4%B8%8D%E9%80%9A%E8%BF%87--do-not-advance">❌ Not Hire（不通过 / Do not advance）</h3>
+<table>
+<thead>
+<tr>
+<th>表现 / Behavior</th>
+<th>原因 / Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>给了 Hint 3（重度提示）后仍写不出二分 / Cannot write binary search even after heavy hints</td>
+<td>最基础的算法能力不达标 / Fundamental algorithm skills are insufficient</td>
+</tr>
+<tr>
+<td>只写出线性扫描且在提示后仍不知道如何优化 / Only writes linear scan and can't optimize after hints</td>
+<td>缺少基本的算法思维 / Lacks basic algorithmic thinking</td>
+</tr>
+<tr>
+<td>代码有死循环（如 <code>while(low &lt; high)</code> 却没有正确移动指针）/ Code has infinite loop (e.g. incorrect pointer movement)</td>
+<td>二分查找的基本功有缺陷 / Binary search fundamentals are flawed</td>
+</tr>
+<tr>
+<td>完全没有考虑上界的问题，写了 <code>high = Infinity</code> 然后死循环 / Sets <code>high = Infinity</code> without thought, causing infinite loop</td>
+<td>逻辑思维欠缺 / Lacks logical reasoning</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E2%9A%A0%EF%B8%8F-lean-no--%E5%BC%B1-sde2%E5%8B%89%E5%BC%BA%E8%BE%B9%E7%BC%98--borderline">⚠️ Lean No / 弱 SDE2（勉强边缘 / Borderline）</h3>
+<table>
+<thead>
+<tr>
+<th>表现 / Behavior</th>
+<th>说明 / Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>给了 1 个提示后写出了二分，但用 <code>high = 1e9</code> 等硬编码上界 / Writes binary search after 1 hint, but hardcodes <code>high = 1e9</code></td>
+<td>知道二分但没有深入分析问题约束 / Knows binary search but lacks deeper analysis of constraints</td>
+</tr>
+<tr>
+<td>代码基本正确但有 off-by-one 的 bug / Code mostly correct but has off-by-one bug</td>
+<td>写码不够严谨 / Coding lacks rigor</td>
+</tr>
+<tr>
+<td>没有主动思考任何边界情况 / Doesn't proactively consider any edge cases</td>
+<td>缺乏工程意识 / Lacks engineering awareness</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E2%9C%85-hire-as-sde2%E9%80%9A%E8%BF%87-sde2--pass-for-sde2">✅ Hire as SDE2（通过 SDE2 / Pass for SDE2）</h3>
+<table>
+<thead>
+<tr>
+<th>表现 / Behavior</th>
+<th>说明 / Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>无提示</strong>写出二分 / Writes binary search <strong>without hints</strong></td>
+<td>算法基本功过关 / Solid algorithm fundamentals</td>
+</tr>
+<tr>
+<td>上界用了倍增<strong>或</strong>推导出 high = y（二者任一）/ Uses doubling <strong>or</strong> derives high = y (either one)</td>
+<td>有独立解决无穷域问题的能力 / Can independently handle unbounded search space</td>
+</tr>
+<tr>
+<td>代码逻辑正确，无 bug / Code logic correct, no bugs</td>
+<td>编码能力达标 / Coding ability meets the bar</td>
+</tr>
+<tr>
+<td>在追问下能理解另一种方案的优劣 / Understands the other approach's trade-offs when prompted</td>
+<td>能在引导下拓展思维 / Can expand thinking with guidance</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%F0%9F%8C%9F-strong-hire--senior%E5%BC%BA%E9%80%9A%E8%BF%87--%E5%8F%AF%E8%80%83%E8%99%91-senior--strong-pass-consider-for-senior">🌟 Strong Hire / Senior（强通过 / 可考虑 Senior / Strong pass, consider for Senior）</h3>
+<table>
+<thead>
+<tr>
+<th>表现 / Behavior</th>
+<th>说明 / Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>写代码前<strong>主动提问</strong>确认约束（&quot;整数还是浮点？答案保证存在吗？f 调用开销大吗？&quot;）/ <strong>Proactively asks</strong> clarifying questions before coding (&quot;Integer or float? Is answer guaranteed? Is f expensive?&quot;)</td>
+<td>展现了 Senior 级别的需求澄清意识 / Demonstrates Senior-level requirement clarification</td>
+</tr>
+<tr>
+<td><strong>无提示</strong>推导出 f(x) ≥ x，直接用 high = y / <strong>Unprompted</strong> derives f(x) ≥ x and uses high = y</td>
+<td>数学推理能力强，能从约束中提取有用性质 / Strong mathematical reasoning, extracts useful properties from constraints</td>
+</tr>
+<tr>
+<td><strong>同时</strong>知道倍增方案，并能<strong>主动</strong>对比两种方案的适用场景 / Knows <strong>both</strong> approaches and <strong>proactively</strong> compares their trade-offs</td>
+<td>全面的算法视野 / Comprehensive algorithmic vision</td>
+</tr>
+<tr>
+<td>主动提到 (low + high) 溢出风险、f 调用缓存等工程细节 / Proactively mentions (low + high) overflow risk, f call caching, etc.</td>
+<td>有生产环境意识 / Production-environment awareness</td>
+</tr>
+<tr>
+<td>代码一次写对，结构清晰，命名规范 / Code correct on first attempt, clean structure, good naming</td>
+<td>高质量编码能力 / High-quality coding ability</td>
+</tr>
+<tr>
+<td>能主动分析并清晰表述时间复杂度 / Proactively analyzes and clearly states time complexity</td>
+<td>理论基础扎实 / Solid theoretical foundation</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="%E9%9D%A2%E8%AF%95%E5%AE%98%E9%80%9F%E6%9F%A5%E6%B5%81%E7%A8%8B%E5%9B%BE--quick-decision-flow">面试官速查流程图 / Quick Decision Flow</h2>
+<pre class="hljs"><code><div>候选人独立写出二分了吗？ / Did candidate write binary search independently?
+├── 否 / No → 给提示后写出来了吗？ / Wrote it after hints?
+│        ├── 否 / No → ❌ Not Hire
+│        └── 是 / Yes → 上界怎么处理的？ / How did they handle upper bound?
+│                 ├── 硬编码常数 / Hardcoded constant → ⚠️ Lean No
+│                 └── 倍增或 high=y / Doubling or high=y → ⚠️ Weak SDE2
+├── 是 / Yes → 上界怎么处理的？ / How did they handle upper bound?
+│        ├── 硬编码常数 / Hardcoded constant → ⚠️ Weak SDE2
+│        ├── 倍增 (一种方案) / Doubling (one approach) → ✅ SDE2
+│        ├── 推导出 high=y (一种方案) / Derived high=y (one approach) → ✅ SDE2
+│        └── 两种都知道且能对比 / Knows both and compares → 🌟 Strong / Senior
+└── 代码是否有 bug？ / Any bugs in code?
+         ├── 无 bug + 主动考虑边界 / No bugs + proactive edge cases → 加分 / Bonus
+         └── 有 bug 但能在追问下修复 / Has bugs but fixes when prompted → 不扣分 / No penalty
+</div></code></pre>
 
 </body>
 </html>
