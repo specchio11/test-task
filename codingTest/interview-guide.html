@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面试官指南：实现反函数</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #d63031;
+    --accent2: #6c5ce7;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #00a676;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR (sticky top) ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .navbar .brand {
+    font-weight: 700; font-size: 14px; color: var(--accent);
+    margin-right: 12px; white-space: nowrap;
+  }
+  .nav-btn {
+    font-size: 12px; padding: 4px 10px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+  .nav-btn.stuck { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .nav-btn.followup { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+  .nav-btn.section { background: var(--card); color: var(--blue); border-color: var(--blue); }
+
+  /* ===== FLOATING QUICK-JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 20px; top: 70px; z-index: 99;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    width: 220px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;
+    transition: transform .3s;
+  }
+  .quick-panel.collapsed { transform: translateX(240px); }
+  .panel-toggle {
+    position: fixed; right: 20px; top: 70px; z-index: 100;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 18px; cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: flex; }
+  .quick-panel h4 {
+    font-size: 13px; color: var(--accent); margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .quick-panel h4 button {
+    background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; line-height: 1;
+  }
+  .qp-group { margin-bottom: 10px; }
+  .qp-group-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .qp-link {
+    display: block; font-size: 12px; padding: 4px 8px; margin: 2px 0;
+    color: var(--text); text-decoration: none;
+    border-radius: 4px; transition: background .15s;
+  }
+  .qp-link:hover { background: var(--card); }
+  .qp-link.red { border-left: 3px solid var(--red); }
+  .qp-link.purple { border-left: 3px solid var(--accent2); }
+  .qp-link.blue { border-left: 3px solid var(--blue); }
+  .qp-link.green { border-left: 3px solid var(--green); }
+
+  /* ===== MAIN CONTENT ===== */
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 24px 40px 24px 40px;
+  }
+  @media (min-width: 1200px) {
+    .container { padding-right: 280px; }
+  }
+  @media (max-width: 1199px) {
+    .quick-panel { display: none; }
+    .panel-toggle { display: none !important; }
+  }
+
+  h1 { font-size: 28px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 22px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 17px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 15px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 14px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #f0edfa;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  /* collapsible */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  /* tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  /* hint chips */
+  .hint-chip {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 700;
+    margin-right: 4px;
+  }
+  .hint-light { background: #d4edda; color: #155724; }
+  .hint-medium { background: #fff3cd; color: #856404; }
+  .hint-heavy { background: #f8d7da; color: #721c24; }
+
+  /* code blocks */
+  pre {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 10px 0;
+  }
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    color: #24292f;
+  }
+  :not(pre) > code {
+    background: #e8f0fe;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #0550ae;
+  }
+
+  /* evaluation badges */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; margin-right: 4px; }
+  .badge-fail { background: #fdd; color: #a00; font-weight: 700; }
+  .badge-weak { background: #fff3cd; color: #7a5800; font-weight: 700; }
+  .badge-pass { background: #d4edda; color: #155724; font-weight: 700; }
+  .badge-strong { background: #e8dff5; color: #5b21b6; font-weight: 700; }
+
+  /* flow chart */
+  .flow-chart {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'Cascadia Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* scroll to top */
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+
+  .version-tabs { display: flex; gap: 4px; margin: 12px 0 0; }
+  .vtab {
+    padding: 6px 14px; border-radius: 6px 6px 0 0;
+    background: var(--card); color: var(--text-muted);
+    border: 1px solid var(--border); border-bottom: none; cursor: pointer; font-size: 13px;
+  }
+  .vtab.active { background: var(--surface); color: var(--accent); font-weight: 600; border-color: var(--border); }
+  .version-content { display: none; }
+  .version-content.active { display: block; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 11px; margin-right: 4px; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+  .tag-diff-1 { background: #d4edda; color: #155724; }
+  .tag-diff-2 { background: #fff3cd; color: #7a5800; }
+  .tag-diff-3 { background: #fdd; color: #a00; }
+  .tag-diff-4 { background: #e8dff5; color: #5b21b6; }
+</style>
+</head>
+<body>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <span class="brand">🎯 面试导航</span>
+  <button class="nav-btn section" onclick="jump('problem')">📋 题面</button>
+  <button class="nav-btn stuck" onclick="jump('stuck0')">卡壳0</button>
+  <button class="nav-btn stuck" onclick="jump('stuck1')">卡壳1</button>
+  <button class="nav-btn stuck" onclick="jump('stuck2')">卡壳2</button>
+  <button class="nav-btn stuck" onclick="jump('stuck3')">卡壳3</button>
+  <button class="nav-btn stuck" onclick="jump('stuck4')">卡壳4</button>
+  <button class="nav-btn followup" onclick="jump('followup1')">追问1</button>
+  <button class="nav-btn followup" onclick="jump('followup2')">追问2</button>
+  <button class="nav-btn followup" onclick="jump('followup3')">追问3</button>
+  <button class="nav-btn followup" onclick="jump('followup4')">追问4</button>
+  <button class="nav-btn section" onclick="jump('checkpoints')">🔍 考察节点</button>
+  <button class="nav-btn section" onclick="jump('solution')">💡 标准答案</button>
+  <button class="nav-btn section" onclick="jump('rubric')">📊 评判标准</button>
+  <button class="nav-btn section" onclick="jump('flowchart')">🗺️ 流程图</button>
+</nav>
+
+<!-- ===== RIGHT PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    快速跳转 Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+
+  <div class="qp-group">
+    <div class="qp-group-title">🚨 候选人卡壳了？</div>
+    <a class="qp-link red" href="#stuck0">卡壳 0 — 不理解数学概念</a>
+    <a class="qp-link red" href="#stuck1">卡壳 1 — 完全没思路</a>
+    <a class="qp-link red" href="#stuck2">卡壳 2 — 不知道上界</a>
+    <a class="qp-link red" href="#stuck3">卡壳 3 — 倍增→更直接？</a>
+    <a class="qp-link red" href="#stuck4">卡壳 4 — high=y→更高效？</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">💬 拓展追问</div>
+    <a class="qp-link purple" href="#followup1">追问 1 — 答案不存在</a>
+    <a class="qp-link purple" href="#followup2">追问 2 — 多次调用优化</a>
+    <a class="qp-link purple" href="#followup3">追问 3 — 非递减左边界</a>
+    <a class="qp-link purple" href="#followup4">追问 4 — 并行异步</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">📖 参考</div>
+    <a class="qp-link blue" href="#problem">题面</a>
+    <a class="qp-link blue" href="#checkpoints">关键考察节点</a>
+    <a class="qp-link green" href="#solution">标准答案</a>
+    <a class="qp-link green" href="#rubric">评判标准</a>
+    <a class="qp-link green" href="#flowchart">速查流程图</a>
+  </div>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>🎯 前端 SDE2 电话面试算法题：实现反函数</h1>
+
+<!-- ==================== PROBLEM ==================== -->
+<h2 id="problem">📋 题面 / Problem Statement</h2>
+
+<div class="version-tabs">
+  <button class="vtab active" onclick="showVersion('formal')">📄 正式版</button>
+  <button class="vtab" onclick="showVersion('conversational')">🗣️ 口语版（推荐）</button>
+  <button class="vtab" onclick="showVersion('plain')">🧸 最简化版</button>
+</div>
+
+<div id="version-formal" class="version-content active card">
+  <h4>English:</h4>
+  <blockquote>
+    You are given a black-box function <code>f(x)</code> that maps non-negative integers to non-negative integers. <code>f</code> is <strong>strictly monotonically increasing</strong> (i.e., for any a &lt; b, f(a) &lt; f(b)).<br><br>
+    You can only call <code>f(x)</code> — you cannot inspect its implementation.<br><br>
+    <strong>Task:</strong> Implement its inverse function <code>g(y)</code> — given a value <code>y</code>, return the integer <code>x</code> such that <code>f(x) = y</code>. You may assume that for every input <code>y</code>, a valid <code>x</code> always exists.
+  </blockquote>
+  <h4>中文:</h4>
+  <blockquote>
+    给定一个黑盒函数 <code>f(x)</code>，它将非负整数映射到非负整数。<code>f</code> <strong>严格单调递增</strong>（即对于任意 a &lt; b，有 f(a) &lt; f(b)）。<br><br>
+    你只能调用 <code>f(x)</code>，不能查看其内部实现。<br><br>
+    <strong>任务：</strong>实现它的反函数 <code>g(y)</code> —— 给定一个值 <code>y</code>，返回整数 <code>x</code> 使得 <code>f(x) = y</code>。你可以假设对于每一个输入的 <code>y</code>，合法的 <code>x</code> 一定存在。
+  </blockquote>
+</div>
+
+<div id="version-conversational" class="version-content card">
+  <p style="color:var(--green);font-weight:600;margin-bottom:8px;">🗣️ 推荐面试时直接用这个版本念给候选人</p>
+  <h4>English:</h4>
+  <blockquote>
+    "Alright, here's the problem. Imagine you have a function <code>f</code> — you can call it with any non-negative integer, and it gives you back a non-negative integer. You can't look inside it, it's a black box. The one thing you <em>do</em> know is that it's strictly increasing — so if you feed it a bigger number, you always get a bigger result. No ties, no going backwards.<br><br>
+    Now, what I need you to do is write the <em>reverse</em> of that function. I'll give you some output value <code>y</code>, and you need to figure out: what input <code>x</code> did it come from? In other words, find <code>x</code> such that <code>f(x) = y</code>.<br><br>
+    You can assume there's always a valid answer — I won't give you a <code>y</code> that doesn't match any <code>x</code>. Sound good? Go ahead."
+  </blockquote>
+  <h4>中文:</h4>
+  <blockquote>
+    "好，我来说一下题目。假设你有一个函数 <code>f</code>，你可以给它传入任何非负整数，它会返回一个非负整数。你看不到它的内部实现，它是一个黑盒。但你知道一件事：它是严格递增的——也就是说你给的数越大，它返回的结果就一定越大。不会有相等，也不会有倒退。<br><br>
+    现在我需要你做的是：写一个'反向'的函数。我给你一个输出值 <code>y</code>，你要找出它是从哪个输入 <code>x</code> 来的。换句话说，找到 <code>x</code> 使得 <code>f(x) = y</code>。<br><br>
+    你可以假设答案一定存在——我不会给你一个不对应任何 <code>x</code> 的 <code>y</code>。清楚了吗？那就开始吧。"
+  </blockquote>
+</div>
+
+<div id="version-plain" class="version-content card">
+  <p style="color:var(--yellow);font-weight:600;margin-bottom:8px;">🧸 当候选人不理解 "单调递增"、"反函数" 等术语时使用</p>
+  <h4>English:</h4>
+  <blockquote>
+    "Let me break it down more simply. Forget the math jargon for a moment.<br><br>
+    Think of <code>f</code> as a machine. You put in a number, it spits out a number. You can't open the machine to see how it works. All you know is one rule: <strong>if you put in a bigger number, you always get a bigger number out.</strong> It never stays the same, and it never goes down.<br><br>
+    For example, let's say:<br>
+    &bull; You put in <code>3</code>, the machine gives you <code>10</code>.<br>
+    &bull; You put in <code>5</code>, it gives you <code>17</code>.<br>
+    &bull; You put in <code>8</code>, it gives you <code>25</code>.<br><br>
+    See? Bigger input, bigger output. Every time.<br><br>
+    Now here's your task: <strong>I'm going to give you an output, and you have to figure out what input produced it.</strong> Like if I say 'the machine output <code>17</code>', you should tell me the input was <code>5</code>. That's it.<br><br>
+    You're writing a function that takes the output and finds the input. And don't worry — I promise there's always exactly one right answer."
+  </blockquote>
+  <h4>中文:</h4>
+  <blockquote>
+    "我换个更简单的方式说。先不管那些数学术语。<br><br>
+    你把 <code>f</code> 想象成一台机器。你往里面塞一个数字，它会吐出一个数字。你看不到机器里面怎么运作的。你唯一知道的一条规则是：<strong>如果你塞进去的数字更大，它吐出来的数字也一定更大。</strong> 不会相同，也不会变小。<br><br>
+    举个例子：<br>
+    &bull; 你塞进去 <code>3</code>，机器吐出 <code>10</code>。<br>
+    &bull; 你塞进去 <code>5</code>，它吐出 <code>17</code>。<br>
+    &bull; 你塞进去 <code>8</code>，它吐出 <code>25</code>。<br><br>
+    看到了吧？输入越大，输出就越大。每次都是这样。<br><br>
+    现在你的任务是：<strong>我告诉你一个输出结果，你要倒推出是哪个输入产生了它。</strong> 比如我说'机器输出了 <code>17</code>'，你要告诉我输入是 <code>5</code>。就这么简单。<br><br>
+    你要写一个函数，接收这个输出值，找到对应的输入值。放心——答案一定存在，而且只有一个。"
+  </blockquote>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== STICKING POINTS ==================== -->
+<h2 id="sticking-points">🚨 候选人卡壳情况及提示策略 / Sticking Points &amp; Hints</h2>
+
+<!-- Stuck 0 -->
+<div id="stuck0">
+<details>
+  <summary>🤔 卡壳 0：不理解题目中的数学概念 / Stuck 0: Doesn't understand the math concepts</summary>
+  <div class="detail-body">
+    <p><strong>表现 / Symptom：</strong>候选人对"单调递增"或"反函数"的概念感到困惑，无法理解题意。</p>
+
+    <h4>解释"单调递增" / Explaining "monotonically increasing"：</h4>
+    <blockquote>
+      "It simply means: the bigger the input, the bigger the output. If you put in a larger <code>x</code>, you always get a larger <code>f(x)</code>. It never goes down. For example, <code>f(x) = 2x + 1</code> — as x grows, f(x) always grows."<br><br>
+      "简单来说就是：输入越大，输出也越大。如果你给一个更大的 <code>x</code>，<code>f(x)</code> 的结果一定更大，永远不会变小。比如 <code>f(x) = 2x + 1</code>，x 越大，f(x) 就越大。"
+    </blockquote>
+
+    <h4>解释"反函数" / Explaining "inverse function"：</h4>
+    <blockquote>
+      "Think of it as 'reversing' the function. If <code>f(5) = 13</code>, then the inverse function <code>g(13)</code> should return <code>5</code>. You're given the output and need to find the original input."<br><br>
+      "可以理解为'反过来'。如果 <code>f(5) = 13</code>，那反函数 <code>g(13)</code> 就应该返回 <code>5</code>。也就是给你一个输出值，让你找到原来的输入。"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官注意：</strong>这个解释<strong>不算提示</strong>，不应影响对候选人算法能力的评分。数学术语可能对非英语母语的候选人造成理解障碍，澄清概念是公平的。但如果候选人在理解概念后仍然长时间没有思路，则按卡壳 1 处理。
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<!-- Stuck 1 -->
+<div id="stuck1">
+<details>
+  <summary>😶 卡壳 1：完全没思路 / Stuck 1: No idea what algorithm to use</summary>
+  <div class="detail-body">
+    <p><strong>表现 / Symptom：</strong>沉默，或者直接写暴力遍历。</p>
+    <table>
+      <tr><th>提示等级</th><th>提示内容 / Hint</th></tr>
+      <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"What property of <code>f</code> makes this problem easier than searching in an unsorted collection?"</td></tr>
+      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 2</td><td>"If I told you x is somewhere between 0 and 1000, how would you find it efficiently?"</td></tr>
+      <tr><td><span class="hint-chip hint-heavy">Heavy</span> Hint 3</td><td>"Think about binary search. The function is monotonically increasing — what does that remind you of?"</td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<!-- Stuck 2 -->
+<div id="stuck2">
+<details>
+  <summary>📐 卡壳 2：知道二分，但不知道上界 / Stuck 2: Knows BS, can't determine upper bound</summary>
+  <div class="detail-body">
+    <p><strong>表现 / Symptom：</strong>写出了二分的框架，但 <code>high = ???</code> 空着或者随便填了个大常数。</p>
+    <table>
+      <tr><th>提示等级</th><th>提示内容 / Hint</th></tr>
+      <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"Given that f maps non-negative integers to non-negative integers and is strictly increasing, what can you say about the relationship between <code>f(x)</code> and <code>x</code>?"</td></tr>
+      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 2</td><td>"If f(0) >= 0 and f(1) must be strictly greater than f(0), and all values are integers... what's the minimum possible value of f(1)? f(2)? f(n)?"</td></tr>
+      <tr><td><span class="hint-chip hint-heavy">Heavy</span> Hint 3</td><td>"Can you prove that f(x) >= x? If so, what does that tell you about the upper bound for x given y?"</td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<!-- Stuck 3 -->
+<div id="stuck3">
+<details>
+  <summary>🔄 卡壳 3：用了倍增，被追问能否更直接 / Stuck 3: Used doubling, asked for simpler</summary>
+  <div class="detail-body">
+    <p><strong>表现 / Symptom：</strong>写出了完整的倍增 + 二分，但面试官追问有没有更简单的方式。</p>
+    <table>
+      <tr><th>提示等级</th><th>提示内容 / Hint</th></tr>
+      <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"Your exponential search works great. But since we know f maps integers to integers and is strictly increasing, is there a mathematical argument that x can never be larger than y?"</td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<!-- Stuck 4 -->
+<div id="stuck4">
+<details>
+  <summary>⚡ 卡壳 4：用了 high=y，被追问更高效 / Stuck 4: Used high=y, asked for more efficient</summary>
+  <div class="detail-body">
+    <p><strong>表现 / Symptom：</strong>写出了正确的 [0, y] 二分，但面试官追问性能。</p>
+    <table>
+      <tr><th>提示等级</th><th>提示内容 / Hint</th></tr>
+      <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"Your solution is O(log y). But imagine f(x) = 2^x and y = 1,000,000. The actual x is only 20. Can you find x in O(log 20) instead of O(log 1,000,000)?"</td></tr>
+      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 2</td><td>"What if you don't start with high = y, but instead grow high from 1 by doubling until f(high) >= y?"</td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FOLLOW-UPS ==================== -->
+<h2 id="followups">💬 拓展追问 / Follow-up Questions</h2>
+<p style="color:var(--text-muted);">候选人完成主题后，根据剩余时间和表现选择性使用。</p>
+
+<!-- Follow-up 1 -->
+<div id="followup1">
+<details>
+  <summary>
+    追问 1：答案不保证存在 / Answer Not Guaranteed
+    <span class="tag tag-time">1-2 min</span>
+    <span class="tag tag-diff-1">⭐ Easy</span>
+  </summary>
+  <div class="detail-body">
+    <h4>提问 / Question：</h4>
+    <blockquote>"What if I remove the guarantee that a valid <code>x</code> always exists? How would you modify your solution to return <code>-1</code> or <code>null</code> when no <code>x</code> satisfies <code>f(x) = y</code>?"</blockquote>
+
+    <h4>标准答案 / Expected Answer：</h4>
+    <p>当前的二分代码其实已经天然处理了这个情况——<code>while</code> 循环正常结束时 <code>low > high</code>，说明没找到。只需改最后一行：</p>
+    <pre><code>// throw new Error("No valid x found");
+return -1;  // or return null;</code></pre>
+
+    <h4>评价标准：</h4>
+    <table>
+      <tr><th>候选人反应</th><th>评价</th></tr>
+      <tr><td>立刻回答"改 throw 为 return -1 就行"</td><td>✅ 理解透彻</td></tr>
+      <tr><td>想了一会儿，审视终止条件后答对</td><td>✅ 可以接受</td></tr>
+      <tr><td>试图加一堆额外的 if 判断</td><td>⚠️ 不够理解自己代码的逻辑</td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<!-- Follow-up 2 -->
+<div id="followup2">
+<details>
+  <summary>
+    追问 2：多次调用 g(y) 优化 / Optimizing for Multiple Calls
+    <span class="tag tag-time">2-3 min</span>
+    <span class="tag tag-diff-2">⭐⭐ Medium</span>
+  </summary>
+  <div class="detail-body">
+    <h4>提问 / Question：</h4>
+    <blockquote>"If <code>g</code> is going to be called millions of times with different <code>y</code> values, but <code>f</code> never changes, how would you optimize?"</blockquote>
+
+    <h4>标准答案 / Expected Answer：</h4>
+    <ol>
+      <li><strong>缓存已知结果：</strong>用 <code>Map&lt;y, x&gt;</code> 缓存每次 g(y) 的返回值，命中则 O(1)。</li>
+      <li><strong>缓存 f 的中间调用：</strong>二分过程中调用的每个 <code>f(mid)</code> 都存入缓存，后续缩小搜索区间。</li>
+      <li><strong>预构建查找表：</strong>如果知道 x 的大致范围，预先调用 f 构建有序数组，后续直接在数组上二分。</li>
+    </ol>
+
+    <h4>评价标准：</h4>
+    <table>
+      <tr><th>候选人反应</th><th>评价</th></tr>
+      <tr><td>提到结果缓存 (Map)</td><td>✅ SDE2 水平</td></tr>
+      <tr><td>提到缓存中间 f 调用来缩小搜索范围</td><td>🌟 Senior 思维</td></tr>
+      <tr><td>提到预构建查找表</td><td>🌟 系统设计能力强</td></tr>
+      <tr><td>完全没有思路</td><td>⚠️ 缺乏工程优化意识</td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<!-- Follow-up 3 -->
+<div id="followup3">
+<details>
+  <summary>
+    追问 3：非严格递增，找最小 x / Non-Decreasing, Find Smallest x
+    <span class="tag tag-time">3-5 min</span>
+    <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
+  </summary>
+  <div class="detail-body">
+    <h4>提问 / Question：</h4>
+    <blockquote>"What if <code>f</code> is non-decreasing instead of strictly increasing? Multiple <code>x</code> values could map to the same <code>y</code>. How would you return the <strong>smallest</strong> such <code>x</code>?"</blockquote>
+
+    <h4>标准答案 / Expected Answer：</h4>
+    <p>经典的"找左边界的二分"（lower bound）。关键：当 <code>f(mid) === y</code> 时，<strong>不立刻返回</strong>，继续向左搜索。</p>
+    <pre><code>function g(f, y) {
+    let low = 0, high = y, result = -1;
+
+    while (low &lt;= high) {
+        const mid = Math.floor((low + high) / 2);
+        const val = f(mid);
+
+        if (val === y) {
+            result = mid;     // 记录候选答案
+            high = mid - 1;   // 继续向左找更小的 x
+        } else if (val &lt; y) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return result;
+}</code></pre>
+
+    <h4>评价标准：</h4>
+    <table>
+      <tr><th>候选人反应</th><th>评价</th></tr>
+      <tr><td>立刻写出 lower bound 变体，逻辑清晰</td><td>🌟 二分功底扎实</td></tr>
+      <tr><td>知道思路但代码有小 bug</td><td>✅ SDE2 可接受</td></tr>
+      <tr><td>完全不知道如何修改</td><td>⚠️ 只会最基础的二分</td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<!-- Follow-up 4 -->
+<div id="followup4">
+<details>
+  <summary>
+    追问 4：并行/异步调用 f（前端特色）/ Parallel Async Calls
+    <span class="tag tag-time">3-5 min</span>
+    <span class="tag tag-diff-4">⭐⭐⭐⭐ Advanced</span>
+  </summary>
+  <div class="detail-body">
+    <h4>提问 / Question：</h4>
+    <blockquote>"What if <code>f(x)</code> is an async function (e.g., a network API call)? And you can make multiple concurrent calls. How would you speed up the search?"</blockquote>
+
+    <h4>标准答案 / Expected Answer：</h4>
+    <p><strong>N 等分并发：</strong>将 [low, high] 等分为 N 段，同时调用 N-1 个分割点的 f 值（<code>Promise.all</code>），每轮排除 (N-1)/N 的区间。</p>
+    <pre><code>async function g(f, y, concurrency = 4) {
+    let low = 0, high = y;
+
+    while (low &lt; high) {
+        const points = [];
+        for (let i = 1; i &lt; concurrency; i++) {
+            points.push(low + Math.floor(
+                (high - low) * i / concurrency));
+        }
+
+        const results = await Promise.all(
+            points.map(p =&gt; f(p)));
+
+        let found = false;
+        for (let i = 0; i &lt; results.length; i++) {
+            if (results[i] === y) return points[i];
+            if (results[i] &gt; y) {
+                high = points[i] - 1;
+                low = i &gt; 0 ? points[i-1] + 1 : low;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            low = points[points.length - 1] + 1;
+        }
+    }
+    return low;
+}</code></pre>
+
+    <h4>评价标准：</h4>
+    <table>
+      <tr><th>候选人反应</th><th>评价</th></tr>
+      <tr><td>提出 N 等分 + Promise.all，能解释 trade-off</td><td>🌟 前端工程能力极强</td></tr>
+      <tr><td>提出三分搜索但没泛化到 N 分</td><td>✅ 有并行思维，SDE2 达标</td></tr>
+      <tr><td>知道 async/await 但不确定如何应用</td><td>⚠️ 异步基础有，算法应用弱</td></tr>
+      <tr><td>完全没有并发优化的思路</td><td>⚠️ 异步思维不足</td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h4>追问使用建议汇总 / Follow-up Usage Summary</h4>
+  <table>
+    <tr><th>追问</th><th>耗时</th><th>适用场景</th><th>难度</th></tr>
+    <tr><td>1. 答案不存在</td><td>1-2 min</td><td>候选人快速完成，填补时间</td><td>⭐</td></tr>
+    <tr><td>2. 多次调用优化</td><td>2-3 min</td><td>展现了工程思维</td><td>⭐⭐</td></tr>
+    <tr><td>3. 非递减找左边界</td><td>3-5 min</td><td>二分熟练，测试变体</td><td>⭐⭐⭐</td></tr>
+    <tr><td>4. 并行异步调用</td><td>3-5 min</td><td>前端候选人，测异步</td><td>⭐⭐⭐⭐</td></tr>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== KEY CHECKPOINTS ==================== -->
+<h2 id="checkpoints">🔍 关键考察节点 / Key Checkpoints</h2>
+
+<div class="card">
+  <h4>节点 1：识别出二分查找（基础门槛）/ Recognizing Binary Search</h4>
+  <table>
+    <tr><th>考察内容</th><th>候选人应该意识到</th></tr>
+    <tr><td>为什么能用二分？</td><td>f 严格单调递增 → 搜索空间有序 → 可以用二分</td></tr>
+    <tr><td>如果写了线性扫描？</td><td>说明不具备基本的算法直觉</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4>节点 2：确定搜索上界 x ≤ y（核心区分度）/ Determining Upper Bound</h4>
+  <table>
+    <tr><th>考察内容</th><th>候选人应该意识到</th></tr>
+    <tr><td>为什么 high = y 是安全的？</td><td>f 是严格递增整数映射 → 归纳证明 f(x) ≥ x → x ≤ y</td></tr>
+    <tr><td>如果用了 <code>high = 1e9</code>？</td><td>可以工作但不够优雅，没有深入分析数学性质</td></tr>
+    <tr><td>如果用倍增 <code>high *= 2</code>？</td><td>更通用的方案，有扎实算法基础</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4>节点 3：倍增方案的优势认知（高阶思维）/ Doubling's Advantage</h4>
+  <table>
+    <tr><th>考察内容</th><th>候选人应该意识到</th></tr>
+    <tr><td>high = y 何时"浪费"？</td><td>f 增长极快时（如 f(x) = 2^x），y 远大于 x</td></tr>
+    <tr><td>倍增的优势</td><td>搜索范围 [x*/2, x*]，O(log x*) 而非 O(log y)</td></tr>
+    <tr><td>Trade-off</td><td>high=y 更简单；倍增更通用、f 增长快时更高效</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4>节点 4：边界条件处理（工程严谨性）/ Edge Cases</h4>
+  <table>
+    <tr><th>边界场景</th><th>正确处理方式</th></tr>
+    <tr><td><strong>y = 0</strong></td><td>标准二分自然处理，不需要特殊处理</td></tr>
+    <tr><td><strong>y = f(0) 且 f(0) > 0</strong></td><td>二分会自然找到 mid = 0</td></tr>
+    <tr><td><strong>x 很大</strong></td><td>JS 中无问题；Java/C++ 中 (low+high) 可能溢出，需用 low + (high-low)/2</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4>节点 5：f 调用次数优化（生产环境意识）/ Minimizing f Calls</h4>
+  <table>
+    <tr><th>考察内容</th><th>优秀的候选人会提到</th></tr>
+    <tr><td>f 可能很昂贵</td><td>网络请求、数据库查询、复杂计算</td></tr>
+    <tr><td>避免重复计算</td><td>把 f(mid) 存到变量再比较，不要调用两次</td></tr>
+    <tr><td>缓存/记忆化</td><td>多次调用 g 时，缓存 f 的历史结果</td></tr>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== MODEL SOLUTION ==================== -->
+<h2 id="solution">💡 标准答案 / Model Solution</h2>
+
+<div class="card">
+  <h4>核心思路 / Core Idea</h4>
+  <p><strong>中文：</strong>f 严格单调递增 → 搜索空间有序 → <strong>二分查找</strong>。关键在于确定二分的上界。</p>
+  <p><strong>English:</strong> f is strictly monotonically increasing → sorted search space → <strong>binary search</strong>. The key is determining the upper bound.</p>
+</div>
+
+<div class="card">
+  <h4>关键数学推导 / Key Mathematical Insight</h4>
+  <p>因为 f: Z≥0 → Z≥0 严格单调递增：</p>
+  <ul>
+    <li>f(0) ≥ 0</li>
+    <li>f(1) > f(0) ≥ 0 ⟹ f(1) ≥ 1</li>
+    <li>f(2) > f(1) ≥ 1 ⟹ f(2) ≥ 2</li>
+    <li>...</li>
+  </ul>
+  <p><strong>归纳结论：f(x) ≥ x 对所有 x ≥ 0 成立。</strong></p>
+  <p>因此若 f(x) = y，则 y ≥ x，即 <strong>x ≤ y</strong>。搜索范围确定为 [0, y]。</p>
+</div>
+
+<div class="card">
+  <h4>算法流程 / Algorithm Step-by-Step</h4>
+  <p><strong>第一步：</strong>根据 f(x) ≥ x，确定搜索范围 [0, y]。</p>
+  <p><strong>第二步：</strong>标准二分查找：</p>
+  <ol>
+    <li>设 lo = 0, hi = y</li>
+    <li>每轮计算 mid = floor((lo + hi) / 2)，调用 f(mid)</li>
+    <li>如果 f(mid) === y → 返回 mid；f(mid) &lt; y → lo = mid+1；f(mid) > y → hi = mid-1</li>
+    <li>重复直到找到答案</li>
+  </ol>
+
+  <h4>示例演练 / Walkthrough：</h4>
+  <p>假设 f(x) = 2x + 3，y = 13（答案 x = 5）</p>
+  <table>
+    <tr><th>轮次</th><th>lo</th><th>hi</th><th>mid</th><th>f(mid)</th><th>比较</th><th>操作</th></tr>
+    <tr><td>1</td><td>0</td><td>13</td><td>6</td><td>15</td><td>15 > 13</td><td>hi = 5</td></tr>
+    <tr><td>2</td><td>0</td><td>5</td><td>2</td><td>7</td><td>7 &lt; 13</td><td>lo = 3</td></tr>
+    <tr><td>3</td><td>3</td><td>5</td><td>4</td><td>11</td><td>11 &lt; 13</td><td>lo = 5</td></tr>
+    <tr><td>4</td><td>5</td><td>5</td><td>5</td><td>13</td><td>13 === 13</td><td>✅ 返回 5</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4>代码：写法一 — 迭代 (Iterative)</h4>
+  <pre><code>function g(f, y) {
+    let low = 0;
+    let high = y;   // Because f(x) >= x, so x <= y
+
+    while (low &lt;= high) {
+        const mid = Math.floor((low + high) / 2);
+        const result = f(mid);
+
+        if (result === y) {
+            return mid;
+        } else if (result &lt; y) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+
+    throw new Error("No valid x found");
+}</code></pre>
+</div>
+
+<div class="card">
+  <h4>代码：写法二 — 递归 (Recursive)</h4>
+  <pre><code>function g(f, y, low = 0, high = y) {
+    if (low > high) throw new Error("No valid x found");
+
+    const mid = Math.floor((low + high) / 2);
+    const result = f(mid);
+
+    if (result === y) return mid;
+    if (result &lt; y) return g(f, y, mid + 1, high);
+    return g(f, y, low, mid - 1);
+}</code></pre>
+</div>
+
+<div class="card">
+  <h4>两种写法对比 / Comparison</h4>
+  <table>
+    <tr><th></th><th>迭代 (While)</th><th>递归 (Recursion)</th></tr>
+    <tr><td><strong>空间复杂度</strong></td><td>O(1)</td><td>O(log y) 调用栈</td></tr>
+    <tr><td><strong>可读性</strong></td><td>更直观，工程常见</td><td>更贴近数学定义</td></tr>
+    <tr><td><strong>栈溢出风险</strong></td><td>无</td><td>y 极大时可能爆栈</td></tr>
+    <tr><td><strong>尾递归优化</strong></td><td>N/A</td><td>JS 几乎不支持（仅 Safari）</td></tr>
+  </table>
+  <blockquote class="interviewer-note">
+    <strong>⚠️ 面试官注意：</strong>候选人写哪种都可以。如果写了递归版，追问："空间复杂度是多少？有没有栈溢出风险？" 如果候选人能主动说出迭代版更适合生产环境，这是加分项。
+  </blockquote>
+</div>
+
+<div class="card">
+  <h4>复杂度 / Complexity</h4>
+  <ul>
+    <li><strong>时间：</strong>O(log y)</li>
+    <li><strong>空间：</strong>O(1)（迭代）或 O(log y)（递归）</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== RUBRIC ==================== -->
+<h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
+
+<div class="card">
+  <h4><span class="badge badge-fail">❌ Not Hire</span> 不通过</h4>
+  <table>
+    <tr><th>表现</th><th>原因</th></tr>
+    <tr><td>给了 Hint 3 后仍写不出二分</td><td>最基础的算法能力不达标</td></tr>
+    <tr><td>只写线性扫描且提示后仍不知优化</td><td>缺少基本算法思维</td></tr>
+    <tr><td>代码有死循环</td><td>二分查找基本功有缺陷</td></tr>
+    <tr><td>写了 <code>high = Infinity</code> 然后死循环</td><td>逻辑思维欠缺</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4><span class="badge badge-weak">⚠️ Lean No</span> 弱 SDE2 / 勉强边缘</h4>
+  <table>
+    <tr><th>表现</th><th>说明</th></tr>
+    <tr><td>1 个提示后写出二分，但用 <code>high = 1e9</code></td><td>知道二分但没深入分析约束</td></tr>
+    <tr><td>代码基本正确但有 off-by-one bug</td><td>写码不够严谨</td></tr>
+    <tr><td>没有主动思考任何边界情况</td><td>缺乏工程意识</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4><span class="badge badge-pass">✅ Hire as SDE2</span> 通过</h4>
+  <table>
+    <tr><th>表现</th><th>说明</th></tr>
+    <tr><td><strong>无提示</strong>写出二分</td><td>算法基本功过关</td></tr>
+    <tr><td>上界用了倍增<strong>或</strong>推导出 high = y</td><td>能独立解决无穷域问题</td></tr>
+    <tr><td>代码逻辑正确，无 bug</td><td>编码能力达标</td></tr>
+    <tr><td>追问下能理解另一种方案的优劣</td><td>能在引导下拓展思维</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4><span class="badge badge-strong">🌟 Strong Hire / Senior</span> 强通过</h4>
+  <table>
+    <tr><th>表现</th><th>说明</th></tr>
+    <tr><td>写代码前<strong>主动提问</strong>确认约束</td><td>Senior 级别的需求澄清意识</td></tr>
+    <tr><td><strong>无提示</strong>推导出 f(x) ≥ x，直接用 high = y</td><td>数学推理能力强</td></tr>
+    <tr><td><strong>同时</strong>知道倍增方案，能主动对比</td><td>全面的算法视野</td></tr>
+    <tr><td>主动提到溢出风险、f 调用缓存等</td><td>生产环境意识</td></tr>
+    <tr><td>代码一次写对，结构清晰</td><td>高质量编码能力</td></tr>
+    <tr><td>能主动分析并表述时间复杂度</td><td>理论基础扎实</td></tr>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FLOW CHART ==================== -->
+<h2 id="flowchart">🗺️ 面试官速查流程图 / Quick Decision Flow</h2>
+
+<div class="flow-chart">候选人独立写出二分了吗？ / Did candidate write binary search independently?
+├── 否 / No → 给提示后写出来了吗？
+│        ├── 否 / No → <span class="badge badge-fail">❌ Not Hire</span>
+│        └── 是 / Yes → 上界怎么处理的？
+│                 ├── 硬编码常数 → <span class="badge badge-weak">⚠️ Lean No</span>
+│                 └── 倍增或 high=y → <span class="badge badge-weak">⚠️ Weak SDE2</span>
+├── 是 / Yes → 上界怎么处理的？
+│        ├── 硬编码常数 → <span class="badge badge-weak">⚠️ Weak SDE2</span>
+│        ├── 倍增 (一种方案) → <span class="badge badge-pass">✅ SDE2</span>
+│        ├── 推导出 high=y (一种方案) → <span class="badge badge-pass">✅ SDE2</span>
+│        └── 两种都知道且能对比 → <span class="badge badge-strong">🌟 Strong / Senior</span>
+└── 代码是否有 bug？
+         ├── 无 bug + 主动考虑边界 → 加分 ✅
+         └── 有 bug 但能在追问下修复 → 不扣分</div>
+
+</div><!-- end container -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+// Jump function
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Open details if inside one
+  const details = el.querySelector('details') || el.closest('details');
+  if (details) details.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Version tabs
+function showVersion(name) {
+  document.querySelectorAll('.version-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.vtab').forEach(el => el.classList.remove('active'));
+  document.getElementById('version-' + name).classList.add('active');
+  // find the clicked tab
+  const tabs = document.querySelectorAll('.vtab');
+  const map = { formal: 0, conversational: 1, plain: 2 };
+  tabs[map[name]].classList.add('active');
+}
+
+// Scroll-to-top button visibility
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  const map = {
+    '0': 'stuck0', '1': 'stuck1', '2': 'stuck2', '3': 'stuck3', '4': 'stuck4',
+    'q': 'problem', 'a': 'solution', 'r': 'rubric', 'f': 'flowchart',
+  };
+  if (map[e.key]) { e.preventDefault(); jump(map[e.key]); }
+});
+</script>
+
+</body>
+</html>
