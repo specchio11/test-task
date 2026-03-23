@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phone Screen — Interview Guide (30 min)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ===== STICKY NAVBAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    background: rgba(15,23,42,.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #334155;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .navbar .brand {
+    font-weight: 700; font-size: 15px; color: #f1f5f9;
+    margin-right: 12px; flex-shrink: 0;
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 14px;
+    border-radius: 6px; border: 1px solid #475569;
+    background: transparent; color: #cbd5e1;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; white-space: nowrap;
+    transition: all .15s ease;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: #334155; color: #f1f5f9; border-color: #64748b; }
+  .nav-btn.section { border-color: #38bdf8; color: #38bdf8; }
+  .nav-btn.transition { border-color: #fbbf24; color: #fbbf24; }
+  .nav-btn.script { border-color: #34d399; color: #34d399; }
+
+  /* ===== QUICK PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 16px; top: 64px; z-index: 90;
+    width: 210px; max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    padding: 14px;
+    font-size: 13px;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .quick-panel.collapsed { transform: translateX(240px); opacity: 0; pointer-events: none; }
+  .quick-panel h4 { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 16px; color: #94a3b8; }
+  .qp-group { margin-bottom: 10px; }
+  .qp-group-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: .5px; }
+  .qp-link { display: block; padding: 3px 8px; border-radius: 4px; text-decoration: none; color: #334155; font-size: 12px; }
+  .qp-link:hover { background: #f1f5f9; }
+  .qp-link.blue { border-left: 3px solid #0284c7; }
+  .qp-link.purple { border-left: 3px solid #7c3aed; }
+  .qp-link.green { border-left: 3px solid #059669; }
+  .qp-link.orange { border-left: 3px solid #ea580c; }
+  .qp-link.gold { border-left: 3px solid #d97706; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 89;
+    background: #0f172a; color: #f1f5f9;
+    border: 1px solid #334155; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 16px;
+  }
+
+  /* ===== MAIN CONTAINER ===== */
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #0f172a;
+  }
+  .subtitle {
+    font-size: 16px;
+    color: #475569;
+    margin-bottom: 32px;
+  }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 32px 0 12px;
+    padding-top: 12px;
+    scroll-margin-top: 60px;
+  }
+
+  /* ===== SECTION LINK CARDS ===== */
+  .section-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin: 16px 0;
+    background: var(--accent-bg);
+    transition: transform .12s ease, box-shadow .12s ease;
+    position: relative;
+  }
+  .section-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+  }
+  .section-link h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--accent);
+  }
+  .section-link p {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+  }
+  .section-link .time-badge {
+    position: absolute;
+    top: 16px; right: 18px;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .s1 { --accent: #0284c7; --accent-bg: #f0f9ff; }
+  .s2 { --accent: #7c3aed; --accent-bg: #f5f3ff; }
+  .s3 { --accent: #059669; --accent-bg: #ecfdf5; }
+  .s4 { --accent: #ea580c; --accent-bg: #fff7ed; }
+
+  /* ===== SCRIPT BLOCKS ===== */
+  .script-block {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .script-block h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #0f172a;
+  }
+  .script-block blockquote {
+    border-left: 3px solid #94a3b8;
+    padding-left: 14px;
+    margin: 6px 0;
+    color: #334155;
+    font-style: italic;
+    line-height: 1.7;
+    font-size: 14px;
+  }
+  .script-block blockquote.cn {
+    border-left-color: #d97706;
+    color: #78350f;
+    font-style: normal;
+  }
+
+  /* ===== TRANSITION BANNER ===== */
+  .transition-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin: 24px 0;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .transition-banner.t12 { background: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%); border: 1px solid #c4b5fd; }
+  .transition-banner.t23 { background: linear-gradient(135deg, #ede9fe 0%, #d1fae5 100%); border: 1px solid #6ee7b7; }
+  .transition-banner.t34 { background: linear-gradient(135deg, #d1fae5 0%, #ffedd5 100%); border: 1px solid #fdba74; }
+  .transition-banner .arrow {
+    font-size: 24px;
+    font-weight: 800;
+    flex-shrink: 0;
+    padding-top: 2px;
+    color: #475569;
+  }
+  .transition-banner .scripts { flex: 1; }
+  .transition-banner .en { font-style: italic; color: #1e293b; margin-bottom: 8px; }
+  .transition-banner .cn { color: #78350f; }
+
+  /* ===== SEPARATOR ===== */
+  hr.separator {
+    border: none;
+    border-top: 2px dashed #e2e8f0;
+    margin: 32px 0;
+  }
+
+  /* ===== CHECKLIST ===== */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: 4px 0 4px 24px; position: relative; font-size: 14px; line-height: 1.6; }
+  .checklist li::before { content: "☐"; position: absolute; left: 0; color: #94a3b8; }
+
+  /* ===== NOTE ===== */
+  .note {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #78350f;
+  }
+
+  /* ===== DETAILS / COLLAPSIBLE ===== */
+  details { margin: 8px 0; }
+  details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    user-select: none;
+  }
+  details summary:hover { background: #e2e8f0; }
+  .detail-body { padding: 12px 16px; }
+
+  /* ===== TAG ===== */
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag-time { background: #e0f2fe; color: #0284c7; }
+
+  /* ===== OVERVIEW TABLE ===== */
+  .overview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .overview-table th, .overview-table td {
+    padding: 8px 14px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+  }
+  .overview-table th {
+    background: #f8fafc;
+    font-weight: 700;
+    font-size: 13px;
+    color: #475569;
+  }
+  .overview-table td:first-child { font-weight: 600; }
+
+  /* ===== SCROLL TOP ===== */
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 80;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #0f172a; color: #f1f5f9; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .scroll-top.show { opacity: 1; }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    color: #94a3b8;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 900px) {
+    .quick-panel { display: none; }
+    .panel-toggle { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <span class="brand">📋 Phone Screen Guide</span>
+  <button class="nav-btn script" onclick="jump('pre-interview')">🎬 面试前</button>
+  <button class="nav-btn script" onclick="jump('opening-script')">🎙️ 开场</button>
+  <button class="nav-btn section" onclick="jump('s1')">① 自我介绍</button>
+  <button class="nav-btn transition" onclick="jump('t12')">→ 衔接</button>
+  <button class="nav-btn section" onclick="jump('s2')">② 技术问答</button>
+  <button class="nav-btn transition" onclick="jump('t23')">→ 衔接</button>
+  <button class="nav-btn section" onclick="jump('s3')">③ Coding</button>
+  <button class="nav-btn transition" onclick="jump('t34')">→ 衔接</button>
+  <button class="nav-btn section" onclick="jump('s4')">④ 候选人提问</button>
+  <button class="nav-btn script" onclick="jump('closing')">👋 结束</button>
+  <button class="nav-btn script" onclick="jump('post-interview')">📝 面试后</button>
+</nav>
+
+<!-- ===== QUICK PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    快速跳转 Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <div class="qp-group">
+    <div class="qp-group-title">🎬 开场 &amp; 结尾</div>
+    <a class="qp-link gold" href="#pre-interview">🎬 面试前准备</a>
+    <a class="qp-link gold" href="#opening-script">🎙️ 开场台词</a>
+    <a class="qp-link gold" href="#closing">👋 结束台词</a>
+    <a class="qp-link gold" href="#post-interview">📝 面试后</a>
+  </div>
+  <div class="qp-group">
+    <div class="qp-group-title">📖 四大环节</div>
+    <a class="qp-link blue" href="#s1">① 自我介绍</a>
+    <a class="qp-link purple" href="#s2">② 技术问答</a>
+    <a class="qp-link green" href="#s3">③ Coding Test</a>
+    <a class="qp-link orange" href="#s4">④ 候选人提问</a>
+  </div>
+  <div class="qp-group">
+    <div class="qp-group-title">🔗 衔接台词</div>
+    <a class="qp-link gold" href="#t12">①→② 衔接</a>
+    <a class="qp-link gold" href="#t23">②→③ 衔接</a>
+    <a class="qp-link gold" href="#t34">③→④ 衔接</a>
+  </div>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="container">
+
+<h1>📋 Phone Screen — Interview Guide</h1>
+<p class="subtitle">SDE2 UI · Total 30 min · 4 Sections · Candidate: Jorge Beltrán Pastor</p>
+
+<!-- ==================== OVERVIEW TABLE ==================== -->
+<h2 id="overview">🗺️ 面试流程总览 / Interview Flow Overview</h2>
+
+<table class="overview-table">
+  <thead>
+    <tr><th>#</th><th>环节 / Section</th><th>时间 / Time</th><th>要点 / Key Points</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="color:#0284c7;">①</td>
+      <td>自我介绍 / Self Introduction</td>
+      <td>~5 min</td>
+      <td>面试官开场 → 候选人介绍背景</td>
+    </tr>
+    <tr>
+      <td style="color:#7c3aed;">②</td>
+      <td>技术问答 / Technical Q&amp;A</td>
+      <td>~10 min</td>
+      <td>基于简历深挖技术细节</td>
+    </tr>
+    <tr>
+      <td style="color:#059669;">③</td>
+      <td>编程测试 / Coding Test</td>
+      <td>~10 min</td>
+      <td>单调递增函数反函数 · 二分查找</td>
+    </tr>
+    <tr>
+      <td style="color:#ea580c;">④</td>
+      <td>候选人提问 / Candidate Q&amp;A</td>
+      <td>~5 min</td>
+      <td>候选人提问 → 结束面试</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                        PRE-INTERVIEW                                   -->
+<!-- ====================================================================== -->
+<h2 id="pre-interview">🎬 面试前准备 / Pre-Interview Checklist</h2>
+
+<div class="script-block">
+  <ul class="checklist">
+    <li>确认候选人姓名和时区：<strong>Jorge Beltrán Pastor</strong>，西班牙马德里 (UTC+1/+2)</li>
+    <li>准备好共享屏幕的编程环境（CoderPad / VS Code Live Share）</li>
+    <li>打开本指南并测试各 Section 链接可正常跳转</li>
+    <li>确认网络、麦克风、摄像头（如视频面试）正常工作</li>
+    <li>准备纸笔或记事本用于实时记录</li>
+    <li>打开候选人简历，浏览关键经历（15+ 年前端, Contractor roles, Vue→React 迁移）</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                        OPENING SCRIPT                                  -->
+<!-- ====================================================================== -->
+<h2 id="opening-script">🎙️ 开场台词 / Opening Script</h2>
+
+<div class="script-block">
+  <h4>English</h4>
+  <blockquote>
+    "Hi Jorge, thanks for taking the time to speak with us today. My name is [Your Name], I'm a [Your Title] on the [Team Name] team at Microsoft. We're working on [brief team description]."
+  </blockquote>
+  <blockquote>
+    "This will be about a 30-minute phone screen. Here's how we'll spend our time: first, I'd love to hear a quick introduction about your background — just a couple of minutes. Then we'll chat about some of the technical work on your resume. After that, we'll do a short coding exercise together, and finally you'll have a chance to ask me any questions. Does that sound good?"
+  </blockquote>
+</div>
+
+<div class="script-block">
+  <h4>中文</h4>
+  <blockquote class="cn">
+    "你好 Jorge，感谢你今天抽时间和我们交流。我是 [你的名字]，在 Microsoft [团队名称] 团队担任 [你的职位]。我们团队主要负责 [团队工作简述]。"
+  </blockquote>
+  <blockquote class="cn">
+    "今天的电话面试大约 30 分钟。流程是这样的：首先请你做一个简短的自我介绍，大约两分钟；然后我会根据你的简历聊一些技术问题；接着我们一起做一道编程题；最后留时间给你向我提问。可以开始吗？"
+  </blockquote>
+</div>
+
+<div class="note">
+  <strong>⚠️ 面试官提醒：</strong>开场时语速稍慢，面带微笑。候选人母语为西班牙语，英语为工作语言，给予适当耐心。确认候选人能听清你说话后再继续。
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                        SECTION 1                                       -->
+<!-- ====================================================================== -->
+<h2 id="s1">① 🙋 自我介绍 / Self Introduction <span class="tag tag-time">~5 min</span></h2>
+
+<a class="section-link s1" href="selfIntro/interview-guide.html">
+  <span class="time-badge">~5 min</span>
+  <h3>🙋 进入 Section 1 详细指南 →</h3>
+  <p>面试官开场破冰，候选人简短介绍背景、近期工作和对该职位的兴趣。包含候选人档案 (Jorge Beltrán)、评估清单、卡壳应对策略。</p>
+</a>
+
+<div class="script-block">
+  <h4>🎯 本环节要点 / Section Goals</h4>
+  <ul class="checklist">
+    <li>建立轻松的对话氛围，让候选人放松 / Build rapport, help candidate relax</li>
+    <li>观察沟通能力和表达清晰度 / Observe communication skills and clarity</li>
+    <li>了解候选人背景是否与职位匹配 / Assess background relevance to role</li>
+    <li>注意：此环节<strong>不计入技术评分</strong> / Note: does NOT count toward technical scoring</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     TRANSITION 1 → 2                                   -->
+<!-- ====================================================================== -->
+<h2 id="t12" style="font-size:1rem;color:#7c3aed;">🔗 衔接 ①→② / Transition: Self-Intro → Technical Q&A</h2>
+
+<div class="transition-banner t12">
+  <div class="arrow">①→②</div>
+  <div class="scripts">
+    <div class="en">"Great, thanks for that overview Jorge. I'd love to dig a bit deeper into some of the technical work you mentioned — especially around [pick a topic from their intro, e.g. 'the Vue-to-React migration at Emeris']. Let me ask you a few questions based on your resume."</div>
+    <div class="cn">"很好，谢谢你的介绍 Jorge。我想更深入了解你提到的一些技术工作——特别是 [根据候选人介绍选一个话题，如 'Emeris 的 Vue→React 迁移']。接下来我根据你的简历问几个问题。"</div>
+  </div>
+</div>
+
+<details>
+  <summary>💡 衔接技巧 / Transition Tips</summary>
+  <div class="detail-body">
+    <div class="note">
+      <strong>技巧：</strong>过渡时尽量引用候选人刚才提到的内容，让对话自然衔接而非生硬切换。例如候选人提到了 design system，可以说 <em>"You mentioned building a design system — I'd love to hear more about that architecture…"</em><br><br>
+      <strong>Tip:</strong> Reference something the candidate just said to make the transition feel natural. This shows you're actively listening and builds rapport.
+    </div>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                        SECTION 2                                       -->
+<!-- ====================================================================== -->
+<h2 id="s2">② 💬 技术问答 / Resume-based Technical Q&A <span class="tag tag-time">~10 min</span></h2>
+
+<a class="section-link s2" href="technicalQuestions/interview-guide.html">
+  <span class="time-badge">~10 min</span>
+  <h3>💬 进入 Section 2 详细指南 →</h3>
+  <p>基于候选人简历深入询问技术细节，评估前端架构、状态管理、性能优化、跨框架经验等方面的深度理解。</p>
+</a>
+
+<div class="script-block">
+  <h4>🎯 本环节要点 / Section Goals</h4>
+  <ul class="checklist">
+    <li>评估技术深度：不仅知道用什么，还要知道<strong>为什么选</strong> / Depth: not just what, but why</li>
+    <li>考察架构决策能力：大规模迁移、设计权衡 / Architectural decision-making</li>
+    <li>关注 React / TypeScript 相关经验（与团队技术栈对齐） / Focus on React/TS relevance</li>
+    <li>注意时间控制，不超过 10 分钟 / Stay within 10 minutes</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     TRANSITION 2 → 3                                   -->
+<!-- ====================================================================== -->
+<h2 id="t23" style="font-size:1rem;color:#059669;">🔗 衔接 ②→③ / Transition: Technical Q&A → Coding</h2>
+
+<div class="transition-banner t23">
+  <div class="arrow">②→③</div>
+  <div class="scripts">
+    <div class="en">"Awesome, those are really helpful insights into your experience. Now I'd like to switch gears a bit — let's do a short coding exercise together. I'll share a problem with you, and we can work through it. It's totally fine to think out loud — I'm more interested in your thought process than getting a perfect solution right away. Let me share my screen…"</div>
+    <div class="cn">"非常好，这些对了解你的经验很有帮助。现在我们换个节奏——接下来做一道编程题。我会把题目分享给你，我们一起来做。你可以边想边说，我更关心你的思考过程，不需要一开始就写出完美代码。让我共享屏幕……"</div>
+  </div>
+</div>
+
+<details>
+  <summary>💡 衔接技巧 / Transition Tips</summary>
+  <div class="detail-body">
+    <div class="note">
+      <strong>技巧：</strong>切换到 coding 前先确认候选人准备好了。给一句 <em>"Take a moment to get comfortable"</em> 的缓冲。如果候选人技术问答表现出色，可以说 <em>"I'm impressed by your depth — let's see how you approach a coding problem"</em> 来保持积极气氛。<br><br>
+      <strong>Tip:</strong> Before switching to coding, confirm the candidate is ready. A brief pause helps reduce anxiety. If the candidate did well in the technical Q&A, acknowledge it to maintain positive momentum.
+    </div>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                        SECTION 3                                       -->
+<!-- ====================================================================== -->
+<h2 id="s3">③ 💻 编程测试 / Coding Test <span class="tag tag-time">~10 min</span></h2>
+
+<a class="section-link s3" href="codingTest/interview-guide.html">
+  <span class="time-badge">~10 min</span>
+  <h3>💻 进入 Section 3 详细指南 →</h3>
+  <p>算法题：实现黑盒单调递增函数的反函数。考察二分查找思维、边界处理、代码质量。含题面 × 3 版本、卡壳提示、追问、标准答案与评判标准。</p>
+</a>
+
+<div class="script-block">
+  <h4>🎯 本环节要点 / Section Goals</h4>
+  <ul class="checklist">
+    <li>观察问题分析和思维过程 / Observe problem analysis and thought process</li>
+    <li>评估代码质量和实时沟通能力 / Assess code quality and live communication</li>
+    <li>适时给出提示，不要让候选人卡太久（&gt;2min） / Give hints when stuck (&gt;2min)</li>
+    <li>留意候选人如何处理边界情况和精度问题 / Note edge case and precision handling</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     TRANSITION 3 → 4                                   -->
+<!-- ====================================================================== -->
+<h2 id="t34" style="font-size:1rem;color:#ea580c;">🔗 衔接 ③→④ / Transition: Coding → Candidate Q&A</h2>
+
+<div class="transition-banner t34">
+  <div class="arrow">③→④</div>
+  <div class="scripts">
+    <div class="en">"Great work on that problem, Jorge. Let's wrap up the coding part here. We have about 5 minutes left — this is your time now. Do you have any questions for me about the team, the role, or anything else about working at Microsoft?"</div>
+    <div class="cn">"这道题做得不错，Jorge。编程部分到此结束。我们还有大约 5 分钟时间——现在是你的时间了。你对我们的团队、这个职位、或者在 Microsoft 工作有什么想问的吗？"</div>
+  </div>
+</div>
+
+<details>
+  <summary>💡 衔接技巧 / Transition Tips</summary>
+  <div class="detail-body">
+    <div class="note">
+      <strong>技巧：</strong>不论候选人 coding 表现如何，都要给予正面的过渡。如果表现不佳，说 <em>"Thanks for working through that with me"</em> 而非评论结果。让候选人在提问环节感到被尊重。<br><br>
+      <strong>Tip:</strong> Regardless of coding performance, transition positively. If they struggled, say <em>"Thanks for working through that with me"</em> rather than commenting on the outcome.
+    </div>
+    <div class="note">
+      <strong>⏱️ 时间不够时 / Running low on time：</strong><br>
+      <em>"We're running a bit short on time, but I want to make sure you get to ask at least one question. What's the most important thing you'd like to know?"</em><br>
+      "时间有点紧张了，但我想确保你至少能问一个问题。你最想了解什么？"
+    </div>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                        SECTION 4                                       -->
+<!-- ====================================================================== -->
+<h2 id="s4">④ ❓ 候选人提问 / Candidate Q&A <span class="tag tag-time">~5 min</span></h2>
+
+<a class="section-link s4" href="candidateQuestions/interview-guide.html">
+  <span class="time-badge">~5 min</span>
+  <h3>❓ 进入 Section 4 详细指南 →</h3>
+  <p>候选人向面试官提问环节。包含常见问题的建议回答、结束话术和评估标准。</p>
+</a>
+
+<div class="script-block">
+  <h4>🎯 本环节要点 / Section Goals</h4>
+  <ul class="checklist">
+    <li>真诚回答候选人的问题 / Answer questions honestly and enthusiastically</li>
+    <li>观察候选人提问的质量和深度 / Observe quality and depth of questions asked</li>
+    <li>展示团队和公司的吸引力（sell the role） / Showcase team appeal</li>
+    <li>控制时间，预留 ~1 分钟用于结束 / Leave ~1 min for closing</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                        CLOSING SCRIPT                                  -->
+<!-- ====================================================================== -->
+<h2 id="closing">👋 结束台词 / Closing Script</h2>
+
+<div class="script-block">
+  <h4>English — Standard Closing</h4>
+  <blockquote>
+    "Thank you so much for your time today, Jorge. It was really great speaking with you and learning about your experience. From here, our recruiting team will be in touch with next steps — usually within [timeframe, e.g. a week or so]. If you think of any other questions in the meantime, feel free to reach out to your recruiter."
+  </blockquote>
+  <blockquote>
+    "I hope you have a great rest of your day. Thanks again, and take care!"
+  </blockquote>
+</div>
+
+<div class="script-block">
+  <h4>中文 — 标准结束语</h4>
+  <blockquote class="cn">
+    "非常感谢你今天的时间，Jorge。和你交流非常愉快，也了解了你很多出色的经验。接下来我们的招聘团队会联系你告知下一步安排——通常在 [时间范围，如一周左右] 内。如果你后续想到什么问题，随时联系你的 recruiter。"
+  </blockquote>
+  <blockquote class="cn">
+    "祝你今天一切顺利。再次感谢，再见！"
+  </blockquote>
+</div>
+
+<details>
+  <summary>🎭 不同场景的结束语变体 / Closing Variants by Scenario</summary>
+  <div class="detail-body">
+    <div class="script-block">
+      <h4>✅ 候选人表现优秀 / Strong Candidate</h4>
+      <blockquote>
+        "I really enjoyed our conversation today — you clearly have a strong grasp of frontend architecture and system design. I'll make sure to pass along my positive feedback. Looking forward to hopefully working together!"
+      </blockquote>
+      <blockquote class="cn">
+        "今天的交流非常愉快——你对前端架构的理解确实很深入。我会把积极的反馈传达给团队。希望未来有机会一起合作！"
+      </blockquote>
+    </div>
+    <div class="script-block">
+      <h4>⚖️ 候选人表现一般 / Neutral</h4>
+      <blockquote>
+        "Thanks for taking the time to chat today, Jorge. It was great getting to know you better. Our team will review everything and get back to you through the recruiting team."
+      </blockquote>
+      <blockquote class="cn">
+        "感谢你今天抽时间来聊，Jorge。很高兴能更多地了解你。我们团队会综合评估，然后通过招聘团队联系你。"
+      </blockquote>
+    </div>
+    <div class="script-block">
+      <h4>⏱️ 时间超了 / Over Time</h4>
+      <blockquote>
+        "I realize we're running a bit over time — I apologize for that. Thank you for your patience. I'll let you go, and our recruiter will follow up on next steps. Great chatting with you!"
+      </blockquote>
+      <blockquote class="cn">
+        "抱歉我们超时了一点。感谢你的耐心。我就不耽误你了，recruiter 会跟进后续安排。和你聊天很开心！"
+      </blockquote>
+    </div>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                        POST-INTERVIEW                                  -->
+<!-- ====================================================================== -->
+<h2 id="post-interview">📝 面试后 / Post-Interview</h2>
+
+<div class="script-block">
+  <h4>面试后清单 / Post-Interview Checklist</h4>
+  <ul class="checklist">
+    <li>在 30 分钟内完成面试反馈表 / Complete feedback form within 30 minutes</li>
+    <li>记录关键印象：技术深度、沟通能力、文化契合度 / Record impressions: depth, communication, culture fit</li>
+    <li>给出 Hire / No Hire / Lean Hire / Lean No Hire 建议 / Provide hiring recommendation</li>
+    <li>如有疑虑（Level 匹配、timezone、contractor 模式等），在备注中明确提出 / Note concerns explicitly</li>
+    <li>不要与其他面试官讨论你的评估（避免偏见） / Don't discuss with other interviewers (avoid bias)</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>💡 提醒：</strong>面试反馈应基于面试中的<strong>实际表现</strong>，而非简历上的资历。15 年经验 ≠ Strong Hire，10 分钟 coding 表现不佳 ≠ No Hire。综合考量所有维度。<br><br>
+  <strong>Reminder:</strong> Base your feedback on <strong>actual interview performance</strong>, not resume credentials. 15 years of experience ≠ automatic Strong Hire. A weak 10-min coding exercise ≠ automatic No Hire. Evaluate holistically across all dimensions.
+</div>
+
+</div><!-- end container -->
+
+<div class="footer">SDE2 UI Phone Screen · Interview Toolkit · Candidate: Jorge Beltrán Pastor</div>
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const details = el.querySelector('details') || el.closest('details');
+  if (details) details.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
+</body>
+</html>

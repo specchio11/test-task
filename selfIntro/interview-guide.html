@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 1 — 自我介绍 / Self Introduction (~5 min)</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #0284c7;
+    --accent2: #0ea5e9;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .navbar .brand {
+    font-weight: 700; font-size: 18px; color: var(--accent);
+    margin-right: 12px; white-space: nowrap;
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+  .nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .nav-btn.section { background: var(--card); color: var(--blue); border-color: var(--blue); }
+  .nav-btn.hint { background: var(--yellow); color: #fff; border-color: var(--yellow); }
+
+  /* ===== QUICK PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 20px; top: 70px; z-index: 99;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    width: 260px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;
+    transition: transform .3s;
+  }
+  .quick-panel.collapsed { transform: translateX(220px); }
+  .panel-toggle {
+    position: fixed; right: 20px; top: 70px; z-index: 100;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 18px; cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: flex; }
+  .quick-panel h4 {
+    font-size: 18px; color: var(--accent); margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .quick-panel h4 button {
+    background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; line-height: 1;
+  }
+  .qp-group { margin-bottom: 10px; }
+  .qp-group-title { font-size: 18px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .qp-link {
+    display: block; font-size: 18px; padding: 4px 8px; margin: 2px 0;
+    color: var(--text); text-decoration: none;
+    border-radius: 4px; transition: background .15s;
+  }
+  .qp-link:hover { background: var(--card); }
+  .qp-link.blue { border-left: 3px solid var(--blue); }
+  .qp-link.orange { border-left: 3px solid var(--yellow); }
+  .qp-link.green { border-left: 3px solid var(--green); }
+
+  /* ===== MAIN ===== */
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 24px 40px 24px 40px;
+  }
+  @media (min-width: 1200px) {
+    .container { padding-right: 280px; }
+  }
+  @media (max-width: 1199px) {
+    .quick-panel { display: none; }
+    .panel-toggle { display: none !important; }
+  }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #e0f2fe;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .checklist { list-style: none; padding-left: 4px; }
+  .checklist li { position: relative; padding-left: 28px; margin-bottom: 8px; font-size: 18px; }
+  .checklist li::before { content: "☐"; position: absolute; left: 0; color: #94a3b8; font-size: 1.1rem; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-style: italic;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;margin-right:8px;">← Overview</a>
+  <span class="brand">🙋 Section 1 — 自我介绍</span>
+  <button class="nav-btn section" onclick="jump('flow')">⏱️ Flow</button>
+  <button class="nav-btn section" onclick="jump('opening')">🎙️ 开场白</button>
+  <button class="nav-btn section" onclick="jump('candidate-intro')">👤 候选人介绍</button>
+  <button class="nav-btn hint" onclick="jump('candidate-profile')">📄 候选人档案</button>
+  <button class="nav-btn hint" onclick="jump('hints')">💡 Hints</button>
+  <button class="nav-btn section" onclick="jump('scoring')">📝 Scoring</button>
+</nav>
+
+<!-- ===== RIGHT PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    快速跳转 Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <div class="qp-group">
+    <div class="qp-group-title">📖 Sections</div>
+    <a class="qp-link blue" href="#flow">⏱️ Flow</a>
+    <a class="qp-link blue" href="#opening">🎙️ 面试官开场白</a>
+    <a class="qp-link blue" href="#candidate-intro">👤 候选人自我介绍</a>
+    <a class="qp-link orange" href="#candidate-profile">📄 候选人档案</a>
+    <a class="qp-link orange" href="#hints">💡 Hints &amp; Pivots</a>
+    <a class="qp-link green" href="#scoring">📝 Scoring</a>
+  </div>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>🙋 自我介绍 / Self Introduction <span class="tag tag-time">~5 min</span></h1>
+
+<!-- ==================== FLOW ==================== -->
+<h2 id="flow">⏱️ Flow</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>#</th><th>Content</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>面试官自我介绍 / Interviewer introduction</td><td>~1 min</td></tr>
+      <tr><td>2</td><td>简要介绍团队和角色 / Brief team &amp; role overview</td><td>~1 min</td></tr>
+      <tr><td>3</td><td>候选人自我介绍 / Candidate elevator pitch</td><td>~2 min</td></tr>
+      <tr><td>4</td><td>暖场过渡 / Warm-up transition</td><td>~1 min</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== OPENING ==================== -->
+<h2 id="opening">🎙️ 面试官开场白 / Interviewer Opening Script</h2>
+
+<div id="opening-en">
+<details open>
+  <summary>English Version</summary>
+  <div class="detail-body">
+    <blockquote>
+      <p><em>"Hi [Candidate Name], thanks for taking the time to speak with us today. My name is [Your Name], I'm a [Your Title] on the [Team Name] team at Microsoft. We're working on [brief description of what the team does]."</em></p>
+      <p><em>"This will be a 30-minute phone screen. We'll start with introductions, then I'll ask a few technical questions based on your resume, followed by a short coding exercise, and finally you'll have a chance to ask me any questions. Sound good?"</em></p>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<div id="opening-cn">
+<details open>
+  <summary>中文版</summary>
+  <div class="detail-body">
+    <blockquote>
+      <p><em>"你好 [候选人姓名]，感谢你今天抽时间和我们交流。我是 [你的名字]，在 Microsoft [团队名称] 团队担任 [你的职位]。我们团队主要负责 [团队工作简述]。"</em></p>
+      <p><em>"今天的电话面试大约 30 分钟。我们先互相介绍一下，然后我会根据你的简历问几个技术问题，接着是一道编程题，最后你可以问我任何问题。可以吗？"</em></p>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== CANDIDATE INTRO ==================== -->
+<h2 id="candidate-intro">👤 候选人自我介绍 / Candidate Self-Introduction</h2>
+
+<div class="card">
+  <h4>ASK:</h4>
+  <blockquote>
+    <p><em>"Great, could you give me a quick 1-2 minute introduction about yourself — your background, what you've been working on recently, and what interests you about this role?"</em></p>
+  </blockquote>
+</div>
+
+<div id="candidate-profile">
+<details open>
+  <summary>📄 候选人档案 / Candidate Profile — Jorge Beltrán Pastor</summary>
+  <div class="detail-body">
+
+    <div class="card">
+      <h4>🧑‍💻 基本背景 / Background</h4>
+      <ul>
+        <li><strong>15+ 年前端经验</strong>，2009 年起从事 Web 开发 — 15+ years of frontend experience since 2009</li>
+        <li>现居 <strong>西班牙马德里</strong>（UTC+1/+2），需关注与 Redmond 的时差 — Based in Madrid, Spain (UTC+1/+2), be mindful of timezone overlap with Redmond</li>
+        <li>自 2020 年起均为 <strong>Contractor / Freelance</strong> 角色 — All roles since 2020 are contractor/freelance</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4>🔧 近期技术栈 / Recent Tech Stack</h4>
+      <ul>
+        <li><strong>Emeris / Cosmos (2022–2023):</strong> Vue 3 → React 迁移, Zustand, TanStack Query, Storybook, Vitest</li>
+        <li><strong>Vosbor Exchange (2021–2022):</strong> Next.js (SSR), Bun.js, PostgreSQL, Prisma — 全栈 / Fullstack</li>
+        <li><strong>框架演进 / Framework Journey:</strong> jQuery → AngularJS → Angular 2+ → React → Next.js → Vue 3</li>
+        <li><strong>测试文化 / Testing:</strong> TDD 理念, Jest, Cypress, Playwright, Vitest, React Testing Library</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4>🎯 面试官应关注 / What to Listen For</h4>
+      <ul class="checklist">
+        <li>是否提到 <strong>领导经验</strong>：曾任 Vosbor <em>Head of Frontend</em>，The Workshop <em>Tech Lead</em> — Leadership experience</li>
+        <li>是否展示 <strong>架构思维</strong>：大规模 Vue→React 迁移、design system 搭建 — Architectural thinking</li>
+        <li>是否体现 <strong>全栈能力</strong>：Next.js SSR + Bun.js + PostgreSQL — Fullstack capability</li>
+        <li>是否表达 <strong>社区贡献</strong>：MDN contributor, 开源项目, 演讲, mentor — Community involvement</li>
+        <li>是否清晰说明 <strong>对此职位的动机</strong>：为何从 Lead/Head 角色申请 SDE2? — Motivation for this level</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #e74c3c;">
+      <h4>🚩 注意事项 / Red Flags to Probe</h4>
+      <ul>
+        <li><strong>全部 Contractor 角色 (2020+):</strong> 问为什么不是全职？是主动选择还是市场原因？ — Ask why all contractor roles</li>
+        <li><strong>Level 匹配:</strong> 15+ 年经验 + Lead title → 为什么申请 SDE2 而不是 Senior? 是否了解 Microsoft IC levels? — Overqualified concern</li>
+        <li><strong>Timezone:</strong> 西班牙与 Redmond 差 8-9 小时，是否愿意调整工作时间？ — 8-9 hour difference with Redmond</li>
+        <li><strong>技术栈偏移:</strong> 近期偏 Vue 3 (Emeris)，与 Microsoft 常用的 React/TypeScript 生态有多少重叠？ — Recent Vue focus vs React/TS</li>
+      </ul>
+    </div>
+
+  </div>
+</details>
+</div>
+
+<div class="card">
+  <h4>📝 Evaluation Checklist</h4>
+  <ul class="checklist">
+    <li>清晰简洁地介绍了自己的背景 / Clear and concise background summary</li>
+    <li>提到了相关的技术栈和经验 / Mentioned relevant tech stack and experience</li>
+    <li>表达了对职位的兴趣和动机 / Expressed interest and motivation for the role</li>
+    <li>沟通流畅自信 / Fluent and confident communication</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== HINTS ==================== -->
+<h2 id="hints">💡 Hints &amp; Pivots</h2>
+
+<div id="hint-brief">
+<details>
+  <summary>😶 候选人太简短 / Candidate is too brief</summary>
+  <div class="detail-body">
+    <blockquote>
+      <p><em>"Could you tell me more about your most recent project?"</em></p>
+    </blockquote>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官注意：</strong>有些候选人因紧张而言简意赅。用开放式问题引导，不要直接评判。
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<div id="hint-verbose">
+<details>
+  <summary>🗣️ 候选人太冗长 / Candidate is too verbose</summary>
+  <div class="detail-body">
+    <blockquote>
+      <p><em>"That's great context, thank you. Let's dive into some technical questions."</em></p>
+    </blockquote>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官注意：</strong>礼貌地打断，确保不超过 5 分钟。候选人可能对职位很兴奋——这不是坏事，只是需要引导。
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<div id="hint-nervous">
+<details>
+  <summary>😰 候选人很紧张 / Candidate seems nervous</summary>
+  <div class="detail-body">
+    <blockquote>
+      <p><em>"No worries, take your time. This is a pretty casual conversation — I just want to learn more about your experience."</em></p>
+    </blockquote>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官注意：</strong>给予额外耐心。如果候选人英语不是母语，语言障碍不应影响技术评分。面带微笑（如果视频），让候选人放松。
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <blockquote class="interviewer-note">
+    <strong>面试官总提示 / General Note：</strong>自我介绍环节主要是暖场，<strong>不应计入技术评分</strong>。重点观察沟通风格和表达清晰度。如果候选人英语不是母语，给予适当耐心。<br><br>
+    <strong>Interviewer Note:</strong> The self-intro section is primarily a warm-up and <strong>should not count toward the technical score</strong>. Focus on communication style and clarity. Be patient if the candidate is not a native English speaker.
+  </blockquote>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== SCORING ==================== -->
+<h2 id="scoring">📝 Scoring</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Communication Clarity</td><td></td><td></td></tr>
+      <tr><td>Relevance to Role</td><td></td><td></td></tr>
+      <tr><td>Enthusiasm / Interest</td><td></td><td></td></tr>
+      <tr><td>Professionalism</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note-area">面试官在此记录候选人自我介绍的表现 / Interviewer notes on candidate self-introduction…</div>
+
+</div><!-- end container -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const details = el.querySelector('details') || el.closest('details');
+  if (details) details.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
+</body>
+</html>

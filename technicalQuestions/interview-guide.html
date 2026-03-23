@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 2 — 简历技术问答 / Resume-based Technical Q&A (~10 min)</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #7c3aed;
+    --accent2: #8b5cf6;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .navbar .brand {
+    font-weight: 700; font-size: 18px; color: var(--accent);
+    margin-right: 12px; white-space: nowrap;
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+  .nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .nav-btn.section { background: var(--card); color: var(--blue); border-color: var(--blue); }
+  .nav-btn.hint { background: var(--yellow); color: #fff; border-color: var(--yellow); }
+  .nav-btn.category { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+
+  /* ===== QUICK PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 20px; top: 70px; z-index: 99;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    width: 280px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;
+    transition: transform .3s;
+  }
+  .quick-panel.collapsed { transform: translateX(240px); }
+  .panel-toggle {
+    position: fixed; right: 20px; top: 70px; z-index: 100;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 18px; cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: flex; }
+  .quick-panel h4 {
+    font-size: 18px; color: var(--accent); margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .quick-panel h4 button {
+    background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; line-height: 1;
+  }
+  .qp-group { margin-bottom: 10px; }
+  .qp-group-title { font-size: 18px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .qp-link {
+    display: block; font-size: 18px; padding: 4px 8px; margin: 2px 0;
+    color: var(--text); text-decoration: none;
+    border-radius: 4px; transition: background .15s;
+  }
+  .qp-link:hover { background: var(--card); }
+  .qp-link.blue { border-left: 3px solid var(--blue); }
+  .qp-link.purple { border-left: 3px solid var(--accent); }
+  .qp-link.orange { border-left: 3px solid var(--yellow); }
+  .qp-link.green { border-left: 3px solid var(--green); }
+  .qp-link.red { border-left: 3px solid var(--red); }
+
+  /* ===== MAIN ===== */
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 24px 40px 24px 40px;
+  }
+  @media (min-width: 1200px) {
+    .container { padding-right: 300px; }
+  }
+  @media (max-width: 1199px) {
+    .quick-panel { display: none; }
+    .panel-toggle { display: none !important; }
+  }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #f5f3ff;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  .hint-chip {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 18px; font-weight: 700;
+    margin-right: 4px;
+  }
+  .hint-light { background: #d4edda; color: #155724; }
+  .hint-medium { background: #fff3cd; color: #856404; }
+  .hint-heavy { background: #f8d7da; color: #721c24; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 18px; font-weight: 700; margin-right: 4px; }
+  .badge-pass { background: #d4edda; color: #155724; }
+  .badge-strong { background: #e8dff5; color: #5b21b6; }
+  .badge-warn { background: #fff3cd; color: #7a5800; }
+  .badge-fail { background: #fdd; color: #a00; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-style: italic;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;margin-right:8px;">← Overview</a>
+  <span class="brand">💬 Section 2 — 技术问答</span>
+  <button class="nav-btn section" onclick="jump('flow')">⏱️ Flow</button>
+  <button class="nav-btn section" onclick="jump('templates')">📋 问题模板</button>
+  <button class="nav-btn hint" onclick="jump('stuck')">🚨 卡壳应对</button>
+  <button class="nav-btn category" onclick="jump('frontend')">🖥️ 前端</button>
+  <button class="nav-btn category" onclick="jump('backend')">⚙️ 后端</button>
+  <button class="nav-btn category" onclick="jump('general')">🔧 通用</button>
+  <button class="nav-btn section" onclick="jump('tips')">💡 Tips</button>
+  <button class="nav-btn section" onclick="jump('rubric')">📊 评判标准</button>
+  <button class="nav-btn section" onclick="jump('notes')">📝 Notes</button>
+</nav>
+
+<!-- ===== RIGHT PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    快速跳转 Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+
+  <div class="qp-group">
+    <div class="qp-group-title">📖 Main Sections</div>
+    <a class="qp-link blue" href="#flow">⏱️ Flow</a>
+    <a class="qp-link blue" href="#templates">📋 通用问题模板</a>
+    <a class="qp-link red" href="#stuck">🚨 卡壳应对</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">🔍 Tech Deep-Dive</div>
+    <a class="qp-link purple" href="#frontend">🖥️ Frontend</a>
+    <a class="qp-link purple" href="#backend">⚙️ Backend</a>
+    <a class="qp-link purple" href="#general">🔧 General Engineering</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">📊 评估</div>
+    <a class="qp-link orange" href="#tips">💡 面试官 Tips</a>
+    <a class="qp-link green" href="#rubric">📊 评判标准</a>
+    <a class="qp-link green" href="#notes">📝 Notes</a>
+  </div>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~10 min</span></h1>
+
+<!-- ==================== FLOW ==================== -->
+<h2 id="flow">⏱️ Flow</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>#</th><th>Content</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>针对简历项目提问 / Questions on resume projects</td><td>~4 min</td></tr>
+      <tr><td>2</td><td>技术深挖 / Technical deep-dive</td><td>~4 min</td></tr>
+      <tr><td>3</td><td>情景/设计问题 / Scenario/design questions</td><td>~2 min</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== QUESTION TEMPLATES ==================== -->
+<h2 id="templates">📋 通用问题模板 / General Question Templates</h2>
+
+<div id="project-exp">
+<details open>
+  <summary>🏗️ 项目经验 / Project Experience</summary>
+  <div class="detail-body">
+    <h4>ASK:</h4>
+    <blockquote>
+      <p><em>"I see you worked on [Project X] at [Company]. Can you walk me through the architecture and your specific contributions?"</em></p>
+    </blockquote>
+
+    <h4>Follow-up questions:</h4>
+    <ul>
+      <li><em>"What was the most challenging technical problem you faced on this project?"</em></li>
+      <li><em>"How did you handle [specific technology/pattern mentioned in resume]?"</em></li>
+      <li><em>"What would you do differently if you were to rebuild it from scratch?"</em></li>
+      <li><em>"How did you measure the success of this project?"</em></li>
+    </ul>
+  </div>
+</details>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== STUCK ==================== -->
+<h2 id="stuck">🚨 卡壳应对 / If Candidate Gets Stuck</h2>
+
+<div id="stuck-vague">
+<details>
+  <summary>😶 回答太泛，缺乏细节 / Answer too vague, lacks detail</summary>
+  <div class="detail-body">
+    <table>
+      <tr><th>提示等级</th><th>Script</th></tr>
+      <tr><td><span class="hint-chip hint-light">Light</span></td><td><em>"Can you be more specific? For example, what APIs or libraries did you use?"</em></td></tr>
+      <tr><td><span class="hint-chip hint-medium">Medium</span></td><td><em>"Walk me through a specific technical decision you made — what options did you consider?"</em></td></tr>
+    </table>
+  </div>
+</details>
+</div>
+
+<div id="stuck-team">
+<details>
+  <summary>👥 只谈团队成果，不谈个人 / Only talks about team, not self</summary>
+  <div class="detail-body">
+    <blockquote>
+      <em>"That sounds like a great team effort. What was YOUR specific contribution?"</em>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<div id="stuck-nervous">
+<details>
+  <summary>😰 紧张不自信 / Nervous, not confident</summary>
+  <div class="detail-body">
+    <blockquote>
+      <em>"Take your time. There's no wrong answer — I just want to understand how you think about these problems."</em>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<div id="stuck-resume">
+<details>
+  <summary>🚩 简历上写的但答不上来 / Can't explain something on their resume</summary>
+  <div class="detail-body">
+    <blockquote class="interviewer-note">
+      <strong>🚩 Red Flag：</strong>不要当场点破，记录下来。注意观察是完全不了解还是只是表述困难。<br>
+      <strong>Red flag:</strong> Note it down, don't call it out. Observe whether they truly don't know or just struggle to articulate.
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== TECH DEEP-DIVE ==================== -->
+<h2 id="deep-dive">🔍 技术栈深挖 / Tech Stack Deep-Dive</h2>
+<p style="color:var(--text-muted);font-size:18px;">Based on the candidate's resume, pick the most relevant area and go deep:</p>
+
+<div id="frontend">
+<details>
+  <summary>🖥️ Frontend (if applicable)</summary>
+  <div class="detail-body">
+    <ul>
+      <li>Component design patterns and state management (Redux? Context? Zustand?)</li>
+      <li>Performance optimization (lazy loading, memoization, virtualization)</li>
+      <li>Accessibility and responsive design practices</li>
+      <li>Build toolchain and bundling (Webpack, Vite, etc.)</li>
+    </ul>
+    <h4>Sample deep-dive questions:</h4>
+    <blockquote>
+      <em>"You mention using React — can you explain how you structured state management? When would you choose Context API over Redux?"</em>
+    </blockquote>
+    <blockquote>
+      <em>"Tell me about a performance issue you identified and resolved in a frontend app."</em>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<div id="backend">
+<details>
+  <summary>⚙️ Backend (if applicable)</summary>
+  <div class="detail-body">
+    <ul>
+      <li>API design — REST vs GraphQL trade-offs</li>
+      <li>Database design and query optimization</li>
+      <li>Scalability patterns (caching, load balancing, message queues)</li>
+      <li>Authentication and security practices</li>
+    </ul>
+    <h4>Sample deep-dive questions:</h4>
+    <blockquote>
+      <em>"How did you handle database performance at scale? What indexing strategies did you use?"</em>
+    </blockquote>
+    <blockquote>
+      <em>"Walk me through how you designed the API for [project]. Why did you choose REST/GraphQL?"</em>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<div id="general">
+<details>
+  <summary>🔧 General Engineering</summary>
+  <div class="detail-body">
+    <ul>
+      <li>Testing strategies: unit, integration, E2E — coverage goals</li>
+      <li>CI/CD pipeline design and deployment strategy</li>
+      <li>Code review practices and mentoring experience</li>
+      <li>How they approach and prioritize technical debt</li>
+    </ul>
+    <h4>Sample deep-dive questions:</h4>
+    <blockquote>
+      <em>"What's your testing philosophy? How do you decide what to test and at what level?"</em>
+    </blockquote>
+    <blockquote>
+      <em>"How do you balance shipping features quickly versus paying down tech debt?"</em>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== TIPS ==================== -->
+<h2 id="tips">💡 Tips for Interviewer</h2>
+
+<div class="card">
+  <ol>
+    <li><strong>跟着简历走 / Follow the resume：</strong>提前标记 2-3 个感兴趣的项目或技术点。Pre-mark 2-3 interesting projects or tech points before the interview.</li>
+    <li><strong>深而不广 / Go deep, not wide：</strong>选一个方向深入比什么都问一遍好。Better to go deep on one topic than skim many.</li>
+    <li><strong>听思考过程 / Listen for thought process：</strong>关注候选人怎么分析问题，而不仅仅是答案。Focus on how they analyze problems, not just answers.</li>
+    <li><strong>注意红旗 / Watch for red flags：</strong>简历上写的但答不上来的内容。Things on the resume they can't explain.</li>
+    <li><strong>时间控制 / Time management：</strong>不要在一个问题上花超过 5 分钟。Don't spend more than 5 min on any single question.</li>
+  </ol>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== RUBRIC ==================== -->
+<h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
+
+<div class="card">
+  <h4><span class="badge badge-pass">✅ SDE2 Bar</span> 达标</h4>
+  <table>
+    <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
+    <tr><td>能清晰解释简历中项目的架构和自己的贡献</td><td>基本表达和理解过关</td></tr>
+    <tr><td>能深入回答至少一个技术方向的追问</td><td>有实际经验，不是纸上谈兵</td></tr>
+    <tr><td>能承认不知道的东西</td><td>有自知之明</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4><span class="badge badge-strong">🌟 Strong / Senior Signal</span></h4>
+  <table>
+    <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
+    <tr><td>主动提到 trade-offs 和 alternatives</td><td>工程判断力成熟</td></tr>
+    <tr><td>能从系统角度思考，不只是实现层面</td><td>有大局观</td></tr>
+    <tr><td>主动反思过去的决定</td><td>成长型思维</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4><span class="badge badge-fail">🚩 Red Flags</span></h4>
+  <table>
+    <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
+    <tr><td>简历上写的完全答不上来</td><td>诚信问题</td></tr>
+    <tr><td>只用 buzzwords，没有实质内容</td><td>缺乏真实经验</td></tr>
+    <tr><td>不愿承认不知道，乱答</td><td>缺乏自知之明</td></tr>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== NOTES ==================== -->
+<h2 id="notes">📝 Notes</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Technical Depth</td><td></td><td></td></tr>
+      <tr><td>Problem-solving Approach</td><td></td><td></td></tr>
+      <tr><td>Communication of Technical Concepts</td><td></td><td></td></tr>
+      <tr><td>Self-awareness (knowing limits)</td><td></td><td></td></tr>
+      <tr><td>Growth Mindset</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note-area">面试官在此记录候选人技术问答的表现 / Interviewer notes on candidate technical Q&amp;A…</div>
+
+</div><!-- end container -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const details = el.querySelector('details') || el.closest('details');
+  if (details) details.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
+</body>
+</html>
