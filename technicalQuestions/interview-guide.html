@@ -61,7 +61,7 @@
   /* ===== QUICK JUMP PANEL ===== */
   .quick-panel {
     position: fixed; right: 16px; top: 64px; z-index: 90;
-    width: 220px; max-height: calc(100vh - 80px);
+    width: 280px; max-height: calc(100vh - 80px);
     overflow-y: auto;
     background: #fff; border: 1px solid #e2e8f0;
     border-radius: 12px;
@@ -69,7 +69,7 @@
     padding: 14px;
     transition: transform .2s ease, opacity .2s ease;
   }
-  .quick-panel.collapsed { transform: translateX(260px); opacity: 0; pointer-events: none; }
+  .quick-panel.collapsed { transform: translateX(320px); opacity: 0; pointer-events: none; }
   .quick-panel.force-open { transform: none !important; opacity: 1 !important; pointer-events: auto !important; display: block !important; }
   .quick-panel h4 {
     font-size: 18px; font-weight: 700; margin-bottom: 10px;
@@ -90,6 +90,26 @@
     border-left: 3px solid transparent;
   }
   .qp-link:hover { background: #f1f5f9; border-left-color: #7c3aed; }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.purple { border-left: 2px solid #7c3aed; }
+  .qp-sub.green { border-left: 2px solid #059669; }
+  .qp-sub.blue { border-left: 2px solid #0984e3; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 89;
     background: #7c3aed; color: #fff;
@@ -99,7 +119,7 @@
   }
   .quick-panel.collapsed ~ .panel-toggle { display: block; }
   @media (max-width: 1100px) {
-    .quick-panel { transform: translateX(260px); opacity: 0; pointer-events: none; }
+    .quick-panel { transform: translateX(320px); opacity: 0; pointer-events: none; }
     .panel-toggle { display: block !important; }
     .quick-panel.force-open ~ .panel-toggle { display: none !important; }
   }
@@ -139,6 +159,18 @@
   blockquote.interviewer-note {
     border-left-color: var(--yellow);
     background: #fef6e8;
+  }
+  blockquote.ask-en {
+    border-left-color: #d97706;
+    background: #fef9ee;
+    color: var(--text);
+  }
+  blockquote.ask-cn {
+    border-left: none;
+    background: none;
+    padding: 8px 0 8px 16px;
+    color: #78350f;
+    font-size: 18px;
   }
 
   .card {
@@ -243,11 +275,33 @@
     <button onclick="var p=document.getElementById('quickPanel');p.classList.add('collapsed');p.classList.remove('force-open')">&times;</button>
   </h4>
   <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
-  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
-  <a class="qp-link" href="#templates" onclick="jump('templates');return false;">📋 问题模板</a>
-  <a class="qp-link" href="#stuck" onclick="jump('stuck');return false;">🚨 卡壳应对</a>
-  <a class="qp-link" href="#deep-dive" onclick="jump('deep-dive');return false;">🔍 技术深挖</a>
-  <a class="qp-link" href="#tips" onclick="jump('tips');return false;">💡 Tips</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Q1 — MDN 贡献</div>
+    <a class="qp-sub purple" href="#q1-mdn" onclick="jump('q1-mdn');return false;">🎤 提问</a>
+    <a class="qp-sub purple" href="#q1-ref" onclick="jump('q1-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub purple" href="#q1-eval" onclick="jump('q1-eval');return false;">🎯 候选人回答评价</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Q2 — 实时数据 / WebSocket</div>
+    <a class="qp-sub blue" href="#q2-ws" onclick="jump('q2-ws');return false;">🎤 提问</a>
+    <a class="qp-sub blue" href="#q2-ws-hints" onclick="jump('q2-ws-hints');return false;">🚨 卡壳引导</a>
+    <a class="qp-sub blue" href="#q2-ref" onclick="jump('q2-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub blue" href="#q2-eval" onclick="jump('q2-eval');return false;">🎯 候选人回答评价</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Q3 — 微前端架构</div>
+    <a class="qp-sub green" href="#q3-mfe" onclick="jump('q3-mfe');return false;">📋 Q3.1 项目背景</a>
+    <a class="qp-sub green" href="#q3-sub2" onclick="jump('q3-sub2');return false;">🔧 Q3.2 技术方案</a>
+    <a class="qp-sub green" href="#q3-sub3" onclick="jump('q3-sub3');return false;">🔗 Q3.3 拆分与通信</a>
+    <a class="qp-sub green" href="#q3-hints" onclick="jump('q3-hints');return false;">🚨 卡壳引导</a>
+    <a class="qp-sub green" href="#q3-ref" onclick="jump('q3-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub green" href="#q3-eval" onclick="jump('q3-eval');return false;">🎯 候选人回答评价</a>
+    <a class="qp-sub green" href="#mfe-comparison" onclick="jump('mfe-comparison');return false;">📊 方案对比表</a>
+  </div>
+
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
 </div>
@@ -260,11 +314,11 @@
 
 <div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
   <h4>🎤 引导进入技术问答 / Introduce Technical Q&A</h4>
-  <blockquote style="background: #f5f3ff;">
-    "Great, thanks for sharing that. Now I'd like to ask you a few questions based on your resume — just to learn more about some of the projects and technologies you've worked with."
+  <blockquote class="ask-en">
+    "Great, thanks for sharing that. Now I'd like to ask you a few questions based on your resume."
   </blockquote>
-  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
-    "很好，谢谢你的分享。接下来我想根据你的简历问几个问题——主要是想多了解一下你做过的一些项目和用过的技术。"
+  <blockquote class="ask-cn">
+    "很好，谢谢你的分享。接下来我想根据你的简历问几个问题。"
   </blockquote>
 </div>
 
@@ -274,173 +328,477 @@
   <table>
     <thead><tr><th>#</th><th>Content</th><th>Time</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td>针对简历项目提问 / Questions on resume projects</td><td>~4 min</td></tr>
-      <tr><td>2</td><td>技术深挖 / Technical deep-dive</td><td>~4 min</td></tr>
-      <tr><td>3</td><td>情景/设计问题 / Scenario/design questions</td><td>~2 min</td></tr>
+      <tr><td>①</td><td>MDN 贡献 / MDN Contribution (小问题 / Warm-up)</td><td>~2 min</td></tr>
+      <tr><td>②</td><td>实时数据管理 / Real-time Data & WebSocket (中难度)</td><td>~3 min</td></tr>
+      <tr><td>③</td><td>微前端架构 / Micro-Frontend Architecture (大问题 / Deep-dive)</td><td>~5 min</td></tr>
     </tbody>
   </table>
 </div>
 
 <hr class="separator">
 
-<!-- ==================== QUESTION TEMPLATES ==================== -->
-<h2 id="templates">📋 通用问题模板 / General Question Templates</h2>
+<!-- ====================================================================== -->
+<!--                     Q1: MDN CONTRIBUTION                               -->
+<!-- ====================================================================== -->
+<h2 id="q1-mdn">① 💡 MDN 贡献 / MDN Contribution <span class="tag tag-time">~2 min</span></h2>
 
-<div id="project-exp">
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt: <em>"Contributor to MDN"</em>, <em>"contributing to resources like MDN and staying abreast of the latest ECMAScript specifications and tc39 GitHub proposals"</em></p>
+</div>
+
 <details open>
-  <summary>🏗️ 项目经验 / Project Experience</summary>
+  <summary>🎤 提问 / Ask</summary>
   <div class="detail-body">
-    <h4>ASK:</h4>
-    <blockquote>
-      <p>"I see you worked on [Project X] at [Company]. Can you walk me through the architecture and your specific contributions?"</p>
+    <blockquote class="ask-en">
+      "I notice you mentioned you contributed to MDN in your resume. Could you tell me more about what you specifically contributed?"
     </blockquote>
+    <blockquote class="ask-cn">
+      "我注意到你简历里提到你为 MDN 做过贡献。能详细介绍一下你具体贡献了哪些内容吗？"
+    </blockquote>
+  </div>
+</details>
 
-    <h4>Follow-up questions:</h4>
+<details>
+  <summary>❓ 可追问的点 / Follow-up Points</summary>
+  <div class="detail-body">
     <ul>
-      <li>"What was the most challenging technical problem you faced on this project?"</li>
-      <li>"How did you handle [specific technology/pattern mentioned in resume]?"</li>
-      <li>"What would you do differently if you were to rebuild it from scratch?"</li>
-      <li>"How did you measure the success of this project?"</li>
+      <li><strong>"你贡献的具体是哪个 API 或哪个页面？"</strong><br><em>"Which specific API or page was your contribution about?"</em><br>→ 检验是否真实、记得细节</li>
+      <li><strong>"你是怎么发现这个问题的？"</strong><br><em>"How did you find the issue?"</em><br>→ 看候选人是主动发现还是偶然遇到</li>
+      <li><strong>"你简历里也提到了 tc39 proposals，有没有哪个 proposal 是你特别关注的？"</strong><br><em>"You also mentioned tc39 proposals — is there one you've been following closely?"</em><br>→ 进一步检验对 Web 标准的真实参与度</li>
     </ul>
   </div>
 </details>
+
+<!-- ===== Q1 INTERVIEWER REFERENCE ANSWER ===== -->
+<details id="q1-ref">
+  <summary>📖 面试官参考答案 / Interviewer Reference Answer — Q1 MDN</summary>
+  <div class="detail-body">
+    <h4>MDN 贡献的常见类型 / Common Types of MDN Contributions</h4>
+    <ul>
+      <li><strong>文档编写/修正</strong>：为 Web API（如 Intersection Observer, ResizeObserver）补充示例代码、修正过时信息<br><em>Writing/fixing docs: adding examples for Web APIs, correcting outdated info</em></li>
+      <li><strong>翻译</strong>：将英文文档翻译为其他语言（候选人是西班牙人，可能翻译为西班牙语）<br><em>Translation: translating English docs to other languages (candidate is Spanish, might have translated to Spanish)</em></li>
+      <li><strong>BCD (Browser Compatibility Data)</strong>：更新浏览器兼容性数据<br><em>Updating browser compatibility data tables</em></li>
+      <li><strong>Interactive Examples</strong>：为 MDN 页面创建可运行的交互示例<br><em>Creating runnable interactive examples for MDN pages</em></li>
+    </ul>
+    <h4>tc39 Proposals 参考 / tc39 Proposals Reference</h4>
+    <p>候选人提到关注 tc39 proposals，常见值得关注的 proposals：<br><em>Common notable proposals the candidate might mention:</em></p>
+    <ul>
+      <li><strong>Stage 4 (已进入标准)</strong>：Array.prototype.at(), Object.hasOwn(), structuredClone<br><em>Already in spec</em></li>
+      <li><strong>Stage 3</strong>：Temporal API, Decorators, Import Attributes<br><em>Close to finalization</em></li>
+      <li><strong>Stage 2</strong>：Pattern Matching, Signals<br><em>Under active discussion</em></li>
+    </ul>
+    <h4>补充工具 / Supplementary Tools</h4>
+    <p>候选人可能还提到 <strong>astexplorer.net</strong>（AST 可视化工具）或 <strong>caniuse.com</strong>，这些都说明他确实在前端生态中活跃。<br><em>Candidate may also mention astexplorer.net (AST visualization) or caniuse.com — signals genuine engagement with the frontend ecosystem.</em></p>
+  </div>
+</details>
+
+<!-- ===== Q1 CANDIDATE EVALUATION ===== -->
+<details id="q1-eval">
+  <summary>🎯 候选人可能的答案 & 评价 / Candidate Possible Answers & Evaluation — Q1</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>“我为某个 Web API 文档补充了示例代码和说明” — <em>“I added example code and clarifications for a specific Web API doc”</em><br>→ 说明有实质性贡献，而且对具体 API 有深入理解</li>
+      <li>“我参与了某个新特性/API 的文档编写或校对” — <em>“I helped write or review docs for a new feature/API”</em><br>→ 说明跟踪 Web 标准演进</li>
+      <li>“我发现了文档中关于某个边界情况的错误，提了 PR 修复” — <em>“I found an error about an edge case in the docs and submitted a PR to fix it”</em><br>→ 注意细节、愿意回馈社区</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>“我修了一些拼写错误和格式问题” — <em>“I fixed some typos and formatting issues”</em><br>→ 真实但较浅，不能很好体现技术深度</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>“我记不清具体做了什么” — <em>“I don’t remember what I did specifically”</em><br>→ 简历真实性存疑</li>
+      <li>完全无法描述任何具体贡献 — <em>Can’t describe any specific contribution at all</em><br>→ 🚩 Red flag</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+<h2 id="q2-ws">② ⚡ 实时数据管理 / Real-time Data & WebSocket <span class="tag tag-time">~3 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>Sphinx (Senior Frontend/Fullstack, 2024–2025):</strong> <em>"leading the front-end implementation of the exchange application using React, Zustand and TanStack libraries... gRPC, websockets and APIs with Golang"</em></p>
 </div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "I see you mentioned building an exchange frontend with real-time data via WebSockets. In a trading app, data updates can come in very fast — how did you manage the WebSocket connection and incoming data on the frontend? And how did you prevent React from re-rendering too frequently with all those high-frequency updates?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "我看到你提到你做过交易所前端，用了 WebSocket 实时数据。在交易应用里数据更新非常频繁——你是怎么管理 WebSocket 连接和接收到的数据的？另外，在这么高频的更新下，你是怎么避免 React 不必要的 re-render 的？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== Q2 HINTS ===== -->
+<h3 id="q2-ws-hints">🚨 卡壳引导 / Hints When Stuck</h3>
+
+<details open>
+  <summary>😶 候选人只说“用了 WebSocket”但没细节 / Only says "used WebSocket" with no details</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote class="ask-en">"When you say you used WebSockets — did you manage the connection yourself, or use a library? How did you handle reconnection if the connection dropped?"</blockquote>
+    <blockquote class="ask-cn">"你说用了 WebSocket——是自己管理连接还是用了库？如果连接断开了怎么处理重连？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote class="ask-en">"With order book data updating many times per second, did you update React state on every single message, or did you batch/throttle them?"</blockquote>
+    <blockquote class="ask-cn">"订单簿数据每秒更新很多次，你是每条消息都更新 React state，还是做了批量处理或节流？"</blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>🤔 候选人对性能优化没思路 / No idea about performance optimization</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote class="ask-en">"If you have a component that shows a live price, and the price updates 10 times a second, how do you make sure only that price component re-renders and not the whole page?"</blockquote>
+    <blockquote class="ask-cn">"如果有一个显示实时价格的组件，价格每秒更新 10 次，你怎么确保只有价格组件重新渲染而不是整个页面？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote class="ask-en">"In Zustand, you can subscribe to specific slices of state. Did you use something like that to avoid unnecessary re-renders?"</blockquote>
+    <blockquote class="ask-cn">"在 Zustand 里可以订阅特定的 state slice。你有没有用类似的方式来避免不必要的 re-render？"</blockquote>
+  </div>
+</details>
+
+<!-- ===== Q2 REFERENCE ANSWERS (collapsed) ===== -->
+<details id="q2-ref">
+  <summary>📖 面试官参考答案 / Interviewer Reference Answer</summary>
+  <div class="detail-body">
+    <div class="card">
+      <blockquote class="interviewer-note">
+        <strong>⚠️ 面试官专用</strong> — 不要念给候选人。用于评估候选人回答的完整度。<br>
+        <strong>Interviewer-only</strong> — Do not read to candidate. Use to evaluate answer completeness.
+      </blockquote>
+    </div>
+
+    <h4>✅ WebSocket 连接管理 / Connection Management</h4>
+    <ul>
+      <li><strong>自己封装 vs 三方库</strong>：可能用原生 WebSocket API 封装一个 hook，或用 socket.io-client / reconnecting-websocket<br><em>Custom hook wrapping native WebSocket API, or library like socket.io-client / reconnecting-websocket</em></li>
+      <li><strong>重连策略</strong>：指数退避 (exponential backoff)，最大重试次数，断线 UI 提示<br><em>Exponential backoff, max retries, disconnection UI indicator</em></li>
+      <li><strong>心跳机制</strong>：定时 ping/pong 检测连接是否存活<br><em>Periodic ping/pong to detect connection liveness</em></li>
+    </ul>
+
+    <h4>✅ 高频数据处理 / High-frequency Data Handling</h4>
+    <ul>
+      <li><strong>节流 (throttle)</strong>：每 100-200ms 只取最新值更新 UI，而不是每条消息都触发 render<br><em>Throttle to latest value every 100-200ms instead of rendering every message</em></li>
+      <li><strong>批量更新 (batch)</strong>：收集一段时间的消息后一次性更新 state，配合 requestAnimationFrame<br><em>Collect messages over a time window, update state once, use requestAnimationFrame</em></li>
+      <li><strong>外部 store (Zustand)</strong>：在 store 层更新数据，组件只订阅自己需要的 slice，避免无关组件 re-render<br><em>Update in store layer, components subscribe to only their slice, avoids unrelated re-renders</em></li>
+      <li><strong>数据层解耦</strong>：WebSocket 消息先写入内存数据结构，UI 层按需读取，不直接与 WebSocket 耦合<br><em>WS messages write to in-memory data structure, UI reads on demand, not directly coupled to WS</em></li>
+    </ul>
+
+    <h4>✅ React 性能优化 / React Performance Optimization</h4>
+    <ul>
+      <li><strong>React.memo</strong>：包装频繁更新的子组件，阻止父组件 render 时的级联更新<br><em>Wrap frequently updating child components to prevent cascade re-renders from parent</em></li>
+      <li><strong>useMemo / useCallback</strong>：缓存计算结果和回调函数，减少引用变化导致的 re-render<br><em>Cache computed results and callbacks to reduce reference-change-triggered re-renders</em></li>
+      <li><strong>Zustand selector</strong>：<code>useStore(state =&gt; state.price)</code> 只订阅需要的字段，而不是整个 store<br><em><code>useStore(state =&gt; state.price)</code> subscribes to only needed field, not entire store</em></li>
+      <li><strong>组件拆分</strong>：把高频更新部分（如价格跳动）拆成独立小组件，不影响其他静态 UI<br><em>Split high-frequency parts (e.g. price ticker) into isolated small components, don't affect static UI</em></li>
+      <li><strong>虚拟列表 (virtualization)</strong>：订单簿、交易历史等长列表用 react-virtual / react-window<br><em>Use react-virtual / react-window for order book, trade history long lists</em></li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== Q2 CANDIDATE EVALUATION (collapsed) ===== -->
+<details id="q2-eval">
+  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>能说出具体的 WebSocket 管理方式（自己封装 hook / 用库）+ 重连策略 — <em>Can describe specific WS management approach (custom hook / library) + reconnection strategy</em><br>→ 有实际动手经验 / Has hands-on experience</li>
+      <li>能说出多种 React 性能优化手段（throttle + Zustand selector + memo + 组件拆分）— <em>Can name multiple React perf optimizations (throttle + Zustand selector + memo + component splitting)</em><br>→ 理解深入，不只是纸上谈兵 / Deep understanding, not just theoretical</li>
+      <li>能讨论数据层和 UI 层解耦的架构思路 — <em>Can discuss data-UI layer decoupling architecture</em><br>→ 有架构思维 / Has architectural thinking</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>能说出用了 WebSocket 和 Zustand，但只能提到 1-2 个优化手段 — <em>Mentions WebSocket + Zustand but only 1-2 optimization techniques</em><br>→ 有经验但深度有限 / Has experience but limited depth</li>
+      <li>知道要避免不必要的 re-render 但说不清具体怎么做 — <em>Knows about avoiding unnecessary re-renders but vague on specifics</em><br>→ 了解概念但实践不足 / Conceptual understanding but lacks practice</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"就是用 WebSocket 接数据然后显示" — <em>"Just used WebSocket to receive data and display it"</em><br>→ 完全没有思考过性能问题 / Never considered performance issues</li>
+      <li>无法说出任何具体的连接管理或性能优化策略 — <em>Can't name any specific connection management or performance optimization</em><br>→ 🚩 可能没有真正做过实时数据 / May not have actually worked on real-time data</li>
+    </ul>
+  </div>
+</details>
 
 <hr class="separator">
 
-<!-- ==================== STUCK ==================== -->
-<h2 id="stuck">🚨 卡壳应对 / If Candidate Gets Stuck</h2>
+<!-- ====================================================================== -->
+<!--                     Q3: MICRO-FRONTEND                                 -->
+<!-- ====================================================================== -->
+<h2 id="q3-mfe">③ 🏗️ 微前端架构 / Micro-Frontend Architecture <span class="tag tag-time">~5 min</span></h2>
 
-<div id="stuck-vague">
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>Vosbor Exchange (Head of Frontend, 2021–2023):</strong> <em>"designed micro-frontend architectures to integrate various application contexts, collaborating closely with the DevOps team"</em></p>
+  <p style="color:var(--text-muted);">📌 开源 / Open Source: <em>"Translator for micro-frontends.org into Spanish at micro-frontends-es.org"</em></p>
+</div>
+
+<!-- ===== SUB-QUESTION 1: Background & Why ===== -->
+<h3 id="q3-sub1">📋 子问题 1：项目背景与选型动机 / Project Context & Why Micro-Frontends</h3>
+
 <details open>
-  <summary>😶 回答太泛，缺乏细节 / Answer too vague, lacks detail</summary>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote>
+      "I see you mentioned you've designed micro-frontend architectures. Could you walk me through the project context — what was the product, and what specific problems led you to choose a micro-frontend approach instead of a traditional monolithic SPA or a component library?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "我看到你提到你设计过微前端架构。能介绍一下当时的项目背景吗——产品是什么，以及是什么具体问题让你们选择了微前端方案，而不是传统的单体 SPA 或者共享组件库？"
+    </blockquote>
+
+    <h4>Follow-up / 追问：</h4>
+    <blockquote>
+      "What were the 'various application contexts' you mentioned? How were they split — by feature, by team, by domain?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你提到的'各种应用上下文'具体指什么？它们是怎么拆分的——按功能、按团队、还是按业务领域？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== SUB-QUESTION 2: Technical Approach ===== -->
+<h3 id="q3-sub2">🔧 子问题 2：技术方案选型 / Technical Approach</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote>
+      "What specific micro-frontend approach did you go with? Why did you choose that particular approach, and what advantages did it give you in your project?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你们具体选择了哪种微前端技术方案？为什么选择了这个方案？它在你们项目里的优势是什么？"
+    </blockquote>
+
+    <h4>🔄 Clarification (if candidate doesn't understand "approach") / 如果候选人不理解 "approach" 指什么：</h4>
+    <blockquote>
+      "For example, things like Webpack Module Federation, iframe-based isolation, single-spa, or route-based splitting."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "比如像 Webpack Module Federation、iframe 隔离、single-spa、或者路由级拆分这些。"
+    </blockquote>
+
+    <h4>Follow-up / 追问：</h4>
+    <blockquote>
+      "How did you handle shared dependencies — like React itself or a design system — across the different micro-frontends? Did you run into version conflicts?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "不同的微前端之间怎么处理共享依赖？比如 React 本身、或者设计系统组件库？有没有遇到过版本冲突的问题？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== SUB-QUESTION 3: Splitting & Communication ===== -->
+<h3 id="q3-sub3">🔗 子问题 3：拆分方式与微前端通信 / How They Split & How MFEs Communicate</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote>
+      "How were the micro-frontends actually split — was it by page, by feature area, by business domain? And once split, how did the different micro-frontends communicate with each other when they needed to share data or coordinate actions?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "微前端具体是怎么拆分的——是按页面、按功能模块、还是按业务域？拆分之后，当不同的微前端需要共享数据或协调操作时，它们之间是怎么通信的？"
+    </blockquote>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ==================== Q3 HINTS WHEN STUCK ==================== -->
+<h2 id="q3-hints">🚨 微前端卡壳引导 / MFE Hints When Stuck</h2>
+
+<details open>
+  <summary>😶 候选人回答太笼统 / Answer is too high-level</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote>"Could you be more specific about the boundaries between the micro-frontends? For example, was each one a separate repo and deployment?"</blockquote>
+    <blockquote class="ask-cn">"能具体说说各个微前端之间的边界是怎么划分的吗？比如每个微前端是独立的仓库和独立部署吗？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote>"Let's narrow it down — how did the micro-frontends communicate with each other? Was there a shared event bus, custom events, or shared state?"</blockquote>
+    <blockquote class="ask-cn">"我们缩小一下范围——各微前端之间是怎么通信的？有共享的事件总线、自定义事件、还是共享状态？"</blockquote>
+
+    <p><span class="hint-chip hint-heavy">Heavy</span></p>
+    <blockquote>"There are a few common approaches — like Module Federation, single-spa, iframes, or even Web Components. Which one did your project use?"</blockquote>
+    <blockquote class="ask-cn">"常见的微前端方案有几种——比如 Module Federation、single-spa、iframe、或者 Web Components。你们项目用的是哪种？"</blockquote>
+  </div>
+</details>
+
+<details open>
+  <summary>🤔 候选人说不清为什么选微前端 / Can't articulate why micro-frontends</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote>"What was the pain point with a single codebase? Was it build time, team coordination, or deployment frequency?"</blockquote>
+    <blockquote class="ask-cn">"单体代码库的痛点是什么？是构建时间、团队协调、还是部署频率？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote>"Imagine you had to justify the micro-frontend decision to a new engineer joining the team — what would you tell them?"</blockquote>
+    <blockquote class="ask-cn">"假设你需要向一个新入职的工程师解释为什么要用微前端——你会怎么说？"</blockquote>
+  </div>
+</details>
+
+<details open>
+  <summary>😰 候选人对共享依赖问题没思路 / No idea about shared dependencies</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote>"For example, if two micro-frontends both use React — did they each bundle their own copy, or share one?"</blockquote>
+    <blockquote class="ask-cn">"比如两个微前端都用 React——它们各自打包一份 React，还是共享同一份？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote>"Module Federation has a 'shared' config for this. Did you use anything similar to avoid duplicate bundles?"</blockquote>
+    <blockquote class="ask-cn">"Module Federation 有 shared 配置来处理这个问题。你们有用类似的方式来避免重复打包吗？"</blockquote>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ===== Q3 REFERENCE ANSWER (collapsed) ===== -->
+<details id="q3-ref">
+  <summary>📖 面试官参考答案 / Interviewer Reference Answer</summary>
+  <div class="detail-body">
+    <div class="card">
+      <blockquote class="interviewer-note">
+        <strong>⚠️ 面试官专用</strong> — 不要念给候选人。用于评估候选人回答是否合理。<br>
+        <strong>Interviewer-only</strong> — Do not read to candidate. Use to evaluate answer quality.
+      </blockquote>
+    </div>
+
+    <h4>Q3.1 项目背景与选型动机 / Why Micro-Frontends</h4>
+    <p><strong>合理的动机 / Reasonable motivations:</strong></p>
+    <ul>
+      <li>🟢 多个团队并行开发不同业务模块，单体应用合并冲突太多 — <em>Multiple teams on different modules, too many merge conflicts in monolith</em></li>
+      <li>🟢 各模块需要独立发布节奏，不能因为一个模块的 bug 阻塞整个产品 — <em>Independent release cadence, one bug shouldn't block entire product</em></li>
+      <li>🟢 交易所有多个不同的应用上下文（如交易大厅、订单管理、数据报表） — <em>Exchange has distinct contexts (trading floor, order management, reporting)</em></li>
+    </ul>
+
+    <h4>Q3.2 技术方案选型 / Technical Approach</h4>
+    <p>根据简历上下文（react-redux-saga + Webpack），最可能的方案：<br><em>Based on resume context (react-redux-saga + Webpack), most likely approaches:</em></p>
+    <ul>
+      <li>🟢 <strong>Webpack Module Federation</strong> — 最合理，全 React 生态 + Webpack 构建<br><em>Most likely — all-React ecosystem + Webpack builds</em></li>
+      <li>🟡 <strong>single-spa</strong> — 也合理，尤其有遗留代码需渐进式集成<br><em>Plausible if legacy code needed gradual integration</em></li>
+      <li>🟡 <strong>路由分发 (Nginx)</strong> — 可能，如果各模块交互不多<br><em>Possible if modules had minimal interaction</em></li>
+    </ul>
+
+    <h4>Q3.3 拆分方式与通信 / Splitting & Communication</h4>
+    <p><strong>拆分方式 / Splitting approach:</strong></p>
+    <ul>
+      <li>🟢 按业务域：交易模块、订单管理、用户设置、报表 — <em>By business domain: trading, order mgmt, user settings, reports</em></li>
+      <li>🟢 按团队：每个团队拥有一个微前端 — <em>By team: each team owns one MFE</em></li>
+      <li>🟡 按页面 — <em>By page (coarser, but feasible)</em></li>
+    </ul>
+    <p><strong>通信方式 / Communication:</strong></p>
+    <ul>
+      <li>🟢 Custom Events (window.dispatchEvent) — 松耦合 / <em>Loosely-coupled</em></li>
+      <li>🟢 共享 store (Zustand/Redux via Module Federation) — <em>Shared store instance</em></li>
+      <li>🟡 Event Bus / PubSub — <em>Custom lightweight pub/sub</em></li>
+      <li>🟡 URL / 路由参数 — <em>URL query params (limited)</em></li>
+      <li>🟠 postMessage (iframe) — <em>Required for iframe approach</em></li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== Q3 CANDIDATE EVALUATION (collapsed) ===== -->
+<details id="q3-eval">
+  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>能说出具体的项目背景和选型动机，而不是"别人让我做的" — <em>Articulates specific project context and motivation, not "I was told to"</em><br>→ 有决策参与能力 / Has decision-making involvement</li>
+      <li>能说出具体的微前端方案名称（如 Module Federation）并解释为什么选它 — <em>Names specific approach (e.g. Module Federation) and explains why</em><br>→ 技术选型有深度 / Deep technical selection reasoning</li>
+      <li>能主动讨论 trade-off（复杂性、共享依赖、部署成本） — <em>Proactively discusses trade-offs (complexity, shared deps, deployment cost)</em><br>→ 工程判断力成熟 / Mature engineering judgment</li>
+      <li>能说出具体的通信方式（Custom Events / shared store）和遇到的实际问题 — <em>Describes specific communication method and real problems encountered</em><br>→ 有实战经验 / Has real-world experience</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>能说出用了微前端，能说出方案名但解释不了为什么选 — <em>Can name the approach but can't explain the rationale</em><br>→ 参与了但可能不是决策者 / Participated but maybe not the decision-maker</li>
+      <li>知道拆分了但说不清楚通信方式 — <em>Knows about splitting but vague on communication</em><br>→ 了解架构但缺少细节 / Understands architecture but lacks details</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"因为微前端很流行所以我们用了" — <em>"Because micro-frontends were trendy"</em><br>→ 缺乏工程思考 / Lacks engineering thinking</li>
+      <li>说"用的微前端"但说不出具体方案名称 — <em>Says "used micro-frontends" but can't name the approach</em><br>→ 🚩 可能只是听说过概念 / May have just heard the concept</li>
+      <li>说"我们就是把代码拆开了" — <em>"We just split the code"</em><br>→ 🚩 拆代码 ≠ 微前端 / Splitting code ≠ micro-frontends</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ==================== MFE COMPARISON TABLE ==================== -->
+<h2 id="mfe-comparison">📊 面试官参考：微前端方案对比 / Interviewer Reference: Micro-Frontend Approaches</h2>
+
+<div class="card">
+  <blockquote class="interviewer-note">
+    <strong>⚠️ 面试官专用参考资料</strong> — 这部分不要念给候选人，仅用于你评估候选人回答时参考。<br>
+    <strong>Interviewer-only reference</strong> — Do not read this to the candidate. Use it to evaluate their answers.
+  </blockquote>
+</div>
+
+<details>
+  <summary>📊 方案总览对比表 / Approach Comparison Table</summary>
   <div class="detail-body">
     <table>
-      <tr><th>提示等级</th><th>Script</th></tr>
-      <tr><td><span class="hint-chip hint-light">Light</span></td><td>"Can you be more specific? For example, what APIs or libraries did you use?"</td></tr>
-      <tr><td><span class="hint-chip hint-medium">Medium</span></td><td>"Walk me through a specific technical decision you made — what options did you consider?"</td></tr>
+      <thead>
+        <tr>
+          <th>方案 / Approach</th>
+          <th>实现方式 / How it works</th>
+          <th>优势 / Pros</th>
+          <th>劣势 / Cons</th>
+          <th>适用场景 / Best for</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Webpack Module Federation</strong></td>
+          <td>Webpack 5 原生支持，运行时加载远程模块<br><em>Webpack 5 native, runtime remote module loading</em></td>
+          <td>✅ 共享依赖、零额外框架<br><em>Shared deps, zero extra framework</em></td>
+          <td>❌ 强依赖 Webpack 5<br><em>Tied to Webpack 5</em></td>
+          <td>全 React/Webpack 项目<br><em>All-React/Webpack projects</em></td>
+        </tr>
+        <tr>
+          <td><strong>single-spa</strong></td>
+          <td>框架无关的微前端编排器<br><em>Framework-agnostic MFE orchestrator</em></td>
+          <td>✅ 支持多框架混合<br><em>Multi-framework support</em></td>
+          <td>❌ 配置复杂、学习曲线陡<br><em>Complex config, steep learning curve</em></td>
+          <td>多框架/渐进式迁移<br><em>Multi-framework / gradual migration</em></td>
+        </tr>
+        <tr>
+          <td><strong>iframe</strong></td>
+          <td>每个微前端在独立 iframe 中运行<br><em>Each MFE runs in its own iframe</em></td>
+          <td>✅ 完全隔离（JS/CSS/DOM）<br><em>Complete isolation</em></td>
+          <td>❌ 性能差、通信困难、SEO 差<br><em>Poor performance, hard communication, bad SEO</em></td>
+          <td>安全隔离要求极高的场景<br><em>Extreme security isolation needs</em></td>
+        </tr>
+        <tr>
+          <td><strong>路由分发 / Route-based (Nginx)</strong></td>
+          <td>Nginx 按 URL 路径代理到不同应用<br><em>Nginx proxies to different apps by URL path</em></td>
+          <td>✅ 极简、无额外运行时<br><em>Ultra-simple, no runtime overhead</em></td>
+          <td>❌ 页面切换整页刷新<br><em>Full-page refresh on navigation</em></td>
+          <td>各模块交互少的内部平台或后台系统<br><em>Internal platforms with minimal cross-module interaction</em></td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </details>
-</div>
 
-<div id="stuck-team">
-<details open>
-  <summary>👥 只谈团队成果，不谈个人 / Only talks about team, not self</summary>
+<details>
+  <summary>🔑 微前端核心挑战清单 / Key Challenges Checklist</summary>
   <div class="detail-body">
-    <blockquote>
-      "That sounds like a great team effort. What was YOUR specific contribution?"
-    </blockquote>
+    <p>候选人如果能主动提到以下任何一项，说明有实战经验：<br><em>If the candidate proactively mentions any of these, it signals real-world experience:</em></p>
+    <table>
+      <thead><tr><th>挑战 / Challenge</th><th>说明 / Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>共享依赖 / Shared Dependencies</strong></td><td>React 等框架多份加载 → bundle 膨胀 / Multiple React copies → bundle bloat</td></tr>
+        <tr><td><strong>样式隔离 / Style Isolation</strong></td><td>CSS 全局污染、命名冲突 / CSS global pollution, naming conflicts</td></tr>
+        <tr><td><strong>微前端间通信 / Inter-MFE Communication</strong></td><td>事件总线、Custom Events、共享状态 / Event bus, Custom Events, shared state</td></tr>
+        <tr><td><strong>独立部署 / Independent Deployment</strong></td><td>CI/CD 管道、版本管理、回滚策略 / CI/CD pipelines, versioning, rollback strategy</td></tr>
+        <tr><td><strong>路由管理 / Routing</strong></td><td>子应用路由和壳应用路由的协调 / Sub-app routing vs shell routing coordination</td></tr>
+        <tr><td><strong>团队自治 vs 一致性 / Autonomy vs Consistency</strong></td><td>各团队独立选型 vs 统一技术标准 / Independent tech choices vs unified standards</td></tr>
+      </tbody>
+    </table>
   </div>
 </details>
-</div>
-
-<div id="stuck-nervous">
-<details open>
-  <summary>😰 紧张不自信 / Nervous, not confident</summary>
-  <div class="detail-body">
-    <blockquote>
-      "Take your time. There's no wrong answer — I just want to understand how you think about these problems."
-    </blockquote>
-  </div>
-</details>
-</div>
-
-<div id="stuck-resume">
-<details open>
-  <summary>🚩 简历上写的但答不上来 / Can't explain something on their resume</summary>
-  <div class="detail-body">
-    <blockquote class="interviewer-note">
-      <strong>🚩 Red Flag：</strong>不要当场点破，记录下来。注意观察是完全不了解还是只是表述困难。<br>
-      <strong>Red flag:</strong> Note it down, don't call it out. Observe whether they truly don't know or just struggle to articulate.
-    </blockquote>
-  </div>
-</details>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== TECH DEEP-DIVE ==================== -->
-<h2 id="deep-dive">🔍 技术栈深挖 / Tech Stack Deep-Dive</h2>
-<p style="color:var(--text-muted);font-size:18px;">Based on the candidate's resume, pick the most relevant area and go deep:</p>
-
-<div id="frontend">
-<details open>
-  <summary>🖥️ Frontend (if applicable)</summary>
-  <div class="detail-body">
-    <ul>
-      <li>Component design patterns and state management (Redux? Context? Zustand?)</li>
-      <li>Performance optimization (lazy loading, memoization, virtualization)</li>
-      <li>Accessibility and responsive design practices</li>
-      <li>Build toolchain and bundling (Webpack, Vite, etc.)</li>
-    </ul>
-    <h4>Sample deep-dive questions:</h4>
-    <blockquote>
-      "You mention using React — can you explain how you structured state management? When would you choose Context API over Redux?"
-    </blockquote>
-    <blockquote>
-      "Tell me about a performance issue you identified and resolved in a frontend app."
-    </blockquote>
-  </div>
-</details>
-</div>
-
-<div id="backend">
-<details open>
-  <summary>⚙️ Backend (if applicable)</summary>
-  <div class="detail-body">
-    <ul>
-      <li>API design — REST vs GraphQL trade-offs</li>
-      <li>Database design and query optimization</li>
-      <li>Scalability patterns (caching, load balancing, message queues)</li>
-      <li>Authentication and security practices</li>
-    </ul>
-    <h4>Sample deep-dive questions:</h4>
-    <blockquote>
-      "How did you handle database performance at scale? What indexing strategies did you use?"
-    </blockquote>
-    <blockquote>
-      "Walk me through how you designed the API for [project]. Why did you choose REST/GraphQL?"
-    </blockquote>
-  </div>
-</details>
-</div>
-
-<div id="general">
-<details open>
-  <summary>🔧 General Engineering</summary>
-  <div class="detail-body">
-    <ul>
-      <li>Testing strategies: unit, integration, E2E — coverage goals</li>
-      <li>CI/CD pipeline design and deployment strategy</li>
-      <li>Code review practices and mentoring experience</li>
-      <li>How they approach and prioritize technical debt</li>
-    </ul>
-    <h4>Sample deep-dive questions:</h4>
-    <blockquote>
-      "What's your testing philosophy? How do you decide what to test and at what level?"
-    </blockquote>
-    <blockquote>
-      "How do you balance shipping features quickly versus paying down tech debt?"
-    </blockquote>
-  </div>
-</details>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== TIPS ==================== -->
-<h2 id="tips">💡 Tips for Interviewer</h2>
-
-<div class="card">
-  <ol>
-    <li><strong>跟着简历走 / Follow the resume：</strong>提前标记 2-3 个感兴趣的项目或技术点。Pre-mark 2-3 interesting projects or tech points before the interview.</li>
-    <li><strong>深而不广 / Go deep, not wide：</strong>选一个方向深入比什么都问一遍好。Better to go deep on one topic than skim many.</li>
-    <li><strong>听思考过程 / Listen for thought process：</strong>关注候选人怎么分析问题，而不仅仅是答案。Focus on how they analyze problems, not just answers.</li>
-    <li><strong>注意红旗 / Watch for red flags：</strong>简历上写的但答不上来的内容。Things on the resume they can't explain.</li>
-    <li><strong>时间控制 / Time management：</strong>不要在一个问题上花超过 5 分钟。Don't spend more than 5 min on any single question.</li>
-  </ol>
-</div>
 
 <hr class="separator">
 
@@ -451,19 +809,23 @@
   <h4><span class="badge badge-pass">✅ SDE2 Bar</span> 达标</h4>
   <table>
     <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
-    <tr><td>能清晰解释简历中项目的架构和自己的贡献</td><td>基本表达和理解过关</td></tr>
-    <tr><td>能深入回答至少一个技术方向的追问</td><td>有实际经验，不是纸上谈兵</td></tr>
-    <tr><td>能承认不知道的东西</td><td>有自知之明</td></tr>
+    <tr><td>MDN 贡献能说出具体内容</td><td>简历内容真实<br><em>Resume content is genuine</em></td></tr>
+    <tr><td>WebSocket 能说出连接管理和至少一种性能优化手段</td><td>有实时数据处理经验<br><em>Has real-time data handling experience</em></td></tr>
+    <tr><td>能说出 Vosbor 微前端的具体拆分方式和选用的技术方案</td><td>有真实实战经验<br><em>Has real hands-on experience</em></td></tr>
+    <tr><td>能解释为什么选择微前端而不是单体 SPA</td><td>理解架构决策<br><em>Understands architectural decisions</em></td></tr>
+    <tr><td>能描述至少一个实际遇到的微前端挑战及解决方式</td><td>不是纸上谈兵<br><em>Not just theoretical</em></td></tr>
   </table>
 </div>
 
 <div class="card">
-  <h4><span class="badge badge-strong">🌟 Strong / Senior Signal</span></h4>
+  <h4><span class="badge badge-strong">🌟 Strong Signal</span></h4>
   <table>
     <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
-    <tr><td>主动提到 trade-offs 和 alternatives</td><td>工程判断力成熟</td></tr>
-    <tr><td>能从系统角度思考，不只是实现层面</td><td>有大局观</td></tr>
-    <tr><td>主动反思过去的决定</td><td>成长型思维</td></tr>
+    <tr><td>WebSocket 能讨论节流/批量 + Zustand selector + 组件拆分等多种优化策略</td><td>深度实时数据经验<br><em>Deep real-time data experience</em></td></tr>
+    <tr><td>主动对比多种微前端方案的 trade-off</td><td>工程判断力成熟<br><em>Mature engineering judgment</em></td></tr>
+    <tr><td>能讨论共享依赖、样式隔离、部署策略、通信机制等细节</td><td>深度实践经验<br><em>Deep practical experience</em></td></tr>
+    <tr><td>能从团队协作和业务角度解释架构选型</td><td>不只是技术视角<br><em>Not just a technical lens</em></td></tr>
+    <tr><td>主动反思架构的不足和改进点</td><td>成长型思维<br><em>Growth mindset</em></td></tr>
   </table>
 </div>
 
@@ -471,9 +833,10 @@
   <h4><span class="badge badge-fail">🚩 Red Flags</span></h4>
   <table>
     <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
-    <tr><td>简历上写的完全答不上来</td><td>诚信问题</td></tr>
-    <tr><td>只用 buzzwords，没有实质内容</td><td>缺乏真实经验</td></tr>
-    <tr><td>不愿承认不知道，乱答</td><td>缺乏自知之明</td></tr>
+    <tr><td>简历写了微前端但说不出任何具体细节</td><td>可能是夸大经历<br><em>May have inflated experience</em></td></tr>
+    <tr><td>不知道微前端有哪些常见方案</td><td>只知道概念，没实操<br><em>Knows concept only, no hands-on</em></td></tr>
+    <tr><td>MDN 贡献完全说不出来</td><td>简历真实性存疑<br><em>Resume authenticity questionable</em></td></tr>
+    <tr><td>只用 buzzwords 回答，追问就卡壳</td><td>缺乏深度<br><em>Lacks depth</em></td></tr>
   </table>
 </div>
 
@@ -486,11 +849,13 @@
   <table>
     <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
     <tbody>
-      <tr><td>Technical Depth</td><td></td><td></td></tr>
-      <tr><td>Problem-solving Approach</td><td></td><td></td></tr>
-      <tr><td>Communication of Technical Concepts</td><td></td><td></td></tr>
-      <tr><td>Self-awareness (knowing limits)</td><td></td><td></td></tr>
-      <tr><td>Growth Mindset</td><td></td><td></td></tr>
+      <tr><td>Q1: MDN — 贡献真实性与深度</td><td></td><td></td></tr>
+      <tr><td>Q2: WebSocket — 连接管理与数据处理</td><td></td><td></td></tr>
+      <tr><td>Q2: WebSocket — React 性能优化</td><td></td><td></td></tr>
+      <tr><td>Q3: 微前端 — 项目背景与选型动机</td><td></td><td></td></tr>
+      <tr><td>Q3: 微前端 — 技术方案深度</td><td></td><td></td></tr>
+      <tr><td>Q3: 微前端 — 拆分与通信</td><td></td><td></td></tr>
+      <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
     </tbody>
   </table>
 </div>
