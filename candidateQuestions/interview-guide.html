@@ -57,23 +57,29 @@
   
 
 
-  /* ===== QUICK JUMP PANEL ===== */
-  .quick-panel {
-    position: fixed; right: 16px; top: 64px; z-index: 90;
-    width: 220px; max-height: calc(100vh - 80px);
-    overflow-y: auto;
-    background: #fff; border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.08);
-    padding: 14px;
-    transition: transform .2s ease, opacity .2s ease;
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
   }
-  .quick-panel.collapsed { transform: translateX(260px); opacity: 0; pointer-events: none; }
-  .quick-panel.force-open { transform: none !important; opacity: 1 !important; pointer-events: auto !important; display: block !important; }
+
+  /* ===== QUICK JUMP PANEL (sidebar) ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 220px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
   .quick-panel h4 {
     font-size: 18px; font-weight: 700; margin-bottom: 10px;
     display: flex; justify-content: space-between; align-items: center;
-    color: #0f172a;
+    color: #0f172a; white-space: nowrap;
   }
   .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
   .quick-panel h4 button:hover { color: #475569; }
@@ -90,7 +96,7 @@
   }
   .qp-link:hover { background: #f1f5f9; border-left-color: #ea580c; }
   .panel-toggle {
-    position: fixed; right: 16px; top: 64px; z-index: 89;
+    position: fixed; right: 16px; top: 64px; z-index: 91;
     background: #ea580c; color: #fff;
     border: none; border-radius: 8px;
     padding: 6px 10px; cursor: pointer; font-size: 18px;
@@ -98,17 +104,20 @@
   }
   .quick-panel.collapsed ~ .panel-toggle { display: block; }
   @media (max-width: 1100px) {
-    .quick-panel { transform: translateX(260px); opacity: 0; pointer-events: none; }
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
     .panel-toggle { display: block !important; }
-    .quick-panel.force-open ~ .panel-toggle { display: none !important; }
   }
 
   /* ===== MAIN ===== */
   .container {
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 24px 24px 24px 24px;
+    flex: 1;
+    min-width: 0;
+    margin-right: 220px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
   }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
 
   h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
   h2 {
@@ -138,6 +147,19 @@
   blockquote.interviewer-note {
     border-left-color: var(--yellow);
     background: #fef6e8;
+  }
+  blockquote.ask-en {
+    border-left-color: #d97706;
+    background: #fef9ee;
+    color: var(--text);
+    font-style: normal;
+  }
+  blockquote.ask-cn {
+    border-left: none;
+    background: none;
+    padding: 8px 0 8px 16px;
+    color: #78350f;
+    font-size: 18px;
   }
 
   .card {
@@ -223,20 +245,19 @@
   <a class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;font-weight:700;">④ 候选人提问</a>
 </nav>
 
+<div class="page-layout">
 <!-- ===== QUICK JUMP PANEL ===== -->
 <div class="quick-panel" id="quickPanel">
   <h4>
     Quick Jump
-    <button onclick="var p=document.getElementById('quickPanel');p.classList.add('collapsed');p.classList.remove('force-open')">&times;</button>
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
   </h4>
   <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
-  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
-  <a class="qp-link" href="#transition" onclick="jump('transition');return false;">🎙️ 过渡话术</a>
-  <a class="qp-link" href="#common-questions" onclick="jump('common-questions');return false;">💬 常见问题</a>
+  <a class="qp-link" href="#q-project" onclick="jump('q-project');return false;">🏢 关于项目</a>
+  <a class="qp-link" href="#q-role" onclick="jump('q-role');return false;">💻 关于岗位</a>
   <a class="qp-link" href="#closing" onclick="jump('closing');return false;">👋 结束话术</a>
-  <a class="qp-link" href="#scoring" onclick="jump('scoring');return false;">📝 Evaluation</a>
 </div>
-<button class="panel-toggle" onclick="var p=document.getElementById('quickPanel');p.classList.remove('collapsed');p.classList.add('force-open')">☰</button>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
 
 <!-- ===== MAIN ===== -->
 <div class="container">
@@ -245,174 +266,117 @@
 
 <div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
   <h4>🎤 引导候选人提问 / Invite Candidate Questions</h4>
-  <blockquote style="background: #fff7ed;">
+  <blockquote class="ask-en">
     "Great, that wraps up my questions. Do you have any questions for us?"
   </blockquote>
-  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
+  <blockquote class="ask-cn">
     "好的，我的问题已经问完了。你有什么问题想问我们吗？"
   </blockquote>
 </div>
 
-<!-- ==================== FLOW ==================== -->
-<h2 id="flow">⏱️ Flow</h2>
-<div class="card">
-  <table>
-    <thead><tr><th>#</th><th>Content</th><th>Time</th></tr></thead>
-    <tbody>
-      <tr><td>1</td><td>邀请候选人提问 / Invite candidate questions</td><td>~0.5 min</td></tr>
-      <tr><td>2</td><td>回答候选人问题 / Answer questions</td><td>~3.5 min</td></tr>
-      <tr><td>3</td><td>结束面试 / Wrap up</td><td>~1 min</td></tr>
-    </tbody>
-  </table>
-</div>
+<hr class="separator">
+
+<!-- ==================== Q: ABOUT OUR PROJECT ==================== -->
+<h2 id="q-project">🏢 "你们组是做什么的？" / "What does your team work on?"</h2>
+
+<details open>
+  <summary>🎤 回答要点 / Answer Hints</summary>
+  <div class="detail-body">
+
+    <h4>Step 1: 介绍 Fabric / Introduce Fabric</h4>
+    <blockquote class="ask-cn">
+      "我们属于 Microsoft Fabric。Fabric 是微软的一站式数据分析平台 (SaaS)，把数据工程、数据科学、实时分析、数据仓库和 BI 报表统一在一个平台上，底层共享一个叫 OneLake 的统一数据湖。"
+    </blockquote>
+    <blockquote class="ask-en">
+      "We are part of Microsoft Fabric. Fabric is Microsoft's unified SaaS analytics platform that brings together data engineering, data science, real-time analytics, data warehousing, and BI reporting on a single platform, with a shared data lake called OneLake underneath."
+    </blockquote>
+
+    <h4>Step 2: 介绍 Data Science & Data Engineering / Introduce DS & DE</h4>
+    <blockquote class="ask-cn">
+      "在 Fabric 下面，我们团队负责两个产品：Data Science 和 Data Engineering。"
+    </blockquote>
+    <blockquote class="ask-en">
+      "Under Fabric, our team owns two products: Data Science and Data Engineering."
+    </blockquote>
+
+    <div class="card">
+      <h4>📊 Data Science</h4>
+      <blockquote class="ask-cn">
+        "Data Science 是一个机器学习平台，让用户可以在 Fabric 里完成从数据探索、模型训练到部署上线的完整 ML 工作流。它集成了 MLflow 做实验追踪和模型注册，整体体验比较像 Databricks。"
+      </blockquote>
+      <blockquote class="ask-en">
+        "Data Science is a machine learning platform that lets users complete the full ML workflow inside Fabric — from data exploration and model training to deployment. It integrates MLflow for experiment tracking and model registry. The overall experience is similar to Databricks."
+      </blockquote>
+    </div>
+
+    <div class="card">
+      <h4>⚙️ Data Engineering</h4>
+      <blockquote class="ask-cn">
+        "Data Engineering 提供基于 Apache Spark 的大规模数据处理能力，核心体验是 Notebook（在线代码编辑器）和 Lakehouse（数据湖仓）。用户可以用 Python/PySpark/Scala 写数据转换和分析任务。"
+      </blockquote>
+      <blockquote class="ask-en">
+        "Data Engineering provides large-scale data processing powered by Apache Spark. The core experiences are Notebook (an online code editor) and Lakehouse (a lake-house data store). Users write data transformation and analysis jobs in Python / PySpark / Scala."
+      </blockquote>
+    </div>
+
+  </div>
+</details>
 
 <hr class="separator">
 
-<!-- ==================== TRANSITION ==================== -->
-<h2 id="transition">🎙️ 过渡话术 / Transition Script</h2>
+<!-- ==================== Q: ABOUT THE UX ROLE ==================== -->
+<h2 id="q-role">💻 "UX 岗位具体做什么？" / "What does the UX role actually do?"</h2>
 
-<div id="transition-en">
 <details open>
-  <summary>🇺🇸 English</summary>
+  <summary>🎤 回答要点 / Answer Hints</summary>
   <div class="detail-body">
-    <blockquote>
-      <p>"Great, that wraps up the technical portion. Now it's your turn — do you have any questions for me about the team, the role, or anything else?"</p>
+
+    <blockquote class="ask-cn">
+      "我们负责的是 Data Science 和 Data Engineering 这两个产品的前端界面开发。"
     </blockquote>
-  </div>
-</details>
-</div>
-
-<div id="transition-cn">
-<details open>
-  <summary>🇨🇳 中文版</summary>
-  <div class="detail-body">
-    <blockquote>
-      <p>"好的，技术部分就到这里了。现在轮到你了——你有什么想问我的吗？关于团队、职位或者其他任何方面都可以。"</p>
+    <blockquote class="ask-en">
+      "We own the frontend UI development for both the Data Science and Data Engineering products."
     </blockquote>
+
+    <div class="card">
+      <h4>📊 Data Science 前端</h4>
+      <blockquote class="ask-cn">
+        "Data Science 这边我们用的是 MLflow 开源项目，整个体验会比较像 Databricks——实验管理界面、模型注册表、运行对比等。"
+      </blockquote>
+      <blockquote class="ask-en">
+        "On the Data Science side, we build on the MLflow open-source project. The experience is similar to Databricks — experiment management UI, model registry, run comparison, etc."
+      </blockquote>
+    </div>
+
+    <div class="card">
+      <h4>⚙️ Data Engineering 前端</h4>
+      <blockquote class="ask-cn">
+        "Data Engineering 这边主要做的是 Python Notebook 在线编辑器，体验比较像 Google Colab——在浏览器里写代码、运行 Spark 任务、看输出结果。"
+      </blockquote>
+      <blockquote class="ask-en">
+        "On the Data Engineering side, the main thing we build is the Python Notebook online editor. The experience is similar to Google Colab — writing code in the browser, running Spark jobs, and viewing output."
+      </blockquote>
+    </div>
+
   </div>
 </details>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== COMMON QUESTIONS ==================== -->
-<h2 id="common-questions">💬 候选人常见问题及建议回答 / Common Questions &amp; Suggested Answers</h2>
-
-<div id="team">
-<details open>
-  <summary>🏢 关于团队 / About the Team</summary>
-  <div class="detail-body">
-    <table>
-      <thead><tr><th>Candidate Might Ask</th><th>Suggested Response Outline</th></tr></thead>
-      <tbody>
-        <tr><td>"How big is the team?"</td><td>(介绍团队规模、sub-team 结构)</td></tr>
-        <tr><td>"What does a typical day/sprint look like?"</td><td>(描述日常工作节奏、stand-up、sprint cadence)</td></tr>
-        <tr><td>"How is the team structured?"</td><td>(PM / Design / Dev 比例，跨组协作方式)</td></tr>
-        <tr><td>"What's the on-call situation?"</td><td>(on-call rotation 频率和负担)</td></tr>
-      </tbody>
-    </table>
-  </div>
-</details>
-</div>
-
-<div id="tech">
-<details open>
-  <summary>🛠️ 关于技术 / About Technology</summary>
-  <div class="detail-body">
-    <table>
-      <thead><tr><th>Candidate Might Ask</th><th>Suggested Response Outline</th></tr></thead>
-      <tbody>
-        <tr><td>"What tech stack do you use?"</td><td>(前端框架、后端语言、云服务、CI/CD)</td></tr>
-        <tr><td>"How do you handle code reviews?"</td><td>(PR 流程、review 标准、turnaround time)</td></tr>
-        <tr><td>"What's the testing strategy?"</td><td>(unit / integration / E2E 覆盖率目标)</td></tr>
-        <tr><td>"How do you handle tech debt?"</td><td>(tech debt sprint、20% time、prioritization)</td></tr>
-      </tbody>
-    </table>
-  </div>
-</details>
-</div>
-
-<div id="growth">
-<details open>
-  <summary>📈 关于成长 / About Growth</summary>
-  <div class="detail-body">
-    <table>
-      <thead><tr><th>Candidate Might Ask</th><th>Suggested Response Outline</th></tr></thead>
-      <tbody>
-        <tr><td>"What does career growth look like?"</td><td>(IC track vs manager track、晋升周期)</td></tr>
-        <tr><td>"How do you support learning &amp; development?"</td><td>(learning budget、conferences、内部培训)</td></tr>
-        <tr><td>"What's the biggest challenge the team is facing?"</td><td>(诚实回答当前挑战，展现团队透明度)</td></tr>
-      </tbody>
-    </table>
-  </div>
-</details>
-</div>
-
-<div class="card" style="margin-top:16px;">
-  <blockquote class="interviewer-note">
-    <strong>面试官注意 / Interviewer Note：</strong>候选人提问的质量也是一种信号。提出有深度、经过思考的问题（如关于技术栈的 trade-off、团队协作模式）是加分项。只问薪资福利不一定是减分项，但如果完全没有问题，可能说明对职位兴趣不高。<br><br>
-    <strong>Interviewer Note:</strong> The quality of a candidate's questions is also a signal. Thoughtful, well-considered questions (about tech trade-offs, team collaboration) are a plus. Only asking about comp/benefits isn't necessarily bad, but having no questions at all might indicate low interest.
-  </blockquote>
-</div>
 
 <hr class="separator">
 
 <!-- ==================== CLOSING ==================== -->
 <h2 id="closing">👋 结束话术 / Closing Script</h2>
 
-<div id="closing-en">
-<details open>
-  <summary>🇺🇸 English</summary>
-  <div class="detail-body">
-    <blockquote>
-      <p>"Thank you so much for your time today, [Candidate Name]. It was great speaking with you. We'll be in touch about next steps within [timeframe]. If you think of any other questions in the meantime, feel free to reach out to your recruiter."</p>
-    </blockquote>
-  </div>
-</details>
-</div>
-
-<div id="closing-cn">
-<details open>
-  <summary>🇨🇳 中文版</summary>
-  <div class="detail-body">
-    <blockquote>
-      <p>"非常感谢你今天的时间，[候选人姓名]。和你交流很愉快。我们会在 [时间范围] 内联系你告知下一步安排。如果你之后还有其他问题，随时可以联系你的招聘人员。"</p>
-    </blockquote>
-  </div>
-</details>
-</div>
-
-<hr class="separator">
-
-<!-- ==================== SCORING ==================== -->
-<h2 id="scoring">📝 Evaluation</h2>
-
 <div class="card">
-  <h4>Observation Checklist</h4>
-  <ul class="checklist">
-    <li>候选人提出了有深度的问题 / Candidate asked insightful questions</li>
-    <li>候选人表现出对职位的真诚兴趣 / Showed genuine interest in the role</li>
-    <li>候选人的问题反映了对团队和工作的思考 / Questions reflected thoughtfulness about team and work</li>
-    <li>候选人礼貌专业地结束了面试 / Ended the interview politely and professionally</li>
-  </ul>
+  <blockquote class="ask-en">
+    "Thank you so much for your time today, Jorge. Hope you have a great rest of your day!"
+  </blockquote>
+  <blockquote class="ask-cn">
+    "非常感谢你今天的时间，Jorge。祝你今天一切顺利！"
+  </blockquote>
 </div>
-
-<div class="card">
-  <h4>Scoring</h4>
-  <table>
-    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td>Quality of Questions</td><td></td><td></td></tr>
-      <tr><td>Interest Level</td><td></td><td></td></tr>
-      <tr><td>Cultural Fit Signals</td><td></td><td></td></tr>
-      <tr><td>Overall Professionalism</td><td></td><td></td></tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="note-area">面试官在此记录候选人提问环节的表现 / Interviewer notes on candidate Q&amp;A…</div>
 
 </div><!-- end container -->
+</div><!-- end page-layout -->
 
 <button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
 
