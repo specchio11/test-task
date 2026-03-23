@@ -56,20 +56,52 @@
   
   
 
-  /* ===== QUICK PANEL ===== */
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+  /* ===== QUICK JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 16px; top: 64px; z-index: 90;
+    width: 220px; max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    padding: 14px;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .quick-panel.collapsed { transform: translateX(260px); opacity: 0; pointer-events: none; }
+  .quick-panel.force-open { transform: none !important; opacity: 1 !important; pointer-events: auto !important; display: block !important; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #ea580c; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 89;
+    background: #ea580c; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .quick-panel { transform: translateX(260px); opacity: 0; pointer-events: none; }
+    .panel-toggle { display: block !important; }
+    .quick-panel.force-open ~ .panel-toggle { display: none !important; }
+  }
 
   /* ===== MAIN ===== */
   .container {
@@ -166,7 +198,6 @@
     margin: 16px 0;
     min-height: 60px;
     color: #94a3b8;
-    font-style: italic;
     font-size: 18px;
   }
 
@@ -185,18 +216,42 @@
 
 <!-- ===== TOP NAV ===== -->
 <nav class="navbar">
-  <a href="../index.html" class="nav-btn" style="background:#0f172a;color:#f1f5f9;border-color:#334155;text-decoration:none;margin-right:8px;">← Overview</a>
-  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="border-color:#0284c7;color:#0284c7;text-decoration:none;">① 自我介绍</a>
-  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="border-color:#7c3aed;color:#7c3aed;text-decoration:none;">② 技术问答</a>
-  <a href="../codingTest/interview-guide.html" class="nav-btn" style="border-color:#059669;color:#059669;text-decoration:none;">③ Coding</a>
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="background:#7c3aed;color:#fff;border-color:#7c3aed;text-decoration:none;opacity:0.7;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
   <a class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;font-weight:700;">④ 候选人提问</a>
 </nav>
 
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="var p=document.getElementById('quickPanel');p.classList.add('collapsed');p.classList.remove('force-open')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
+  <a class="qp-link" href="#transition" onclick="jump('transition');return false;">🎙️ 过渡话术</a>
+  <a class="qp-link" href="#common-questions" onclick="jump('common-questions');return false;">💬 常见问题</a>
+  <a class="qp-link" href="#closing" onclick="jump('closing');return false;">👋 结束话术</a>
+  <a class="qp-link" href="#scoring" onclick="jump('scoring');return false;">📝 Evaluation</a>
+</div>
+<button class="panel-toggle" onclick="var p=document.getElementById('quickPanel');p.classList.remove('collapsed');p.classList.add('force-open')">☰</button>
 
 <!-- ===== MAIN ===== -->
 <div class="container">
 
 <h1>❓ 候选人提问 / Candidate Q&amp;A <span class="tag tag-time">~5 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导候选人提问 / Invite Candidate Questions</h4>
+  <blockquote style="background: #fff7ed;">
+    "Great, that wraps up my questions. Do you have any questions for us?"
+  </blockquote>
+  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
+    "好的，我的问题已经问完了。你有什么问题想问我们吗？"
+  </blockquote>
+</div>
 
 <!-- ==================== FLOW ==================== -->
 <h2 id="flow">⏱️ Flow</h2>
@@ -221,7 +276,7 @@
   <summary>🇺🇸 English</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"Great, that wraps up the technical portion. Now it's your turn — do you have any questions for me about the team, the role, or anything else?"</em></p>
+      <p>"Great, that wraps up the technical portion. Now it's your turn — do you have any questions for me about the team, the role, or anything else?"</p>
     </blockquote>
   </div>
 </details>
@@ -232,7 +287,7 @@
   <summary>🇨🇳 中文版</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"好的，技术部分就到这里了。现在轮到你了——你有什么想问我的吗？关于团队、职位或者其他任何方面都可以。"</em></p>
+      <p>"好的，技术部分就到这里了。现在轮到你了——你有什么想问我的吗？关于团队、职位或者其他任何方面都可以。"</p>
     </blockquote>
   </div>
 </details>
@@ -244,16 +299,16 @@
 <h2 id="common-questions">💬 候选人常见问题及建议回答 / Common Questions &amp; Suggested Answers</h2>
 
 <div id="team">
-<details>
+<details open>
   <summary>🏢 关于团队 / About the Team</summary>
   <div class="detail-body">
     <table>
       <thead><tr><th>Candidate Might Ask</th><th>Suggested Response Outline</th></tr></thead>
       <tbody>
-        <tr><td>"How big is the team?"</td><td><em>(介绍团队规模、sub-team 结构)</em></td></tr>
-        <tr><td>"What does a typical day/sprint look like?"</td><td><em>(描述日常工作节奏、stand-up、sprint cadence)</em></td></tr>
-        <tr><td>"How is the team structured?"</td><td><em>(PM / Design / Dev 比例，跨组协作方式)</em></td></tr>
-        <tr><td>"What's the on-call situation?"</td><td><em>(on-call rotation 频率和负担)</em></td></tr>
+        <tr><td>"How big is the team?"</td><td>(介绍团队规模、sub-team 结构)</td></tr>
+        <tr><td>"What does a typical day/sprint look like?"</td><td>(描述日常工作节奏、stand-up、sprint cadence)</td></tr>
+        <tr><td>"How is the team structured?"</td><td>(PM / Design / Dev 比例，跨组协作方式)</td></tr>
+        <tr><td>"What's the on-call situation?"</td><td>(on-call rotation 频率和负担)</td></tr>
       </tbody>
     </table>
   </div>
@@ -261,16 +316,16 @@
 </div>
 
 <div id="tech">
-<details>
+<details open>
   <summary>🛠️ 关于技术 / About Technology</summary>
   <div class="detail-body">
     <table>
       <thead><tr><th>Candidate Might Ask</th><th>Suggested Response Outline</th></tr></thead>
       <tbody>
-        <tr><td>"What tech stack do you use?"</td><td><em>(前端框架、后端语言、云服务、CI/CD)</em></td></tr>
-        <tr><td>"How do you handle code reviews?"</td><td><em>(PR 流程、review 标准、turnaround time)</em></td></tr>
-        <tr><td>"What's the testing strategy?"</td><td><em>(unit / integration / E2E 覆盖率目标)</em></td></tr>
-        <tr><td>"How do you handle tech debt?"</td><td><em>(tech debt sprint、20% time、prioritization)</em></td></tr>
+        <tr><td>"What tech stack do you use?"</td><td>(前端框架、后端语言、云服务、CI/CD)</td></tr>
+        <tr><td>"How do you handle code reviews?"</td><td>(PR 流程、review 标准、turnaround time)</td></tr>
+        <tr><td>"What's the testing strategy?"</td><td>(unit / integration / E2E 覆盖率目标)</td></tr>
+        <tr><td>"How do you handle tech debt?"</td><td>(tech debt sprint、20% time、prioritization)</td></tr>
       </tbody>
     </table>
   </div>
@@ -278,15 +333,15 @@
 </div>
 
 <div id="growth">
-<details>
+<details open>
   <summary>📈 关于成长 / About Growth</summary>
   <div class="detail-body">
     <table>
       <thead><tr><th>Candidate Might Ask</th><th>Suggested Response Outline</th></tr></thead>
       <tbody>
-        <tr><td>"What does career growth look like?"</td><td><em>(IC track vs manager track、晋升周期)</em></td></tr>
-        <tr><td>"How do you support learning &amp; development?"</td><td><em>(learning budget、conferences、内部培训)</em></td></tr>
-        <tr><td>"What's the biggest challenge the team is facing?"</td><td><em>(诚实回答当前挑战，展现团队透明度)</em></td></tr>
+        <tr><td>"What does career growth look like?"</td><td>(IC track vs manager track、晋升周期)</td></tr>
+        <tr><td>"How do you support learning &amp; development?"</td><td>(learning budget、conferences、内部培训)</td></tr>
+        <tr><td>"What's the biggest challenge the team is facing?"</td><td>(诚实回答当前挑战，展现团队透明度)</td></tr>
       </tbody>
     </table>
   </div>
@@ -310,7 +365,7 @@
   <summary>🇺🇸 English</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"Thank you so much for your time today, [Candidate Name]. It was great speaking with you. We'll be in touch about next steps within [timeframe]. If you think of any other questions in the meantime, feel free to reach out to your recruiter."</em></p>
+      <p>"Thank you so much for your time today, [Candidate Name]. It was great speaking with you. We'll be in touch about next steps within [timeframe]. If you think of any other questions in the meantime, feel free to reach out to your recruiter."</p>
     </blockquote>
   </div>
 </details>
@@ -321,7 +376,7 @@
   <summary>🇨🇳 中文版</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"非常感谢你今天的时间，[候选人姓名]。和你交流很愉快。我们会在 [时间范围] 内联系你告知下一步安排。如果你之后还有其他问题，随时可以联系你的招聘人员。"</em></p>
+      <p>"非常感谢你今天的时间，[候选人姓名]。和你交流很愉快。我们会在 [时间范围] 内联系你告知下一步安排。如果你之后还有其他问题，随时可以联系你的招聘人员。"</p>
     </blockquote>
   </div>
 </details>

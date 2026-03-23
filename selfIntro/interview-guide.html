@@ -56,20 +56,70 @@
   
   
 
-  /* ===== QUICK PANEL ===== */
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+  /* ===== QUICK JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 16px; top: 64px; z-index: 90;
+    width: 220px; max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    padding: 14px;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .quick-panel.collapsed { transform: translateX(260px); opacity: 0; pointer-events: none; }
+  .quick-panel.force-open { transform: none !important; opacity: 1 !important; pointer-events: auto !important; display: block !important; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #0284c7; }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+    border-left: 2px solid #0284c7;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 89;
+    background: #0284c7; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .quick-panel { transform: translateX(260px); opacity: 0; pointer-events: none; }
+    .panel-toggle { display: block !important; }
+    .quick-panel.force-open ~ .panel-toggle { display: none !important; }
+  }
 
   /* ===== MAIN ===== */
   .container {
@@ -166,7 +216,6 @@
     margin: 16px 0;
     min-height: 60px;
     color: #94a3b8;
-    font-style: italic;
     font-size: 18px;
   }
 
@@ -185,18 +234,55 @@
 
 <!-- ===== TOP NAV ===== -->
 <nav class="navbar">
-  <a href="../index.html" class="nav-btn" style="background:#0f172a;color:#f1f5f9;border-color:#334155;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
   <a class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;font-weight:700;">① 自我介绍</a>
-  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="border-color:#7c3aed;color:#7c3aed;text-decoration:none;">② 技术问答</a>
-  <a href="../codingTest/interview-guide.html" class="nav-btn" style="border-color:#059669;color:#059669;text-decoration:none;">③ Coding</a>
-  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="border-color:#ea580c;color:#ea580c;text-decoration:none;">④ 候选人提问</a>
+  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="background:#7c3aed;color:#fff;border-color:#7c3aed;text-decoration:none;opacity:0.7;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ 候选人提问</a>
 </nav>
 
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="var p=document.getElementById('quickPanel');p.classList.add('collapsed');p.classList.remove('force-open')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
+  <a class="qp-link" href="#candidate-profile" onclick="jump('candidate-profile');return false;">📄 候选人档案</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title">💡 Hints</div>
+    <a class="qp-sub" href="#hint-brief" onclick="jump('hint-brief');return false;">😶 太简短</a>
+    <a class="qp-sub" href="#hint-verbose" onclick="jump('hint-verbose');return false;">🗣️ 太冗长</a>
+    <a class="qp-sub" href="#hint-nervous" onclick="jump('hint-nervous');return false;">😰 很紧张</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">🎙️ 开场白</div>
+    <a class="qp-sub" href="#opening-en" onclick="jump('opening-en');return false;">English</a>
+    <a class="qp-sub" href="#opening-cn" onclick="jump('opening-cn');return false;">中文版</a>
+  </div>
+
+  <a class="qp-link" href="#candidate-intro" onclick="jump('candidate-intro');return false;">👤 候选人介绍</a>
+  <a class="qp-link" href="#scoring" onclick="jump('scoring');return false;">📝 Scoring</a>
+</div>
+<button class="panel-toggle" onclick="var p=document.getElementById('quickPanel');p.classList.remove('collapsed');p.classList.add('force-open')">☰</button>
 
 <!-- ===== MAIN ===== -->
 <div class="container">
 
 <h1>🙋 自我介绍 / Self Introduction <span class="tag tag-time">~5 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导候选人自我介绍 / Ask for Self-Introduction</h4>
+  <blockquote style="background: #f0f9ff;">
+    "Alright, let's get started. Could you give me a brief introduction about yourself — maybe 1 to 2 minutes?"
+  </blockquote>
+  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
+    "好的，那我们开始吧。能请你做一个简短的自我介绍吗？大概 1 到 2 分钟就好。"
+  </blockquote>
+</div>
 
 <!-- ==================== FLOW ==================== -->
 <h2 id="flow">⏱️ Flow</h2>
@@ -243,7 +329,7 @@
     <div class="card">
       <h4>🎯 面试官应关注 / What to Listen For</h4>
       <ul class="checklist">
-        <li>是否提到 <strong>领导经验</strong>：曾任 Vosbor <em>Head of Frontend</em>，The Workshop <em>Tech Lead</em> — Leadership experience</li>
+        <li>是否提到 <strong>领导经验</strong>：曾任 Vosbor Head of Frontend，The Workshop Tech Lead — Leadership experience</li>
         <li>是否展示 <strong>架构思维</strong>：大规模 Vue→React 迁移、design system 搭建 — Architectural thinking</li>
         <li>是否体现 <strong>全栈能力</strong>：Next.js SSR + Bun.js + PostgreSQL — Fullstack capability</li>
         <li>是否表达 <strong>社区贡献</strong>：MDN contributor, 开源项目, 演讲, mentor — Community involvement</li>
@@ -270,11 +356,11 @@
 <h2 id="hints">💡 Hints &amp; Pivots</h2>
 
 <div id="hint-brief">
-<details>
+<details open>
   <summary>😶 候选人太简短 / Candidate is too brief</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"Could you tell me more about your most recent project?"</em></p>
+      <p>"Could you tell me more about your most recent project?"</p>
     </blockquote>
     <blockquote class="interviewer-note">
       <strong>⚠️ 面试官注意：</strong>有些候选人因紧张而言简意赅。用开放式问题引导，不要直接评判。
@@ -284,11 +370,11 @@
 </div>
 
 <div id="hint-verbose">
-<details>
+<details open>
   <summary>🗣️ 候选人太冗长 / Candidate is too verbose</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"That's great context, thank you. Let's dive into some technical questions."</em></p>
+      <p>"That's great context, thank you. Let's dive into some technical questions."</p>
     </blockquote>
     <blockquote class="interviewer-note">
       <strong>⚠️ 面试官注意：</strong>礼貌地打断，确保不超过 5 分钟。候选人可能对职位很兴奋——这不是坏事，只是需要引导。
@@ -298,11 +384,11 @@
 </div>
 
 <div id="hint-nervous">
-<details>
+<details open>
   <summary>😰 候选人很紧张 / Candidate seems nervous</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"No worries, take your time. This is a pretty casual conversation — I just want to learn more about your experience."</em></p>
+      <p>"No worries, take your time. This is a pretty casual conversation — I just want to learn more about your experience."</p>
     </blockquote>
     <blockquote class="interviewer-note">
       <strong>⚠️ 面试官注意：</strong>给予额外耐心。如果候选人英语不是母语，语言障碍不应影响技术评分。面带微笑（如果视频），让候选人放松。
@@ -328,8 +414,8 @@
   <summary>English Version</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"Hi [Candidate Name], thanks for taking the time to speak with us today. My name is [Your Name], I'm a [Your Title] on the [Team Name] team at Microsoft. We're working on [brief description of what the team does]."</em></p>
-      <p><em>"This will be a 30-minute phone screen. We'll start with introductions, then I'll ask a few technical questions based on your resume, followed by a short coding exercise, and finally you'll have a chance to ask me any questions. Sound good?"</em></p>
+      <p>"Hi [Candidate Name], thanks for taking the time to speak with us today. My name is [Your Name], I'm a [Your Title] on the [Team Name] team at Microsoft. We're working on [brief description of what the team does]."</p>
+      <p>"This will be a 30-minute phone screen. We'll start with introductions, then I'll ask a few technical questions based on your resume, followed by a short coding exercise, and finally you'll have a chance to ask me any questions. Sound good?"</p>
     </blockquote>
   </div>
 </details>
@@ -340,8 +426,8 @@
   <summary>中文版</summary>
   <div class="detail-body">
     <blockquote>
-      <p><em>"你好 [候选人姓名]，感谢你今天抽时间和我们交流。我是 [你的名字]，在 Microsoft [团队名称] 团队担任 [你的职位]。我们团队主要负责 [团队工作简述]。"</em></p>
-      <p><em>"今天的电话面试大约 30 分钟。我们先互相介绍一下，然后我会根据你的简历问几个技术问题，接着是一道编程题，最后你可以问我任何问题。可以吗？"</em></p>
+      <p>"你好 [候选人姓名]，感谢你今天抽时间和我们交流。我是 [你的名字]，在 Microsoft [团队名称] 团队担任 [你的职位]。我们团队主要负责 [团队工作简述]。"</p>
+      <p>"今天的电话面试大约 30 分钟。我们先互相介绍一下，然后我会根据你的简历问几个技术问题，接着是一道编程题，最后你可以问我任何问题。可以吗？"</p>
     </blockquote>
   </div>
 </details>
@@ -355,7 +441,7 @@
 <div class="card">
   <h4>ASK:</h4>
   <blockquote>
-    <p><em>"Great, could you give me a quick 1-2 minute introduction about yourself — your background, what you've been working on recently, and what interests you about this role?"</em></p>
+    <p>"Great, could you give me a quick 1-2 minute introduction about yourself — your background, what you've been working on recently, and what interests you about this role?"</p>
   </blockquote>
 </div>
 

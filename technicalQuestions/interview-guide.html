@@ -57,22 +57,52 @@
   
   
 
-  /* ===== QUICK PANEL ===== */
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+  /* ===== QUICK JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 16px; top: 64px; z-index: 90;
+    width: 220px; max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    padding: 14px;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .quick-panel.collapsed { transform: translateX(260px); opacity: 0; pointer-events: none; }
+  .quick-panel.force-open { transform: none !important; opacity: 1 !important; pointer-events: auto !important; display: block !important; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #7c3aed; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 89;
+    background: #7c3aed; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .quick-panel { transform: translateX(260px); opacity: 0; pointer-events: none; }
+    .panel-toggle { display: block !important; }
+    .quick-panel.force-open ~ .panel-toggle { display: none !important; }
+  }
 
   /* ===== MAIN ===== */
   .container {
@@ -181,7 +211,6 @@
     margin: 16px 0;
     min-height: 60px;
     color: #94a3b8;
-    font-style: italic;
     font-size: 18px;
   }
 
@@ -200,18 +229,44 @@
 
 <!-- ===== TOP NAV ===== -->
 <nav class="navbar">
-  <a href="../index.html" class="nav-btn" style="background:#0f172a;color:#f1f5f9;border-color:#334155;text-decoration:none;margin-right:8px;">← Overview</a>
-  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="border-color:#0284c7;color:#0284c7;text-decoration:none;">① 自我介绍</a>
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
   <a class="nav-btn" style="background:#7c3aed;color:#fff;border-color:#7c3aed;text-decoration:none;font-weight:700;">② 技术问答</a>
-  <a href="../codingTest/interview-guide.html" class="nav-btn" style="border-color:#059669;color:#059669;text-decoration:none;">③ Coding</a>
-  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="border-color:#ea580c;color:#ea580c;text-decoration:none;">④ 候选人提问</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ 候选人提问</a>
 </nav>
 
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="var p=document.getElementById('quickPanel');p.classList.add('collapsed');p.classList.remove('force-open')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
+  <a class="qp-link" href="#templates" onclick="jump('templates');return false;">📋 问题模板</a>
+  <a class="qp-link" href="#stuck" onclick="jump('stuck');return false;">🚨 卡壳应对</a>
+  <a class="qp-link" href="#deep-dive" onclick="jump('deep-dive');return false;">🔍 技术深挖</a>
+  <a class="qp-link" href="#tips" onclick="jump('tips');return false;">💡 Tips</a>
+  <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
+  <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
+</div>
+<button class="panel-toggle" onclick="var p=document.getElementById('quickPanel');p.classList.remove('collapsed');p.classList.add('force-open')">☰</button>
 
 <!-- ===== MAIN ===== -->
 <div class="container">
 
 <h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~10 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入技术问答 / Introduce Technical Q&A</h4>
+  <blockquote style="background: #f5f3ff;">
+    "Great, thanks for sharing that. Now I'd like to ask you a few questions based on your resume — just to learn more about some of the projects and technologies you've worked with."
+  </blockquote>
+  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
+    "很好，谢谢你的分享。接下来我想根据你的简历问几个问题——主要是想多了解一下你做过的一些项目和用过的技术。"
+  </blockquote>
+</div>
 
 <!-- ==================== FLOW ==================== -->
 <h2 id="flow">⏱️ Flow</h2>
@@ -237,15 +292,15 @@
   <div class="detail-body">
     <h4>ASK:</h4>
     <blockquote>
-      <p><em>"I see you worked on [Project X] at [Company]. Can you walk me through the architecture and your specific contributions?"</em></p>
+      <p>"I see you worked on [Project X] at [Company]. Can you walk me through the architecture and your specific contributions?"</p>
     </blockquote>
 
     <h4>Follow-up questions:</h4>
     <ul>
-      <li><em>"What was the most challenging technical problem you faced on this project?"</em></li>
-      <li><em>"How did you handle [specific technology/pattern mentioned in resume]?"</em></li>
-      <li><em>"What would you do differently if you were to rebuild it from scratch?"</em></li>
-      <li><em>"How did you measure the success of this project?"</em></li>
+      <li>"What was the most challenging technical problem you faced on this project?"</li>
+      <li>"How did you handle [specific technology/pattern mentioned in resume]?"</li>
+      <li>"What would you do differently if you were to rebuild it from scratch?"</li>
+      <li>"How did you measure the success of this project?"</li>
     </ul>
   </div>
 </details>
@@ -257,42 +312,42 @@
 <h2 id="stuck">🚨 卡壳应对 / If Candidate Gets Stuck</h2>
 
 <div id="stuck-vague">
-<details>
+<details open>
   <summary>😶 回答太泛，缺乏细节 / Answer too vague, lacks detail</summary>
   <div class="detail-body">
     <table>
       <tr><th>提示等级</th><th>Script</th></tr>
-      <tr><td><span class="hint-chip hint-light">Light</span></td><td><em>"Can you be more specific? For example, what APIs or libraries did you use?"</em></td></tr>
-      <tr><td><span class="hint-chip hint-medium">Medium</span></td><td><em>"Walk me through a specific technical decision you made — what options did you consider?"</em></td></tr>
+      <tr><td><span class="hint-chip hint-light">Light</span></td><td>"Can you be more specific? For example, what APIs or libraries did you use?"</td></tr>
+      <tr><td><span class="hint-chip hint-medium">Medium</span></td><td>"Walk me through a specific technical decision you made — what options did you consider?"</td></tr>
     </table>
   </div>
 </details>
 </div>
 
 <div id="stuck-team">
-<details>
+<details open>
   <summary>👥 只谈团队成果，不谈个人 / Only talks about team, not self</summary>
   <div class="detail-body">
     <blockquote>
-      <em>"That sounds like a great team effort. What was YOUR specific contribution?"</em>
+      "That sounds like a great team effort. What was YOUR specific contribution?"
     </blockquote>
   </div>
 </details>
 </div>
 
 <div id="stuck-nervous">
-<details>
+<details open>
   <summary>😰 紧张不自信 / Nervous, not confident</summary>
   <div class="detail-body">
     <blockquote>
-      <em>"Take your time. There's no wrong answer — I just want to understand how you think about these problems."</em>
+      "Take your time. There's no wrong answer — I just want to understand how you think about these problems."
     </blockquote>
   </div>
 </details>
 </div>
 
 <div id="stuck-resume">
-<details>
+<details open>
   <summary>🚩 简历上写的但答不上来 / Can't explain something on their resume</summary>
   <div class="detail-body">
     <blockquote class="interviewer-note">
@@ -310,7 +365,7 @@
 <p style="color:var(--text-muted);font-size:18px;">Based on the candidate's resume, pick the most relevant area and go deep:</p>
 
 <div id="frontend">
-<details>
+<details open>
   <summary>🖥️ Frontend (if applicable)</summary>
   <div class="detail-body">
     <ul>
@@ -321,17 +376,17 @@
     </ul>
     <h4>Sample deep-dive questions:</h4>
     <blockquote>
-      <em>"You mention using React — can you explain how you structured state management? When would you choose Context API over Redux?"</em>
+      "You mention using React — can you explain how you structured state management? When would you choose Context API over Redux?"
     </blockquote>
     <blockquote>
-      <em>"Tell me about a performance issue you identified and resolved in a frontend app."</em>
+      "Tell me about a performance issue you identified and resolved in a frontend app."
     </blockquote>
   </div>
 </details>
 </div>
 
 <div id="backend">
-<details>
+<details open>
   <summary>⚙️ Backend (if applicable)</summary>
   <div class="detail-body">
     <ul>
@@ -342,17 +397,17 @@
     </ul>
     <h4>Sample deep-dive questions:</h4>
     <blockquote>
-      <em>"How did you handle database performance at scale? What indexing strategies did you use?"</em>
+      "How did you handle database performance at scale? What indexing strategies did you use?"
     </blockquote>
     <blockquote>
-      <em>"Walk me through how you designed the API for [project]. Why did you choose REST/GraphQL?"</em>
+      "Walk me through how you designed the API for [project]. Why did you choose REST/GraphQL?"
     </blockquote>
   </div>
 </details>
 </div>
 
 <div id="general">
-<details>
+<details open>
   <summary>🔧 General Engineering</summary>
   <div class="detail-body">
     <ul>
@@ -363,10 +418,10 @@
     </ul>
     <h4>Sample deep-dive questions:</h4>
     <blockquote>
-      <em>"What's your testing philosophy? How do you decide what to test and at what level?"</em>
+      "What's your testing philosophy? How do you decide what to test and at what level?"
     </blockquote>
     <blockquote>
-      <em>"How do you balance shipping features quickly versus paying down tech debt?"</em>
+      "How do you balance shipping features quickly versus paying down tech debt?"
     </blockquote>
   </div>
 </details>

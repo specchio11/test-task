@@ -55,6 +55,72 @@
   
   
 
+
+  /* ===== QUICK JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 16px; top: 64px; z-index: 90;
+    width: 280px; max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    padding: 14px;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .quick-panel.collapsed { transform: translateX(320px); opacity: 0; pointer-events: none; }
+  .quick-panel.force-open { transform: none !important; opacity: 1 !important; pointer-events: auto !important; display: block !important; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #059669; }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.red { border-left: 2px solid var(--red); }
+  .qp-sub.purple { border-left: 2px solid #6c5ce7; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 89;
+    background: #059669; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .quick-panel { transform: translateX(320px); opacity: 0; pointer-events: none; }
+    .panel-toggle { display: block !important; }
+    .quick-panel.force-open ~ .panel-toggle { display: none !important; }
+  }
+
   /* ===== MAIN CONTENT ===== */
   .container {
     max-width: 820px;
@@ -116,6 +182,7 @@
     color: var(--text);
     list-style: none;
     display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
   }
   details > summary::before {
     content: '▸'; display: inline-block; transition: transform .2s;
@@ -212,7 +279,7 @@
 
   .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
 
-  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; white-space: nowrap; flex-shrink: 0; }
   .tag-time { background: #e8f0fe; color: #0550ae; }
   .tag-diff-1 { background: #d4edda; color: #155724; }
   .tag-diff-2 { background: #fff3cd; color: #7a5800; }
@@ -224,18 +291,61 @@
 
 <!-- ===== TOP NAV ===== -->
 <nav class="navbar">
-  <a href="../index.html" class="nav-btn" style="background:#0f172a;color:#f1f5f9;border-color:#334155;text-decoration:none;margin-right:8px;">← Overview</a>
-  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="border-color:#0284c7;color:#0284c7;text-decoration:none;">① 自我介绍</a>
-  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="border-color:#7c3aed;color:#7c3aed;text-decoration:none;">② 技术问答</a>
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="background:#7c3aed;color:#fff;border-color:#7c3aed;text-decoration:none;opacity:0.7;">② 技术问答</a>
   <a class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;font-weight:700;">③ Coding</a>
-  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="border-color:#ea580c;color:#ea580c;text-decoration:none;">④ 候选人提问</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ 候选人提问</a>
 </nav>
 
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="var p=document.getElementById('quickPanel');p.classList.add('collapsed');p.classList.remove('force-open')">&times;</button>
+  </h4>
+
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#problem" onclick="jump('problem');return false;">📋 题面</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title">🚨 卡壳提示</div>
+    <a class="qp-sub red" href="#stuck0" onclick="jump('stuck0');return false;">0 — 不理解数学概念</a>
+    <a class="qp-sub red" href="#stuck1" onclick="jump('stuck1');return false;">1 — 完全没思路</a>
+    <a class="qp-sub red" href="#stuck2" onclick="jump('stuck2');return false;">2 — 不知道上界</a>
+    <a class="qp-sub red" href="#stuck3" onclick="jump('stuck3');return false;">3 — 倍增→更直接？</a>
+    <a class="qp-sub red" href="#stuck4" onclick="jump('stuck4');return false;">4 — high=y→更高效？</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">💬 拓展追问</div>
+    <a class="qp-sub purple" href="#followup1" onclick="jump('followup1');return false;">1 — 答案不存在 ⭐</a>
+    <a class="qp-sub purple" href="#followup2" onclick="jump('followup2');return false;">2 — 多次调用优化 ⭐⭐</a>
+    <a class="qp-sub purple" href="#followup3" onclick="jump('followup3');return false;">3 — 非递减左边界 ⭐⭐⭐</a>
+    <a class="qp-sub purple" href="#followup4" onclick="jump('followup4');return false;">4 — 并行异步 ⭐⭐⭐⭐</a>
+  </div>
+
+  <a class="qp-link" href="#checkpoints" onclick="jump('checkpoints');return false;">🔍 考察节点</a>
+  <a class="qp-link" href="#solution" onclick="jump('solution');return false;">💡 标准答案</a>
+  <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
+  <a class="qp-link" href="#flowchart" onclick="jump('flowchart');return false;">🗺️ 流程图</a>
+</div>
+<button class="panel-toggle" onclick="var p=document.getElementById('quickPanel');p.classList.remove('collapsed');p.classList.add('force-open')">☰</button>
 
 <!-- ===== MAIN ===== -->
 <div class="container">
 
 <h1>🎯 前端 SDE2 电话面试算法题：实现反函数</h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入编程测试 / Introduce Coding Exercise</h4>
+  <blockquote style="background: #ecfdf5;">
+    "Alright, let's move on to a short coding exercise. I'll describe a problem, and we can work through it together."
+  </blockquote>
+  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
+    "好的，接下来我们做一道编程题。我会描述一个问题，我们可以一起讨论。"
+  </blockquote>
+</div>
 
 <!-- ==================== PROBLEM ==================== -->
 <h2 id="problem">📋 题面 / Problem Statement</h2>
@@ -265,8 +375,8 @@
   <p style="color:var(--green);font-weight:600;margin-bottom:8px;">🗣️ 推荐面试时直接用这个版本念给候选人</p>
   <h4>English:</h4>
   <blockquote>
-    "Alright, here's the problem. Imagine you have a function <code>f</code> — you can call it with any non-negative integer, and it gives you back a non-negative integer. You can't look inside it, it's a black box. The one thing you <em>do</em> know is that it's strictly increasing — so if you feed it a bigger number, you always get a bigger result. No ties, no going backwards.<br><br>
-    Now, what I need you to do is write the <em>reverse</em> of that function. I'll give you some output value <code>y</code>, and you need to figure out: what input <code>x</code> did it come from? In other words, find <code>x</code> such that <code>f(x) = y</code>.<br><br>
+    "Alright, here's the problem. Imagine you have a function <code>f</code> — you can call it with any non-negative integer, and it gives you back a non-negative integer. You can't look inside it, it's a black box. The one thing you do know is that it's strictly increasing — so if you feed it a bigger number, you always get a bigger result. No ties, no going backwards.<br><br>
+    Now, what I need you to do is write the reverse of that function. I'll give you some output value <code>y</code>, and you need to figure out: what input <code>x</code> did it come from? In other words, find <code>x</code> such that <code>f(x) = y</code>.<br><br>
     You can assume there's always a valid answer — I won't give you a <code>y</code> that doesn't match any <code>x</code>. Sound good? Go ahead."
   </blockquote>
   <h4>中文:</h4>
@@ -305,14 +415,22 @@
   </blockquote>
 </div>
 
-<hr class="separator">
+<div id="after-problem" class="card" style="border-left: 4px solid #059669; margin-top: 16px;">
+  <h4 style="color: #059669;">💬 读完题后的衔接语 / After reading the problem</h4>
+  <blockquote style="background: #ecfdf5;">
+    "Take your time. Feel free to walk me through your thinking as you go, and if anything's unclear, don't hesitate to ask."
+  </blockquote>
+  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
+    "不着急，可以慢慢想。请随时把你的思路说出来，有不清楚的地方尽管问我。"
+  </blockquote>
+</div>
 
-<!-- ==================== STICKING POINTS ==================== -->
+<hr class="separator">
 <h2 id="sticking-points">🚨 候选人卡壳情况及提示策略 / Sticking Points &amp; Hints</h2>
 
 <!-- Stuck 0 -->
 <div id="stuck0">
-<details>
+<details open>
   <summary>🤔 卡壳 0：不理解题目中的数学概念 / Stuck 0: Doesn't understand the math concepts</summary>
   <div class="detail-body">
     <p><strong>表现 / Symptom：</strong>候选人对"单调递增"或"反函数"的概念感到困惑，无法理解题意。</p>
@@ -338,15 +456,16 @@
 
 <!-- Stuck 1 -->
 <div id="stuck1">
-<details>
+<details open>
   <summary>😶 卡壳 1：完全没思路 / Stuck 1: No idea what algorithm to use</summary>
   <div class="detail-body">
     <p><strong>表现 / Symptom：</strong>沉默，或者直接写暴力遍历。/ Silent, or jumps straight to brute-force linear scan.</p>
     <table>
       <tr><th>提示等级</th><th>English</th><th>中文</th></tr>
       <tr><td><span class="hint-chip hint-light">Light</span> Hint 1</td><td>"What property of <code>f</code> makes this problem easier than searching in an unsorted collection?"</td><td>"<code>f</code> 的什么性质让这个问题比在无序集合里搜索更简单？"</td></tr>
-      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 2</td><td>"If I told you x is somewhere between 0 and 1000, how would you find it efficiently?"</td><td>"如果我告诉你 x 在 0 到 1000 之间，你会怎么高效地找到它？"</td></tr>
-      <tr><td><span class="hint-chip hint-heavy">Heavy</span> Hint 3</td><td>"Think about binary search. The function is monotonically increasing — what does that remind you of?"</td><td>"想想二分查找。这个函数是单调递增的——这让你联想到什么？"</td></tr>
+      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 2</td><td>"This is less of a math problem and more of a classic algorithm problem — actually a very common pattern on LeetCode. You may have seen something like this before."</td><td>"与其说这是一个数学问题，不如说这就是一道很经典的算法题——在 LeetCode 上也非常常见，也许你之前见过类似的。"</td></tr>
+      <tr><td><span class="hint-chip hint-medium">Medium</span> Hint 3</td><td>"If I told you x is somewhere between 0 and 1000, how would you find it efficiently?"</td><td>"如果我告诉你 x 在 0 到 1000 之间，你会怎么高效地找到它？"</td></tr>
+      <tr><td><span class="hint-chip hint-heavy">Heavy</span> Hint 4</td><td>"Think about binary search. The function is monotonically increasing — what does that remind you of?"</td><td>"想想二分查找。这个函数是单调递增的——这让你联想到什么？"</td></tr>
     </table>
   </div>
 </details>
@@ -354,7 +473,7 @@
 
 <!-- Stuck 2 -->
 <div id="stuck2">
-<details>
+<details open>
   <summary>📐 卡壳 2：知道二分，但不知道上界 / Stuck 2: Knows BS, can't determine upper bound</summary>
   <div class="detail-body">
     <p><strong>表现 / Symptom：</strong>写出了二分的框架，但 <code>high = ???</code> 空着或者随便填了个大常数。/ Writes the binary search skeleton, but leaves <code>high = ???</code> blank or hardcodes a large constant.</p>
@@ -370,7 +489,7 @@
 
 <!-- Stuck 3 -->
 <div id="stuck3">
-<details>
+<details open>
   <summary>🔄 卡壳 3：用了倍增，被追问能否更直接 / Stuck 3: Used doubling, asked for simpler</summary>
   <div class="detail-body">
     <p><strong>表现 / Symptom：</strong>写出了完整的倍增 + 二分，但面试官追问有没有更简单的方式。/ Wrote a complete doubling + binary search, but interviewer asks if there's a simpler approach.</p>
@@ -384,7 +503,7 @@
 
 <!-- Stuck 4 -->
 <div id="stuck4">
-<details>
+<details open>
   <summary>⚡ 卡壳 4：用了 high=y，被追问更高效 / Stuck 4: Used high=y, asked for more efficient</summary>
   <div class="detail-body">
     <p><strong>表现 / Symptom：</strong>写出了正确的 [0, y] 二分，但面试官追问性能。/ Wrote a correct [0, y] binary search, but interviewer probes on performance.</p>
@@ -405,7 +524,7 @@
 
 <!-- Follow-up 1 -->
 <div id="followup1">
-<details>
+<details open>
   <summary>
     追问 1：答案不保证存在 / Answer Not Guaranteed
     <span class="tag tag-time">1-2 min</span>
@@ -457,7 +576,7 @@ return -1;  // or return null;</code></pre>
 
 <!-- Follow-up 2 -->
 <div id="followup2">
-<details>
+<details open>
   <summary>
     追问 2：多次调用 g(y) 优化 / Optimizing for Multiple Calls
     <span class="tag tag-time">2-3 min</span>
@@ -505,7 +624,7 @@ return -1;  // or return null;</code></pre>
 
 <!-- Follow-up 3 -->
 <div id="followup3">
-<details>
+<details open>
   <summary>
     追问 3：非严格递增，找最小 x / Non-Decreasing, Find Smallest x
     <span class="tag tag-time">3-5 min</span>
@@ -573,7 +692,7 @@ return -1;  // or return null;</code></pre>
 
 <!-- Follow-up 4 -->
 <div id="followup4">
-<details>
+<details open>
   <summary>
     追问 4：并行/异步调用 f（前端特色）/ Parallel Async Calls
     <span class="tag tag-time">3-5 min</span>
@@ -928,6 +1047,7 @@ window.addEventListener('scroll', () => {
 // Keyboard shortcuts
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
   const map = {
     '0': 'stuck0', '1': 'stuck1', '2': 'stuck2', '3': 'stuck3', '4': 'stuck4',
     'q': 'problem', 'a': 'solution', 'r': 'rubric', 'f': 'flowchart',
