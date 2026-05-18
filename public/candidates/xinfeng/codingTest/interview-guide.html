@@ -209,6 +209,11 @@
   .tag-time { background: #ffedd5; color: #9a3412; }
   .tag-lang { background: #e8f0fe; color: #0550ae; }
   .tag-py { background: #fef9c3; color: #854d0e; }
+  /* difficulty tags for follow-up questions */
+  .tag-diff-1 { background: #d1fae5; color: #065f46; }   /* ⭐ Easy */
+  .tag-diff-2 { background: #fef3c7; color: #92400e; }   /* ⭐⭐ Medium */
+  .tag-diff-3 { background: #fed7aa; color: #9a3412; }   /* ⭐⭐⭐ Hard */
+  .tag-diff-4 { background: #fecaca; color: #991b1b; }   /* ⭐⭐⭐⭐ Advanced */
 
   /* code blocks */
   pre {
@@ -297,6 +302,11 @@
     <a class="qp-sub orange" href="#problem" onclick="jump('problem');return false;">📋 题面 / Problem Statement</a>
     <a class="qp-sub orange" href="#examples" onclick="jump('examples');return false;">🧪 示例 / Examples</a>
     <a class="qp-sub blue" href="#reference" onclick="jump('reference');return false;">📖 参考答案 (C++ / Python)</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title" style="color:var(--accent);">P0 · Follow-ups</div>
+    <a class="qp-sub orange" href="#followup1" onclick="jump('followup1');return false;">追问 1 — 存储 layout &amp; 访存代价</a>
   </div>
 
   <div class="qp-group">
@@ -629,6 +639,80 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
     </details>
   </div>
 </details>
+
+<hr class="separator">
+
+<!-- ==================== P0 FOLLOW-UPS ==================== -->
+<h2 id="followups" style="background:#fff7ed;border-left:6px solid var(--accent);color:var(--accent);">
+  💬 P0 拓展追问 / P0 Follow-up Questions
+</h2>
+<p style="color:var(--text-muted);">候选人完成 P0 naive 实现后，根据剩余时间和表现选择性使用。每个追问都<strong>锚定在候选人刚写的具体代码上</strong>——不是泛化话题，而是对原题的一个具体变体或对自己代码的诊断。<br>
+<span class="en-text">After candidate finishes P0 naive impl, use selectively based on remaining time and performance. Each follow-up is <strong>anchored to specific code the candidate just wrote</strong> — not a generic topic, but a concrete variation of the original problem or a diagnosis of their own code.</span></p>
+
+<!-- ==================== FOLLOW-UP 1 ==================== -->
+<div id="followup1">
+<details open>
+  <summary>
+    追问 1：存储 layout &amp; 访存代价 / Storage Layout &amp; Memory Access Cost
+    <span class="tag tag-time">2-3 min</span>
+    <span class="tag tag-diff-2">⭐⭐ Medium</span>
+  </summary>
+  <div class="detail-body">
+
+    <h4>🎯 锚点 / Anchor</h4>
+    <p>候选人 P0 代码中两处：(1) 类型别名 <code>using Matrix = std::vector&lt;std::vector&lt;double&gt;&gt;;</code>，(2) 最内层 <code>acc += A[i][p] * B[p][j];</code>。<br>
+    <span class="en-text">Two spots in the candidate's P0 code: (1) the type alias <code>using Matrix = std::vector&lt;std::vector&lt;double&gt;&gt;;</code>, (2) the innermost line <code>acc += A[i][p] * B[p][j];</code>.</span></p>
+
+    <h4>提问 / Question</h4>
+    <blockquote>
+      <strong>EN:</strong> "Your <code>Matrix</code> is <code>vector&lt;vector&lt;double&gt;&gt;</code>. Two questions:<br>
+      (a) Is this row-major or column-major in memory, and how do you know?<br>
+      (b) Now look at your innermost line <code>acc += A[i][p] * B[p][j]</code>. Given that layout and your <code>i-j-p</code> loop order, between these two reads — <code>A[i][p]</code> and <code>B[p][j]</code> — which one is the bottleneck on a 1024×1024 matrix, and why?"
+    </blockquote>
+    <blockquote>
+      <strong>中:</strong> "你的 <code>Matrix</code> 是 <code>vector&lt;vector&lt;double&gt;&gt;</code>。两个问题：<br>
+      (a) 这种存储是 row-major 还是 column-major？你怎么判断？<br>
+      (b) 看你的最内层 <code>acc += A[i][p] * B[p][j]</code>。基于这个 layout 和你的 <code>i-j-p</code> 循环顺序，这两次读取——<code>A[i][p]</code> 和 <code>B[p][j]</code>——在 1024×1024 输入下哪个是瓶颈？为什么？"
+    </blockquote>
+
+    <h4>标准答案 / Expected Answer</h4>
+
+    <p><strong>(a) Layout 部分 / Layout part：</strong></p>
+    <p><strong>中:</strong> Row-major——但<strong>有一个重要 caveat</strong>：<code>vector&lt;vector&lt;double&gt;&gt;</code> 的每一<strong>行内部</strong>是连续的（一个 <code>vector&lt;double&gt;</code> 就是堆上一段连续 buffer），但<strong>行与行之间不一定连续</strong>——外层 <code>vector</code> 持有的是 m 个独立的 <code>vector&lt;double&gt;</code> 对象，每个对象的 <code>data</code> 指针分别走 <code>new[]</code>，它们在堆上的位置是分散的。</p>
+    <p>判断依据：<code>A[i][p]</code> 这个语法 = 先 <code>A[i]</code> 取出第 i 个 <code>vector&lt;double&gt;</code>，再 <code>[p]</code> 取该行第 p 个元素 → <strong>先按行索引，所以是行优先</strong>。</p>
+    <p>真正的 row-major <strong>flat</strong> layout 是 <code>vector&lt;double&gt;(m*n)</code> + <code>[i*n+j]</code> 索引——那才是连行间也连续。<code>vector&lt;vector&lt;double&gt;&gt;</code> 只能说"按行存放、行内连续"。</p>
+    <p class="en-text"><strong>EN:</strong> Row-major — but with an <strong>important caveat</strong>: each <strong>row</strong> in <code>vector&lt;vector&lt;double&gt;&gt;</code> is contiguous (one <code>vector&lt;double&gt;</code> = one contiguous heap buffer), but <strong>rows are not contiguous with each other</strong>. The outer <code>vector</code> holds m independent <code>vector&lt;double&gt;</code> objects; each one's <code>data</code> pointer goes through its own <code>new[]</code>, scattered on the heap. True row-major flat layout would require <code>vector&lt;double&gt;(m*n)</code> with <code>[i*n+j]</code> indexing — that's the only way to get inter-row contiguity. Evidence: <code>A[i][p]</code> = first index by row <code>i</code>, then by column <code>p</code> → row-first.</p>
+
+    <p><strong>(b) 访存代价部分 / Access cost part：</strong></p>
+    <p><strong>中:</strong> 最内层是 <code>p</code> 递增：</p>
+    <ul>
+      <li><code>A[i][p]</code>：<code>i</code> 固定、<code>p</code> 递增 → 在<strong>同一行内</strong>连续访问 → <strong>stride-1，cache 友好</strong>。一个 cache line 64 字节 = 8 个 <code>double</code>，每 8 次访存才一次 cache miss。</li>
+      <li><code>B[p][j]</code>：<code>j</code> 固定、<code>p</code> 递增 → 跨<strong>不同行</strong>访问，而行间又不连续（见 (a) 的 caveat）→ <strong>每次访存几乎都 miss</strong>，n 大时还伴随 TLB miss。</li>
+    </ul>
+    <p><strong>结论：B 是瓶颈。</strong>在 n=1024（每行 8KB）的量级，B 的访问会比 A 慢 8-50 倍（取决于 L1/L2/L3 命中状况）。</p>
+    <p class="en-text"><strong>EN:</strong> Inner loop increments <code>p</code>. <code>A[i][p]</code>: i fixed, p increments → walks along the same row → <strong>stride-1, cache-friendly</strong> (a 64-byte cache line holds 8 doubles, so 1 miss per 8 accesses). <code>B[p][j]</code>: j fixed, p increments → walks across rows, and rows aren't contiguous (see caveat in (a)) → <strong>nearly every access misses</strong>, plus TLB misses at large n. <strong>Conclusion: B is the bottleneck.</strong> At n=1024 (8KB per row), B reads are 8-50× slower than A reads depending on cache hierarchy hit rates.</p>
+
+    <h4>评价标准 / Evaluation</h4>
+    <table>
+      <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
+      <tr><td>(a) row-major + <strong>主动指出 "行间不连续" caveat</strong>；(b) 正确指出 B 慢 + 能讲 cache line / stride 机制<br><span class="en-text">(a) row-major + spontaneously mentions "rows not contiguous" caveat; (b) correctly identifies B + explains cache line / stride mechanism</span></td><td>🌟🌟 系统级 sense 极强，可直接跳过追问 3 (flat layout 重写) — 候选人已经预演了它的动机 / Strong systems sense; can skip F3 — they already telegraphed its motivation</td></tr>
+      <tr><td>(a) 说 row-major（不提 caveat）；(b) 正确指出 B 慢并能解释 stride<br><span class="en-text">(a) row-major (no caveat); (b) correctly says B + explains stride</span></td><td>🌟 Cache 概念扎实，SDE2-Senior 边界水准 / Solid cache understanding, SDE2-Senior borderline</td></tr>
+      <tr><td>(a) 答对 row-major；(b) 只说"列访问慢"或"B 慢"但说不出 cache line 机制<br><span class="en-text">(a) gets row-major; (b) only says "column access is slow" without explaining cache line mechanism</span></td><td>✅ 经验型，及格 / Experience-based, passing</td></tr>
+      <tr><td>(a) 答错或答"不知道哪种"；(b) 说"两个一样"或"A 慢"<br><span class="en-text">(a) wrong or "don't know"; (b) "they're the same" or "A is slower"</span></td><td>⚠️ Cache 模型不熟，会影响后续 F2/F3 表现 / Weak cache model; will affect F2/F3 performance</td></tr>
+    </table>
+
+    <blockquote class="interviewer-note">
+      <strong>🎯 关键说明 / Key notes：</strong>
+      <ul style="margin:6px 0 0 18px;">
+        <li><strong>(a) 是 fact，(b) 是 reasoning。</strong>Senior 应该 (a) 一句话带过、(b) 是主战场。如果 (a) 都讲不清就直接停在 (a)，不要往 (b) 推。</li>
+        <li><strong>(b) 卡壳时的 hint：</strong>"cache line 一次载入 64 字节。<code>B[p][j]</code> 和 <code>B[p+1][j]</code> 在内存里相距多远？" 引导候选人推 stride-n。</li>
+        <li><strong>如果 (a) 主动提到 "行间不连续"</strong>——这是简历真实性的强信号。后续可直接问"那如果想让行间也连续，你会怎么改？"<strong>无缝过渡到 F3 (flat layout)</strong>。</li>
+        <li><strong>仅 stride 但不提 cache line</strong> 的候选人，可追问"为什么 stride 大就慢？硬件层面发生了什么？"——验证他是否真的理解硬件而不是背概念。</li>
+      </ul>
+    </blockquote>
+  </div>
+</details>
+</div>
 
 <hr class="separator">
 
