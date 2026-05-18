@@ -112,6 +112,34 @@
   .qp-sub.green { border-left: 2px solid #059669; }
   .qp-sub.blue { border-left: 2px solid #0984e3; }
   .qp-sub.orange { border-left: 2px solid #ea580c; }
+  /* Collapsible follow-up section inside quick-panel */
+  details.qp-followups {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin: 8px 0 4px;
+    box-shadow: none;
+  }
+  details.qp-followups > summary {
+    padding: 6px 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: .3px;
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  details.qp-followups > summary:hover { background: #f1f5f9; border-left-color: #7c3aed; }
+  details.qp-followups[open] > summary {
+    background: #f5f3ff; color: #5b21b6; border-left-color: #7c3aed;
+    margin-bottom: 4px;
+  }
+  details.qp-followups .qp-followups-body {
+    padding: 2px 0 4px 6px;
+  }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
     background: #7c3aed; color: #fff;
@@ -297,35 +325,15 @@
     <a class="qp-sub purple" href="#q1-eval" onclick="jump('q1-eval');return false;">🎯 候选人回答评价</a>
   </div>
 
-  <div class="qp-group">
-    <div class="qp-group-title">↳ 追问 1 / Follow-up 1 — GPU 显存</div>
-    <a class="qp-sub blue" href="#q2-gpu" onclick="jump('q2-gpu');return false;">🎤 追问</a>
-    <a class="qp-sub blue" href="#q2-hints" onclick="jump('q2-hints');return false;">🚨 卡壳引导</a>
-    <a class="qp-sub blue" href="#q2-ref" onclick="jump('q2-ref');return false;">📖 参考答案</a>
-    <a class="qp-sub blue" href="#q2-eval" onclick="jump('q2-eval');return false;">🎯 候选人回答评价</a>
-  </div>
-
-  <div class="qp-group">
-    <div class="qp-group-title">↳ 追问 2 / Follow-up 2 — 请求路由</div>
-    <a class="qp-sub green" href="#q3-route" onclick="jump('q3-route');return false;">🎤 追问</a>
-    <a class="qp-sub green" href="#q3-hints" onclick="jump('q3-hints');return false;">🚨 卡壳引导</a>
-    <a class="qp-sub green" href="#q3-ref" onclick="jump('q3-ref');return false;">📖 参考答案</a>
-    <a class="qp-sub green" href="#q3-eval" onclick="jump('q3-eval');return false;">🎯 候选人回答评价</a>
-  </div>
-
-  <div class="qp-group">
-    <div class="qp-group-title">↳ 追问 3 / Follow-up 3 — 冷启动</div>
-    <a class="qp-sub orange" href="#q4-cold" onclick="jump('q4-cold');return false;">🎤 追问</a>
-    <a class="qp-sub orange" href="#q4-ref" onclick="jump('q4-ref');return false;">📖 参考答案</a>
-    <a class="qp-sub orange" href="#q4-eval" onclick="jump('q4-eval');return false;">🎯 候选人回答评价</a>
-  </div>
-
-  <div class="qp-group">
-    <div class="qp-group-title">↳ 追问 4 / Follow-up 4 — 发布管线</div>
-    <a class="qp-sub purple" href="#q5-release" onclick="jump('q5-release');return false;">🎤 追问</a>
-    <a class="qp-sub purple" href="#q5-ref" onclick="jump('q5-ref');return false;">📖 参考答案</a>
-    <a class="qp-sub purple" href="#q5-eval" onclick="jump('q5-eval');return false;">🎯 候选人回答评价</a>
-  </div>
+  <details class="qp-followups">
+    <summary>↳ 追问 / Follow-ups（4 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub blue" href="#q2-gpu" onclick="jump('q2-gpu');return false;">追问 1 — GPU 显存</a>
+      <a class="qp-sub green" href="#q3-route" onclick="jump('q3-route');return false;">追问 2 — 请求路由</a>
+      <a class="qp-sub orange" href="#q4-cold" onclick="jump('q4-cold');return false;">追问 3 — 冷启动</a>
+      <a class="qp-sub purple" href="#q5-release" onclick="jump('q5-release');return false;">追问 4 — 发布管线</a>
+    </div>
+  </details>
 
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
