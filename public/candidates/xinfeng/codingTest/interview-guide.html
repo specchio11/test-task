@@ -1,32 +1,787 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>④ 编程测试 · Xinfeng Chen</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #e0e7ff; color: #3730a3; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #4338ca;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #3730a3; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 4 — 编程测试 / Coding Test (~15 min) · Xinfeng Chen · Onsite</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #ea580c;
+    --accent2: #fb923c;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== QUICK JUMP PANEL (sidebar) ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: var(--accent); }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.orange { border-left: 2px solid var(--accent); }
+  .qp-sub.blue { border-left: 2px solid var(--blue); }
+  .qp-sub.green { border-left: 2px solid var(--green); }
+  .qp-sub.muted { border-left: 2px solid #cbd5e1; color: #94a3b8; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
+
+  /* ===== MAIN ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 280px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #fff7ed;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+
+  .en-text { font-style: normal; color: #475569; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: #fff7ed; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #ffedd5; color: #9a3412; }
+  .tag-lang { background: #e8f0fe; color: #0550ae; }
+  .tag-py { background: #fef9c3; color: #854d0e; }
+
+  /* code blocks */
+  pre {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 12px 0;
+  }
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 16px;
+    color: #24292f;
+  }
+  :not(pre) > code {
+    background: #fff7ed;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #9a3412;
+    font-size: 17px;
+  }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .placeholder-card {
+    background: repeating-linear-gradient(45deg, #fff7ed, #fff7ed 10px, #fef3e6 10px, #fef3e6 20px);
+    border: 2px dashed var(--accent);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0;
+    color: #9a3412;
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+</style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Xinfeng Chen · Coding Test</div>
-    <h1>④ 编程测试</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="background:#0d9488;color:#fff;border-color:#0d9488;text-decoration:none;opacity:0.7;">② 技术问答</a>
+  <a href="../systemDesign/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ 系统设计</a>
+  <a class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;font-weight:700;">④ Coding</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;opacity:0.7;">⑤ 候选人提问</a>
+</nav>
+
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+
+  <a class="qp-link" href="#topic-matmul" onclick="jump('topic-matmul');return false;" style="background:#fff7ed;color:var(--accent);font-weight:700;margin-top:10px;border-left-color:var(--accent);">📌 主题 · 矩阵乘法 / Matrix Multiplication</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title" style="color:var(--accent);">P0 · Basic (no perf)</div>
+    <a class="qp-sub orange" href="#problem" onclick="jump('problem');return false;">📋 题面 / Problem Statement</a>
+    <a class="qp-sub orange" href="#examples" onclick="jump('examples');return false;">🧪 示例 / Examples</a>
+    <a class="qp-sub blue" href="#reference-cpp" onclick="jump('reference-cpp');return false;">📖 C++ 参考答案</a>
+    <a class="qp-sub green" href="#reference-py" onclick="jump('reference-py');return false;">🐍 Python 参考答案</a>
+    <a class="qp-sub orange" href="#language-diff" onclick="jump('language-diff');return false;">🔄 两种语言差异</a>
   </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title" style="color:#94a3b8;">P1-P5 · Perf (待添加)</div>
+    <a class="qp-sub muted" href="#future" onclick="jump('future');return false;">🚧 Cache / Tiling / SIMD / GPU</a>
+  </div>
+
+  <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>💻 编程测试 / Coding Test <span class="tag tag-time">~15 min</span></h1>
+
+<!-- ==================== INTRO ==================== -->
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入编程测试 / Introduce Coding Exercise</h4>
+  <blockquote>
+    <strong>EN:</strong> "Alright, next we'll do a short coding exercise. This isn't a LeetCode-style algorithm puzzle — we'll start with a simple, well-defined problem and then progressively dig into the engineering and performance aspects, which is closer to the kind of work you've done at Azure. You can use whichever language you're most comfortable with."
+  </blockquote>
+  <blockquote>
+    <strong>中:</strong> "好，接下来我们做一个简短的编程练习。这不是 LeetCode 风格的算法题——我们会从一个明确的基础题目开始，然后逐步深入到工程和性能层面，更贴近你在 Azure 的工作。语言你用最顺手的就行。"
+  </blockquote>
+</div>
+
+<!-- ==================== TOPIC BANNER ==================== -->
+<h2 id="topic-matmul" style="background:#fff7ed;border-left:6px solid var(--accent);color:var(--accent);font-size:28px;">
+  📌 主题：矩阵乘法 (Matrix Multiplication) — 从正确性到性能
+  <br><span style="font-size:18px;color:#9a3412;font-weight:500;">Theme: Matrix Multiplication — From Correctness to Performance &nbsp;<span class="tag tag-time">~15 min total</span></span>
+</h2>
+
+<div class="card">
+  <p>这一节分为两个阶段。<strong>P0（本页当前内容）</strong>只考察正确性——候选人能否写出一个干净、通用、防御性合理的 naive 矩阵乘法。<strong>P1-P5（后续阶段）</strong>考察性能优化：cache locality / loop reorder / blocking / SIMD / GPU 实现，并直接回测简历 Bullet ② 的 "GPU CUDA optimization" 真实度。</p>
+  <p class="en-text">This section has two phases. <strong>P0 (current content)</strong> tests correctness only — can the candidate produce a clean, generic, defensively-coded naive matmul? <strong>P1-P5 (coming next)</strong> tests perf optimization: cache locality / loop reorder / blocking / SIMD / GPU — directly back-testing the "GPU CUDA optimization" claim from resume Bullet ②.</p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== PROBLEM STATEMENT ==================== -->
+<h2 id="problem">📋 题面 / Problem Statement</h2>
+
+<div class="card">
+  <h3>English</h3>
+  <p><strong>Title:</strong> Implement Matrix Multiplication</p>
+  <p><strong>Problem:</strong></p>
+  <p>Given two matrices <code>A</code> and <code>B</code> of real numbers (double precision), implement a function <code>multiply(A, B)</code> that computes and returns their matrix product <code>C = A × B</code>.</p>
+  <ul>
+    <li><code>A</code> has dimensions <code>m × k</code> (m rows, k columns).</li>
+    <li><code>B</code> has dimensions <code>k × n</code>.</li>
+    <li>The product <code>C</code> has dimensions <code>m × n</code>, where:</li>
+  </ul>
+  <blockquote style="font-family:'Cascadia Code',monospace;font-size:17px;">
+    C[i][j] = Σ<sub>p=0..k-1</sub> ( A[i][p] · B[p][j] )
+  </blockquote>
+
+  <h4 style="color:var(--blue);">Input specification</h4>
+  <ul>
+    <li><code>A</code>: an <code>m × k</code> matrix of doubles, with <code>m ≥ 0</code> and <code>k ≥ 0</code>.</li>
+    <li><code>B</code>: a <code>k × n</code> matrix of doubles, with <code>n ≥ 0</code>.</li>
+  </ul>
+
+  <h4 style="color:var(--blue);">Output specification</h4>
+  <ul>
+    <li><code>C</code>: an <code>m × n</code> matrix of doubles.</li>
+    <li>If any input matrix is empty (zero rows or zero columns), return an empty matrix.</li>
+  </ul>
+
+  <h4 style="color:var(--red);">Requirements</h4>
+  <ol>
+    <li>The function MUST handle non-square matrices (do not assume <code>m == k == n</code>).</li>
+    <li>The function MUST verify that <code>A</code>'s column count equals <code>B</code>'s row count. If they do not match, signal an error (throw <code>std::invalid_argument</code> in C++ / raise <code>ValueError</code> in Python).</li>
+    <li>Implement the algorithm directly. <strong>Do NOT delegate the multiplication to a numerical library</strong> (e.g., <code>numpy.matmul</code>, <code>Eigen</code>, BLAS, cuBLAS). Library calls are out of scope for this exercise.</li>
+    <li>Focus on correctness. Performance optimization is addressed in a subsequent phase.</li>
+  </ol>
+</div>
+
+<div class="card">
+  <h3>中文</h3>
+  <p><strong>题目：</strong>实现矩阵乘法</p>
+  <p><strong>问题描述：</strong></p>
+  <p>给定两个实数矩阵 <code>A</code> 和 <code>B</code>（双精度浮点），实现函数 <code>multiply(A, B)</code>，计算并返回它们的矩阵乘积 <code>C = A × B</code>。</p>
+  <ul>
+    <li><code>A</code> 的维度为 <code>m × k</code>（m 行 k 列）。</li>
+    <li><code>B</code> 的维度为 <code>k × n</code>。</li>
+    <li>乘积 <code>C</code> 的维度为 <code>m × n</code>，其中：</li>
+  </ul>
+  <blockquote style="font-family:'Cascadia Code',monospace;font-size:17px;">
+    C[i][j] = Σ<sub>p=0..k-1</sub> ( A[i][p] · B[p][j] )
+  </blockquote>
+
+  <h4 style="color:var(--blue);">输入规范</h4>
+  <ul>
+    <li><code>A</code>：维度为 <code>m × k</code> 的 double 矩阵，<code>m ≥ 0</code>，<code>k ≥ 0</code>。</li>
+    <li><code>B</code>：维度为 <code>k × n</code> 的 double 矩阵，<code>n ≥ 0</code>。</li>
+  </ul>
+
+  <h4 style="color:var(--blue);">输出规范</h4>
+  <ul>
+    <li><code>C</code>：维度为 <code>m × n</code> 的 double 矩阵。</li>
+    <li>若任一输入矩阵为空（零行或零列），返回空矩阵。</li>
+  </ul>
+
+  <h4 style="color:var(--red);">要求</h4>
+  <ol>
+    <li>函数<strong>必须</strong>支持非方阵（不可假设 <code>m == k == n</code>）。</li>
+    <li>函数<strong>必须</strong>校验 <code>A</code> 的列数等于 <code>B</code> 的行数。若不匹配，需报告错误（C++ 抛出 <code>std::invalid_argument</code>，Python 抛出 <code>ValueError</code>）。</li>
+    <li>直接实现算法。<strong>不得</strong>调用数值库（如 <code>numpy.matmul</code>、<code>Eigen</code>、BLAS、cuBLAS）完成乘法本身。</li>
+    <li>本题仅考察正确性；性能优化在后续阶段讨论。</li>
+  </ol>
+</div>
+
+<!-- ==================== EXAMPLES ==================== -->
+<h2 id="examples">🧪 示例 / Examples</h2>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr><th>#</th><th>A</th><th>B</th><th>Expected C</th><th>考察 / Tests</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1</strong></td>
+        <td><code>[[1, 2], [3, 4]]</code><br><span class="en-text">(2×2)</span></td>
+        <td><code>[[5, 6], [7, 8]]</code><br><span class="en-text">(2×2)</span></td>
+        <td><code>[[19, 22], [43, 50]]</code><br><span class="en-text">(2×2)</span></td>
+        <td>基础方阵 / Basic square</td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td><code>[[1, 2, 3], [4, 5, 6]]</code><br><span class="en-text">(2×3)</span></td>
+        <td><code>[[7, 8], [9, 10], [11, 12]]</code><br><span class="en-text">(3×2)</span></td>
+        <td><code>[[58, 64], [139, 154]]</code><br><span class="en-text">(2×2)</span></td>
+        <td><strong>非方阵</strong> / Non-square</td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td><code>[[1, 0], [0, 1]]</code><br><span class="en-text">(2×2 identity)</span></td>
+        <td><code>[[5, 6], [7, 8]]</code><br><span class="en-text">(2×2)</span></td>
+        <td><code>[[5, 6], [7, 8]]</code><br><span class="en-text">(2×2)</span></td>
+        <td>单位阵 sanity / Identity sanity</td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td><code>[]</code></td>
+        <td><code>[[1]]</code></td>
+        <td><code>[]</code></td>
+        <td>空输入 / Empty input</td>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td><code>[[1, 2]]</code><br><span class="en-text">(1×2)</span></td>
+        <td><code>[[3, 4]]</code><br><span class="en-text">(1×2)</span></td>
+        <td style="color:var(--red);font-weight:600;">Error — dim mismatch (2 ≠ 1)</td>
+        <td>维度校验 / Dim validation</td>
+      </tr>
+    </tbody>
+  </table>
+  <blockquote class="interviewer-note">
+    <strong>⚠️ 面试官建议 / Interviewer note:</strong> Senior 候选人应该至少口头走一遍示例 #1 和 #2 自验。若他完全不主动测试任何 case → 🟡 信号。若他主动跑了 #5（dim mismatch）→ 🟢 防御性思维信号。<br>
+    <span class="en-text">A senior candidate should verbally walk at least cases #1 and #2 for self-verification. If they never propose any test case → 🟡. If they actively check case #5 (dim mismatch) → 🟢 defensive-coding signal.</span>
+  </blockquote>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== C++ REFERENCE ANSWER ==================== -->
+<h2 id="reference-cpp">📖 C++ 参考答案 / C++ Reference Answer <span class="tag tag-lang">C++17</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">推荐这个候选人写 C++ —— 贴他 Azure TTS 的实际工作环境，与后续性能讨论（cache / SIMD / CUDA）无缝衔接。<br>
+  <span class="en-text">Recommended language for this candidate — matches his Azure TTS environment and connects seamlessly to the perf phase (cache / SIMD / CUDA).</span></p>
+
+<pre><code>#include &lt;vector&gt;
+#include &lt;stdexcept&gt;
+
+using Matrix = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
+    // ── Step 1: 空输入短路 ──────────────────────────────
+    if (A.empty() || A[0].empty() || B.empty()) {
+        return {};
+    }
+
+    // ── Step 2: 提取维度 ────────────────────────────────
+    const size_t m = A.size();         // A 的行数
+    const size_t k = A[0].size();      // A 的列数 = B 的行数
+    const size_t n = B[0].size();      // B 的列数
+
+    // ── Step 3: 维度校验 ────────────────────────────────
+    if (B.size() != k) {
+        throw std::invalid_argument(
+            "dim mismatch: A is " + std::to_string(m) + "x" + std::to_string(k) +
+            ", B is " + std::to_string(B.size()) + "x" + std::to_string(n));
+    }
+
+    // ── Step 4: 分配输出矩阵，全部初始化为 0.0 ──────────
+    Matrix C(m, std::vector&lt;double&gt;(n, 0.0));
+
+    // ── Step 5: 三重循环计算 ───────────────────────────
+    for (size_t i = 0; i &lt; m; ++i) {           // 遍历 C 的每一行
+        for (size_t j = 0; j &lt; n; ++j) {       // 遍历 C 的每一列
+            double acc = 0.0;                  // 局部累加器
+            for (size_t p = 0; p &lt; k; ++p) {   // 点积：A 第 i 行 · B 第 j 列
+                acc += A[i][p] * B[p][j];
+            }
+            C[i][j] = acc;                     // 写回 C[i][j]
+        }
+    }
+
+    return C;
+}</code></pre>
+</div>
+
+<details open id="cpp-walkthrough">
+  <summary>📝 全流程解说 / Step-by-step walkthrough</summary>
+  <div class="detail-body">
+
+    <h4>Step 1 — 空输入短路</h4>
+    <p>三个条件：</p>
+    <ul>
+      <li><code>A.empty()</code> → A 一行都没有（m=0）</li>
+      <li><code>A[0].empty()</code> → A 有行但列数为 0（k=0）</li>
+      <li><code>B.empty()</code> → B 一行都没有（k=0）</li>
+    </ul>
+    <p>任何一个成立都直接返回 <code>{}</code>（构造空 Matrix），避免后续访问 <code>A[0].size()</code> 时 segfault。</p>
+    <p class="en-text">Any empty input short-circuits to <code>{}</code>. Without this guard, accessing <code>A[0].size()</code> below would crash.</p>
+
+    <h4>Step 2 — 提取维度</h4>
+    <p>用 <code>size_t</code>（无符号整型）保存维度，匹配 STL 容器 <code>.size()</code> 的返回类型，避免编译期 <code>sign-compare</code> warning。<code>const</code> 修饰强调这三个值不应被修改。</p>
+    <p class="en-text">Use <code>size_t</code> to match <code>vector::size()</code> return type — avoids sign-compare warnings. <code>const</code> documents intent.</p>
+
+    <h4>Step 3 — 维度校验</h4>
+    <p>要求 <code>B.size() == k</code>，即 B 的行数等于 A 的列数。不满足就抛 <code>std::invalid_argument</code>，并把具体维度写进错误信息便于调试。</p>
+    <p class="en-text">Validate <code>B.size() == k</code>. Throw <code>std::invalid_argument</code> with concrete dimensions in the message for debuggability.</p>
+
+    <h4>Step 4 — 输出矩阵分配</h4>
+    <p><code>Matrix C(m, std::vector&lt;double&gt;(n, 0.0))</code> 这个构造器调用：</p>
+    <ul>
+      <li>外层 <code>vector</code> 大小为 <code>m</code></li>
+      <li>每个元素是一个内层 <code>vector&lt;double&gt;</code>，大小 <code>n</code>，所有元素初始化为 <code>0.0</code></li>
+    </ul>
+    <blockquote class="interviewer-note">
+      <strong>注意 / Note:</strong> 内层 vector 是<strong>独立堆分配</strong>的，行与行之间内存不连续——这是嵌套 vector 数据结构的固有特性，会在 P3 blocking 讨论中重新出现。<br>
+      <span class="en-text">Inner vectors are independently heap-allocated; rows are NOT contiguous in memory. This becomes a perf concern in P3 (blocking).</span>
+    </blockquote>
+
+    <h4>Step 5 — 三重循环</h4>
+    <p>经典 <code>i-j-p</code> 顺序：</p>
+    <ul>
+      <li>外两层 <code>i, j</code> 锁定要算 C 的哪一格</li>
+      <li>最内层 <code>p</code> 是点积的求和变量</li>
+      <li><strong>关键工程细节</strong>：用局部变量 <code>acc</code> 累加，最后一次性写入 <code>C[i][j]</code>。比直接 <code>C[i][j] += ...</code> 减少对 <code>C[i][j]</code> 的反复 indirection 访问（虽然现代编译器开 <code>-O2</code> 后通常能识别并优化掉，但显式写出是 senior 习惯）。</li>
+    </ul>
+    <p class="en-text">Classic <code>i-j-p</code> triple loop. <strong>Key engineering detail</strong>: a local <code>acc</code> accumulator avoids repeated indirection through <code>C[i][j]</code>. Modern compilers often hoist this with <code>-O2</code>, but writing it explicitly is a senior habit.</p>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ==================== PYTHON REFERENCE ANSWER ==================== -->
+<h2 id="reference-py">🐍 Python 参考答案 / Python Reference Answer <span class="tag tag-py">Python 3.10+</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">如果候选人选 Python：逻辑可以快速验证，但后续 P1-P5 性能阶段必须切回 C++ 或显式讨论 "翻译成 C++ 后的行为"，否则 Python 解释器开销会掩盖真正的 cache / SIMD 信号。<br>
+  <span class="en-text">If the candidate picks Python: fast for verifying logic, but in P1-P5 you must switch to C++ (or explicitly discuss "behaviour assuming a C++ translation") — otherwise Python interpreter overhead masks the real cache / SIMD signals.</span></p>
+
+<pre><code>from typing import List
+
+Matrix = List[List[float]]
+
+def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
+    # ── Step 1: 空输入短路 ──────────────────────────────
+    if not A or not A[0] or not B:
+        return []
+
+    # ── Step 2: 提取维度 ────────────────────────────────
+    m = len(A)              # A 的行数
+    k = len(A[0])           # A 的列数 = B 的行数
+    n = len(B[0])           # B 的列数
+
+    # ── Step 3: 维度校验 ────────────────────────────────
+    if len(B) != k:
+        raise ValueError(
+            f"dim mismatch: A is {m}x{k}, B is {len(B)}x{n}")
+
+    # ── Step 4: 分配输出矩阵，全部初始化为 0.0 ──────────
+    C = [[0.0] * n for _ in range(m)]
+
+    # ── Step 5: 三重循环计算 ───────────────────────────
+    for i in range(m):                          # 遍历 C 的每一行
+        for j in range(n):                      # 遍历 C 的每一列
+            acc = 0.0                           # 局部累加器
+            for p in range(k):                  # 点积
+                acc += A[i][p] * B[p][j]
+            C[i][j] = acc                       # 写回
+
+    return C</code></pre>
+</div>
+
+<details open id="py-walkthrough">
+  <summary>📝 全流程解说 / Step-by-step walkthrough</summary>
+  <div class="detail-body">
+
+    <h4>Step 1 — 空输入短路</h4>
+    <p>Python 的 truthiness：空 list <code>[]</code> 为 <code>False</code>。<code>not A</code> 即 <code>len(A) == 0</code>；<code>not A[0]</code> 即 A 的第一行是空 list（k=0）。<strong>判断顺序不能颠倒</strong>（先确认 A 非空才能访问 <code>A[0]</code>）。</p>
+    <p class="en-text">Python truthiness: empty list is falsy. <strong>Order matters</strong> — must check <code>not A</code> first before accessing <code>A[0]</code>.</p>
+
+    <h4>Step 2 — 提取维度</h4>
+    <p>直接 <code>len()</code>。Python 没有 unsigned int，统一用普通 int。</p>
+
+    <h4>Step 3 — 维度校验</h4>
+    <p>用 f-string 内插具体维度。抛 <code>ValueError</code>（Python 的内置数值错误异常）。</p>
+
+    <h4>Step 4 — 输出矩阵分配</h4>
+    <p><code>[[0.0] * n for _ in range(m)]</code> 是列表推导式：</p>
+    <ul>
+      <li>外层生成 <code>m</code> 个独立列表</li>
+      <li>每个内层 <code>[0.0] * n</code> 生成长度 <code>n</code> 的全零 list</li>
+    </ul>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 新手常见陷阱 / Common pitfall:</strong> 写成 <code>[[0.0] * n] * m</code> 是<strong>错的</strong>——这样 <code>m</code> 个内层 list 是<strong>同一个对象的引用</strong>，改一个全变。必须用列表推导式让每一行是独立的 list。这本身就是一个面试观察点。<br>
+      <span class="en-text">Writing <code>[[0.0] * n] * m</code> creates <code>m</code> aliased references to the SAME inner list. Mutating one mutates all. Always use the list comprehension form. This pitfall is itself an observation point.</span>
+    </blockquote>
+
+    <h4>Step 5 — 三重循环</h4>
+    <p>与 C++ 完全对应。<code>range(k)</code> 生成 0 到 k-1。Python 没有 <code>++</code>，自然用 <code>for p in range(k)</code>。</p>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ==================== LANGUAGE DIFFERENCES ==================== -->
+<h2 id="language-diff">🔄 C++ vs Python 两版差异 / Key Differences</h2>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>维度 / Dimension</th>
+        <th>C++</th>
+        <th>Python</th>
+        <th>实际影响 / Practical impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>类型系统</strong><br>Type system</td>
+        <td>强类型，编译期检查；<code>vector&lt;vector&lt;double&gt;&gt;</code> 必须明确</td>
+        <td>动态类型；<code>Matrix = List[List[float]]</code> 只是 hint，运行时不强制</td>
+        <td>C++ 类型错编译失败；Python 跑到那行才 TypeError</td>
+      </tr>
+      <tr>
+        <td><strong>参数传递语义</strong><br>Param passing</td>
+        <td>必须显式 <code>const Matrix&amp;</code> 才是按引用；写成 <code>Matrix A</code> 就是<strong>值拷贝</strong>（拷贝整个 m×k 矩阵，O(mk)）</td>
+        <td>list 永远按引用语义传递（无须语法标记）</td>
+        <td>C++ 写错一个 <code>&amp;</code> 就吃 O(mk) 拷贝代价；Python 无此坑</td>
+      </tr>
+      <tr>
+        <td><strong>矩阵分配</strong><br>Matrix allocation</td>
+        <td><code>Matrix C(m, std::vector&lt;double&gt;(n, 0.0))</code>——嵌套构造器，啰嗦但显式</td>
+        <td><code>[[0.0] * n for _ in range(m)]</code>——列表推导式，一行</td>
+        <td>Python 写法更简洁，但<strong>有 <code>[[0.0]*n]*m</code> 陷阱</strong></td>
+      </tr>
+      <tr>
+        <td><strong>错误处理</strong><br>Error handling</td>
+        <td><code>throw std::invalid_argument(...)</code>；错误信息要手动拼字符串（<code>std::to_string</code>）</td>
+        <td><code>raise ValueError(f"...")</code>；f-string 内插</td>
+        <td>Python 错误信息可读性天然更好</td>
+      </tr>
+      <tr>
+        <td><strong>空检查</strong><br>Empty check</td>
+        <td><code>A.empty()</code> / <code>A[0].empty()</code>——调成员函数</td>
+        <td><code>not A</code> / <code>not A[0]</code>——truthiness 隐式判断</td>
+        <td>Python 写法更短，但隐式判断在大型代码库里降低可读性</td>
+      </tr>
+      <tr>
+        <td><strong>索引类型</strong><br>Index type</td>
+        <td><code>size_t</code>（无符号 64 位），与 <code>.size()</code> 返回值匹配</td>
+        <td>普通 <code>int</code>，无类型负担</td>
+        <td>C++ 用 <code>int</code> 会触发 <code>-Wsign-compare</code> 警告</td>
+      </tr>
+      <tr>
+        <td><strong>执行性能 (N=1024)</strong><br>Runtime perf</td>
+        <td>编译后 <code>-O2</code>，~1 GFLOPS 量级，几秒内出结果</td>
+        <td>解释执行 + 每次 <code>+=</code> 都涉及 PyObject 装箱，<strong>慢 50-100×</strong>，可能跑分钟级</td>
+        <td>写 Python 验证正确性可以，做 perf 题必须切回 C++</td>
+      </tr>
+      <tr>
+        <td><strong>内存模型</strong><br>Memory model</td>
+        <td><code>vector&lt;vector&lt;double&gt;&gt;</code> 每行独立堆分配，行间不连续</td>
+        <td><code>list of list of float</code>，每个 float 是 PyObject (24+ 字节)，行间不连续 + 元素本身也是 pointer</td>
+        <td>Python 实际内存占用是 C++ 的 ~5-10×</td>
+      </tr>
+      <tr>
+        <td><strong>数值类型</strong><br>Numeric type</td>
+        <td><code>double</code> 严格 IEEE 754 binary64</td>
+        <td><code>float</code> 实际就是 IEEE 754 binary64（与 C <code>double</code> 等价）</td>
+        <td>数值结果一致，无精度差</td>
+      </tr>
+      <tr>
+        <td><strong>编译/运行</strong><br>Build/run</td>
+        <td>需要 <code>g++ -O2 -o mm mm.cpp &amp;&amp; ./mm</code></td>
+        <td>直接 <code>python mm.py</code></td>
+        <td>Python 演示更快，C++ 调试反馈链更长</td>
+      </tr>
+      <tr>
+        <td><strong>依赖</strong><br>Dependencies</td>
+        <td>仅 <code>&lt;vector&gt;</code> + <code>&lt;stdexcept&gt;</code>，标准库</td>
+        <td>仅 <code>typing.List</code>（可省略）</td>
+        <td>两者都零外部依赖</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card" style="border-left:4px solid var(--accent);">
+  <h4 style="color:var(--accent);">💡 面试现场的语言选择建议 / Language choice in the room</h4>
+  <ul>
+    <li><strong>候选人选 C++（推荐这个候选人）</strong>：与他 Azure TTS 工作环境一致，后续 perf 阶段无缝衔接（cache、SIMD、CUDA 都自然过渡）。<br><span class="en-text">Picks C++ (recommended for this candidate): matches Azure TTS environment; seamless transition into cache / SIMD / CUDA discussion.</span></li>
+    <li><strong>候选人选 Python</strong>：可以快速验证逻辑，但你<strong>必须</strong>在 P1 开头说："接下来我们讨论性能时，请假设代码已经翻译成 C++（或讨论一个 C++ 实现的行为）"——否则 Python 的解释器开销会掩盖真正想考的 cache / 向量化 问题。<br><span class="en-text">Picks Python: useful to verify correctness, but at start of P1 you MUST say "for the perf discussion, please assume this is translated to C++" — otherwise interpreter overhead masks the real signals.</span></li>
+    <li><strong>候选人想用 <code>numpy.matmul</code> / <code>np.dot</code></strong>：直接拒绝。题面已写明禁止——P0 是要确认他<strong>能不能自己手写算法</strong>，不是测试 API 调用能力。<br><span class="en-text">Wants to use <code>numpy.matmul</code> / <code>np.dot</code>: refuse. The problem statement forbids it — P0 is about hand-writing the algorithm, not testing API knowledge.</span></li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FUTURE PHASES PLACEHOLDER ==================== -->
+<h2 id="future">🚧 P1-P5 性能优化阶段 / Performance Optimization Phases <span class="tag tag-time">~10 min · 待添加</span></h2>
+
+<div class="placeholder-card">
+  <p><strong>📌 本页 P0 已完成（题面 + C++ 参考 + Python 参考 + 差异表）</strong></p>
+  <p style="margin-top:8px;">P1-P5 内容（cache locality / loop reorder / blocking / SIMD / GPU kernel）将在下一轮补充。</p>
+  <p class="en-text" style="margin-top:8px;">P0 (problem + C++ ref + Python ref + diff table) is complete. P1-P5 content (cache locality / loop reorder / blocking / SIMD / GPU kernel) will be added in the next iteration.</p>
+  <p style="margin-top:12px;font-size:16px;color:#9a3412;">计划阶段：P1 找瓶颈 → P2 loop reorder → P3 blocking/tiling → P4 SIMD → P5 GPU kernel mental model</p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== NOTES ==================== -->
+<h2 id="notes">📝 Notes</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:var(--accent);">P0 · 矩阵乘法基础 / Basic Matrix Multiplication</td></tr>
+      <tr><td>写代码前主动问 clarifying questions（维度 / dtype / 语言）</td><td></td><td></td></tr>
+      <tr><td>正确处理非方阵 (m×k × k×n)</td><td></td><td></td></tr>
+      <tr><td>做了维度校验（dim mismatch 报错）</td><td></td><td></td></tr>
+      <tr><td>处理空输入边界</td><td></td><td></td></tr>
+      <tr><td>代码质量 / 语言 idiom (const&amp; / size_t / 局部 acc / 命名)</td><td></td><td></td></tr>
+      <tr><td>主动跑 test case 自验</td><td></td><td></td></tr>
+      <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
+      <tr><td>语言选择是否合适（C++ 优先）</td><td></td><td></td></tr>
+      <tr><td>动手速度 / Coding speed</td><td></td><td></td></tr>
+      <tr><td>沟通 / Communication during coding</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note-area">面试官在此记录候选人编程测试的表现 / Interviewer notes on candidate coding performance…</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'DETAILS') el.open = true;
+  const parent = el.closest('details');
+  if (parent) parent.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
 </body>
 </html>
+
