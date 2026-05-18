@@ -169,6 +169,7 @@
 .agenda-root .s2 { --accent: #7c3aed; --accent-bg: #f5f3ff; }
 .agenda-root .s3 { --accent: #059669; --accent-bg: #ecfdf5; }
 .agenda-root .s4 { --accent: #ea580c; --accent-bg: #fff7ed; }
+.agenda-root .s5 { --accent: #db2777; --accent-bg: #fdf2f8; }
 
 /* ===== SCRIPT BLOCKS ===== */
 .agenda-root .script-block {

@@ -9,8 +9,8 @@
  * No component changes required.
  */
 
-/** Accent theme for a section card. Matches CSS classes .s1-.s4 in agenda.css. */
-export type SectionAccent = 's1' | 's2' | 's3' | 's4';
+/** Accent theme for a section card. Matches CSS classes .s1-.s5 in agenda.css. */
+export type SectionAccent = 's1' | 's2' | 's3' | 's4' | 's5';
 
 export interface AgendaSection {
   /** Stable id used for anchor jumps (e.g. "s1"). */
