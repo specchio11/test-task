@@ -1,6 +1,7 @@
 import type { CandidateConfig } from './types';
 import { jorge } from '../candidates/jorge';
 import { xinfeng } from '../candidates/xinfeng';
+import { samarth } from '../candidates/samarth';
 
 /**
  * Registry of all candidates. Add new candidates here.
@@ -12,6 +13,7 @@ import { xinfeng } from '../candidates/xinfeng';
 export const candidates: CandidateConfig[] = [
   jorge,
   xinfeng,
+  samarth,
 ];
 
 const byId = new Map(candidates.map((c) => [c.id, c]));
