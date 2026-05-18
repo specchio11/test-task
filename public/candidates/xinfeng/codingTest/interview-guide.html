@@ -675,31 +675,38 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
       (b) 看你的最内层 <code>acc += A[i][p] * B[p][j]</code>。基于这个 layout 和你的 <code>i-j-p</code> 循环顺序，这两次读取——<code>A[i][p]</code> 和 <code>B[p][j]</code>——在 1024×1024 输入下哪个是瓶颈？为什么？"
     </blockquote>
 
-    <h4>标准答案 / Expected Answer</h4>
+    <details>
+      <summary>📖 标准答案 / Expected Answer</summary>
+      <div class="detail-body">
+        <p><strong>(a) Layout 部分 / Layout part：</strong></p>
+        <p><strong>中:</strong> Row-major——但<strong>有一个重要 caveat</strong>：<code>vector&lt;vector&lt;double&gt;&gt;</code> 的每一<strong>行内部</strong>是连续的（一个 <code>vector&lt;double&gt;</code> 就是堆上一段连续 buffer），但<strong>行与行之间不一定连续</strong>——外层 <code>vector</code> 持有的是 m 个独立的 <code>vector&lt;double&gt;</code> 对象，每个对象的 <code>data</code> 指针分别走 <code>new[]</code>，它们在堆上的位置是分散的。</p>
+        <p>判断依据：<code>A[i][p]</code> 这个语法 = 先 <code>A[i]</code> 取出第 i 个 <code>vector&lt;double&gt;</code>，再 <code>[p]</code> 取该行第 p 个元素 → <strong>先按行索引，所以是行优先</strong>。</p>
+        <p>真正的 row-major <strong>flat</strong> layout 是 <code>vector&lt;double&gt;(m*n)</code> + <code>[i*n+j]</code> 索引——那才是连行间也连续。<code>vector&lt;vector&lt;double&gt;&gt;</code> 只能说"按行存放、行内连续"。</p>
+        <p class="en-text"><strong>EN:</strong> Row-major — but with an <strong>important caveat</strong>: each <strong>row</strong> in <code>vector&lt;vector&lt;double&gt;&gt;</code> is contiguous (one <code>vector&lt;double&gt;</code> = one contiguous heap buffer), but <strong>rows are not contiguous with each other</strong>. The outer <code>vector</code> holds m independent <code>vector&lt;double&gt;</code> objects; each one's <code>data</code> pointer goes through its own <code>new[]</code>, scattered on the heap. True row-major flat layout would require <code>vector&lt;double&gt;(m*n)</code> with <code>[i*n+j]</code> indexing — that's the only way to get inter-row contiguity. Evidence: <code>A[i][p]</code> = first index by row <code>i</code>, then by column <code>p</code> → row-first.</p>
 
-    <p><strong>(a) Layout 部分 / Layout part：</strong></p>
-    <p><strong>中:</strong> Row-major——但<strong>有一个重要 caveat</strong>：<code>vector&lt;vector&lt;double&gt;&gt;</code> 的每一<strong>行内部</strong>是连续的（一个 <code>vector&lt;double&gt;</code> 就是堆上一段连续 buffer），但<strong>行与行之间不一定连续</strong>——外层 <code>vector</code> 持有的是 m 个独立的 <code>vector&lt;double&gt;</code> 对象，每个对象的 <code>data</code> 指针分别走 <code>new[]</code>，它们在堆上的位置是分散的。</p>
-    <p>判断依据：<code>A[i][p]</code> 这个语法 = 先 <code>A[i]</code> 取出第 i 个 <code>vector&lt;double&gt;</code>，再 <code>[p]</code> 取该行第 p 个元素 → <strong>先按行索引，所以是行优先</strong>。</p>
-    <p>真正的 row-major <strong>flat</strong> layout 是 <code>vector&lt;double&gt;(m*n)</code> + <code>[i*n+j]</code> 索引——那才是连行间也连续。<code>vector&lt;vector&lt;double&gt;&gt;</code> 只能说"按行存放、行内连续"。</p>
-    <p class="en-text"><strong>EN:</strong> Row-major — but with an <strong>important caveat</strong>: each <strong>row</strong> in <code>vector&lt;vector&lt;double&gt;&gt;</code> is contiguous (one <code>vector&lt;double&gt;</code> = one contiguous heap buffer), but <strong>rows are not contiguous with each other</strong>. The outer <code>vector</code> holds m independent <code>vector&lt;double&gt;</code> objects; each one's <code>data</code> pointer goes through its own <code>new[]</code>, scattered on the heap. True row-major flat layout would require <code>vector&lt;double&gt;(m*n)</code> with <code>[i*n+j]</code> indexing — that's the only way to get inter-row contiguity. Evidence: <code>A[i][p]</code> = first index by row <code>i</code>, then by column <code>p</code> → row-first.</p>
+        <p><strong>(b) 访存代价部分 / Access cost part：</strong></p>
+        <p><strong>中:</strong> 最内层是 <code>p</code> 递增：</p>
+        <ul>
+          <li><code>A[i][p]</code>：<code>i</code> 固定、<code>p</code> 递增 → 在<strong>同一行内</strong>连续访问 → <strong>stride-1，cache 友好</strong>。一个 cache line 64 字节 = 8 个 <code>double</code>，每 8 次访存才一次 cache miss。</li>
+          <li><code>B[p][j]</code>：<code>j</code> 固定、<code>p</code> 递增 → 跨<strong>不同行</strong>访问，而行间又不连续（见 (a) 的 caveat）→ <strong>每次访存几乎都 miss</strong>，n 大时还伴随 TLB miss。</li>
+        </ul>
+        <p><strong>结论：B 是瓶颈。</strong>在 n=1024（每行 8KB）的量级，B 的访问会比 A 慢 8-50 倍（取决于 L1/L2/L3 命中状况）。</p>
+        <p class="en-text"><strong>EN:</strong> Inner loop increments <code>p</code>. <code>A[i][p]</code>: i fixed, p increments → walks along the same row → <strong>stride-1, cache-friendly</strong> (a 64-byte cache line holds 8 doubles, so 1 miss per 8 accesses). <code>B[p][j]</code>: j fixed, p increments → walks across rows, and rows aren't contiguous (see caveat in (a)) → <strong>nearly every access misses</strong>, plus TLB misses at large n. <strong>Conclusion: B is the bottleneck.</strong> At n=1024 (8KB per row), B reads are 8-50× slower than A reads depending on cache hierarchy hit rates.</p>
+      </div>
+    </details>
 
-    <p><strong>(b) 访存代价部分 / Access cost part：</strong></p>
-    <p><strong>中:</strong> 最内层是 <code>p</code> 递增：</p>
-    <ul>
-      <li><code>A[i][p]</code>：<code>i</code> 固定、<code>p</code> 递增 → 在<strong>同一行内</strong>连续访问 → <strong>stride-1，cache 友好</strong>。一个 cache line 64 字节 = 8 个 <code>double</code>，每 8 次访存才一次 cache miss。</li>
-      <li><code>B[p][j]</code>：<code>j</code> 固定、<code>p</code> 递增 → 跨<strong>不同行</strong>访问，而行间又不连续（见 (a) 的 caveat）→ <strong>每次访存几乎都 miss</strong>，n 大时还伴随 TLB miss。</li>
-    </ul>
-    <p><strong>结论：B 是瓶颈。</strong>在 n=1024（每行 8KB）的量级，B 的访问会比 A 慢 8-50 倍（取决于 L1/L2/L3 命中状况）。</p>
-    <p class="en-text"><strong>EN:</strong> Inner loop increments <code>p</code>. <code>A[i][p]</code>: i fixed, p increments → walks along the same row → <strong>stride-1, cache-friendly</strong> (a 64-byte cache line holds 8 doubles, so 1 miss per 8 accesses). <code>B[p][j]</code>: j fixed, p increments → walks across rows, and rows aren't contiguous (see caveat in (a)) → <strong>nearly every access misses</strong>, plus TLB misses at large n. <strong>Conclusion: B is the bottleneck.</strong> At n=1024 (8KB per row), B reads are 8-50× slower than A reads depending on cache hierarchy hit rates.</p>
-
-    <h4>评价标准 / Evaluation</h4>
-    <table>
-      <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
-      <tr><td>(a) row-major + <strong>主动指出 "行间不连续" caveat</strong>；(b) 正确指出 B 慢 + 能讲 cache line / stride 机制<br><span class="en-text">(a) row-major + spontaneously mentions "rows not contiguous" caveat; (b) correctly identifies B + explains cache line / stride mechanism</span></td><td>🌟🌟 系统级 sense 极强，可直接跳过追问 3 (flat layout 重写) — 候选人已经预演了它的动机 / Strong systems sense; can skip F3 — they already telegraphed its motivation</td></tr>
-      <tr><td>(a) 说 row-major（不提 caveat）；(b) 正确指出 B 慢并能解释 stride<br><span class="en-text">(a) row-major (no caveat); (b) correctly says B + explains stride</span></td><td>🌟 Cache 概念扎实，SDE2-Senior 边界水准 / Solid cache understanding, SDE2-Senior borderline</td></tr>
-      <tr><td>(a) 答对 row-major；(b) 只说"列访问慢"或"B 慢"但说不出 cache line 机制<br><span class="en-text">(a) gets row-major; (b) only says "column access is slow" without explaining cache line mechanism</span></td><td>✅ 经验型，及格 / Experience-based, passing</td></tr>
-      <tr><td>(a) 答错或答"不知道哪种"；(b) 说"两个一样"或"A 慢"<br><span class="en-text">(a) wrong or "don't know"; (b) "they're the same" or "A is slower"</span></td><td>⚠️ Cache 模型不熟，会影响后续 F2/F3 表现 / Weak cache model; will affect F2/F3 performance</td></tr>
-    </table>
+    <details>
+      <summary>🎯 评价标准 / Evaluation</summary>
+      <div class="detail-body">
+        <table>
+          <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
+          <tr><td>(a) row-major + <strong>主动指出 "行间不连续" caveat</strong>；(b) 正确指出 B 慢 + 能讲 cache line / stride 机制<br><span class="en-text">(a) row-major + spontaneously mentions "rows not contiguous" caveat; (b) correctly identifies B + explains cache line / stride mechanism</span></td><td>🌟🌟 系统级 sense 极强，可直接跳过追问 3 (flat layout 重写) — 候选人已经预演了它的动机 / Strong systems sense; can skip F3 — they already telegraphed its motivation</td></tr>
+          <tr><td>(a) 说 row-major（不提 caveat）；(b) 正确指出 B 慢并能解释 stride<br><span class="en-text">(a) row-major (no caveat); (b) correctly says B + explains stride</span></td><td>🌟 Cache 概念扎实，SDE2-Senior 边界水准 / Solid cache understanding, SDE2-Senior borderline</td></tr>
+          <tr><td>(a) 答对 row-major；(b) 只说"列访问慢"或"B 慢"但说不出 cache line 机制<br><span class="en-text">(a) gets row-major; (b) only says "column access is slow" without explaining cache line mechanism</span></td><td>✅ 经验型，及格 / Experience-based, passing</td></tr>
+          <tr><td>(a) 答错或答"不知道哪种"；(b) 说"两个一样"或"A 慢"<br><span class="en-text">(a) wrong or "don't know"; (b) "they're the same" or "A is slower"</span></td><td>⚠️ Cache 模型不熟，会影响后续 F2/F3 表现 / Weak cache model; will affect F2/F3 performance</td></tr>
+        </table>
+      </div>
+    </details>
 
     <blockquote class="interviewer-note">
       <strong>🎯 关键说明 / Key notes：</strong>
