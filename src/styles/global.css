@@ -1,5 +1,6 @@
 /* ===================================================================== *
  * global.css — Reset + Home (candidate selection) page styles            *
+ * Light theme, matched to the agenda pages.                              *
  * ===================================================================== */
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -11,8 +12,8 @@ html, body, #root {
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: #f8fafc;
+  color: #1e293b;
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; }
@@ -23,22 +24,21 @@ button { font-family: inherit; }
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(56,189,248,.18), transparent 60%),
-    radial-gradient(1000px 500px at -10% 110%, rgba(124,58,237,.18), transparent 60%),
-    #0f172a;
+  background: #f8fafc;
 }
 .home-header {
-  padding: 56px 32px 24px;
+  padding: 56px 32px 32px;
   text-align: center;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
 }
 .home-header .brand-tag {
   display: inline-block;
   padding: 4px 14px;
   border-radius: 999px;
-  background: rgba(56,189,248,.12);
-  border: 1px solid rgba(56,189,248,.4);
-  color: #7dd3fc;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+  color: #0284c7;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: .08em;
@@ -48,27 +48,27 @@ button { font-family: inherit; }
 .home-header h1 {
   font-size: clamp(28px, 4vw, 44px);
   font-weight: 800;
-  color: #f8fafc;
+  color: #0f172a;
   margin: 0 0 10px;
   letter-spacing: -0.02em;
 }
 .home-header p {
   font-size: 17px;
-  color: #94a3b8;
+  color: #475569;
   margin: 0 auto;
   max-width: 620px;
   line-height: 1.6;
 }
 
 .home-grid {
-  flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
-  padding: 24px 32px 56px;
+  padding: 32px 32px 56px;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  align-items: start;        /* don't stretch row to tallest sibling */
 }
 
 .cdd-card {
@@ -76,77 +76,131 @@ button { font-family: inherit; }
   flex-direction: column;
   text-decoration: none;
   color: inherit;
-  background: linear-gradient(180deg, rgba(30,41,59,.95), rgba(15,23,42,.95));
-  border: 1px solid #1e293b;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
-  padding: 24px;
+  padding: 22px;
   cursor: pointer;
   transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
   position: relative;
   overflow: hidden;
-}
-.cdd-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, var(--cdd-accent, #38bdf8), transparent 60%);
-  opacity: 0;
-  transition: opacity .2s ease;
-  pointer-events: none;
+  min-height: 220px;         /* fixed-ish card height */
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
 }
 .cdd-card:hover {
   transform: translateY(-3px);
-  border-color: var(--cdd-accent, #38bdf8);
-  box-shadow: 0 12px 32px rgba(0,0,0,.35),
-              0 0 0 1px var(--cdd-accent, #38bdf8) inset;
+  border-color: var(--cdd-accent, #0284c7);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .08),
+              0 0 0 1px var(--cdd-accent, #0284c7) inset;
 }
-.cdd-card:hover::before { opacity: .08; }
 
 .cdd-card .avatar {
-  width: 52px; height: 52px;
-  border-radius: 14px;
-  background: var(--cdd-accent, #38bdf8);
-  color: #0f172a;
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: var(--cdd-accent, #0284c7);
+  color: #ffffff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px; font-weight: 800;
+  font-size: 20px; font-weight: 800;
   letter-spacing: -0.02em;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .cdd-card h3 {
   font-size: 20px;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #0f172a;
   margin: 0 0 4px;
 }
 .cdd-card .role {
   font-size: 14px;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0 0 16px;
 }
+
+/* ----- Schedule slot ----- */
+.cdd-card .schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+.cdd-card .schedule-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.cdd-card .schedule-time {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+.cdd-card .schedule-time.tbd {
+  color: #94a3b8;
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* ----- Completed state ----- */
+.cdd-card .badge.done {
+  position: absolute;
+  top: 16px; right: 22px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+  letter-spacing: .02em;
+}
+.cdd-card.is-completed {
+  background: #f8fafc;
+  opacity: 0.78;
+}
+.cdd-card.is-completed:hover {
+  opacity: 1;
+}
+.cdd-card.is-completed h3 {
+  color: #475569;
+}
+.cdd-card.is-completed .avatar {
+  filter: grayscale(0.35);
+}
+/* Hide the corner arrow when the "Completed" badge takes that slot. */
+.cdd-card.is-completed .cta {
+  display: none;
+}
+
 .cdd-card .meta {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid #1e293b;
+  margin-top: auto;          /* stick meta row to bottom of card */
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
 }
 .cdd-card .meta span {
   font-size: 13px;
-  color: #cbd5e1;
-  background: rgba(148,163,184,.1);
+  color: #475569;
+  background: #f1f5f9;
   padding: 4px 10px;
   border-radius: 999px;
 }
 .cdd-card .cta {
   position: absolute;
-  top: 24px; right: 24px;
-  font-size: 22px;
-  color: #475569;
+  top: 20px; right: 22px;
+  font-size: 20px;
+  color: #cbd5e1;
   transition: color .15s ease, transform .15s ease;
 }
 .cdd-card:hover .cta {
-  color: var(--cdd-accent, #38bdf8);
+  color: var(--cdd-accent, #0284c7);
   transform: translateX(4px);
 }
 
@@ -154,17 +208,20 @@ button { font-family: inherit; }
   grid-column: 1 / -1;
   text-align: center;
   padding: 60px 20px;
-  border: 1px dashed #334155;
+  border: 1px dashed #cbd5e1;
   border-radius: 16px;
-  color: #94a3b8;
+  color: #64748b;
+  background: #ffffff;
 }
 
 .home-footer {
   text-align: center;
   padding: 20px;
   font-size: 13px;
-  color: #475569;
-  border-top: 1px solid #1e293b;
+  color: #94a3b8;
+  border-top: 1px solid #e2e8f0;
+  margin-top: auto;          /* push footer to bottom of viewport */
+  background: #ffffff;
 }
 
 /* ============== NOT FOUND ============== */
@@ -173,17 +230,18 @@ button { font-family: inherit; }
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 16px;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: #f8fafc;
+  color: #1e293b;
   padding: 24px;
   text-align: center;
 }
-.notfound h1 { font-size: 28px; margin: 0; }
+.notfound h1 { font-size: 28px; margin: 0; color: #0f172a; }
 .notfound a {
   display: inline-block;
   padding: 10px 18px;
-  background: #38bdf8; color: #0f172a;
+  background: #0284c7; color: #ffffff;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 700;
 }
+.notfound a:hover { background: #0369a1; }

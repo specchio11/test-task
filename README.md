@@ -60,7 +60,15 @@ npm run preview      # serve dist/ locally
    `public/candidates/<new-id>/index.html` and change the hash route at the
    bottom to `#/candidate/<new-id>`.
 3. Create `src/candidates/<new-id>.ts` exporting a `CandidateConfig`
-   (copy Jorge's file as a template).
+   (copy Jorge's file as a template). Two optional fields control the
+   home-page card:
+   - `scheduledAt?: string` — ISO 8601 timestamp
+     (e.g. `"2026-05-20T10:00:00-07:00"`). Cards with the closest time
+     to "now" appear first. Omit → shown as `未排期 / TBD` and sorted
+     to the end of the upcoming list.
+   - `completed?: boolean` — set `true` after the interview is done.
+     Completed candidates are pinned to the bottom of the list and
+     visually dimmed.
 4. Register the import in [`src/data/candidates.ts`](src/data/candidates.ts).
 
 That's it — no component changes needed.

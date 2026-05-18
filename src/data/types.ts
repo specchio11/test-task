@@ -60,6 +60,17 @@ export interface CandidateConfig {
   brand: string;
   /** Accent color (hex) used by the home page card. */
   accent: string;
+  /**
+   * Scheduled interview time as an ISO 8601 string,
+   * e.g. "2026-05-20T10:00:00-07:00". Leave undefined if not yet scheduled
+   * (the card will show "未排期 / TBD" and sort to the end of the upcoming list).
+   */
+  scheduledAt?: string;
+  /**
+   * Mark the interview as completed. Completed candidates are always
+   * sorted to the bottom of the home page list and visually dimmed.
+   */
+  completed?: boolean;
   /** Opening script (EN). */
   openingEn: string;
   /** Opening script (ZH). */
