@@ -1,32 +1,393 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>interview</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #e0e7ff; color: #3730a3; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #4338ca;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #3730a3; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>interview</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #db2777;
+    --accent2: #ec4899;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .navbar .brand {
+    font-weight: 700; font-size: 18px; color: var(--accent);
+    margin-right: 12px; white-space: nowrap;
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== QUICK JUMP PANEL (sidebar) ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 220px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #db2777; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: #db2777; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
+
+  /* ===== MAIN ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 220px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #fdf2f8;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+  blockquote.ask-en {
+    border-left-color: #d97706;
+    background: #fef9ee;
+    color: var(--text);
+    font-style: normal;
+  }
+  blockquote.ask-cn {
+    border-left: none;
+    background: none;
+    padding: 8px 0 8px 16px;
+    color: #78350f;
+    font-size: 18px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .checklist { list-style: none; padding-left: 4px; }
+  .checklist li { position: relative; padding-left: 28px; margin-bottom: 8px; font-size: 18px; }
+  .checklist li::before { content: "☐"; position: absolute; left: 0; color: #94a3b8; font-size: 1.1rem; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+</style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Xinfeng Chen · Candidate Q&amp;A</div>
-    <h1>④ 候选人提问</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="background:#0d9488;color:#fff;border-color:#0d9488;text-decoration:none;opacity:0.7;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;font-weight:700;">④ 候选人提问</a>
+</nav>
+
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#q-project" onclick="jump('q-project');return false;">🏢 关于项目</a>
+  <a class="qp-link" href="#q-role" onclick="jump('q-role');return false;">💻 关于岗位</a>
+  <a class="qp-link" href="#closing" onclick="jump('closing');return false;">👋 结束话术</a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>❓ 候选人提问 / Candidate Q&amp;A <span class="tag tag-time">~5 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导候选人提问 / Invite Candidate Questions</h4>
+  <blockquote class="ask-en">
+    "Great, that wraps up my questions. Do you have any questions for us?"
+  </blockquote>
+  <blockquote class="ask-cn">
+    "好的，我的问题已经问完了。你有什么问题想问我们吗？"
+  </blockquote>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== Q: ABOUT OUR PROJECT ==================== -->
+<h2 id="q-project">🏢 "你们组是做什么的？" / "What does your team work on?"</h2>
+
+<details open>
+  <summary>🎤 回答要点 / Answer Hints</summary>
+  <div class="detail-body">
+
+    <h4>Step 1: 介绍 Fabric / Introduce Fabric</h4>
+    <blockquote class="ask-cn">
+      "我们属于 Microsoft Fabric。Fabric 是微软的一站式数据分析平台 (SaaS)，把数据工程、数据科学、实时分析、数据仓库和 BI 报表统一在一个平台上，底层共享一个叫 OneLake 的统一数据湖。"
+    </blockquote>
+    <blockquote class="ask-en">
+      "We are part of Microsoft Fabric. Fabric is Microsoft's unified SaaS analytics platform that brings together data engineering, data science, real-time analytics, data warehousing, and BI reporting on a single platform, with a shared data lake called OneLake underneath."
+    </blockquote>
+
+    <h4>Step 2: 介绍 Data Science & Data Engineering / Introduce DS & DE</h4>
+    <blockquote class="ask-cn">
+      "在 Fabric 下面，我们团队负责两个产品：Data Science 和 Data Engineering。"
+    </blockquote>
+    <blockquote class="ask-en">
+      "Under Fabric, our team owns two products: Data Science and Data Engineering."
+    </blockquote>
+
+    <div class="card">
+      <h4>📊 Data Science</h4>
+      <blockquote class="ask-cn">
+        "Data Science 是一个机器学习平台，让用户可以在 Fabric 里完成从数据探索、模型训练到部署上线的完整 ML 工作流。它集成了 MLflow 做实验追踪和模型注册，整体体验比较像 Databricks。"
+      </blockquote>
+      <blockquote class="ask-en">
+        "Data Science is a machine learning platform that lets users complete the full ML workflow inside Fabric — from data exploration and model training to deployment. It integrates MLflow for experiment tracking and model registry. The overall experience is similar to Databricks."
+      </blockquote>
+    </div>
+
+    <div class="card">
+      <h4>⚙️ Data Engineering</h4>
+      <blockquote class="ask-cn">
+        "Data Engineering 提供基于 Apache Spark 的大规模数据处理能力，核心体验是 Notebook（在线代码编辑器）和 Lakehouse（数据湖仓）。用户可以用 Python/PySpark/Scala 写数据转换和分析任务。"
+      </blockquote>
+      <blockquote class="ask-en">
+        "Data Engineering provides large-scale data processing powered by Apache Spark. The core experiences are Notebook (an online code editor) and Lakehouse (a lake-house data store). Users write data transformation and analysis jobs in Python / PySpark / Scala."
+      </blockquote>
+    </div>
+
   </div>
+</details>
+
+<hr class="separator">
+
+<!-- ==================== Q: ABOUT THE UX ROLE ==================== -->
+<h2 id="q-role">💻 "UX 岗位具体做什么？" / "What does the UX role actually do?"</h2>
+
+<details open>
+  <summary>🎤 回答要点 / Answer Hints</summary>
+  <div class="detail-body">
+
+    <blockquote class="ask-cn">
+      "我们负责的是 Data Science 和 Data Engineering 这两个产品的前端界面开发。"
+    </blockquote>
+    <blockquote class="ask-en">
+      "We own the frontend UI development for both the Data Science and Data Engineering products."
+    </blockquote>
+
+    <div class="card">
+      <h4>📊 Data Science 前端</h4>
+      <blockquote class="ask-cn">
+        "Data Science 这边我们用的是 MLflow 开源项目，整个体验会比较像 Databricks——实验管理界面、模型注册表、运行对比等。"
+      </blockquote>
+      <blockquote class="ask-en">
+        "On the Data Science side, we build on the MLflow open-source project. The experience is similar to Databricks — experiment management UI, model registry, run comparison, etc."
+      </blockquote>
+    </div>
+
+    <div class="card">
+      <h4>⚙️ Data Engineering 前端</h4>
+      <blockquote class="ask-cn">
+        "Data Engineering 这边主要做的是 Python Notebook 在线编辑器，体验比较像 Google Colab——在浏览器里写代码、运行 Spark 任务、看输出结果。"
+      </blockquote>
+      <blockquote class="ask-en">
+        "On the Data Engineering side, the main thing we build is the Python Notebook online editor. The experience is similar to Google Colab — writing code in the browser, running Spark jobs, and viewing output."
+      </blockquote>
+    </div>
+
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ==================== CLOSING ==================== -->
+<h2 id="closing">👋 结束话术 / Closing Script</h2>
+
+<div class="card">
+  <blockquote class="ask-en">
+    "Thank you so much for your time today, Xinfeng. Hope you have a great rest of your day!"
+  </blockquote>
+  <blockquote class="ask-cn">
+    "非常感谢你今天的时间，Xinfeng。祝你今天一切顺利！"
+  </blockquote>
+</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const details = el.querySelector('details') || el.closest('details');
+  if (details) details.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
 </body>
 </html>
