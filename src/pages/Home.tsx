@@ -1,9 +1,21 @@
 import { Link } from 'react-router-dom';
 import { candidates } from '../data/candidates';
 import { sortCandidatesForHome, formatScheduledAt } from '../data/sort';
+import {
+  resolveCompleted,
+  setCompletedOverride,
+  useCandidateOverrides,
+} from '../data/overrides';
 
 export function Home() {
-  const sorted = sortCandidatesForHome(candidates);
+  const overrides = useCandidateOverrides();
+  // Apply per-browser overrides BEFORE sorting so completed cards drop to
+  // the bottom immediately when the user toggles them.
+  const merged = candidates.map((c) => ({
+    ...c,
+    completed: resolveCompleted(c.id, c.completed, overrides),
+  }));
+  const sorted = sortCandidatesForHome(merged);
 
   return (
     <div className="home">
@@ -25,30 +37,40 @@ export function Home() {
         {sorted.map((c) => {
           const when = formatScheduledAt(c.scheduledAt);
           return (
-            <Link
+            <article
               key={c.id}
-              to={`/candidate/${c.id}`}
               className={`cdd-card${c.completed ? ' is-completed' : ''}`}
               style={{ ['--cdd-accent' as string]: c.accent }}
             >
               {c.completed && <span className="badge done">✓ 已完成</span>}
-              <span className="cta">→</span>
-              <div className="avatar">{c.initials}</div>
-              <h3>{c.name}</h3>
-              <p className="role">{c.role}</p>
+              <Link to={`/candidate/${c.id}`} className="cdd-card-body">
+                <span className="cta" aria-hidden="true">→</span>
+                <div className="avatar">{c.initials}</div>
+                <h3>{c.name}</h3>
+                <p className="role">{c.role}</p>
 
-              <div className="schedule" title="Interview time">
-                <span className="schedule-label">面试时间</span>
-                <span className={`schedule-time${when ? '' : ' tbd'}`}>
-                  {when ?? '未排期 / TBD'}
-                </span>
-              </div>
+                <div className="schedule" title="Interview time">
+                  <span className="schedule-label">面试时间</span>
+                  <span className={`schedule-time${when ? '' : ' tbd'}`}>
+                    {when ?? '未排期 / TBD'}
+                  </span>
+                </div>
 
-              <div className="meta">
-                <span>⏱ {c.totalMin} min</span>
-                <span>📋 {c.sections.length} sections</span>
-              </div>
-            </Link>
+                <div className="meta">
+                  <span>⏱ {c.totalMin} min</span>
+                  <span>📋 {c.sections.length} sections</span>
+                </div>
+              </Link>
+              <button
+                type="button"
+                className={`toggle-done${c.completed ? ' is-on' : ''}`}
+                onClick={() => setCompletedOverride(c.id, !c.completed)}
+                aria-pressed={c.completed}
+                title={c.completed ? '取消标记为已完成' : '标记为面试已完成'}
+              >
+                {c.completed ? '↺ 标记为未完成' : '✓ 标记已完成'}
+              </button>
+            </article>
           );
         })}
       </div>

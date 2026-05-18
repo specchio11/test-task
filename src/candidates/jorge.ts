@@ -14,6 +14,7 @@ export const jorge: CandidateConfig = {
   totalMin: 30,
   brand: '📋 Phone Screen Guide',
   accent: '#0284c7',
+  completed: true,
 
   openingEn:
     "So today we have about 30 minutes. I'll start by having you do a quick intro, then I'll ask some questions about your background. After that we'll do a short coding problem together, and then at the end you can ask me anything. Let's get started!",
