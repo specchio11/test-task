@@ -309,6 +309,7 @@
     <a class="qp-sub orange" href="#followup1" onclick="jump('followup1');return false;">追问 1 — 存储 layout &amp; 访存代价</a>
     <a class="qp-sub orange" href="#followup2" onclick="jump('followup2');return false;">追问 2 — Loop reorder 修复</a>
     <a class="qp-sub orange" href="#followup3" onclick="jump('followup3');return false;">追问 3 — 理想 layout 跨语言讨论</a>
+    <a class="qp-sub orange" href="#followup4" onclick="jump('followup4');return false;">追问 4 — 规模放大 + GPU 简历验证</a>
   </div>
 
   <div class="qp-group">
@@ -965,8 +966,188 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
         <li><strong>跨语言部分卡住的 hint：</strong>问 "你平时用 numpy 吗？numpy 的 ndarray 底层是什么？" 多数人会想起 "连续 buffer + shape + strides"。然后类比到其他语言："那 C++ 里对应什么？Rust 里呢？"</li>
         <li><strong>主动提 column-major → 🌟 信号。</strong>可追问："为什么 BLAS / Eigen / nalgebra 用 column-major？" 期望答 "Fortran 历史 + 列操作多的算法（QR/SVD）+ 矩阵-向量乘 <code>y = A*x</code> 时列连续更友好"。</li>
         <li><strong>主动提 strides → 🌟🌟 信号。</strong>可追问："numpy 怎么用 strides 实现转置不拷贝？" 期望答 "swap strides[0] 和 strides[1]，buffer 不变"。</li>
-        <li><strong>主动提 GPU coalesced access → 🌟🌟 信号。</strong>说明候选人有 GPU 实战经验，F4 可以直接跳 4a 的 naive kernel、上 4b 的 shared memory tiling。</li>
+        <li><strong>主动提 GPU coalesced access → 🌟🌟 信号。</strong>说明候选人有 GPU 实战经验，F4c 可以直接深挖 shared memory tiling / tensor cores 等高阶细节，跳过基础 GPU 引入。</li>
         <li><strong>📌 Python 候选人不需要特殊处理。</strong>这是纯口述题、跨语言展开本身就让 Python 候选人可以从 numpy 切入；反而 Python 候选人如果对 numpy 的 buffer/strides 模型说不清，是<strong>减分项</strong>——"日常用的工具，底层不知道"。</li>
+      </ul>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FOLLOW-UP 4 ==================== -->
+<div id="followup4">
+<details open>
+  <summary>
+    追问 4：规模放大下的方案诊断 + GPU 深挖 / Scale-Up Diagnosis + GPU Deep Dive
+    <span class="tag tag-time">5-6 min</span>
+    <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
+    <span class="tag tag-py">🎯 简历验证 / Resume verify</span>
+  </summary>
+  <div class="detail-body">
+
+    <h4>🎯 锚点 / Anchor</h4>
+    <p>F1-F3 都在讨论"这段代码本身怎么改"。F4 把视角拉到<strong>规模变化下的工程决策</strong>——senior 工程师的核心能力不是"会哪个技巧"，而是"<strong>在多个方案里挑对、按场景排优先级</strong>"。<br>
+    <span class="en-text">F1-F3 all discussed "how to fix the code itself." F4 zooms out to <strong>engineering decisions under scale change</strong> — a senior engineer's core skill isn't "knowing which technique" but "<strong>choosing the right option for the context, ranking by priority</strong>."</span></p>
+    <p><strong>🎯 同时也是简历 "GPU CUDA optimization" 的验证段。</strong>通过三段渐进——先诊断、再开放讨论方案、最后兜底深挖 GPU——把 GPU 经验从"会不会写 syntax"提升到"<strong>在工程决策中如何使用 GPU</strong>"。<br>
+    <span class="en-text">Also the resume verification stage for "GPU CUDA optimization." The three-stage progression — diagnose, then open discussion, then GPU deep dive — elevates GPU validation from "can you write the syntax" to "<strong>how do you reason about GPU in engineering decisions</strong>."</span></p>
+
+    <h4>提问 · 三段式（依次问、不要一次抛三个）/ Question (3 stages, ask sequentially)</h4>
+
+    <blockquote>
+      <strong>F4a · 诊断 / Diagnose (~1 min):</strong><br>
+      <strong>EN:</strong> "Your code works fine on 1024×1024. Now bump it to 10000×10000 — about 1000× more work. Who's going to be the bottleneck first? Walk me through why."<br>
+      <strong>中:</strong> "你这段代码我跑 1024×1024 没问题。现在我换成 10000×10000——大约 1000 倍工作量。谁会先成为瓶颈？说说为什么。"
+    </blockquote>
+
+    <blockquote>
+      <strong>F4b · 方案 + 优先级（开放）/ Options + Priority (open, ~2 min):</strong><br>
+      <strong>EN:</strong> "How would you save it? Give me multiple options, ranked by priority — what would you try first, second, third? Why that order?"<br>
+      <strong>中:</strong> "你会怎么救？给我多个方案、按你的优先级排——先试什么、再试什么、最后试什么？为什么这个顺序？"
+    </blockquote>
+
+    <blockquote>
+      <strong>F4c · GPU 深挖（兜底必问）/ GPU Deep Dive (mandatory, ~2-3 min):</strong><br>
+      <strong>EN:</strong> "If we bring in a GPU, can it help here? How would you use it? And — equally important — <strong>what scenarios are NOT worth putting on a GPU</strong>?"<br>
+      <strong>中:</strong> "如果上 GPU，这道题能不能加速？要怎么用？而且同样重要——<strong>什么场景反而不值得上 GPU</strong>？"
+    </blockquote>
+
+    <details>
+      <summary>📖 标准答案 · F4a 诊断 / Expected Answer — F4a Diagnosis</summary>
+      <div class="detail-body">
+        <h4>必须先算数量级 / Must establish magnitudes first</h4>
+        <ul>
+          <li><strong>数据量</strong>：10000² × 8B = <strong>800 MB</strong> per matrix；A+B+C 三个 = <strong>2.4 GB</strong></li>
+          <li><strong>计算量</strong>：10000³ = <strong>10¹² FMA</strong> ≈ <strong>1 TFLOP</strong></li>
+          <li><strong>朴素单线程 CPU</strong>：~10 GFLOPS → <strong>100 秒</strong>；优化后 ~80 GFLOPS（5GHz × AVX-512 × FMA）→ ~12 秒</li>
+          <li><strong>单 GPU 理论上限</strong>（V100 FP64 ~7 TFLOPS）→ ~<strong>0.14 秒</strong></li>
+        </ul>
+        <h4>瓶颈结论 / Bottleneck conclusion</h4>
+        <ol>
+          <li><strong>Cache 进不下</strong>：800 MB 远超 L3（典型 8-64 MB）→ 每个元素都要从 DRAM 取</li>
+          <li><strong>B 矩阵被遍历 N 次</strong>（接 F1）→ <strong>内存带宽是 wall，memory-bound</strong></li>
+          <li>加分点：<strong>NUMA / page fault / TLB miss</strong>——大分配可能跨 NUMA node、首次访问触发 minor fault；TLB 覆盖不住 800 MB（典型覆盖 ~2 MB）</li>
+        </ol>
+        <p><strong>判断："memory-bound, 单线程不可接受"——senior 必须秒答的诊断。</strong></p>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 标准答案 · F4b 方案 + 优先级 / Expected Answer — F4b Options + Priority</summary>
+      <div class="detail-body">
+        <h4>候选人应能列出（按 effort × gain）/ Should be able to list (by effort × gain)</h4>
+        <table>
+          <tr><th>#</th><th>方案 / Option</th><th>Effort</th><th>Gain</th><th>何时合适 / When</th></tr>
+          <tr><td>A</td><td><strong>调 BLAS</strong>（OpenBLAS / MKL / cuBLAS / Eigen）</td><td>极低（5 行）</td><td>100-1000×</td><td><strong>几乎所有情况先试</strong></td></tr>
+          <tr><td>B</td><td>F2 的 i-p-j 循环改序</td><td>低</td><td>2-10×</td><td>已经做了</td></tr>
+          <tr><td>C</td><td><strong>Cache blocking / tiling</strong>（64×64 块）</td><td>中</td><td>2-5×</td><td>自己写时配套</td></tr>
+          <tr><td>D</td><td><strong>SIMD 显式向量化</strong>（AVX-512 intrinsic）</td><td>中</td><td>2-4×</td><td>自己写时配套</td></tr>
+          <tr><td>E</td><td><strong>多线程</strong>（OpenMP <code>parallel for</code> 切外层 i）</td><td>中</td><td>core 数 (8-32×)</td><td>自己写时必上</td></tr>
+          <tr><td>F</td><td><strong>GPU</strong>（cuBLAS / 自写 CUDA kernel）</td><td>高</td><td>100-1000×</td><td>N 大 / batch 多 / 有硬件</td></tr>
+          <tr><td>G</td><td><strong>分布式</strong>（MPI / NCCL / Ray）</td><td>极高</td><td>scale</td><td>N&gt;10⁵ 或 multi-GPU</td></tr>
+        </table>
+
+        <h4>期望的 senior 优先级排序 / Senior priority order</h4>
+        <ol>
+          <li><strong>先调 BLAS</strong>——"我不会自己写 GEMM。工业级 GEMM 是几十人年调优的产物。先 link 一个看够不够。"</li>
+          <li><strong>BLAS 不够 / 不能用</strong>时，自己写优化：E (多线程) → C (blocking) → D (SIMD)</li>
+          <li><strong>N 继续涨 (10⁵+) 或 batch matmul / 训练循环</strong>：上 GPU（优先 <code>cuBLAS</code>，特殊融合需求才自己写 CUDA kernel）</li>
+          <li><strong>还想再快</strong>：tensor cores (FP16/TF32 mixed precision) → 多 GPU → 分布式</li>
+        </ol>
+
+        <h4>评分关键 / Key signals</h4>
+        <ul>
+          <li><strong>🌟🌟 第一句就提 BLAS</strong>：真有数值计算经验、有"<strong>不重复造轮子</strong>"的工程意识——senior 最重要的标志</li>
+          <li><strong>🌟 主动提 cuBLAS 优先于自写 kernel</strong>：知道业界默认做法</li>
+          <li><strong>🌟 主动提 GPU（即使不是第一个）</strong>：脑子里有 GPU 这个工具，为 F4c 自然铺垫</li>
+          <li><strong>✅ 上来讲多线程 / blocking</strong>：会，但有点 mid-level——没意识到 BLAS 已经把这些做完了</li>
+          <li><strong>🟡 第一个就讲 GPU 但漏掉 BLAS</strong>：GPU 概念有、工程优先级感缺失</li>
+          <li><strong>⚠️ 完全没提 BLAS 也没提 GPU</strong>：可能只在 toy 级别写过 matmul</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 标准答案 · F4c GPU 深挖 / Expected Answer — F4c GPU Deep Dive</summary>
+      <div class="detail-body">
+        <h4>核心思路（必答）/ Core idea (must answer)</h4>
+        <p><strong>GPU = 算力批发店</strong>——进货成本（PCIe 传输）+ 零售单价（GPU 算力）。判断值不值得上 GPU，<strong>两个条件要同时满足</strong>：</p>
+        <ol>
+          <li><strong>算得多</strong>：计算量大到能"摊平"PCIe 传输成本</li>
+          <li><strong>数据复用</strong>：搬一次能算多次（训练循环 / batch matmul）</li>
+        </ol>
+        <p><strong>关键数字</strong>：PCIe 4.0 ~12 GB/s 单向 → 800MB 单程 ~67ms；如果只算一次就丢，PCIe 时间可能 > 计算时间，<strong>反而比 CPU 慢</strong>。</p>
+
+        <h4>什么场景值得上 / When GPU pays off</h4>
+        <ul>
+          <li>N &gt; 10000 单算（数据搬运摊得平）</li>
+          <li>Batch matmul（一次搬多个矩阵）</li>
+          <li>训练循环（同一份权重反复用 N 个 epoch）</li>
+          <li><strong>matmul 本身是 GPU 天选工作</strong>——算术强度极高（O(N²) 数据 vs O(N³) 计算，每搬 1 byte 算 N 次），整个深度学习革命就是建立在这之上</li>
+        </ul>
+
+        <h4>什么场景不值得（关键考察）/ When GPU is NOT worth it (key probe)</h4>
+        <ul>
+          <li><strong>单次中等规模 + 结果立刻给 CPU 用</strong>：PCIe 往返时间 &gt; GPU 计算时间</li>
+          <li><strong>大量小矩阵（N&lt;100）</strong>：每个 kernel launch 的 ~5μs 开销盖过算力优势——这种用 <strong>batched GEMM</strong> 或干脆 CPU</li>
+          <li><strong>没有 GPU 硬件 / 部署在 edge / 客户没买 GPU</strong>：工程现实</li>
+          <li><strong>开发成本不划算</strong>：一次性脚本，用 BLAS 几行搞定，没必要折腾 GPU 环境</li>
+        </ul>
+
+        <h4>如果真的上 GPU，怎么用 / How to actually use GPU</h4>
+        <ol>
+          <li><strong>第一选择：cuBLAS</strong>（<code>cublasDgemm</code>）——几乎永远更快，几十人年调优</li>
+          <li><strong>第二选择：高层框架</strong>——PyTorch / JAX / CuPy，自动选 backend</li>
+          <li><strong>自写 kernel 仅在</strong>：fused op（matmul + activation）、非标准 shape、研究新算法</li>
+        </ol>
+
+        <h4>自写 naive kernel 思路（候选人主动写代码时）/ Naive kernel sketch (if candidate volunteers)</h4>
+        <ul>
+          <li><strong>Grid / Block</strong>：2D grid，每个 thread 算一个 C[i][j]；典型 16×16 thread block</li>
+          <li><strong>Naive kernel 瓶颈</strong>：每个 thread 要从 global memory 读 2N 个元素，<strong>memory-bandwidth bound</strong>（和 CPU 朴素版同样的病）</li>
+          <li><strong>救命招：shared memory tiling</strong>——每个 block 协作把一对 tile 加载到 shared memory，所有 thread 复用 → 减少 N/tile 倍的 global memory 流量</li>
+          <li><strong>进阶</strong>：tensor cores（FP16/TF32 mixed precision，A100 上 ~300 TFLOPS）、多级 tiling（thread tile → warp tile → block tile）、CUTLASS</li>
+        </ul>
+
+        <h4>4 个深挖钩子 / 4 deep-dive probes</h4>
+        <table>
+          <tr><th>追问 / Probe</th><th>期望答案 / Expected</th><th>验证 / Validates</th></tr>
+          <tr><td>"为什么不一上来就 GPU？"</td><td>PCIe 传输成本 / 一次性计算不划算</td><td>真生产经验</td></tr>
+          <tr><td>"cuBLAS vs 自写 kernel 怎么选？"</td><td>几乎永远 cuBLAS，除非 fused op</td><td>业界默认做法</td></tr>
+          <tr><td>"自写 naive kernel 瓶颈 + 怎么救？"</td><td>global memory bandwidth → shared memory tiling</td><td>真写过 kernel</td></tr>
+          <tr><td>"coalesced access 是什么？"</td><td>warp 32 线程读连续地址 = 1 次 transaction，不连续掉 32×（接 F3）</td><td>真调过 kernel</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 评价标准 · 5 级简历可信度 / Evaluation — 5-tier Resume Credibility</summary>
+      <div class="detail-body">
+        <table>
+          <tr><th>候选人表现 / Performance</th><th>简历可信度 / Resume credibility</th></tr>
+          <tr><td>F4a 秒答 memory-bound + F4b 第一句 BLAS 优先 + F4c 能讲 PCIe 成本 + tensor cores + multi-level tiling + 主动谈 "什么场景不该上 GPU" + 提 CUTLASS / cuBLAS 选型 / warp coalesce 细节<br><span class="en-text">F4a instant memory-bound diagnosis + F4b BLAS-first + F4c covers PCIe / tensor cores / multi-level tiling + spontaneously discusses "when NOT to use GPU" + mentions CUTLASS / warp coalesce</span></td><td>🌟🌟🌟 <strong>L5 资深 GEMM 作者级</strong>——简历 100% 可信 / Top-tier GEMM expert; resume fully validated</td></tr>
+          <tr><td>F4a 答对 + F4b 提到 BLAS 和 GPU 都有 + F4c 能讲 shared memory tiling 的 motivation + 知道 PCIe 是大头 + 知道 cuBLAS 优于自写<br><span class="en-text">F4a correct + F4b mentions both BLAS and GPU + F4c articulates shared memory tiling motivation + knows PCIe overhead + cuBLAS &gt; self-written</span></td><td>🌟🌟 <strong>L4 真调优过 GPU kernel</strong>——简历可信 / Real GPU tuning experience; resume credible</td></tr>
+          <tr><td>F4a 答对 + F4b 列出多方案 + F4c 知道 GPU 适用场景 + 能讲基本 kernel 思路（2D grid, 1 thread/cell）但讲不深 tiling<br><span class="en-text">F4a correct + F4b lists multiple options + F4c knows GPU use cases + can describe basic kernel (2D grid, 1 thread per cell) but not deep tiling</span></td><td>🌟 <strong>L3 用过 GPU、写过简单 kernel</strong>——简历基本可信 / Has used GPU, written simple kernel</td></tr>
+          <tr><td>F4a 卡在数量级 + F4b 只能想到 1-2 方案 + F4c 听说过 GPU 但讲不出具体怎么用 / 误以为 "GPU 永远更快"<br><span class="en-text">F4a stuck on magnitudes + F4b 1-2 options only + F4c heard of GPU but can't describe usage / thinks "GPU is always faster"</span></td><td>🟡 <strong>L1-L2 听说过 GPU、没真做过</strong>——简历有夸大 / Heard of GPU, never really used; resume exaggerated</td></tr>
+          <tr><td>F4a 没数感 + F4b 一片空白 + F4c 完全讲不出 GPU 思路<br><span class="en-text">F4a no number sense + F4b blank + F4c can't describe GPU at all</span></td><td>⚠️ <strong>简历严重不符</strong>——红旗 / Resume severely misrepresented; red flag</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <blockquote class="interviewer-note">
+      <strong>🎯 关键说明 / Key notes：</strong>
+      <ul style="margin:6px 0 0 18px;">
+        <li><strong>F4a · 启动数量级估算的 hint：</strong>"先帮我算一下，10000×10000 的 double 矩阵多大？单线程估计跑多久？" 引到 800MB + 100 秒。</li>
+        <li><strong>F4b · 候选人忘提 BLAS：</strong>问 "你听说过 OpenBLAS / MKL 吗？为什么大家不自己写 matmul？" 不提 BLAS 还到 senior 级是<strong>严重缺口</strong>。</li>
+        <li><strong>F4b · 候选人忘提 GPU：</strong>不要硬拽，F4c 会兜底。这里观察"自发性"——主动提 GPU = 🌟 信号。</li>
+        <li><strong>F4c 必问：</strong>无论候选人 F4b 提没提 GPU，F4c 都要问——这是简历验证的硬核环节。</li>
+        <li><strong>F4c · "什么场景不该上 GPU" 是分水岭。</strong>讲得出 PCIe 传输 / kernel launch 开销 / 小矩阵不划算 = 真做过；讲不出 = 只听说过。<strong>这是 senior 和 mid-level 最大区别。</strong></li>
+        <li><strong>F4c · 候选人开始默写 CUDA syntax 时打断：</strong>"语法不重要，告诉我思路就行。" 关注点是<strong>思路深度</strong>不是 syntax 记忆。</li>
+        <li><strong>F4c · 主动提 tensor cores / CUTLASS / bank conflict / occupancy：</strong>L4-L5 信号，每提一个就 +1 档。</li>
+        <li><strong>📌 时间分配：</strong>F4a ~1 min（不超时）、F4b ~2 min（重点听优先级排序）、F4c ~2-3 min（深挖钩子轮着问）。F4c 顶级候选人可能不需要钩子、自己一口气讲完——让他讲。</li>
+        <li><strong>📌 Python 候选人在 F4 完全没问题。</strong>BLAS 在 Python 里是 numpy（底层 OpenBLAS / MKL）；GPU 在 Python 里是 PyTorch / CuPy / JAX。Python 反而是 GPU 数值计算的主流接入语言。</li>
+        <li><strong>📌 F4 是 P0 拓展追问的收尾。</strong>F4 答完无论好坏都建议给 1-2 min 让候选人提问，然后结束 P0 部分。</li>
       </ul>
     </blockquote>
   </div>
