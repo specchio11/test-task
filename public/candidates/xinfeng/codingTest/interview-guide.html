@@ -516,7 +516,9 @@ Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
     return C;
 }</code></pre>
 
-    <h4>📝 全流程解说 / Step-by-step walkthrough</h4>
+    <details class="walkthrough-inner">
+      <summary>📝 全流程解说 / Step-by-step walkthrough</summary>
+      <div class="detail-body">
 
     <h4>Step 1 — 空输入短路</h4>
     <p>三个条件：</p>
@@ -555,6 +557,8 @@ Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
       <li><strong>关键工程细节</strong>：用局部变量 <code>acc</code> 累加，最后一次性写入 <code>C[i][j]</code>。比直接 <code>C[i][j] += ...</code> 减少对 <code>C[i][j]</code> 的反复 indirection 访问（虽然现代编译器开 <code>-O2</code> 后通常能识别并优化掉，但显式写出是 senior 习惯）。</li>
     </ul>
     <p class="en-text">Classic <code>i-j-p</code> triple loop. <strong>Key engineering detail</strong>: a local <code>acc</code> accumulator avoids repeated indirection through <code>C[i][j]</code>. Modern compilers often hoist this with <code>-O2</code>, but writing it explicitly is a senior habit.</p>
+      </div>
+    </details>
   </div>
 </details>
 
@@ -594,7 +598,9 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
 
     return C</code></pre>
 
-    <h4>📝 全流程解说 / Step-by-step walkthrough</h4>
+    <details class="walkthrough-inner">
+      <summary>📝 全流程解说 / Step-by-step walkthrough</summary>
+      <div class="detail-body">
 
     <h4>Step 1 — 空输入短路</h4>
     <p>Python 的 truthiness：空 list <code>[]</code> 为 <code>False</code>。<code>not A</code> 即 <code>len(A) == 0</code>；<code>not A[0]</code> 即 A 的第一行是空 list（k=0）。<strong>判断顺序不能颠倒</strong>（先确认 A 非空才能访问 <code>A[0]</code>）。</p>
@@ -619,6 +625,8 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
 
     <h4>Step 5 — 三重循环</h4>
     <p>与 C++ 完全对应。<code>range(k)</code> 生成 0 到 k-1。Python 没有 <code>++</code>，自然用 <code>for p in range(k)</code>。</p>
+      </div>
+    </details>
   </div>
 </details>
 
