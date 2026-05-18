@@ -296,9 +296,7 @@
     <div class="qp-group-title" style="color:var(--accent);">P0 · Basic (no perf)</div>
     <a class="qp-sub orange" href="#problem" onclick="jump('problem');return false;">📋 题面 / Problem Statement</a>
     <a class="qp-sub orange" href="#examples" onclick="jump('examples');return false;">🧪 示例 / Examples</a>
-    <a class="qp-sub blue" href="#reference-cpp" onclick="jump('reference-cpp');return false;">📖 C++ 参考答案</a>
-    <a class="qp-sub green" href="#reference-py" onclick="jump('reference-py');return false;">🐍 Python 参考答案</a>
-    <a class="qp-sub orange" href="#language-diff" onclick="jump('language-diff');return false;">🔄 两种语言差异</a>
+    <a class="qp-sub blue" href="#reference" onclick="jump('reference');return false;">📖 参考答案 (C++ / Python)</a>
   </div>
 
   <div class="qp-group">
@@ -466,12 +464,17 @@
 
 <hr class="separator">
 
-<!-- ==================== C++ REFERENCE ANSWER ==================== -->
-<h2 id="reference-cpp">📖 C++ 参考答案 / C++ Reference Answer <span class="tag tag-lang">C++17</span></h2>
+<!-- ==================== REFERENCE SOLUTIONS ==================== -->
+<h2 id="reference">📖 参考答案 / Reference Solutions <span style="font-size:16px;color:var(--text-muted);font-weight:500;">(C++ / Python · 默认折叠 · click to expand)</span></h2>
 
 <div class="card">
-  <p style="color:var(--text-muted);">推荐这个候选人写 C++ —— 贴他 Azure TTS 的实际工作环境，与后续性能讨论（cache / SIMD / CUDA）无缝衔接。<br>
-  <span class="en-text">Recommended language for this candidate — matches his Azure TTS environment and connects seamlessly to the perf phase (cache / SIMD / CUDA).</span></p>
+  <p style="margin:0;color:var(--text-muted);">推荐这个候选人写 <strong>C++</strong>——贴合他 Azure TTS 的工作环境，与后续 P1-P5 性能讨论（cache / SIMD / CUDA）无缝衔接。若选 Python：逻辑可快速验证，但 P1 开头必须明确"假设代码翻译成 C++"，且<strong>禁止</strong>调用 <code>numpy.matmul</code> / <code>np.dot</code>。<br>
+  <span class="en-text">Recommend <strong>C++</strong> (matches Azure TTS environment; seamless transition to perf phase). If Python: useful for verifying logic, but at start of P1 must say "assume translated to C++"; reject <code>numpy.matmul</code> / <code>np.dot</code>.</span></p>
+</div>
+
+<details id="ref-cpp">
+  <summary>📖 C++ 参考答案 / C++ Reference Answer <span class="tag tag-lang">C++17</span></summary>
+  <div class="detail-body">
 
 <pre><code>#include &lt;vector&gt;
 #include &lt;stdexcept&gt;
@@ -512,11 +515,8 @@ Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
 
     return C;
 }</code></pre>
-</div>
 
-<details open id="cpp-walkthrough">
-  <summary>📝 全流程解说 / Step-by-step walkthrough</summary>
-  <div class="detail-body">
+    <h4>📝 全流程解说 / Step-by-step walkthrough</h4>
 
     <h4>Step 1 — 空输入短路</h4>
     <p>三个条件：</p>
@@ -558,14 +558,9 @@ Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
   </div>
 </details>
 
-<hr class="separator">
-
-<!-- ==================== PYTHON REFERENCE ANSWER ==================== -->
-<h2 id="reference-py">🐍 Python 参考答案 / Python Reference Answer <span class="tag tag-py">Python 3.10+</span></h2>
-
-<div class="card">
-  <p style="color:var(--text-muted);">如果候选人选 Python：逻辑可以快速验证，但后续 P1-P5 性能阶段必须切回 C++ 或显式讨论 "翻译成 C++ 后的行为"，否则 Python 解释器开销会掩盖真正的 cache / SIMD 信号。<br>
-  <span class="en-text">If the candidate picks Python: fast for verifying logic, but in P1-P5 you must switch to C++ (or explicitly discuss "behaviour assuming a C++ translation") — otherwise Python interpreter overhead masks the real cache / SIMD signals.</span></p>
+<details id="ref-py">
+  <summary>🐍 Python 参考答案 / Python Reference Answer <span class="tag tag-py">Python 3.10+</span></summary>
+  <div class="detail-body">
 
 <pre><code>from typing import List
 
@@ -598,11 +593,8 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
             C[i][j] = acc                       # 写回
 
     return C</code></pre>
-</div>
 
-<details open id="py-walkthrough">
-  <summary>📝 全流程解说 / Step-by-step walkthrough</summary>
-  <div class="detail-body">
+    <h4>📝 全流程解说 / Step-by-step walkthrough</h4>
 
     <h4>Step 1 — 空输入短路</h4>
     <p>Python 的 truthiness：空 list <code>[]</code> 为 <code>False</code>。<code>not A</code> 即 <code>len(A) == 0</code>；<code>not A[0]</code> 即 A 的第一行是空 list（k=0）。<strong>判断顺序不能颠倒</strong>（先确认 A 非空才能访问 <code>A[0]</code>）。</p>
@@ -632,108 +624,13 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
 
 <hr class="separator">
 
-<!-- ==================== LANGUAGE DIFFERENCES ==================== -->
-<h2 id="language-diff">🔄 C++ vs Python 两版差异 / Key Differences</h2>
-
-<div class="card">
-  <table>
-    <thead>
-      <tr>
-        <th>维度 / Dimension</th>
-        <th>C++</th>
-        <th>Python</th>
-        <th>实际影响 / Practical impact</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>类型系统</strong><br>Type system</td>
-        <td>强类型，编译期检查；<code>vector&lt;vector&lt;double&gt;&gt;</code> 必须明确</td>
-        <td>动态类型；<code>Matrix = List[List[float]]</code> 只是 hint，运行时不强制</td>
-        <td>C++ 类型错编译失败；Python 跑到那行才 TypeError</td>
-      </tr>
-      <tr>
-        <td><strong>参数传递语义</strong><br>Param passing</td>
-        <td>必须显式 <code>const Matrix&amp;</code> 才是按引用；写成 <code>Matrix A</code> 就是<strong>值拷贝</strong>（拷贝整个 m×k 矩阵，O(mk)）</td>
-        <td>list 永远按引用语义传递（无须语法标记）</td>
-        <td>C++ 写错一个 <code>&amp;</code> 就吃 O(mk) 拷贝代价；Python 无此坑</td>
-      </tr>
-      <tr>
-        <td><strong>矩阵分配</strong><br>Matrix allocation</td>
-        <td><code>Matrix C(m, std::vector&lt;double&gt;(n, 0.0))</code>——嵌套构造器，啰嗦但显式</td>
-        <td><code>[[0.0] * n for _ in range(m)]</code>——列表推导式，一行</td>
-        <td>Python 写法更简洁，但<strong>有 <code>[[0.0]*n]*m</code> 陷阱</strong></td>
-      </tr>
-      <tr>
-        <td><strong>错误处理</strong><br>Error handling</td>
-        <td><code>throw std::invalid_argument(...)</code>；错误信息要手动拼字符串（<code>std::to_string</code>）</td>
-        <td><code>raise ValueError(f"...")</code>；f-string 内插</td>
-        <td>Python 错误信息可读性天然更好</td>
-      </tr>
-      <tr>
-        <td><strong>空检查</strong><br>Empty check</td>
-        <td><code>A.empty()</code> / <code>A[0].empty()</code>——调成员函数</td>
-        <td><code>not A</code> / <code>not A[0]</code>——truthiness 隐式判断</td>
-        <td>Python 写法更短，但隐式判断在大型代码库里降低可读性</td>
-      </tr>
-      <tr>
-        <td><strong>索引类型</strong><br>Index type</td>
-        <td><code>size_t</code>（无符号 64 位），与 <code>.size()</code> 返回值匹配</td>
-        <td>普通 <code>int</code>，无类型负担</td>
-        <td>C++ 用 <code>int</code> 会触发 <code>-Wsign-compare</code> 警告</td>
-      </tr>
-      <tr>
-        <td><strong>执行性能 (N=1024)</strong><br>Runtime perf</td>
-        <td>编译后 <code>-O2</code>，~1 GFLOPS 量级，几秒内出结果</td>
-        <td>解释执行 + 每次 <code>+=</code> 都涉及 PyObject 装箱，<strong>慢 50-100×</strong>，可能跑分钟级</td>
-        <td>写 Python 验证正确性可以，做 perf 题必须切回 C++</td>
-      </tr>
-      <tr>
-        <td><strong>内存模型</strong><br>Memory model</td>
-        <td><code>vector&lt;vector&lt;double&gt;&gt;</code> 每行独立堆分配，行间不连续</td>
-        <td><code>list of list of float</code>，每个 float 是 PyObject (24+ 字节)，行间不连续 + 元素本身也是 pointer</td>
-        <td>Python 实际内存占用是 C++ 的 ~5-10×</td>
-      </tr>
-      <tr>
-        <td><strong>数值类型</strong><br>Numeric type</td>
-        <td><code>double</code> 严格 IEEE 754 binary64</td>
-        <td><code>float</code> 实际就是 IEEE 754 binary64（与 C <code>double</code> 等价）</td>
-        <td>数值结果一致，无精度差</td>
-      </tr>
-      <tr>
-        <td><strong>编译/运行</strong><br>Build/run</td>
-        <td>需要 <code>g++ -O2 -o mm mm.cpp &amp;&amp; ./mm</code></td>
-        <td>直接 <code>python mm.py</code></td>
-        <td>Python 演示更快，C++ 调试反馈链更长</td>
-      </tr>
-      <tr>
-        <td><strong>依赖</strong><br>Dependencies</td>
-        <td>仅 <code>&lt;vector&gt;</code> + <code>&lt;stdexcept&gt;</code>，标准库</td>
-        <td>仅 <code>typing.List</code>（可省略）</td>
-        <td>两者都零外部依赖</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="card" style="border-left:4px solid var(--accent);">
-  <h4 style="color:var(--accent);">💡 面试现场的语言选择建议 / Language choice in the room</h4>
-  <ul>
-    <li><strong>候选人选 C++（推荐这个候选人）</strong>：与他 Azure TTS 工作环境一致，后续 perf 阶段无缝衔接（cache、SIMD、CUDA 都自然过渡）。<br><span class="en-text">Picks C++ (recommended for this candidate): matches Azure TTS environment; seamless transition into cache / SIMD / CUDA discussion.</span></li>
-    <li><strong>候选人选 Python</strong>：可以快速验证逻辑，但你<strong>必须</strong>在 P1 开头说："接下来我们讨论性能时，请假设代码已经翻译成 C++（或讨论一个 C++ 实现的行为）"——否则 Python 的解释器开销会掩盖真正想考的 cache / 向量化 问题。<br><span class="en-text">Picks Python: useful to verify correctness, but at start of P1 you MUST say "for the perf discussion, please assume this is translated to C++" — otherwise interpreter overhead masks the real signals.</span></li>
-    <li><strong>候选人想用 <code>numpy.matmul</code> / <code>np.dot</code></strong>：直接拒绝。题面已写明禁止——P0 是要确认他<strong>能不能自己手写算法</strong>，不是测试 API 调用能力。<br><span class="en-text">Wants to use <code>numpy.matmul</code> / <code>np.dot</code>: refuse. The problem statement forbids it — P0 is about hand-writing the algorithm, not testing API knowledge.</span></li>
-  </ul>
-</div>
-
-<hr class="separator">
-
 <!-- ==================== FUTURE PHASES PLACEHOLDER ==================== -->
 <h2 id="future">🚧 P1-P5 性能优化阶段 / Performance Optimization Phases <span class="tag tag-time">~10 min · 待添加</span></h2>
 
 <div class="placeholder-card">
-  <p><strong>📌 本页 P0 已完成（题面 + C++ 参考 + Python 参考 + 差异表）</strong></p>
+  <p><strong>📌 本页 P0 已完成（题面 + C++ 参考 + Python 参考）</strong></p>
   <p style="margin-top:8px;">P1-P5 内容（cache locality / loop reorder / blocking / SIMD / GPU kernel）将在下一轮补充。</p>
-  <p class="en-text" style="margin-top:8px;">P0 (problem + C++ ref + Python ref + diff table) is complete. P1-P5 content (cache locality / loop reorder / blocking / SIMD / GPU kernel) will be added in the next iteration.</p>
+  <p class="en-text" style="margin-top:8px;">P0 (problem + C++ ref + Python ref) is complete. P1-P5 content (cache locality / loop reorder / blocking / SIMD / GPU kernel) will be added in the next iteration.</p>
   <p style="margin-top:12px;font-size:16px;color:#9a3412;">计划阶段：P1 找瓶颈 → P2 loop reorder → P3 blocking/tiling → P4 SIMD → P5 GPU kernel mental model</p>
 </div>
 
