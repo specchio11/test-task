@@ -308,6 +308,7 @@
     <div class="qp-group-title" style="color:var(--accent);">P0 · Follow-ups</div>
     <a class="qp-sub orange" href="#followup1" onclick="jump('followup1');return false;">追问 1 — 存储 layout &amp; 访存代价</a>
     <a class="qp-sub orange" href="#followup2" onclick="jump('followup2');return false;">追问 2 — Loop reorder 修复</a>
+    <a class="qp-sub orange" href="#followup3" onclick="jump('followup3');return false;">追问 3 — Flat layout 重写</a>
   </div>
 
   <div class="qp-group">
@@ -839,6 +840,122 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
         <li><strong>最常见 bug：</strong>不预先置 0（但原代码用 <code>vector(n, 0.0)</code> 别名刚好避免）；或者仍用 <code>acc</code> 然后在错误位置赋给 <code>C[i][j]</code>。发现 bug 后指一下：“<code>C[i][j]</code> 现在被多次访问了，你确保初始是 0 吗？”</li>
         <li><strong>“为什么变快” 卡壳时的 hint：</strong>“Cache line 一次载入 64 字节 = 8 个 double。原版每次只用 1 个就跳走。新版呢？” —— 一步把他从 “知道结果” 逼到 “理解机制”。</li>
         <li><strong>加分项 · 浮点敦动意识：</strong>如果候选人主动提“严格来说两版本结果会有微小 IEEE 754 舍入差异，因为累加顺序变了”——这是<strong>顶级 Senior 信号</strong>（说明他懂浮点 + 懂数值算法），记在 Notes 里。</li>
+      </ul>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<!-- ==================== FOLLOW-UP 3 ==================== -->
+<div id="followup3">
+<details open>
+  <summary>
+    追问 3：Flat layout 重写 / Rewrite with Flat Layout
+    <span class="tag tag-time">3-4 min</span>
+    <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
+  </summary>
+  <div class="detail-body">
+
+    <h4>🎯 锚点 / Anchor</h4>
+    <p>F2 时<strong>临时禁止</strong>改 <code>Matrix</code> 类型。F3 把这个约束<strong>解除</strong>——“现在让你改类型，你会怎么改？”同时也是 F1 里提到的 “<code>vector&lt;vector&lt;&gt;&gt;</code> 行间不连续” caveat 的造手修复。<br>
+    <span class="en-text">F2 <strong>temporarily forbade</strong> changing the <code>Matrix</code> type. F3 <strong>lifts that constraint</strong> — "now you can change the type, what would you do?" This is also the hands-on fix to the "<code>vector&lt;vector&lt;&gt;&gt;</code> rows not contiguous" caveat raised in F1.</span></p>
+
+    <h4>提问 / Question</h4>
+    <blockquote>
+      <strong>EN:</strong> "Now I'm lifting the constraint from F2 — you can change the <code>Matrix</code> type. Reimplement <code>Matrix</code> as a flat <code>vector&lt;double&gt;</code> of size <code>rows*cols</code> with manual <code>[i*cols+j]</code> indexing. Then rewrite <code>multiply</code> using your new type. After that, give me <strong>at least 3 reasons</strong> why real numerical libraries (Eigen, BLAS, cuBLAS) always use this layout instead of <code>vector&lt;vector&lt;&gt;&gt;</code>."
+    </blockquote>
+    <blockquote>
+      <strong>中:</strong> "现在我解除 F2 的约束——你可以改 <code>Matrix</code> 类型了。请把 <code>Matrix</code> 重新实现为一个 flat 的 <code>vector&lt;double&gt;</code>，大小 <code>rows*cols</code>，手动用 <code>[i*cols+j]</code> 做索引。然后用新类型重写 <code>multiply</code>。完了之后给我<strong>至少 3 条理由</strong>：为什么真实数值库（Eigen、BLAS、cuBLAS）一定用这种 layout 而不是 <code>vector&lt;vector&lt;&gt;&gt;</code>？"
+    </blockquote>
+
+    <details>
+      <summary>📖 标准答案 / Expected Answer</summary>
+      <div class="detail-body">
+        <h4>代码（C++）/ Code (C++)</h4>
+<pre><code>struct Matrix {
+    size_t rows = 0, cols = 0;
+    std::vector&lt;double&gt; data;            // size = rows * cols, row-major flat
+
+    Matrix() = default;
+    Matrix(size_t r, size_t c, double init = 0.0)
+        : rows(r), cols(c), data(r * c, init) {}
+
+    double&amp; at(size_t i, size_t j)       { return data[i * cols + j]; }
+    double  at(size_t i, size_t j) const { return data[i * cols + j]; }
+};
+
+Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
+    if (A.cols != B.rows)
+        throw std::invalid_argument("dim mismatch");
+
+    Matrix C(A.rows, B.cols, 0.0);          // 一次性分配
+    for (size_t i = 0; i &lt; A.rows; ++i) {
+        for (size_t p = 0; p &lt; A.cols; ++p) {
+            const double a = A.at(i, p);
+            for (size_t j = 0; j &lt; B.cols; ++j) {
+                C.at(i, j) += a * B.at(p, j);   // 依然是 i-p-j
+            }
+        }
+    }
+    return C;
+}</code></pre>
+        <p><strong>与 F2 的区别只有两点 / Only two differences from F2:</strong></p>
+        <ol>
+          <li><strong>类型表示不同</strong>：从 <code>vector&lt;vector&lt;double&gt;&gt;</code> 换成自定义 <code>struct{rows, cols, data}</code></li>
+          <li><strong>索引表示不同</strong>：<code>A[i][p]</code> → <code>A.at(i, p)</code>，底层 = <code>data[i * cols + p]</code></li>
+        </ol>
+        <p><strong>循环主体不变。</strong>F3 送给候选人的信号：“<strong>F2 的算法级优化 + F3 的数据结构级优化 = 两个独立、累计生效的优化</strong>”。</p>
+
+        <h4>为什么真实库都用这个 layout（期望⍥3 条）/ Why real libs use this layout (expect ≥3 reasons)</h4>
+        <ol>
+          <li><strong>一次性堆分配</strong>：<code>vector&lt;double&gt;(m*n)</code> 走一次 <code>new[]</code>；vs <code>vector&lt;vector&lt;&gt;&gt;</code> 需要 <strong>m+1 次 <code>new[]</code></strong>。减少 allocator 开销 + 避免堆碎片 + 初始化更快。</li>
+          <li><strong>行间内存连续</strong>：硬件 prefetcher 能<strong>跨行预取</strong>（从第 i 行末端顺到第 i+1 行头部）；TLB 命中率高；huge pages 可用。</li>
+          <li><strong>指针 indirection 消失</strong>：<code>A.at(i,p)</code> = 一次乘加 (<code>i*cols+p</code>) + 一次 load；<code>A[i][p]</code> = 一次 load vector header + 一次 load data 指针 + 一次 load 数据 → 少走 1-2 次内存。</li>
+          <li><strong>可直接传给 BLAS / cuBLAS / GPU</strong>：这些库接口都要 <code>(double* ptr, int ld)</code> 形式；nested vector <strong>完全不兼容</strong>——传给 cuBLAS 必须先 deep copy 成 flat，那不如一开始就是 flat。</li>
+          <li><strong>SIMD load 友好</strong>：<code>_mm256_load_pd</code> / <code>_mm512_load_pd</code> 一次连续读 4 或 8 个 double；nested vector 跨行边界时必须停下重新加载指针。</li>
+          <li><strong>可控的 alignment / padding</strong>：真实 BLAS 会让 leading dimension 是 cache line 倍数（避免 conflict miss）；nested vector 没法控制每行起始地址。</li>
+          <li><strong>ABI 清晰、零拷贝跨语言</strong>：一个连续 buffer 可以零拷贝传给 Python (numpy)、Rust、CUDA kernel、网络协议。</li>
+        </ol>
+
+        <h4>BLAS 风格的 leading dimension（加分项）/ BLAS-style leading dimension (bonus)</h4>
+        <p>真正生产级的 flat layout 还会多一个 <code>ld</code> 参数：</p>
+<pre><code>struct Matrix {
+    size_t rows, cols, ld;          // ld &gt;= cols, 行践的实际步长
+    std::vector&lt;double&gt; data;       // size = rows * ld
+    double&amp; at(size_t i, size_t j) { return data[i * ld + j]; }
+};</code></pre>
+        <p><strong>为什么要 <code>ld</code>？</strong></p>
+        <ul>
+          <li>支持 <strong>sub-matrix (slice) 零拷贝</strong>：从一个大矩阵取一个块作为子矩阵，ld 仍指向大矩阵的行步长——<strong>不需要拷贝子块</strong>，直接在原地计算。</li>
+          <li>支持 <strong>alignment padding</strong>：ld 可以被填充到 cache line / SIMD register 倍数，避免 false sharing 和未对齐 load。</li>
+        </ul>
+        <p>候选人主动提 leading dimension → <strong>🌟🌟 BLAS 真懂</strong>。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 评价标准 / Evaluation</summary>
+      <div class="detail-body">
+        <table>
+          <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
+          <tr><td>自定义 <code>struct{rows, cols, data}</code> + 索引写对 + 列出 <strong>≥5 条</strong>理由（含 BLAS / cuBLAS / SIMD / alignment / leading dimension 词汇）<br><span class="en-text">Defines struct + correct indexing + lists ≥5 reasons (with BLAS / cuBLAS / SIMD / alignment / leading-dimension vocabulary)</span></td><td>🌟🌟 数值计算栈真有经验，可跳过 F4 基础部分、直接上 F4 高阶 / Real numerical-stack expert; can skip F4 basics and go to advanced</td></tr>
+          <tr><td>struct + 索引对 + 3-4 条理由（至少含“一次分配 / 无 indirection / BLAS 兼容”中的两条）<br><span class="en-text">struct + correct indexing + 3-4 reasons (at least 2 of: single allocation / no indirection / BLAS compat)</span></td><td>🌟 SDE2-Senior 达标 / SDE2-Senior level</td></tr>
+          <tr><td>struct + 索引对，但理由只能说“内存连续会快”——讲不清具体机制<br><span class="en-text">struct + correct indexing but reasons stop at "contiguous memory is faster" — can't articulate specific mechanism</span></td><td>✅ 经验型，及格 / Experience-based, passing</td></tr>
+          <tr><td>索引写错（<code>[i*rows+j]</code> 或 <code>[j*cols+i]</code> 这种典型错误）但被提示后能 self-debug<br><span class="en-text">Indexing bug (<code>[i*rows+j]</code> or <code>[j*cols+i]</code>) but self-debugs when prompted</span></td><td>🟡 注意力问题，可恢复 / Attention slip, recoverable</td></tr>
+          <tr><td>完全卡在“怎么把 2D 映射到 1D”——索引算式想不出来<br><span class="en-text">Completely stuck on "how to map 2D to 1D" — can't derive the index formula</span></td><td>⚠️ Senior 不应该卡在这里 / Senior should not be stuck here</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <blockquote class="interviewer-note">
+      <strong>🎯 关键说明 / Key notes：</strong>
+      <ul style="margin:6px 0 0 18px;">
+        <li><strong>最常见 bug · 索引写错：</strong><code>[i*rows+j]</code> 或 <code>[j*cols+i]</code>。看候选人能不能 self-debug：“打印一下 (0,1) 元素的位置在哪里？跳 cols 个还是 rows 个？”</li>
+        <li><strong>主动提 leading dimension → 🌟🌟 信号。</strong>可追问：“为什么 BLAS 的 GEMM 接口要 <code>lda</code> / <code>ldb</code> / <code>ldc</code> 参数？” 期望答 “支持子矩阵 slice 零拷贝”。</li>
+        <li><strong>只能说“连续就是快”的 hint：</strong>“具体说，一次 <code>new[]</code> 1MB 和 1024 次 <code>new[]</code> 1KB，开销差在哪里？” 引到 allocator overhead。或者问：“为什么 prefetcher 能跨行预取主要是 flat layout 才能做到？”</li>
+        <li><strong>主动提 column-major → 🌟 信号。</strong>可引申：“什么时候用 column-major 更合适？” 期望答 “Fortran/BLAS 默认、列操作多的场景（QR / SVD）。”</li>
+        <li><strong>F3 顶级表现 → 可以跳 F4 基础。</strong>如果候选人 30 秒内写对 + 一气列 5 条理由 + 提了 leading dimension/column-major——资深 GEMM 作者才有这个反应。上去直接问 F4 高阶点（tensor cores 、多级 tiling）、别浪费时间走 4a 的 naive kernel。</li>
+        <li><strong>📌 语言后贴 · 若候选人用 Python：</strong>这个追问需要提醒 “假设你是在写 C++”（P0 既定规则）。若候选人用了 <code>numpy.zeros((m,n))</code>，可反方向追问：“ndarray 本身为什么不会有 F1 讨论的 ‘行间不连续’ 问题？” 期望答 “ndarray 底层就是连续 buffer + shape/strides”——同样考察点、不同表达。</li>
       </ul>
     </blockquote>
   </div>
