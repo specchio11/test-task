@@ -307,6 +307,7 @@
   <div class="qp-group">
     <div class="qp-group-title" style="color:var(--accent);">P0 · Follow-ups</div>
     <a class="qp-sub orange" href="#followup1" onclick="jump('followup1');return false;">追问 1 — 存储 layout &amp; 访存代价</a>
+    <a class="qp-sub orange" href="#followup2" onclick="jump('followup2');return false;">追问 2 — Loop reorder 修复</a>
   </div>
 
   <div class="qp-group">
@@ -715,6 +716,129 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
         <li><strong>(b) 卡壳时的 hint：</strong>"cache line 一次载入 64 字节。<code>B[p][j]</code> 和 <code>B[p+1][j]</code> 在内存里相距多远？" 引导候选人推 stride-n。</li>
         <li><strong>如果 (a) 主动提到 "行间不连续"</strong>——这是简历真实性的强信号。后续可直接问"那如果想让行间也连续，你会怎么改？"<strong>无缝过渡到 F3 (flat layout)</strong>。</li>
         <li><strong>仅 stride 但不提 cache line</strong> 的候选人，可追问"为什么 stride 大就慢？硬件层面发生了什么？"——验证他是否真的理解硬件而不是背概念。</li>
+      </ul>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<!-- ==================== FOLLOW-UP 2 ==================== -->
+<div id="followup2">
+<details open>
+  <summary>
+    追问 2：Loop reorder 修复 / Fix It with Loop Reorder
+    <span class="tag tag-time">3-4 min</span>
+    <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
+  </summary>
+  <div class="detail-body">
+
+    <h4>🎯 锚点 / Anchor</h4>
+    <p>接 F1 的结论——候选人刚说完 "B 是瓶颈"，现在让他<strong>动手修。</strong>F1 是诊断，F2 是接上的 "diagnose → fix" 闭环。<br>
+    <span class="en-text">Picks up F1's conclusion — candidate just said "B is the bottleneck"; now make them <strong>actually fix it</strong>. F1 = diagnose, F2 = close the "diagnose → fix" loop.</span></p>
+
+    <h4>提问 / Question</h4>
+    <blockquote>
+      <strong>EN:</strong> "OK, so you just told me B's column access is the bottleneck. Now show me the <strong>smallest code change</strong> to your existing function that fixes this. Don't change the function signature, don't change the <code>Matrix</code> type — just rewrite the body. Then walk me through why the new version is faster."
+    </blockquote>
+    <blockquote>
+      <strong>中:</strong> "好，你刚说 B 的列访问是瓶颈。现在请你给我<strong>最小的代码改动</strong>来修这个问题。不准改函数签名、不准改 <code>Matrix</code> 类型——只重写函数体。然后告诉我为什么新版本更快。"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>注意 / Note:</strong> 两个约束<strong>必须明说</strong>——“不改签名、不改 Matrix 类型”，是为了把 "换 flat layout" 这条路<strong>临时堆死</strong>，逗候选人在<strong>算法层</strong>（而不是数据结构层）思考。Flat layout 留给开放式 F3。<br>
+      <span class="en-text">Both constraints <strong>must be stated explicitly</strong> — "no signature change, no Matrix type change" — to temporarily kill the "flat layout" escape route, forcing the candidate to think at the <strong>algorithmic level</strong> (not data-structure level). Flat layout is reserved for F3.</span>
+    </blockquote>
+
+    <details>
+      <summary>📖 标准答案 / Expected Answer</summary>
+      <div class="detail-body">
+        <h4>代码（C++）/ Code (C++)</h4>
+<pre><code>Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
+    const size_t m = A.size();
+    const size_t k = A.empty() ? 0 : A[0].size();
+    const size_t n = B.empty() ? 0 : B[0].size();
+    if (!B.empty() &amp;&amp; B.size() != k)
+        throw std::invalid_argument("dim mismatch");
+
+    Matrix C(m, std::vector&lt;double&gt;(n, 0.0));   // 必须预先置 0
+    for (size_t i = 0; i &lt; m; ++i) {
+        for (size_t p = 0; p &lt; k; ++p) {
+            const double a = A[i][p];             // hoist 出内层
+            for (size_t j = 0; j &lt; n; ++j) {
+                C[i][j] += a * B[p][j];           // B[p][·] 、 C[i][·] 都是 stride-1
+            }
+        }
+    }
+    return C;
+}</code></pre>
+        <p><strong>与原版的三个区别 / Three differences from original:</strong></p>
+        <ol>
+          <li><strong>循环顺序</strong>：<code>i-j-p</code> → <code>i-p-j</code>（交换后两层）</li>
+          <li><strong>累加方式</strong>：原版用 <code>acc</code> 累加完后赋值给 <code>C[i][j]</code>；新版用 <code>C[i][j] +=</code>——所以 <code>C</code> <strong>必须预先置 0</strong>（原代码的 <code>vector(n, 0.0)</code> 刚好满足）</li>
+          <li><strong>提取不变量</strong>：<code>const double a = A[i][p];</code> 提到最内层外面（编译器一般会做，主动写出体现对热点的控制意识）</li>
+        </ol>
+
+        <h4>为什么这能解决：三层解释 / Why this works — three layers</h4>
+
+        <p><strong>第一层 · 访问 pattern 对比表 / Layer 1 · Access pattern comparison</strong></p>
+        <table>
+          <tr><th>访问</th><th>原版 <code>i-j-p</code>（内层是 p）</th><th>F2 版 <code>i-p-j</code>（内层是 j）</th></tr>
+          <tr><td><code>A[i][p]</code></td><td>i 定、p 增 → <strong>stride-1</strong> ✅</td><td>i、p 都定 → <strong>scalar</strong>（提取到寄存器）✅✅</td></tr>
+          <tr><td><code>B[p][j]</code></td><td>j 定、p 增 → <strong>stride-n</strong> ❌</td><td>p 定、j 增 → <strong>stride-1</strong> ✅</td></tr>
+          <tr><td><code>C[i][j]</code></td><td>i、j 都定 → <strong>scalar</strong>（acc 在寄存器）✅✅</td><td>i 定、j 增 → <strong>stride-1</strong> 写入 ✅</td></tr>
+        </table>
+        <p><strong>关键洞察：</strong>F2 用一次 "降级"（C 从 scalar 降到 stride-1）换了一次 "升级"（B 从灾难性的 stride-n 升到 stride-1）。B 的修复是巨大的赢，C 的降级是轻微的输。净结果：三个访问<strong>全部是 stride-1 或 scalar</strong>，没有一个是 stride-n。<br>
+        <span class="en-text"><strong>Key insight:</strong> F2 trades one "downgrade" (C: scalar → stride-1) for one "upgrade" (B: stride-n → stride-1). B's fix is a huge win, C's downgrade is a tiny loss. Net result: all three accesses are stride-1 or scalar; none is stride-n.</span></p>
+
+        <p><strong>第二层 · 硬件为什么 stride-1 这么快 / Layer 2 · Hardware mechanisms (why stride-1 wins)</strong></p>
+        <ol>
+          <li><strong>Cache line 利用率（最重要）</strong>：CPU 读 <code>B[p][j]</code> 时硬件强制载入一条 64 字节 cache line = 8 个 double。原版下一次跳到 <code>B[p+1][j]</code>，距离 n×8 字节，刚载入的另外 7 个 double <strong>一个都没用上就被淘汰</strong>——87.5% 带宽浪费。F2 版载入后紧接着 7 次迭代刚好用掉 7 个值 → <strong>100% 利用率 → 8× 内存带宽提升</strong>。</li>
+          <li><strong>硬件 prefetcher（隐藏延迟）</strong>：stride-n（n=1024 时 = 8KB 跳跃）超出多数 CPU prefetcher 预测能力，prefetcher <strong>直接放弃</strong>，每次访问都要等 ~100ns DRAM 延迟。stride-1 是 prefetcher 的最理想场景，能<strong>完全隐藏延迟</strong>。</li>
+          <li><strong>TLB 压力</strong>：stride-n 下每个 <code>B[p][j]</code> 在不同 page，很快手爆 L1 dTLB（通常 64 项）→ page walk 又加几十 ns。stride-1 TLB 命中率几乎 100%。</li>
+          <li><strong>Load 流水线</strong>：stride-n 下 load 之间锘锘 cache miss 依赖，LSU 被串行化；stride-1 可以满发多发 load。</li>
+        </ol>
+
+        <p><strong>第三层 · 数学上为什么合法 / Layer 3 · Why this is a valid transformation</strong></p>
+        <p>原版和 F2 版<strong>计算量完全一样</strong>（都是 m×k×n 次乘加），只是<strong>顺序</strong>变了。这本质是矩阵乘法的两种数学公式：</p>
+        <ul>
+          <li><strong>原版 = 点积公式</strong>：C<sub>ij</sub> = Σ<sub>p</sub> A<sub>ip</sub>·B<sub>pj</sub>，一次算出 C 的一个元素（外层 固定 (i,j)，内层 走 p）</li>
+          <li><strong>F2 版 = 外积公式</strong>：C = Σ<sub>p</sub> A<sub>:,p</sub> ⊗ B<sub>p,:</sub>，每个 p 贡献一个秩 1 矩阵，累加到 C（外层 走 p，内层 一次更新 C 的所有元素）</li>
+        </ul>
+        <p>这就是为什么 F2 需要 <code>C</code> 预先置 0、原版不需要。<strong>BLAS 库全有并不是一个公式一路走到黑——他们在不同维度对 GEMM 拆分重组，就是为了让计算顺序贴合硬件缓存层次。</strong></p>
+        <p class="en-text"><strong>EN:</strong> Original and F2 do <strong>exactly the same arithmetic</strong> (m×k×n multiply-adds) — only the <strong>execution order</strong> changes. This is fundamentally two mathematical formulations of matmul: <strong>dot-product</strong> (one C element at a time) vs <strong>outer-product</strong> (rank-1 update of all C elements per p). That's why F2 requires C pre-zeroed and original doesn't. BLAS libraries exploit exactly this freedom — they recast GEMM in different layouts to match the hardware memory hierarchy.</p>
+
+        <h4>预期加速比 / Expected speedup</h4>
+        <table>
+          <tr><th>矩阵规模</th><th>加速比</th><th>原因</th></tr>
+          <tr><td>256×256 (B 列在 L1 里)</td><td>~3-5×</td><td>原版 L1 miss 还不多</td></tr>
+          <tr><td>1024×1024 (B 列在 L2)</td><td>~8-15×</td><td>原版开始 L2 miss</td></tr>
+          <tr><td>4096×4096 (B 列在 DRAM)</td><td>~15-30×</td><td>原版火热跳 DRAM</td></tr>
+        </table>
+        <p><strong>规模越大、F2 优势越明显</strong>——原版 cache miss 率随 n 上升，F2 几乎不变。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 评价标准 / Evaluation</summary>
+      <div class="detail-body">
+        <table>
+          <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
+          <tr><td>5 秒内反应 "交换循环为 i-p-j" + 主动 hoist <code>A[i][p]</code> + 能讲清第二层硬件机制（cache line / prefetcher）<br><span class="en-text">Immediately says "swap to i-p-j" + hoists <code>A[i][p]</code> + explains hardware mechanisms (cache line / prefetcher)</span></td><td>🌟🌟 Cache 优化真是熟手，Senior 上沒 / Real cache-optimization expert, Senior tier</td></tr>
+          <tr><td>写出 <code>i-p-j</code> + 能解释“B 现在连续了”（第一层），但说不出 cache line 机制；是否 hoist 随意<br><span class="en-text">Writes <code>i-p-j</code> + explains "B is now contiguous" (Layer 1) but can't articulate cache-line mechanism; hoisting optional</span></td><td>✅ SDE2 达标，知道「怎么」但不太说得清「为什么」 / SDE2 level; knows "how" but vague on "why"</td></tr>
+          <tr><td>思路对（交换循环）但实现出 bug：忘了 <code>C</code> 要预先置 0、或者仍然用 <code>acc</code> 变量导致丢结果<br><span class="en-text">Right idea (swap loops) but buggy impl: forgets C must be pre-zeroed, or still uses local <code>acc</code> and loses results</span></td><td>🟡 概念懂但代码控制力弱，可提醒一次看是否 self-debug / Concept ok but weak code control; give one hint, see if they self-debug</td></tr>
+          <tr><td>选择转置 B 为 B' 再乘（也对但多占 O(kn) 内存 + O(kn) 拷贝）<br><span class="en-text">Picks "transpose B first, then multiply" (also correct but extra O(kn) memory + O(kn) copy)</span></td><td>✅ 思路合理。追问「能不能不转置、只改循环就做到同样效果？」引到 loop interchange / Reasonable; probe with "can we achieve the same without transposing, just by reordering loops?"</td></tr>
+          <tr><td>完全卡住，不知道从何下手<br><span class="en-text">Completely stuck</span></td><td>⚠️ Cache 意识可能是背的不是真懂，跳过 F3、直接走 F4 GPU 换赛道 / Cache awareness may be memorized not understood; skip F3, go straight to F4 GPU on a different axis</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <blockquote class="interviewer-note">
+      <strong>🎯 关键说明 / Key notes：</strong>
+      <ul style="margin:6px 0 0 18px;">
+        <li><strong>只需化验 “交换循环 + B 连续” 这个核心点。</strong>hoist <code>A[i][p]</code> 是加分项、不是门槛。</li>
+        <li><strong>最常见 bug：</strong>不预先置 0（但原代码用 <code>vector(n, 0.0)</code> 别名刚好避免）；或者仍用 <code>acc</code> 然后在错误位置赋给 <code>C[i][j]</code>。发现 bug 后指一下：“<code>C[i][j]</code> 现在被多次访问了，你确保初始是 0 吗？”</li>
+        <li><strong>“为什么变快” 卡壳时的 hint：</strong>“Cache line 一次载入 64 字节 = 8 个 double。原版每次只用 1 个就跳走。新版呢？” —— 一步把他从 “知道结果” 逼到 “理解机制”。</li>
+        <li><strong>加分项 · 浮点敦动意识：</strong>如果候选人主动提“严格来说两版本结果会有微小 IEEE 754 舍入差异，因为累加顺序变了”——这是<strong>顶级 Senior 信号</strong>（说明他懂浮点 + 懂数值算法），记在 Notes 里。</li>
       </ul>
     </blockquote>
   </div>
