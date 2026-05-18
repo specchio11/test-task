@@ -140,6 +140,31 @@
   details.qp-followups .qp-followups-body {
     padding: 2px 0 4px 6px;
   }
+  /* Collapsible follow-up section wrapper (追问 1-4 主内容) */
+  details.followup-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0 10px 10px 0;
+    margin: 24px 0 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  details.followup-section > summary {
+    padding: 14px 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #475569;
+    background: #f8fafc;
+    border-radius: 0 8px 0 0;
+  }
+  details.followup-section[open] > summary {
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--border);
+  }
+  details.followup-section.fu-blue { border-left: 4px solid var(--blue); }
+  details.followup-section.fu-green { border-left: 4px solid var(--green); }
+  details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
+  details.followup-section.fu-purple { border-left: 4px solid var(--accent); }
+  .followup-body { padding: 14px 18px 18px; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
     background: #7c3aed; color: #fff;
@@ -473,7 +498,9 @@
 <!-- ====================================================================== -->
 <!--                     Q2: GPU MEMORY & LIFECYCLE                         -->
 <!-- ====================================================================== -->
-<h3 id="q2-gpu" style="font-size:20px;color:#475569;margin-top:24px;border-left:4px solid var(--blue);padding-left:12px;">➜ 追问 1 / Follow-up 1 · 🎯 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle <span class="tag tag-time">~3 min</span></h3>
+<details class="followup-section fu-blue" id="q2-gpu">
+<summary>➜ 追问 1 / Follow-up 1 · 🎯 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle <span class="tag tag-time">~3 min</span></summary>
+<div class="followup-body">
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 单张 H100 = 80GB 显存；假设每个 voice 模型 ~1GB，单卡最多装 ~70 个 voice；500+ voice 必须动态调度。<br><span class="en-text">A single H100 has 80GB of memory. If each voice ~1GB, one card fits ~70 voices max. 500+ voices must be dynamically scheduled.</span></p>
@@ -574,12 +601,17 @@
   </div>
 </details>
 
+</div>
+</details><!-- end 追问 1 wrapper -->
+
 <hr class="separator">
 
 <!-- ====================================================================== -->
 <!--                     Q3: REQUEST ROUTING                                -->
 <!-- ====================================================================== -->
-<h3 id="q3-route" style="font-size:20px;color:#475569;margin-top:24px;border-left:4px solid var(--green);padding-left:12px;">➜ 追问 2 / Follow-up 2 · 🔀 请求路由 / Request Routing <span class="tag tag-time">~3 min</span></h3>
+<details class="followup-section fu-green" id="q3-route">
+<summary>➜ 追问 2 / Follow-up 2 · 🔀 请求路由 / Request Routing <span class="tag tag-time">~3 min</span></summary>
+<div class="followup-body">
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 客户请求里指定 voice ID。K8s 默认 round-robin LB 会让请求随机落到任何 pod 上，cache 命中率惨不忍睹。<br><span class="en-text">Request specifies a voice ID. K8s default round-robin LB scatters requests across pods, killing cache hit rate.</span></p>
@@ -671,12 +703,17 @@
   </div>
 </details>
 
+</div>
+</details><!-- end 追问 2 wrapper -->
+
 <hr class="separator">
 
 <!-- ====================================================================== -->
 <!--                     Q4: COLD START                                     -->
 <!-- ====================================================================== -->
-<h3 id="q4-cold" style="font-size:20px;color:#475569;margin-top:24px;border-left:4px solid #ea580c;padding-left:12px;">➜ 追问 3 / Follow-up 3 · ⚡ 冷启动 / Cold Start <span class="tag tag-time">~2 min</span></h3>
+<details class="followup-section fu-orange" id="q4-cold">
+<summary>➜ 追问 3 / Follow-up 3 · ⚡ 冷启动 / Cold Start <span class="tag tag-time">~2 min</span></summary>
+<div class="followup-body">
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 加载一个 ~1GB 模型从磁盘到 GPU 显存大约 5–30s。冷门 voice 直接命中冷启动，用户体验灾难。<br><span class="en-text">Loading a ~1GB model from disk to GPU memory takes ~5–30s. Long-tail voices hit cold-start directly — a UX disaster.</span></p>
@@ -743,12 +780,17 @@
   </div>
 </details>
 
+</div>
+</details><!-- end 追问 3 wrapper -->
+
 <hr class="separator">
 
 <!-- ====================================================================== -->
 <!--                     Q5: RELEASE PIPELINE                               -->
 <!-- ====================================================================== -->
-<h3 id="q5-release" style="font-size:20px;color:#475569;margin-top:24px;border-left:4px solid var(--accent);padding-left:12px;">➜ 追问 4 / Follow-up 4 · 🚀 发布管线 / Release Pipeline <span class="tag tag-time">~2 min</span></h3>
+<details class="followup-section fu-purple" id="q5-release">
+<summary>➜ 追问 4 / Follow-up 4 · 🚀 发布管线 / Release Pipeline <span class="tag tag-time">~2 min</span></summary>
+<div class="followup-body">
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 500 个 voice × 多版本 × 持续训练新版本 = 发布频率极高。手动发布在这个规模下不可能。<br><span class="en-text">500 voices × multiple versions × ongoing retraining = extremely high release cadence. Manual release impossible at this scale.</span></p>
@@ -825,6 +867,9 @@
     </ul>
   </div>
 </details>
+
+</div>
+</details><!-- end 追问 4 wrapper -->
 
 <hr class="separator">
 
