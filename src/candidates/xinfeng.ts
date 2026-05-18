@@ -26,7 +26,7 @@ export const xinfeng: CandidateConfig = {
   role: 'Senior SDE · Azure AI / TTS',
   totalMin: 60,
   brand: '📋 Onsite Interview Guide',
-  accent: '#7c3aed',
+  accent: '#4338ca',
   scheduledAt: '2026-05-19T08:30:00',
 
   openingEn: '(TBD — opening script)',

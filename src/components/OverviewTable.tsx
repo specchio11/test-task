@@ -2,7 +2,7 @@ import type { AgendaSection } from '../data/types';
 
 const NUM_COLOR: Record<AgendaSection['accent'], string> = {
   s1: '#0284c7',
-  s2: '#7c3aed',
+  s2: '#0d9488',
   s3: '#059669',
   s4: '#ea580c',
   s5: '#db2777',
