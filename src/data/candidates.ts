@@ -1,14 +1,17 @@
 import type { CandidateConfig } from './types';
 import { jorge } from '../candidates/jorge';
+import { xinfeng } from '../candidates/xinfeng';
 
 /**
  * Registry of all candidates. Add new candidates here.
  *
- * Order in this array == order shown on the home page.
+ * Order in this array is the registration order; the actual home-page
+ * ordering is computed by `sortCandidatesForHome` (closest interview first,
+ * completed pushed to the bottom).
  */
 export const candidates: CandidateConfig[] = [
   jorge,
-  // Example: import { alice } from '../candidates/alice'; then add `alice` here.
+  xinfeng,
 ];
 
 const byId = new Map(candidates.map((c) => [c.id, c]));
