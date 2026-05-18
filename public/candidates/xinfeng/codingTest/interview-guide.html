@@ -308,7 +308,7 @@
     <div class="qp-group-title" style="color:var(--accent);">P0 · Follow-ups</div>
     <a class="qp-sub orange" href="#followup1" onclick="jump('followup1');return false;">追问 1 — 存储 layout &amp; 访存代价</a>
     <a class="qp-sub orange" href="#followup2" onclick="jump('followup2');return false;">追问 2 — Loop reorder 修复</a>
-    <a class="qp-sub orange" href="#followup3" onclick="jump('followup3');return false;">追问 3 — Flat layout 重写</a>
+    <a class="qp-sub orange" href="#followup3" onclick="jump('followup3');return false;">追问 3 — 理想 layout 跨语言讨论</a>
   </div>
 
   <div class="qp-group">
@@ -850,86 +850,95 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
 <div id="followup3">
 <details open>
   <summary>
-    追问 3：Flat layout 重写 / Rewrite with Flat Layout
+    追问 3：理想 layout 跨语言讨论 / Ideal Layout — Cross-Language Discussion
     <span class="tag tag-time">3-4 min</span>
-    <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
+    <span class="tag tag-diff-2">⭐⭐ Medium</span>
+    <span class="tag tag-py">不写代码 / No code</span>
   </summary>
   <div class="detail-body">
 
     <h4>🎯 锚点 / Anchor</h4>
-    <p>F2 时<strong>临时禁止</strong>改 <code>Matrix</code> 类型。F3 把这个约束<strong>解除</strong>——“现在让你改类型，你会怎么改？”同时也是 F1 里提到的 “<code>vector&lt;vector&lt;&gt;&gt;</code> 行间不连续” caveat 的造手修复。<br>
-    <span class="en-text">F2 <strong>temporarily forbade</strong> changing the <code>Matrix</code> type. F3 <strong>lifts that constraint</strong> — "now you can change the type, what would you do?" This is also the hands-on fix to the "<code>vector&lt;vector&lt;&gt;&gt;</code> rows not contiguous" caveat raised in F1.</span></p>
+    <p>F1 是 access pattern（读 A vs 读 B），F2 是循环顺序（i-j-p vs i-p-j）——两个都是<strong>动作层面</strong>。F3 拉到<strong>数据结构层面</strong>：跳出代码、跳出语言，单纯讨论"做矩阵乘法，最理想的内存 layout 应该是什么样？"再回到不同语言里怎么实现。<strong>F3 不写代码、只说话。</strong><br>
+    <span class="en-text">F1 was about access pattern (reading A vs reading B), F2 about loop order (i-j-p vs i-p-j) — both are <strong>at the action level</strong>. F3 zooms out to the <strong>data-structure level</strong>: stepping outside of code and language, purely discuss "what's the ideal memory layout for matmul?", then come back to how each language implements it. <strong>F3 is verbal only — no code.</strong></span></p>
 
     <h4>提问 / Question</h4>
     <blockquote>
-      <strong>EN:</strong> "Now I'm lifting the constraint from F2 — you can change the <code>Matrix</code> type. Reimplement <code>Matrix</code> as a flat <code>vector&lt;double&gt;</code> of size <code>rows*cols</code> with manual <code>[i*cols+j]</code> indexing. Then rewrite <code>multiply</code> using your new type. After that, give me <strong>at least 3 reasons</strong> why real numerical libraries (Eigen, BLAS, cuBLAS) always use this layout instead of <code>vector&lt;vector&lt;&gt;&gt;</code>."
+      <strong>EN:</strong> "Now I want a verbal discussion — <strong>no code</strong>. Three sub-questions:<br>
+      &nbsp;&nbsp;(1) For matrix multiplication, what's the <strong>ideal memory layout</strong>? Describe it in words.<br>
+      &nbsp;&nbsp;(2) <strong>Why</strong> does this layout make multiply fast? (specific mechanisms, not just 'cache-friendly')<br>
+      &nbsp;&nbsp;(3) In different languages, <strong>what do people actually use</strong> to get this layout? C++ uses what, Python uses what, Rust uses what?"
     </blockquote>
     <blockquote>
-      <strong>中:</strong> "现在我解除 F2 的约束——你可以改 <code>Matrix</code> 类型了。请把 <code>Matrix</code> 重新实现为一个 flat 的 <code>vector&lt;double&gt;</code>，大小 <code>rows*cols</code>，手动用 <code>[i*cols+j]</code> 做索引。然后用新类型重写 <code>multiply</code>。完了之后给我<strong>至少 3 条理由</strong>：为什么真实数值库（Eigen、BLAS、cuBLAS）一定用这种 layout 而不是 <code>vector&lt;vector&lt;&gt;&gt;</code>？"
+      <strong>中:</strong> "现在我想要一个口头讨论——<strong>不写代码</strong>。三个子问题：<br>
+      &nbsp;&nbsp;(1) 对于矩阵乘法，<strong>最理想的内存 layout</strong> 应该是什么样？用文字描述。<br>
+      &nbsp;&nbsp;(2) <strong>为什么</strong>这种 layout 让乘法变快？（要具体机制，不是只说"cache-friendly"）<br>
+      &nbsp;&nbsp;(3) 在不同语言里，大家<strong>实际用什么</strong>来得到这种 layout？C++ 用什么、Python 用什么、Rust 用什么？"
     </blockquote>
 
     <details>
       <summary>📖 标准答案 / Expected Answer</summary>
       <div class="detail-body">
-        <h4>代码（C++）/ Code (C++)</h4>
-<pre><code>struct Matrix {
-    size_t rows = 0, cols = 0;
-    std::vector&lt;double&gt; data;            // size = rows * cols, row-major flat
 
-    Matrix() = default;
-    Matrix(size_t r, size_t c, double init = 0.0)
-        : rows(r), cols(c), data(r * c, init) {}
+        <h4>(1) 理想 layout / Ideal layout</h4>
+        <p>一个 <strong>单一、连续、按行优先（row-major）展开</strong>的 buffer，再加 <strong>(rows, cols)</strong> 两个元数据描述形状（生产级再加 <strong>leading dimension <code>ld</code></strong> 描述行步长，以支持 sub-matrix slice）。逻辑上是 2D，物理上是 1D 数组——<code>(i, j)</code> 元素位于偏移 <code>i * cols + j</code>（或 <code>i * ld + j</code>）。<br>
+        <span class="en-text">A <strong>single, contiguous, row-major flattened</strong> buffer, plus <strong>(rows, cols)</strong> metadata to describe shape (production-grade adds <strong>leading dimension <code>ld</code></strong> for sub-matrix slicing). Logically 2D, physically a 1D array — element <code>(i, j)</code> sits at offset <code>i * cols + j</code> (or <code>i * ld + j</code>).</span></p>
+        <p>反例：<code>vector&lt;vector&lt;double&gt;&gt;</code> / Python 的 list-of-list——<strong>每一行是一次独立分配</strong>，行与行之间内存地址<strong>不连续</strong>，外层是一个指针数组指向各行。<br>
+        <span class="en-text">Counter-example: <code>vector&lt;vector&lt;double&gt;&gt;</code> / Python list-of-list — <strong>each row is a separate allocation</strong>, rows are <strong>not contiguous</strong> in memory, and the outer layer is just a pointer array pointing to each row.</span></p>
 
-    double&amp; at(size_t i, size_t j)       { return data[i * cols + j]; }
-    double  at(size_t i, size_t j) const { return data[i * cols + j]; }
-};
-
-Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
-    if (A.cols != B.rows)
-        throw std::invalid_argument("dim mismatch");
-
-    Matrix C(A.rows, B.cols, 0.0);          // 一次性分配
-    for (size_t i = 0; i &lt; A.rows; ++i) {
-        for (size_t p = 0; p &lt; A.cols; ++p) {
-            const double a = A.at(i, p);
-            for (size_t j = 0; j &lt; B.cols; ++j) {
-                C.at(i, j) += a * B.at(p, j);   // 依然是 i-p-j
-            }
-        }
-    }
-    return C;
-}</code></pre>
-        <p><strong>与 F2 的区别只有两点 / Only two differences from F2:</strong></p>
+        <h4>(2) 为什么这种 layout 让乘法变快 / Why this layout makes multiply fast</h4>
+        <p>期望候选人讲<strong>具体机制</strong>，不止 "cache-friendly"。覆盖 ≥3 条算合格 / Expect <strong>specific mechanisms</strong>, not just "cache-friendly". ≥3 of the following is a pass：</p>
         <ol>
-          <li><strong>类型表示不同</strong>：从 <code>vector&lt;vector&lt;double&gt;&gt;</code> 换成自定义 <code>struct{rows, cols, data}</code></li>
-          <li><strong>索引表示不同</strong>：<code>A[i][p]</code> → <code>A.at(i, p)</code>，底层 = <code>data[i * cols + p]</code></li>
-        </ol>
-        <p><strong>循环主体不变。</strong>F3 送给候选人的信号：“<strong>F2 的算法级优化 + F3 的数据结构级优化 = 两个独立、累计生效的优化</strong>”。</p>
-
-        <h4>为什么真实库都用这个 layout（期望⍥3 条）/ Why real libs use this layout (expect ≥3 reasons)</h4>
-        <ol>
-          <li><strong>一次性堆分配</strong>：<code>vector&lt;double&gt;(m*n)</code> 走一次 <code>new[]</code>；vs <code>vector&lt;vector&lt;&gt;&gt;</code> 需要 <strong>m+1 次 <code>new[]</code></strong>。减少 allocator 开销 + 避免堆碎片 + 初始化更快。</li>
-          <li><strong>行间内存连续</strong>：硬件 prefetcher 能<strong>跨行预取</strong>（从第 i 行末端顺到第 i+1 行头部）；TLB 命中率高；huge pages 可用。</li>
-          <li><strong>指针 indirection 消失</strong>：<code>A.at(i,p)</code> = 一次乘加 (<code>i*cols+p</code>) + 一次 load；<code>A[i][p]</code> = 一次 load vector header + 一次 load data 指针 + 一次 load 数据 → 少走 1-2 次内存。</li>
-          <li><strong>可直接传给 BLAS / cuBLAS / GPU</strong>：这些库接口都要 <code>(double* ptr, int ld)</code> 形式；nested vector <strong>完全不兼容</strong>——传给 cuBLAS 必须先 deep copy 成 flat，那不如一开始就是 flat。</li>
-          <li><strong>SIMD load 友好</strong>：<code>_mm256_load_pd</code> / <code>_mm512_load_pd</code> 一次连续读 4 或 8 个 double；nested vector 跨行边界时必须停下重新加载指针。</li>
-          <li><strong>可控的 alignment / padding</strong>：真实 BLAS 会让 leading dimension 是 cache line 倍数（避免 conflict miss）；nested vector 没法控制每行起始地址。</li>
-          <li><strong>ABI 清晰、零拷贝跨语言</strong>：一个连续 buffer 可以零拷贝传给 Python (numpy)、Rust、CUDA kernel、网络协议。</li>
+          <li><strong>一次性堆分配</strong> / Single heap allocation：<code>m * n</code> 个 double 走一次 <code>malloc</code>；vs nested 版要 <code>m + 1</code> 次。减少 allocator 开销 + 避免堆碎片。</li>
+          <li><strong>跨行内存连续</strong> / Inter-row contiguity：硬件 prefetcher 能从第 <code>i</code> 行尾部<strong>预取到第 <code>i+1</code> 行头部</strong>；TLB 命中率高、可享用 huge pages。</li>
+          <li><strong>指针 indirection 消失</strong> / No pointer indirection：<code>A(i,j)</code> = <strong>1 次乘加 + 1 次 load</strong>；nested 版 = <strong>1 次 load 行指针 + 1 次 load 数据</strong>，少走 1 跳内存。</li>
+          <li><strong>SIMD load 友好</strong> / SIMD-friendly load：AVX2 一次连续读 4 个 double、AVX-512 读 8 个、NEON 读 2 个；连续 buffer 才能用 aligned load 指令，nested 版跨行边界会断。</li>
+          <li><strong>可控的 alignment / padding</strong> / Controllable alignment：可以让每行起始地址对齐到 cache line（64B）或 SIMD register 宽度，避免 false sharing 和未对齐 load 惩罚；nested 版受 allocator 摆布。</li>
+          <li><strong>直接喂 BLAS / cuBLAS / GPU</strong> / Directly feedable to BLAS：这些库的 API 全部是 <code>(double* ptr, int ld)</code> 形式；连续 buffer 可以零拷贝 <code>cudaMemcpy</code> 到 device，nested 版必须先拍平。</li>
+          <li><strong>跨语言零拷贝</strong> / Zero-copy cross-language：一个连续 buffer 可以通过 Python buffer protocol、Rust slice、CUDA pointer、网络协议<strong>不拷贝</strong>地传递。</li>
         </ol>
 
-        <h4>BLAS 风格的 leading dimension（加分项）/ BLAS-style leading dimension (bonus)</h4>
-        <p>真正生产级的 flat layout 还会多一个 <code>ld</code> 参数：</p>
-<pre><code>struct Matrix {
-    size_t rows, cols, ld;          // ld &gt;= cols, 行践的实际步长
-    std::vector&lt;double&gt; data;       // size = rows * ld
-    double&amp; at(size_t i, size_t j) { return data[i * ld + j]; }
-};</code></pre>
-        <p><strong>为什么要 <code>ld</code>？</strong></p>
+        <h4>(3) 各语言怎么实现这种 layout / How each language gets this layout</h4>
+        <table>
+          <tr><th>语言 / Language</th><th>实际用什么 / What people actually use</th><th>备注 / Notes</th></tr>
+          <tr>
+            <td><strong>C++</strong></td>
+            <td><code>std::vector&lt;double&gt;</code> + 手写 <code>at(i,j)</code><br>或 <strong>Eigen</strong>（<code>Eigen::MatrixXd</code>）<br>或 <strong>Armadillo</strong></td>
+            <td>Eigen / Armadillo 默认 <strong>column-major</strong>！（沿 Fortran/BLAS 传统）</td>
+          </tr>
+          <tr>
+            <td><strong>Python</strong></td>
+            <td><strong><code>numpy.ndarray</code></strong>（默认 C-order = row-major）<br>更高层：PyTorch <code>Tensor</code>、JAX array、TF tensor</td>
+            <td>底层就是一个连续 buffer + <code>shape</code> + <code>strides</code>；<code>.flags['C_CONTIGUOUS']</code> 可查；和 list-of-list 完全两回事</td>
+          </tr>
+          <tr>
+            <td><strong>Rust</strong></td>
+            <td><code>Vec&lt;f64&gt;</code> + 手写 indexing<br>或 <strong><code>ndarray</code></strong> crate（row-major 默认）<br>或 <strong><code>nalgebra</code></strong>（column-major 默认）</td>
+            <td>nalgebra 选 column-major 也是为了和 BLAS 接口对齐</td>
+          </tr>
+          <tr>
+            <td><strong>Fortran</strong></td>
+            <td>原生 2D 数组 <code>real :: A(m,n)</code></td>
+            <td>原生就是 <strong>column-major</strong>——这就是为什么 BLAS / LAPACK 接口默认 column-major</td>
+          </tr>
+          <tr>
+            <td><strong>CUDA / GPU</strong></td>
+            <td><code>cudaMalloc(rows*cols*sizeof(float))</code> + 显式 row/col + ld<br>高层：<strong>cuBLAS</strong>（column-major 默认）、<strong>CUTLASS</strong></td>
+            <td>GPU 上 layout 不连续 = warp coalesce 失败 = 性能掉 10×；连续是<strong>硬件要求</strong>不是优化</td>
+          </tr>
+          <tr>
+            <td><strong>Java / JVM</strong></td>
+            <td><code>double[]</code>（一维原生数组）+ 手写 indexing<br>避免 <code>double[][]</code>（=数组 of 数组对象，行间不连续 + 有对象 header）</td>
+            <td>JVM 没有真正的多维原生数组——<code>double[][]</code> 本质就是 nested vector 的坑</td>
+          </tr>
+        </table>
+
+        <h4>加分点 / Bonus signals</h4>
         <ul>
-          <li>支持 <strong>sub-matrix (slice) 零拷贝</strong>：从一个大矩阵取一个块作为子矩阵，ld 仍指向大矩阵的行步长——<strong>不需要拷贝子块</strong>，直接在原地计算。</li>
-          <li>支持 <strong>alignment padding</strong>：ld 可以被填充到 cache line / SIMD register 倍数，避免 false sharing 和未对齐 load。</li>
+          <li>主动提 <strong>row-major vs column-major</strong>（C/numpy/Rust ndarray = row-major；Fortran/BLAS/Eigen/nalgebra = column-major）= 🌟 信号</li>
+          <li>主动提 <strong>leading dimension <code>ld</code></strong> + 用途（sub-matrix slice 零拷贝 + alignment padding）= 🌟🌟 BLAS 真懂</li>
+          <li>主动提 <strong>strides</strong>（numpy / ndarray 用 strides 同时表达 row-major / column-major / transposed view / sub-slice，无需拷贝）= 🌟🌟 真懂数据视图模型</li>
+          <li>主动提 <strong>GPU coalesced access</strong>（warp 内 32 个线程必须读连续地址，layout 不连续直接 10× 性能损失）= 🌟🌟 GPU 思维</li>
         </ul>
-        <p>候选人主动提 leading dimension → <strong>🌟🌟 BLAS 真懂</strong>。</p>
       </div>
     </details>
 
@@ -938,11 +947,11 @@ Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
       <div class="detail-body">
         <table>
           <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
-          <tr><td>自定义 <code>struct{rows, cols, data}</code> + 索引写对 + 列出 <strong>≥5 条</strong>理由（含 BLAS / cuBLAS / SIMD / alignment / leading dimension 词汇）<br><span class="en-text">Defines struct + correct indexing + lists ≥5 reasons (with BLAS / cuBLAS / SIMD / alignment / leading-dimension vocabulary)</span></td><td>🌟🌟 数值计算栈真有经验，可跳过 F4 基础部分、直接上 F4 高阶 / Real numerical-stack expert; can skip F4 basics and go to advanced</td></tr>
-          <tr><td>struct + 索引对 + 3-4 条理由（至少含“一次分配 / 无 indirection / BLAS 兼容”中的两条）<br><span class="en-text">struct + correct indexing + 3-4 reasons (at least 2 of: single allocation / no indirection / BLAS compat)</span></td><td>🌟 SDE2-Senior 达标 / SDE2-Senior level</td></tr>
-          <tr><td>struct + 索引对，但理由只能说“内存连续会快”——讲不清具体机制<br><span class="en-text">struct + correct indexing but reasons stop at "contiguous memory is faster" — can't articulate specific mechanism</span></td><td>✅ 经验型，及格 / Experience-based, passing</td></tr>
-          <tr><td>索引写错（<code>[i*rows+j]</code> 或 <code>[j*cols+i]</code> 这种典型错误）但被提示后能 self-debug<br><span class="en-text">Indexing bug (<code>[i*rows+j]</code> or <code>[j*cols+i]</code>) but self-debugs when prompted</span></td><td>🟡 注意力问题，可恢复 / Attention slip, recoverable</td></tr>
-          <tr><td>完全卡在“怎么把 2D 映射到 1D”——索引算式想不出来<br><span class="en-text">Completely stuck on "how to map 2D to 1D" — can't derive the index formula</span></td><td>⚠️ Senior 不应该卡在这里 / Senior should not be stuck here</td></tr>
+          <tr><td>说清 row-major flat + (rows,cols) + 列 <strong>≥5 条</strong>具体机制 + 覆盖 <strong>3+ 语言</strong>正确实现 + 主动提 leading dimension / strides / GPU coalesce 中至少一项<br><span class="en-text">Clearly describes row-major flat + (rows,cols) + lists ≥5 specific mechanisms + correctly maps to 3+ languages + mentions leading dimension / strides / GPU coalesce</span></td><td>🌟🌟 数值计算栈真懂，可跳 F4 基础直接上高阶 / Numerical-stack expert; can skip F4 basics, go straight to advanced</td></tr>
+          <tr><td>说清连续 buffer + (rows,cols) + 3-4 条机制 + 至少能说对 <strong>C++ 和 Python 各用什么</strong>（numpy）<br><span class="en-text">Describes contiguous buffer + (rows,cols) + 3-4 mechanisms + at least correctly names C++ and Python tools (numpy)</span></td><td>🌟 SDE2-Senior 达标 / SDE2-Senior level</td></tr>
+          <tr><td>知道要连续、能讲到 "cache-friendly"，但讲不清具体机制；语言层面只能说 numpy<br><span class="en-text">Knows it should be contiguous and "cache-friendly" but can't articulate mechanisms; only knows numpy</span></td><td>✅ 经验型，及格 / Experience-based, passing</td></tr>
+          <tr><td>知道连续好，但说不出怎么实现 / 误以为 <code>vector&lt;vector&gt;</code> 或 Python list-of-list 就是连续的<br><span class="en-text">Knows contiguous is good but can't say how, or thinks <code>vector&lt;vector&gt;</code> / Python list-of-list is contiguous</span></td><td>🟡 概念有缺口，可补 / Has conceptual gap, can be filled</td></tr>
+          <tr><td>完全说不出 layout 应该是什么样，或者说 "反正交给编译器/库就好了"<br><span class="en-text">Can't describe the layout at all, or says "just let the compiler/library handle it"</span></td><td>⚠️ Senior 不应该没有数据结构层面的直觉 / Senior should have data-structure-level intuition</td></tr>
         </table>
       </div>
     </details>
@@ -950,12 +959,14 @@ Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
     <blockquote class="interviewer-note">
       <strong>🎯 关键说明 / Key notes：</strong>
       <ul style="margin:6px 0 0 18px;">
-        <li><strong>最常见 bug · 索引写错：</strong><code>[i*rows+j]</code> 或 <code>[j*cols+i]</code>。看候选人能不能 self-debug：“打印一下 (0,1) 元素的位置在哪里？跳 cols 个还是 rows 个？”</li>
-        <li><strong>主动提 leading dimension → 🌟🌟 信号。</strong>可追问：“为什么 BLAS 的 GEMM 接口要 <code>lda</code> / <code>ldb</code> / <code>ldc</code> 参数？” 期望答 “支持子矩阵 slice 零拷贝”。</li>
-        <li><strong>只能说“连续就是快”的 hint：</strong>“具体说，一次 <code>new[]</code> 1MB 和 1024 次 <code>new[]</code> 1KB，开销差在哪里？” 引到 allocator overhead。或者问：“为什么 prefetcher 能跨行预取主要是 flat layout 才能做到？”</li>
-        <li><strong>主动提 column-major → 🌟 信号。</strong>可引申：“什么时候用 column-major 更合适？” 期望答 “Fortran/BLAS 默认、列操作多的场景（QR / SVD）。”</li>
-        <li><strong>F3 顶级表现 → 可以跳 F4 基础。</strong>如果候选人 30 秒内写对 + 一气列 5 条理由 + 提了 leading dimension/column-major——资深 GEMM 作者才有这个反应。上去直接问 F4 高阶点（tensor cores 、多级 tiling）、别浪费时间走 4a 的 naive kernel。</li>
-        <li><strong>📌 语言后贴 · 若候选人用 Python：</strong>这个追问需要提醒 “假设你是在写 C++”（P0 既定规则）。若候选人用了 <code>numpy.zeros((m,n))</code>，可反方向追问：“ndarray 本身为什么不会有 F1 讨论的 ‘行间不连续’ 问题？” 期望答 “ndarray 底层就是连续 buffer + shape/strides”——同样考察点、不同表达。</li>
+        <li><strong>反复强调 "不写代码"。</strong>候选人很可能惯性地想动手写——打断他："等等，我现在不要代码，只要你用文字描述。"考察的是<strong>能不能脱离代码讲清概念</strong>。</li>
+        <li><strong>三个子问题分开问、依次问。</strong>不要一口气抛三个，否则候选人会只挑会的答。先问 (1) layout 是什么 → 听完 → 再问 (2) 为什么快 → 听完 → 再问 (3) 跨语言实现。每个子问题留 60-90 秒。</li>
+        <li><strong>只能说 "cache-friendly" 的 hint：</strong>"具体说，一次 <code>malloc</code> 1MB 和 1024 次 <code>malloc</code> 1KB，开销差在哪里？" → 引到 allocator。或者："prefetcher 跨行预取需要什么前提？" → 引到地址连续。</li>
+        <li><strong>跨语言部分卡住的 hint：</strong>问 "你平时用 numpy 吗？numpy 的 ndarray 底层是什么？" 多数人会想起 "连续 buffer + shape + strides"。然后类比到其他语言："那 C++ 里对应什么？Rust 里呢？"</li>
+        <li><strong>主动提 column-major → 🌟 信号。</strong>可追问："为什么 BLAS / Eigen / nalgebra 用 column-major？" 期望答 "Fortran 历史 + 列操作多的算法（QR/SVD）+ 矩阵-向量乘 <code>y = A*x</code> 时列连续更友好"。</li>
+        <li><strong>主动提 strides → 🌟🌟 信号。</strong>可追问："numpy 怎么用 strides 实现转置不拷贝？" 期望答 "swap strides[0] 和 strides[1]，buffer 不变"。</li>
+        <li><strong>主动提 GPU coalesced access → 🌟🌟 信号。</strong>说明候选人有 GPU 实战经验，F4 可以直接跳 4a 的 naive kernel、上 4b 的 shared memory tiling。</li>
+        <li><strong>📌 Python 候选人不需要特殊处理。</strong>这是纯口述题、跨语言展开本身就让 Python 候选人可以从 numpy 切入；反而 Python 候选人如果对 numpy 的 buffer/strides 模型说不清，是<strong>减分项</strong>——"日常用的工具，底层不知道"。</li>
       </ul>
     </blockquote>
   </div>
