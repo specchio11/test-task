@@ -287,6 +287,8 @@
   <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
   <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
 
+  <a class="qp-link" href="#topic-voice-scaling" onclick="jump('topic-voice-scaling');return false;" style="background:#f5f3ff;color:var(--accent);font-weight:700;margin-top:10px;border-left-color:var(--accent);">📌 Flow ① · Voice 库扩容</a>
+
   <div class="qp-group">
     <div class="qp-group-title">Q1 — 开门 / Big Picture</div>
     <a class="qp-sub purple" href="#q1-open" onclick="jump('q1-open');return false;">🎤 提问</a>
@@ -332,7 +334,7 @@
 <!-- ===== MAIN ===== -->
 <div class="container">
 
-<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~12 min</span></h1>
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A</h1>
 
 <div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
   <h4>🎤 引导进入技术问答 / Introduce Technical Q&A</h4>
@@ -347,14 +349,33 @@
 <!-- ==================== FLOW ==================== -->
 <h2 id="flow">⏱️ Flow</h2>
 <div class="card">
+  <p style="margin-bottom:10px;color:var(--text-muted);font-size:18px;">
+    每个简历问题（resume bullet）是 Flow 的一个 step，每个 step 内部由若干个递进式追问组成。<br>
+    <span class="en-text">Each resume bullet is one Flow step, made up of several progressive follow-ups.</span>
+  </p>
   <table>
     <thead><tr><th>#</th><th>Content</th><th>Time</th></tr></thead>
     <tbody>
-      <tr><td>①</td><td>开门：扩容全貌 / Big Picture (开放题)</td><td>~2 min</td></tr>
-      <tr><td>②</td><td>GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle (核心)</td><td>~3 min</td></tr>
-      <tr><td>③</td><td>请求路由 / Request Routing (核心)</td><td>~3 min</td></tr>
-      <tr><td>④</td><td>冷启动 / Cold Start (深挖)</td><td>~2 min</td></tr>
-      <tr><td>⑤</td><td>发布管线 / Release Pipeline (深挖)</td><td>~2 min</td></tr>
+      <tr style="background:#f5f3ff;">
+        <td><strong style="color:var(--accent);">①</strong></td>
+        <td><strong>简历问题 1：Voice 库扩容 (500+ voices) / Resume Question 1: Voice Library Scaling</strong></td>
+        <td><strong>~12 min</strong></td>
+      </tr>
+      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q1 开门：扩容全貌 / Big Picture <em>(开放题)</em></td><td>~2 min</td></tr>
+      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q2 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Lifecycle <em>(核心)</em></td><td>~3 min</td></tr>
+      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q3 请求路由 / Request Routing <em>(核心)</em></td><td>~3 min</td></tr>
+      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q4 冷启动 / Cold Start <em>(深挖)</em></td><td>~2 min</td></tr>
+      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q5 发布管线 / Release Pipeline <em>(深挖)</em></td><td>~2 min</td></tr>
+      <tr style="opacity:0.55;">
+        <td>②</td>
+        <td><em>简历问题 2 / Resume Question 2 — 待添加 (TBD)</em></td>
+        <td><em>TBD</em></td>
+      </tr>
+      <tr style="opacity:0.55;">
+        <td>③</td>
+        <td><em>简历问题 3 / Resume Question 3 — 待添加 (TBD)</em></td>
+        <td><em>TBD</em></td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -362,13 +383,23 @@
 <hr class="separator">
 
 <!-- ====================================================================== -->
-<!--                     Q1: BIG PICTURE                                    -->
+<!-- ============== FLOW STEP ① : RESUME QUESTION 1 ====================== -->
+<!-- ============== Voice Library Scaling deep-dive ====================== -->
 <!-- ====================================================================== -->
-<h2 id="q1-open">① 🌐 开门：扩容全貌 / Big Picture <span class="tag tag-time">~2 min</span></h2>
+<h2 id="topic-voice-scaling" style="background:#f5f3ff;border-left:6px solid var(--accent);color:var(--accent);font-size:28px;">
+  📌 Flow ① · 简历问题 1：Voice 库扩容 / Resume Question 1: Voice Library Scaling
+  <span class="tag tag-time">~12 min total</span>
+</h2>
 
-<div class="card">
-  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt: <span class="en-text">"Scaled voice library from tens to 500+ voices, leveraging advanced orchestration stacks (Kubernetes, KEDA, Southfork, ZeroScaler, Southpaw, Southspot, Prometheus, Grafana, Istio, Redis etc.)."</span></p>
+<div class="card" style="border-left:4px solid var(--accent);">
+  <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
+  <blockquote style="border-left-color:var(--accent);background:#fff;">
+    <span class="en-text">"Scaled voice library from tens to 500+ voices, leveraging advanced orchestration stacks (Kubernetes, KEDA, Southfork, ZeroScaler, Southpaw, Southspot, Prometheus, Grafana, Istio, Redis etc.)."</span>
+  </blockquote>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">本节包含 5 个递进式追问 (Q1-Q5)，按从全貌到细节的顺序展开。<br><span class="en-text">This section contains 5 progressive follow-ups (Q1-Q5), unfolding from big-picture to specifics.</span></p>
 </div>
+
+<h3 id="q1-open" style="font-size:22px;color:var(--accent);margin-top:24px;">Q1 · 🌐 开门：扩容全貌 / Big Picture <span class="tag tag-time">~2 min</span></h3>
 
 <details open>
   <summary>🎤 提问 / Ask</summary>
@@ -428,7 +459,7 @@
 <!-- ====================================================================== -->
 <!--                     Q2: GPU MEMORY & LIFECYCLE                         -->
 <!-- ====================================================================== -->
-<h2 id="q2-gpu">② 🎯 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle <span class="tag tag-time">~3 min</span></h2>
+<h3 id="q2-gpu" style="font-size:22px;color:var(--accent);margin-top:24px;">Q2 · 🎯 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle <span class="tag tag-time">~3 min</span></h3>
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 单张 H100 = 80GB 显存；假设每个 voice 模型 ~1GB，单卡最多装 ~70 个 voice；500+ voice 必须动态调度。<br><span class="en-text">A single H100 has 80GB of memory. If each voice ~1GB, one card fits ~70 voices max. 500+ voices must be dynamically scheduled.</span></p>
@@ -534,7 +565,7 @@
 <!-- ====================================================================== -->
 <!--                     Q3: REQUEST ROUTING                                -->
 <!-- ====================================================================== -->
-<h2 id="q3-route">③ 🔀 请求路由 / Request Routing <span class="tag tag-time">~3 min</span></h2>
+<h3 id="q3-route" style="font-size:22px;color:var(--accent);margin-top:24px;">Q3 · 🔀 请求路由 / Request Routing <span class="tag tag-time">~3 min</span></h3>
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 客户请求里指定 voice ID。K8s 默认 round-robin LB 会让请求随机落到任何 pod 上，cache 命中率惨不忍睹。<br><span class="en-text">Request specifies a voice ID. K8s default round-robin LB scatters requests across pods, killing cache hit rate.</span></p>
@@ -631,7 +662,7 @@
 <!-- ====================================================================== -->
 <!--                     Q4: COLD START                                     -->
 <!-- ====================================================================== -->
-<h2 id="q4-cold">④ ⚡ 冷启动 / Cold Start <span class="tag tag-time">~2 min</span></h2>
+<h3 id="q4-cold" style="font-size:22px;color:var(--accent);margin-top:24px;">Q4 · ⚡ 冷启动 / Cold Start <span class="tag tag-time">~2 min</span></h3>
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 加载一个 ~1GB 模型从磁盘到 GPU 显存大约 5–30s。冷门 voice 直接命中冷启动，用户体验灾难。<br><span class="en-text">Loading a ~1GB model from disk to GPU memory takes ~5–30s. Long-tail voices hit cold-start directly — a UX disaster.</span></p>
@@ -703,7 +734,7 @@
 <!-- ====================================================================== -->
 <!--                     Q5: RELEASE PIPELINE                               -->
 <!-- ====================================================================== -->
-<h2 id="q5-release">⑤ 🚀 发布管线 / Release Pipeline <span class="tag tag-time">~2 min</span></h2>
+<h3 id="q5-release" style="font-size:22px;color:var(--accent);margin-top:24px;">Q5 · 🚀 发布管线 / Release Pipeline <span class="tag tag-time">~2 min</span></h3>
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 500 个 voice × 多版本 × 持续训练新版本 = 发布频率极高。手动发布在这个规模下不可能。<br><span class="en-text">500 voices × multiple versions × ongoing retraining = extremely high release cadence. Manual release impossible at this scale.</span></p>
