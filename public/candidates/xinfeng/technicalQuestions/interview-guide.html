@@ -1,32 +1,870 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>② 技术问答 · Xinfeng Chen</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #ede9fe; color: #6d28d9; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #7c3aed;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #6d28d9; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 2 — 简历技术问答 / Resume-based Technical Q&A · Xinfeng Chen</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #7c3aed;
+    --accent2: #8b5cf6;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .navbar .brand {
+    font-weight: 700; font-size: 18px; color: var(--accent);
+    margin-right: 12px; white-space: nowrap;
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== QUICK JUMP PANEL (sidebar) ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #7c3aed; }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.purple { border-left: 2px solid #7c3aed; }
+  .qp-sub.green { border-left: 2px solid #059669; }
+  .qp-sub.blue { border-left: 2px solid #0984e3; }
+  .qp-sub.orange { border-left: 2px solid #ea580c; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: #7c3aed; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
+
+  /* ===== MAIN ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 280px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #f5f3ff;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+  blockquote.ask-en {
+    border-left-color: #d97706;
+    background: #fef9ee;
+    color: var(--text);
+  }
+  blockquote.ask-cn {
+    border-left: none;
+    background: none;
+    padding: 8px 0 8px 16px;
+    color: #78350f;
+    font-size: 18px;
+  }
+  .en-text {
+    font-style: normal;
+    color: #475569;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  .hint-chip {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 18px; font-weight: 700;
+    margin-right: 4px;
+  }
+  .hint-light { background: #d4edda; color: #155724; }
+  .hint-medium { background: #fff3cd; color: #856404; }
+  .hint-heavy { background: #f8d7da; color: #721c24; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 18px; font-weight: 700; margin-right: 4px; }
+  .badge-pass { background: #d4edda; color: #155724; }
+  .badge-strong { background: #e8dff5; color: #5b21b6; }
+  .badge-warn { background: #fff3cd; color: #7a5800; }
+  .badge-fail { background: #fdd; color: #a00; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+</style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Xinfeng Chen · Technical Q&amp;A</div>
-    <h1>② 技术问答</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a class="nav-btn" style="background:#7c3aed;color:#fff;border-color:#7c3aed;text-decoration:none;font-weight:700;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ 候选人提问</a>
+</nav>
+
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Q1 — 开门 / Big Picture</div>
+    <a class="qp-sub purple" href="#q1-open" onclick="jump('q1-open');return false;">🎤 提问</a>
+    <a class="qp-sub purple" href="#q1-ref" onclick="jump('q1-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub purple" href="#q1-eval" onclick="jump('q1-eval');return false;">🎯 候选人回答评价</a>
   </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Q2 — GPU 显存 / Voice Lifecycle</div>
+    <a class="qp-sub blue" href="#q2-gpu" onclick="jump('q2-gpu');return false;">🎤 提问</a>
+    <a class="qp-sub blue" href="#q2-hints" onclick="jump('q2-hints');return false;">🚨 卡壳引导</a>
+    <a class="qp-sub blue" href="#q2-ref" onclick="jump('q2-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub blue" href="#q2-eval" onclick="jump('q2-eval');return false;">🎯 候选人回答评价</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Q3 — 请求路由 / Routing</div>
+    <a class="qp-sub green" href="#q3-route" onclick="jump('q3-route');return false;">🎤 提问</a>
+    <a class="qp-sub green" href="#q3-hints" onclick="jump('q3-hints');return false;">🚨 卡壳引导</a>
+    <a class="qp-sub green" href="#q3-ref" onclick="jump('q3-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub green" href="#q3-eval" onclick="jump('q3-eval');return false;">🎯 候选人回答评价</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Q4 — 冷启动 / Cold Start</div>
+    <a class="qp-sub orange" href="#q4-cold" onclick="jump('q4-cold');return false;">🎤 提问</a>
+    <a class="qp-sub orange" href="#q4-ref" onclick="jump('q4-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub orange" href="#q4-eval" onclick="jump('q4-eval');return false;">🎯 候选人回答评价</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Q5 — 发布管线 / Release Pipeline</div>
+    <a class="qp-sub purple" href="#q5-release" onclick="jump('q5-release');return false;">🎤 提问</a>
+    <a class="qp-sub purple" href="#q5-ref" onclick="jump('q5-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub purple" href="#q5-eval" onclick="jump('q5-eval');return false;">🎯 候选人回答评价</a>
+  </div>
+
+  <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
+  <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~12 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入技术问答 / Introduce Technical Q&A</h4>
+  <blockquote class="ask-en">
+    "Great, thanks for sharing that. Now I'd like to ask you a few questions based on your resume — there are a few items in your Microsoft experience I'd love to dig deeper into."
+  </blockquote>
+  <blockquote class="ask-cn">
+    "很好，谢谢你的分享。接下来我想根据你的简历问几个问题——你在微软那段经历里有几个点我想深入聊聊。"
+  </blockquote>
+</div>
+
+<!-- ==================== FLOW ==================== -->
+<h2 id="flow">⏱️ Flow</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>#</th><th>Content</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>开门：扩容全貌 / Big Picture (开放题)</td><td>~2 min</td></tr>
+      <tr><td>②</td><td>GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle (核心)</td><td>~3 min</td></tr>
+      <tr><td>③</td><td>请求路由 / Request Routing (核心)</td><td>~3 min</td></tr>
+      <tr><td>④</td><td>冷启动 / Cold Start (深挖)</td><td>~2 min</td></tr>
+      <tr><td>⑤</td><td>发布管线 / Release Pipeline (深挖)</td><td>~2 min</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q1: BIG PICTURE                                    -->
+<!-- ====================================================================== -->
+<h2 id="q1-open">① 🌐 开门：扩容全貌 / Big Picture <span class="tag tag-time">~2 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt: <span class="en-text">"Scaled voice library from tens to 500+ voices, leveraging advanced orchestration stacks (Kubernetes, KEDA, Southfork, ZeroScaler, Southpaw, Southspot, Prometheus, Grafana, Istio, Redis etc.)."</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "I'd love to hear the big picture first — how did you scale the voice library from a few dozen to 500+? What were the biggest engineering challenges you ran into along the way?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "我想先听听全貌——你是怎么把 voice 库从几十个扩展到 500+ 的？这中间你遇到的最大的工程挑战是什么？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 这一问故意问得很开放，目的是听他<strong>首先想到什么</strong>。他主动 frame 出来的方向就是后面深挖的切入点。<br>
+      <strong>Interviewer note</strong> — Deliberately open-ended. Listen for what he frames <strong>first</strong> — that becomes the pivot for follow-ups.
+    </blockquote>
+  </div>
+</details>
+
+<details id="q1-ref">
+  <summary>📖 面试官参考答案 / Interviewer Reference Answer — Q1 开门</summary>
+  <div class="detail-body">
+    <p><strong>合理的挑战维度 / Reasonable challenge dimensions a strong candidate should mention:</strong></p>
+    <ul>
+      <li>🟢 <strong>GPU 显存约束</strong>：500 个模型不可能全部常驻 GPU，必须做动态调度<br><span class="en-text">GPU memory constraint — can't keep all 500 resident, need dynamic scheduling</span></li>
+      <li>🟢 <strong>路由复杂度</strong>：voice ID → pod 映射，不能 random LB<br><span class="en-text">Routing complexity — voice ID → pod mapping, can't use random LB</span></li>
+      <li>🟢 <strong>冷启动</strong>：冷门 voice 加载耗时 5-30s，需要 mitigation<br><span class="en-text">Cold start — infrequent voices take 5-30s to load, need mitigation</span></li>
+      <li>🟢 <strong>发布/版本管理</strong>：500 个 voice × 多版本，必须自动化<br><span class="en-text">Release/version management — 500 voices × versions, must be automated</span></li>
+      <li>🟢 <strong>监控爆炸</strong>：per-voice metric × 多维度 = 几千条指标<br><span class="en-text">Monitoring explosion — per-voice metrics × dimensions = thousands of series</span></li>
+      <li>🟡 <strong>成本控制</strong>：连到第 1 条 COGS——GPU 利用率必须打满<br><span class="en-text">Cost control — ties back to COGS; GPU utilization must be high</span></li>
+      <li>🟡 <strong>多租户隔离</strong>：公共 voice vs Custom Voice 客户私有<br><span class="en-text">Multi-tenancy — public voices vs customer Custom Voice isolation</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q1-eval">
+  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation — Q1</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>立刻聚焦 <strong>GPU 显存约束、动态调度、路由复杂度</strong>这几个真问题 — <span class="en-text">Immediately focuses on GPU memory, dynamic scheduling, routing complexity</span><br>→ 真正深度参与过架构 / Was a real architect, not a bystander</li>
+      <li>能用<strong>具体数字</strong>开场（如"我们一张 H100 能装 N 个 voice"、"冷启动 X 秒"） — <span class="en-text">Opens with concrete numbers</span><br>→ 有运营经验 / Has operations experience</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>列了用到的 stack（K8s、KEDA、Redis 一串），有大致架构图但不落到具体问题 — <span class="en-text">Lists the stack with a vague architecture diagram, doesn't ground to specific problems</span><br>→ 偏 "用了什么" 而不是 "为什么这么用" / "What we used" not "why we used it"</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>讲多了多少 voice、多少语言、多少客户场景 — <span class="en-text">Talks about how many voices/languages/customers</span><br>→ 🚩 可能只是 user/PM 视角，没参与底层架构 / Likely user/PM perspective, not architect</li>
+      <li>主要讲训练流程（data scientist 的事） — <span class="en-text">Mostly talks about training pipeline (data scientist's job)</span><br>→ 🚩 没意识到 serving 才是难点 / Doesn't realize serving is the hard part</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q2: GPU MEMORY & LIFECYCLE                         -->
+<!-- ====================================================================== -->
+<h2 id="q2-gpu">② 🎯 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle <span class="tag tag-time">~3 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 单张 H100 = 80GB 显存；假设每个 voice 模型 ~1GB，单卡最多装 ~70 个 voice；500+ voice 必须动态调度。<br><span class="en-text">A single H100 has 80GB of memory. If each voice ~1GB, one card fits ~70 voices max. 500+ voices must be dynamically scheduled.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "500 voice models clearly can't all fit in a single GPU's memory at the same time. How did you manage their lifecycle — what's hot, what's cold, when do you load, when do you evict?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "500 个 voice 模型加起来肯定塞不进任何一张 GPU 的显存。你是怎么管理它们的生命周期的——什么算热、什么算冷、什么时候 load、什么时候 evict？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q2-hints">
+  <summary>🚨 Q2 卡壳引导 / Hints When Stuck</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote class="ask-en">"What does the voice request distribution look like in practice? Is it uniform, or long-tail?"</blockquote>
+    <blockquote class="ask-cn">"Voice 的请求分布在实际中是什么样的？是均匀的还是长尾的？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote class="ask-en">"If a popular voice like Aria is taking 30% of traffic and another voice gets 1 request a day — should they be treated the same?"</blockquote>
+    <blockquote class="ask-cn">"如果 Aria 这种热门 voice 占了 30% 流量，而另一个 voice 一天只有 1 个请求——它们应该被一样对待吗？"</blockquote>
+
+    <p><span class="hint-chip hint-heavy">Heavy</span></p>
+    <blockquote class="ask-en">"Think about it as a cache problem — you have limited GPU memory (the cache), and need a policy to decide what stays and what gets kicked out."</blockquote>
+    <blockquote class="ask-cn">"可以把它当作一个缓存问题——GPU 显存有限（就是 cache），你需要一个策略决定什么留下、什么被踢出。"</blockquote>
+  </div>
+</details>
+
+<details id="q2-ref">
+  <summary>📖 Q2 面试官参考答案 / Interviewer Reference Answer</summary>
+  <div class="detail-body">
+    <div class="card">
+      <blockquote class="interviewer-note">
+        <strong>⚠️ 面试官专用</strong> — 不要念给候选人。用于评估候选人回答的完整度。<br>
+        <strong>Interviewer-only</strong> — Do not read to candidate. Use to evaluate answer completeness.
+      </blockquote>
+    </div>
+
+    <h4>✅ 热/冷分层 / Hot &amp; Warm Pool Tiering</h4>
+    <ul>
+      <li><strong>Hot pool</strong>：Top-N 热门 voice 常驻 GPU 显存，绝不 evict<br><span class="en-text">Top-N hot voices pinned in GPU memory, never evicted</span></li>
+      <li><strong>Warm pool</strong>：按需 load，可被 evict<br><span class="en-text">On-demand load, evictable</span></li>
+      <li>典型比例：~20% 热 voice 吃 80% 流量（Pareto 分布）<br><span class="en-text">~20% hot voices serve 80% traffic (Pareto)</span></li>
+    </ul>
+
+    <h4>✅ 淘汰策略 / Eviction Policy</h4>
+    <ul>
+      <li><strong>LRU</strong>：最近最少使用——简单但忽略权重<br><span class="en-text">Simple but ignores priority</span></li>
+      <li><strong>Weighted LRU / LFU</strong>：考虑客户优先级、付费等级、SLA 等级<br><span class="en-text">Account for customer priority, paid tier, SLA</span></li>
+      <li><strong>Watermark</strong>：显存达 80% 触发 evict；evict 到 60% 停止<br><span class="en-text">Trigger evict at 80% memory; stop at 60%</span></li>
+    </ul>
+
+    <h4>✅ Pod 调度策略 / Pod Scheduling</h4>
+    <ul>
+      <li>典型架构：<strong>不是</strong>每个 voice 一组 pod（500 组太浪费）；而是一个 pod 同时承担多个 voice，按 GPU 显存容量打包<br><span class="en-text">NOT one pod per voice (too wasteful) — one pod hosts multiple voices, packed by GPU memory capacity</span></li>
+      <li>新 voice 来时，router 决定丢给哪个有空闲的 pod，触发该 pod 的 model swap<br><span class="en-text">When new voice comes, router picks a pod with free capacity, triggers model swap on that pod</span></li>
+    </ul>
+
+    <h4>✅ Evict 时的并发 / Eviction Concurrency Safety</h4>
+    <ul>
+      <li>正在跑请求的 voice 不能 evict → 引用计数 (refcount) 或 readers-writer lock<br><span class="en-text">Voice with in-flight requests can't be evicted → refcount or RW lock</span></li>
+      <li>Evict 前 drain 等待最后一个请求完成<br><span class="en-text">Drain in-flight requests before evicting</span></li>
+    </ul>
+
+    <h4>✅ 长尾 voice (Custom Voice) 特殊处理 / Long-tail Handling</h4>
+    <ul>
+      <li>用 <strong>ZeroScaler 缩到 0</strong>，请求来时再起<br><span class="en-text">Scale to zero with ZeroScaler, spin up on demand</span></li>
+      <li>SLA 合同允许冷启动延迟（写在 Custom Voice 条款）<br><span class="en-text">SLA contract permits cold-start latency (written in Custom Voice terms)</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q2-eval">
+  <summary>🎯 Q2 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>能说出<strong>热/冷分层 + LRU evict + watermark</strong>三件套，并给具体数字 — <span class="en-text">Names hot/warm tiering + LRU evict + watermark with concrete numbers</span><br>→ 是真正的架构师，做过实战 / Real architect, has done it in production</li>
+      <li>能讨论 <strong>evict 时并发问题</strong>（refcount / drain）— <span class="en-text">Discusses concurrency during eviction (refcount/drain)</span><br>→ 注意到工程细节 / Notices engineering detail</li>
+      <li>能讨论 <strong>Custom Voice 长尾</strong>怎么用 ZeroScaler 缩到 0 — <span class="en-text">Discusses long-tail Custom Voice handling via ZeroScaler scale-to-zero</span><br>→ 把 stack 和业务连起来了 / Connects stack to business reality</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道要分热冷，知道用 LRU 之类，但具体数字、watermark、阈值说不清 — <span class="en-text">Knows hot/cold + LRU, but vague on numbers</span><br>→ 听说过/参与过但不是负责人 / Has heard of / participated but not the owner</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"每个 voice 部署成独立的 pod / Deployment" — <span class="en-text">"Each voice is its own Deployment"</span><br>→ 🚩 根本没意识到 GPU 显存约束 / Hasn't grasped the GPU memory constraint</li>
+      <li>"K8s 会自动调度" — <span class="en-text">"K8s handles it automatically"</span><br>→ 🚩 把责任甩给不懂业务的 K8s / Shifts responsibility to K8s, which doesn't understand the domain</li>
+      <li>"我们买够多 GPU 就行" — <span class="en-text">"We just buy more GPUs"</span><br>→ 🚩 成本意识缺失 / No cost awareness — also undermines bullet #1 (COGS)</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q3: REQUEST ROUTING                                -->
+<!-- ====================================================================== -->
+<h2 id="q3-route">③ 🔀 请求路由 / Request Routing <span class="tag tag-time">~3 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 客户请求里指定 voice ID。K8s 默认 round-robin LB 会让请求随机落到任何 pod 上，cache 命中率惨不忍睹。<br><span class="en-text">Request specifies a voice ID. K8s default round-robin LB scatters requests across pods, killing cache hit rate.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "When a client request comes in with a specific voice ID, how does it actually get routed to the right pod? Default K8s Service round-robin obviously wouldn't work — what did you build instead?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "客户请求里指定了 voice ID——这个请求进来后，怎么知道该路由到哪个 pod？K8s 默认的 round-robin Service 显然不行——你们是怎么实现的？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q3-hints">
+  <summary>🚨 Q3 卡壳引导 / Hints When Stuck</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote class="ask-en">"Imagine 100 pods, and only 20 of them have voice 'Aria' loaded. How does the request find one of those 20?"</blockquote>
+    <blockquote class="ask-cn">"想象你有 100 个 pod，只有 20 个 load 了 Aria 这个 voice。请求怎么找到这 20 个里的一个？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote class="ask-en">"You probably need some kind of index that maps voice → which pods have it. Where would you maintain that index?"</blockquote>
+    <blockquote class="ask-cn">"你大概需要一个索引，把 voice 映射到加载了它的 pod。这个索引你会维护在哪里？"</blockquote>
+
+    <p><span class="hint-chip hint-heavy">Heavy</span></p>
+    <blockquote class="ask-en">"And once you find candidates, do you want requests for the same voice to land on the same pod, or spread out? Why?"</blockquote>
+    <blockquote class="ask-cn">"找到候选 pod 之后——同一个 voice 的请求你希望都打到同一个 pod，还是分散？为什么？"</blockquote>
+  </div>
+</details>
+
+<details id="q3-ref">
+  <summary>📖 Q3 面试官参考答案 / Interviewer Reference Answer</summary>
+  <div class="detail-body">
+    <h4>✅ 路由层架构 / Router Architecture</h4>
+    <ul>
+      <li><strong>Voice-aware Router</strong>：独立微服务 或 ingress 扩展（不能依赖默认 K8s Service）<br><span class="en-text">Standalone microservice or ingress extension — can't rely on default K8s Service</span></li>
+      <li>维护 <strong>voice → pod 索引</strong>（哪些 pod load 了哪些 voice），存 Redis / etcd / 内存 + 心跳同步<br><span class="en-text">Maintains voice → pod index in Redis/etcd/in-memory with heartbeat sync</span></li>
+      <li>Router 自己 HA：多副本 + 索引共享存储，单点 fail 不影响请求<br><span class="en-text">Router itself is HA: replicas + shared index store</span></li>
+    </ul>
+
+    <h4>✅ Consistent Hashing on Voice ID</h4>
+    <ul>
+      <li>同 voice 的请求 → 同 pod，让该 pod 的 KV-cache / 模型 warm-up 状态被复用<br><span class="en-text">Same voice → same pod, reusing KV-cache / warm-up state on that pod</span></li>
+      <li>Pod 增删时 only ~K/N 的请求需要重路由（vs 简单 hash 的 K 个全部重路由）<br><span class="en-text">Only ~K/N requests rerouted on pod churn (vs K with naive hashing)</span></li>
+    </ul>
+
+    <h4>✅ Cold Voice 处理 / Cold Voice Handling</h4>
+    <ul>
+      <li>没人 load 的 voice → 选一个容量空闲 pod 触发 load → 路由到它<br><span class="en-text">No pod has it → pick free-capacity pod → trigger load → route there</span></li>
+      <li>Load 期间的请求可以排队或返回 retry-after<br><span class="en-text">In-flight requests during load can queue or return retry-after</span></li>
+    </ul>
+
+    <h4>✅ Pod 增删时的 Rebalance / Pod Churn</h4>
+    <ul>
+      <li>新 pod 上线 → 索引同步 → router 开始把部分流量分给它<br><span class="en-text">New pod up → index sync → router starts directing partial traffic</span></li>
+      <li>老 pod 下线 → drain 等 in-flight 请求完成 → 索引移除<br><span class="en-text">Old pod down → drain in-flight → remove from index</span></li>
+    </ul>
+
+    <h4>✅ Istio 在这里能干什么 / What Istio Brings</h4>
+    <ul>
+      <li>Istio 本身<strong>不懂</strong> voice 业务语义，但能提供：mTLS、tracing、circuit breaker、retry<br><span class="en-text">Istio doesn't understand voice semantics, but provides: mTLS, tracing, circuit breaker, retry</span></li>
+      <li>Voice-aware routing 在 Istio 之上的 application 层<br><span class="en-text">Voice-aware routing sits above Istio at the application layer</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q3-eval">
+  <summary>🎯 Q3 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>能说出 <strong>Voice-aware Router</strong> + <strong>voice→pod 索引</strong> + <strong>consistent hashing on voice ID</strong> 三件套 — <span class="en-text">Names voice-aware router + voice→pod index + consistent hashing trio</span><br>→ 真正的设计者 / Real designer</li>
+      <li>能讨论<strong>索引存哪里</strong>（Redis / etcd）和 <strong>HA 策略</strong> — <span class="en-text">Discusses where index is stored and HA</span><br>→ 工程化思维 / Engineering mindset</li>
+      <li>能讨论 <strong>pod 增删时的 rebalance</strong> 和 <strong>cold voice fallback 路由</strong> — <span class="en-text">Discusses pod churn rebalance and cold-voice fallback routing</span><br>→ 全面 / Comprehensive</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道不能 round-robin，提到 voice-aware 或中心化 router，但 consistent hashing / rebalance / cold load 细节讲不清 — <span class="en-text">Knows round-robin won't work, mentions voice-aware/centralized router, but vague on details</span><br>→ 看过设计文档但没深入实现 / Saw the design but didn't implement it</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"K8s Service 直接 LB" — <span class="en-text">"K8s Service does the LB"</span><br>→ 🚩 完全没意识到 cache 命中问题 / Hasn't grasped the cache hit problem</li>
+      <li>"Istio 自动处理" — <span class="en-text">"Istio handles it automatically"</span><br>→ 🚩 Istio 不懂业务语义 / Istio doesn't understand business semantics</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q4: COLD START                                     -->
+<!-- ====================================================================== -->
+<h2 id="q4-cold">④ ⚡ 冷启动 / Cold Start <span class="tag tag-time">~2 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 加载一个 ~1GB 模型从磁盘到 GPU 显存大约 5–30s。冷门 voice 直接命中冷启动，用户体验灾难。<br><span class="en-text">Loading a ~1GB model from disk to GPU memory takes ~5–30s. Long-tail voices hit cold-start directly — a UX disaster.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "A voice that hasn't been used for a year suddenly gets a request. What's the cold-start latency you typically see? And how do you mitigate the user experience hit?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "一个一年没人用的 voice 突然来了请求——你们一般看到的冷启动延迟是多少？用户体验上你们怎么 mitigate？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q4-ref">
+  <summary>📖 Q4 面试官参考答案 / Interviewer Reference Answer</summary>
+  <div class="detail-body">
+    <h4>✅ 冷启动延迟分解 / Cold-start Latency Breakdown</h4>
+    <ul>
+      <li><strong>磁盘读 model artifact</strong>：几百 ms 到几 s（取决于 blob storage vs 本地 SSD）<br><span class="en-text">Disk read model artifact: 100ms - several seconds</span></li>
+      <li><strong>GPU memcopy</strong>：~1GB 模型 PCIe 拷贝 ~100ms<br><span class="en-text">GPU memcopy: ~100ms for 1GB over PCIe</span></li>
+      <li><strong>模型 init / CUDA kernel warmup</strong>：首次推理 kernel 编译 + cache 1-5s<br><span class="en-text">Model init / CUDA kernel warmup: 1-5s on first inference</span></li>
+      <li><strong>合计</strong>：5-30s 是正常区间<br><span class="en-text">Total: 5-30s is the normal range</span></li>
+    </ul>
+
+    <h4>✅ Mitigation 手段 / Mitigation Strategies</h4>
+    <ul>
+      <li><strong>Pre-warm pool</strong>：根据历史调用预测哪些 voice 要起，提前 load<br><span class="en-text">Predict from history which voices will be requested, pre-load</span></li>
+      <li><strong>N+1 buffer pod</strong>：永远多保留 1 个 idle pod 接 cold request<br><span class="en-text">Always keep 1 idle pod for cold requests</span></li>
+      <li><strong>客户端流式返回</strong>：返回 streaming response 或 status，让客户知道"正在 load"<br><span class="en-text">Return streaming response or status so client knows it's loading</span></li>
+      <li><strong>Fallback 小模型</strong>：用小 footprint 模型做 first-token 响应，大模型 background load<br><span class="en-text">Smaller-footprint model for first-token response, larger model background-loads</span></li>
+      <li><strong>SLA 降级</strong>：Custom Voice 这种极冷场景接受冷启动，明确写进合同<br><span class="en-text">For extreme cold-start scenarios like Custom Voice, accept cold start in SLA contract</span></li>
+    </ul>
+
+    <h4>✅ 关联到 ZeroScaler / Tie to ZeroScaler</h4>
+    <ul>
+      <li>ZeroScaler 可以把极冷 voice 缩到 0 pod 节省成本<br><span class="en-text">ZeroScaler can scale extreme-cold voices to 0 pods to save cost</span></li>
+      <li>Trade-off：第一个请求必然冷启动 → 必须接受或用 fallback<br><span class="en-text">Trade-off: first request guaranteed cold start → must accept or use fallback</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q4-eval">
+  <summary>🎯 Q4 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>给出<strong>具体数字</strong>（5-30s），分解到磁盘 / memcopy / init 三段 — <span class="en-text">Gives concrete numbers (5-30s), breaks down disk/memcopy/init</span><br>→ 真正排查过 / Has actually investigated</li>
+      <li>能说出<strong>多种 mitigation</strong>（pre-warm + N+1 buffer + 客户端流式 + SLA 合同） — <span class="en-text">Names multiple mitigations</span><br>→ 全面 / Comprehensive</li>
+      <li>能讨论 <strong>SLA 合同层面</strong>怎么处理（不是所有冷启动都能 mitigate） — <span class="en-text">Discusses contract-level handling</span><br>→ 产品意识 / Product mindset</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道有冷启动问题，大致几秒，知道用 pre-warm，但具体策略和数字讲不全 — <span class="en-text">Knows cold-start exists, several seconds, knows pre-warm, but vague on specifics</span><br>→ 知道问题但没主导解决 / Aware of problem, didn't drive solution</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"我们没遇到过冷启动问题" — <span class="en-text">"We never had cold-start issues"</span><br>→ 🚩 要么没真做过，要么没意识到（500 voice 不可能没冷启动）/ Either didn't do it or didn't notice — impossible with 500 voices</li>
+      <li>"用户多等一会儿就行" — <span class="en-text">"User can just wait a bit"</span><br>→ 🚩 没产品意识 / No product mindset</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q5: RELEASE PIPELINE                               -->
+<!-- ====================================================================== -->
+<h2 id="q5-release">⑤ 🚀 发布管线 / Release Pipeline <span class="tag tag-time">~2 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 500 个 voice × 多版本 × 持续训练新版本 = 发布频率极高。手动发布在这个规模下不可能。<br><span class="en-text">500 voices × multiple versions × ongoing retraining = extremely high release cadence. Manual release impossible at this scale.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "How do you manage releases across 500 voices? When a new voice gets trained, or an existing voice gets a v2 — what does the rollout workflow look like?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "500 个 voice 你们怎么管发布？一个新 voice 训出来，或者一个老 voice 升级到 v2——上线流程是什么样的？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q5-ref">
+  <summary>📖 Q5 面试官参考答案 / Interviewer Reference Answer</summary>
+  <div class="detail-body">
+    <h4>✅ Model Registry / Artifact 管理</h4>
+    <ul>
+      <li>Model Registry（类似 MLflow / Azure ML）：每个 voice 每个版本 = 一个 artifact，带 metadata（训练数据集、超参、quality 评分）<br><span class="en-text">Model Registry: each voice × version = one artifact with metadata (training data, hyperparams, quality score)</span></li>
+      <li>不可变 artifact：发布后不改，新改动 = 新版本<br><span class="en-text">Immutable artifacts: once published, never modified — changes = new version</span></li>
+    </ul>
+
+    <h4>✅ 自动 QA / Automated Quality Gates</h4>
+    <ul>
+      <li>训完即跑回归测试集：几十种文本场景（短句、长句、数字、外语词、特殊符号）<br><span class="en-text">Regression test suite runs on training completion: dozens of scenarios</span></li>
+      <li>自动 <strong>MOS 评分</strong>（Mean Opinion Score）或用预训练判别模型打分<br><span class="en-text">Automatic MOS scoring or pretrained discriminator</span></li>
+      <li>低于阈值直接 fail，不进 registry<br><span class="en-text">Below threshold = fail, never enters registry</span></li>
+    </ul>
+
+    <h4>✅ Canary / 灰度发布 / Progressive Rollout</h4>
+    <ul>
+      <li><strong>Per-voice 灰度</strong>：v2 先放 1% → 5% → 25% → 100%<br><span class="en-text">Per-voice canary: 1% → 5% → 25% → 100%</span></li>
+      <li>每档观察 24h，监控：P99 延迟 / 错误率 / 业务 MOS 分 / 用户复购率<br><span class="en-text">Hold each stage 24h, monitor P99/error rate/MOS/return rate</span></li>
+      <li>路由层支持 voice 维度的流量切分（同一 voice 不同版本可以并存）<br><span class="en-text">Router supports per-voice version split (same voice different versions can coexist)</span></li>
+    </ul>
+
+    <h4>✅ 自动回滚 / Automated Rollback</h4>
+    <ul>
+      <li>任一指标超阈值 → 一键回滚（router 切回老版本）<br><span class="en-text">Any metric over threshold → one-click rollback (router switches back)</span></li>
+      <li>老版本 artifact 必须保留至少 N 天，方便回滚<br><span class="en-text">Keep old artifacts at least N days for rollback</span></li>
+    </ul>
+
+    <h4>✅ 多 region 协调 / Multi-region Coordination</h4>
+    <ul>
+      <li>新版本不是一次性推到所有 region<br><span class="en-text">New version is not pushed to all regions at once</span></li>
+      <li>典型：dev → staging → 1 个小 region → 主要 region → 全球<br><span class="en-text">Typical: dev → staging → 1 small region → primary regions → worldwide</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q5-eval">
+  <summary>🎯 Q5 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>能描述<strong>全自动 pipeline</strong>：artifact → 自动 QA → registry → canary → 全量 — <span class="en-text">Describes full pipeline</span><br>→ 真正的平台思维 / Real platform mindset</li>
+      <li>能说出 <strong>per-voice 灰度</strong>（1% → 5% → 25% → 100%）+ 自动回滚 — <span class="en-text">Per-voice canary + auto rollback</span><br>→ 谨慎、有 SLA 意识 / Cautious, SLA-aware</li>
+      <li>能讨论 <strong>自动质量回归</strong>（MOS 评分 / 判别模型）— <span class="en-text">Auto quality regression (MOS / discriminator)</span><br>→ ML serving 经验丰富 / Rich ML-serving experience</li>
+      <li>能讨论 <strong>多 region 协调</strong>策略 — <span class="en-text">Multi-region coordination</span><br>→ 全球部署经验 / Global deployment experience</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>有 CI/CD pipeline，有 canary，但质量回归 / 回滚机制讲不全 — <span class="en-text">Has CI/CD and canary but vague on quality regression / rollback</span><br>→ 用过 pipeline 但没设计过 / Used pipeline, didn't design it</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"手动 SCP 模型文件 + 重启 pod" — <span class="en-text">"Manually SCP model file and restart pod"</span><br>→ 🚩 500 voice 规模不可能这么干 / Impossible at this scale</li>
+      <li>没有 canary 概念 — <span class="en-text">No canary concept</span><br>→ 🚩 不懂渐进发布 / Doesn't understand progressive rollout</li>
+      <li>"我们 QA 团队会先验" — <span class="en-text">"Our QA team verifies first"</span><br>→ 🚩 把责任甩出去 / Shifts responsibility</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ==================== RUBRIC ==================== -->
+<h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
+
+<div class="card">
+  <h4><span class="badge badge-pass">✅ Senior Bar</span> 达标</h4>
+  <table>
+    <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
+    <tr><td>开门题主动 frame 出 GPU 显存 / 路由 / 冷启动等真问题</td><td>真正参与过架构<br><span class="en-text">Was a real participant in the architecture</span></td></tr>
+    <tr><td>能解释 voice 热/冷分层和某种 evict 策略</td><td>有 serving 调度经验<br><span class="en-text">Has serving scheduling experience</span></td></tr>
+    <tr><td>能说出 voice-aware routing 不能用 round-robin，提出某种索引方案</td><td>理解 cache 命中重要性<br><span class="en-text">Understands cache-hit importance</span></td></tr>
+    <tr><td>能说出至少一种冷启动 mitigation 手段</td><td>有 production 经验<br><span class="en-text">Has production experience</span></td></tr>
+    <tr><td>能描述自动化发布 pipeline + canary 概念</td><td>有平台工程意识<br><span class="en-text">Has platform engineering awareness</span></td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4><span class="badge badge-strong">🌟 Strong Signal</span></h4>
+  <table>
+    <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
+    <tr><td>能给出<strong>具体数字</strong>：单 GPU 装多少 voice / 冷启动几秒 / 灰度比例</td><td>真负责过、看过 dashboard<br><span class="en-text">Real owner, watched dashboards</span></td></tr>
+    <tr><td>能讨论 evict 时的<strong>并发安全</strong>（refcount / drain）</td><td>注重工程细节<br><span class="en-text">Attentive to engineering detail</span></td></tr>
+    <tr><td>能讨论 consistent hashing 在 pod 增删时的 rebalance 优势</td><td>系统设计深度<br><span class="en-text">Deep systems thinking</span></td></tr>
+    <tr><td>能用通用术语解释微软内部 stack（ZeroScaler / Southfork 等）</td><td>脱黑话能力<br><span class="en-text">Can articulate without company jargon</span></td></tr>
+    <tr><td>能把多个问题串起来（routing × cold start × COGS）</td><td>系统全局观<br><span class="en-text">Holistic system view</span></td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h4><span class="badge badge-fail">🚩 Red Flags</span></h4>
+  <table>
+    <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
+    <tr><td>"每个 voice 独立 pod / Deployment"</td><td>没意识到 GPU 显存约束<br><span class="en-text">Hasn't grasped GPU memory constraint</span></td></tr>
+    <tr><td>"K8s / Istio 自动处理"</td><td>把责任甩给不懂业务语义的中间件<br><span class="en-text">Shifts responsibility to middleware unaware of business semantics</span></td></tr>
+    <tr><td>"我们没遇到过冷启动问题"</td><td>500 voice 不可能没冷启动；要么没做过，要么没意识到<br><span class="en-text">Impossible at 500-voice scale</span></td></tr>
+    <tr><td>列了一堆 stack 但说不出每个在系统里干嘛</td><td>buzzword bingo，可能只是 stack 用户而非设计者<br><span class="en-text">Buzzword bingo — likely user not designer</span></td></tr>
+    <tr><td>把发布讲成手动 + 没 canary 概念</td><td>500 voice 规模根本不可能这么干<br><span class="en-text">Manual + no canary is impossible at this scale</span></td></tr>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== NOTES ==================== -->
+<h2 id="notes">📝 Notes</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Q1: 开门 — 主动 frame 哪些真问题</td><td></td><td></td></tr>
+      <tr><td>Q2: GPU 显存 — 分层 / evict / 并发</td><td></td><td></td></tr>
+      <tr><td>Q3: 路由 — voice-aware / consistent hash / 索引</td><td></td><td></td></tr>
+      <tr><td>Q4: 冷启动 — 数字 + mitigation 手段</td><td></td><td></td></tr>
+      <tr><td>Q5: 发布 — pipeline / canary / 回滚 / 多 region</td><td></td><td></td></tr>
+      <tr><td>Stack 脱黑话能力（ZeroScaler / Southfork 等）</td><td></td><td></td></tr>
+      <tr><td>系统全局观（多问题串联）</td><td></td><td></td></tr>
+      <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note-area">面试官在此记录候选人技术问答的表现 / Interviewer notes on candidate technical Q&amp;A…</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // If the element IS a <details>, open it directly
+  if (el.tagName === 'DETAILS') el.open = true;
+  // Also open any parent <details>
+  const parent = el.closest('details');
+  if (parent) parent.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
 </body>
 </html>
