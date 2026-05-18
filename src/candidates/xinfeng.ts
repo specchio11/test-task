@@ -1,14 +1,17 @@
 import type { CandidateConfig } from '../data/types';
 
 /**
- * Xinfeng Chen — 60-min formal interview scaffolded on 2026-05-18.
+ * Xinfeng Chen — 60-min formal (onsite-style) interview scaffolded
+ * on 2026-05-18. This is NOT a phone screen — it's the full technical loop.
  *
- * Candidate background (per resume): senior Microsoft Azure AI engineer,
- * owned Azure TTS service end-to-end (engine, pipelines, deploy, SLA, COGS).
- * Recently expanded to Azure OpenAI RealtimeAPI / SORA / Whisper. Heavy
- * systems / cloud-native / C# + C++ + GPU CUDA background. Light on
+ * Candidate background (per resume): senior Microsoft Azure AI engineer
+ * (2018–2025, Suzhou / Beijing / Vancouver). Owned Azure TTS service
+ * end-to-end (engine, pipelines, deploy, SLA, COGS). Scaled the TTS voice
+ * library from tens to 500+ voices on K8s + KEDA + ZeroScaler stack.
+ * Recently expanded to Azure OpenAI RealtimeAPI / SORA / Whisper as DRI.
+ * Heavy systems / cloud-native / C# + C++ + GPU CUDA background. Light on
  * frontend and pure-algo work — agenda biases toward systems / design /
- * deep-dive accordingly.
+ * resume deep-dive accordingly.
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
  * material is prepared. The static section pages under
@@ -20,7 +23,7 @@ export const xinfeng: CandidateConfig = {
   name: 'Xinfeng Chen',
   shortName: 'Xinfeng',
   initials: 'XC',
-  role: 'TBD',
+  role: 'Senior SDE · Azure AI / TTS',
   totalMin: 60,
   brand: '📋 Onsite Interview Guide',
   accent: '#7c3aed',
@@ -51,11 +54,11 @@ export const xinfeng: CandidateConfig = {
       id: 's2',
       num: '②',
       emoji: '💬',
-      titleZh: '技术问答',
-      titleEn: 'Resume-based Technical Deep-dive',
-      navLabel: '② 技术深挖',
+      titleZh: '简历技术问答',
+      titleEn: 'Resume-based Technical Q&A',
+      navLabel: '② 技术问答',
       time: '~20 min',
-      keyPoints: '（待填写 · Azure TTS / SLA / COGS / K8s 栈深挖）',
+      keyPoints: '基于简历挑 2–3 个 bullet 深挖，每个 bullet = 1 主问题 + 若干递进追问',
       accent: 's2',
       href: 'technicalQuestions/interview-guide.html',
       introEn: '(TBD)',
@@ -74,6 +77,7 @@ export const xinfeng: CandidateConfig = {
       href: 'systemDesign/interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
+      introHeading: '🎤 引导进入系统设计 / Introduce System Design',
     },
     {
       id: 's4',
@@ -88,6 +92,7 @@ export const xinfeng: CandidateConfig = {
       href: 'codingTest/interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
+      introHeading: '🎤 引导进入编程测试 / Introduce Coding Exercise',
     },
     {
       id: 's5',
@@ -102,6 +107,7 @@ export const xinfeng: CandidateConfig = {
       href: 'candidateQuestions/interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
+      introHeading: '🎤 引导候选人提问 / Invite Candidate Questions',
     },
   ],
 };

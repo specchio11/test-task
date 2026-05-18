@@ -8,7 +8,14 @@ import { SectionLink } from '../components/SectionLink';
 import { ScrollTop } from '../components/ScrollTop';
 import '../styles/agenda.css';
 
-const SECTION_INTRO_HEADING: Record<string, string> = {
+/**
+ * Default intro-script heading per section id. Used when a section does NOT
+ * provide its own `introHeading`. Only valid for the classic 4-section
+ * phone-screen layout (s1-s4). Candidates with 5+ sections (e.g. Xinfeng
+ * with a separate System Design block) should set `introHeading` explicitly
+ * on each affected section.
+ */
+const DEFAULT_SECTION_INTRO_HEADING: Record<string, string> = {
   s1: '🎤 引导候选人自我介绍 / Ask for Self-Introduction',
   s2: '🎤 引导进入技术问答 / Introduce Technical Q&A',
   s3: '🎤 引导进入编程测试 / Introduce Coding Exercise',
@@ -36,7 +43,7 @@ export function CandidateAgenda() {
         <QuickPanel sections={candidate.sections} />
 
         <div className="container">
-          <h1>📋 Phone Screen — Interview Guide</h1>
+          <h1>{candidate.brand} — Interview Guide</h1>
           <p className="subtitle">
             {candidate.role} · Total {candidate.totalMin} min ·{' '}
             {candidate.sections.length} Sections · Candidate: {candidate.name}
@@ -63,7 +70,11 @@ export function CandidateAgenda() {
               </h2>
 
               <ScriptBlock
-                heading={SECTION_INTRO_HEADING[s.id] ?? '🎤 引导 / Introduce'}
+                heading={
+                  s.introHeading ??
+                  DEFAULT_SECTION_INTRO_HEADING[s.id] ??
+                  '🎤 引导 / Introduce'
+                }
                 english={s.introEn}
                 chinese={s.introZh}
               />
@@ -81,7 +92,7 @@ export function CandidateAgenda() {
       </div>
 
       <div className="footer">
-        {candidate.role} Phone Screen · Interview Toolkit · Candidate: {candidate.name}
+        {candidate.role} · {candidate.totalMin} min · Interview Toolkit · Candidate: {candidate.name}
       </div>
 
       <ScrollTop />

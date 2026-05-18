@@ -5,6 +5,7 @@ const NUM_COLOR: Record<AgendaSection['accent'], string> = {
   s2: '#7c3aed',
   s3: '#059669',
   s4: '#ea580c',
+  s5: '#db2777',
 };
 
 interface Props {

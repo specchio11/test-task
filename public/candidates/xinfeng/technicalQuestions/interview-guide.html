@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Section 2 — 简历技术问答 / Resume-based Technical Q&A · Xinfeng Chen</title>
+<title>Section 2 — 简历技术问答 / Resume-based Technical Q&A (~20 min) · Xinfeng Chen · Onsite</title>
 <style>
   :root {
     --bg: #f8f9fa;
@@ -273,8 +273,9 @@
   <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
   <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
   <a class="nav-btn" style="background:#7c3aed;color:#fff;border-color:#7c3aed;text-decoration:none;font-weight:700;">② 技术问答</a>
-  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
-  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ 候选人提问</a>
+  <a href="../systemDesign/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ 系统设计</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ Coding</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;opacity:0.7;">⑤ 候选人提问</a>
 </nav>
 
 <div class="page-layout">
@@ -287,41 +288,41 @@
   <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
   <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
 
-  <a class="qp-link" href="#topic-voice-scaling" onclick="jump('topic-voice-scaling');return false;" style="background:#f5f3ff;color:var(--accent);font-weight:700;margin-top:10px;border-left-color:var(--accent);">📌 Flow ① · Voice 库扩容</a>
+  <a class="qp-link" href="#topic-voice-scaling" onclick="jump('topic-voice-scaling');return false;" style="background:#f5f3ff;color:var(--accent);font-weight:700;margin-top:10px;border-left-color:var(--accent);">📌 简历 Bullet ① · Voice 库扩容</a>
 
   <div class="qp-group">
-    <div class="qp-group-title">Q1 — 开门 / Big Picture</div>
-    <a class="qp-sub purple" href="#q1-open" onclick="jump('q1-open');return false;">🎤 提问</a>
+    <div class="qp-group-title" style="color:var(--accent);">🎯 主问题 / Main Question</div>
+    <a class="qp-sub purple" href="#q1-open" onclick="jump('q1-open');return false;">🎤 提问（开门：扩容全貌）</a>
     <a class="qp-sub purple" href="#q1-ref" onclick="jump('q1-ref');return false;">📖 参考答案</a>
     <a class="qp-sub purple" href="#q1-eval" onclick="jump('q1-eval');return false;">🎯 候选人回答评价</a>
   </div>
 
   <div class="qp-group">
-    <div class="qp-group-title">Q2 — GPU 显存 / Voice Lifecycle</div>
-    <a class="qp-sub blue" href="#q2-gpu" onclick="jump('q2-gpu');return false;">🎤 提问</a>
+    <div class="qp-group-title">↳ 追问 1 / Follow-up 1 — GPU 显存</div>
+    <a class="qp-sub blue" href="#q2-gpu" onclick="jump('q2-gpu');return false;">🎤 追问</a>
     <a class="qp-sub blue" href="#q2-hints" onclick="jump('q2-hints');return false;">🚨 卡壳引导</a>
     <a class="qp-sub blue" href="#q2-ref" onclick="jump('q2-ref');return false;">📖 参考答案</a>
     <a class="qp-sub blue" href="#q2-eval" onclick="jump('q2-eval');return false;">🎯 候选人回答评价</a>
   </div>
 
   <div class="qp-group">
-    <div class="qp-group-title">Q3 — 请求路由 / Routing</div>
-    <a class="qp-sub green" href="#q3-route" onclick="jump('q3-route');return false;">🎤 提问</a>
+    <div class="qp-group-title">↳ 追问 2 / Follow-up 2 — 请求路由</div>
+    <a class="qp-sub green" href="#q3-route" onclick="jump('q3-route');return false;">🎤 追问</a>
     <a class="qp-sub green" href="#q3-hints" onclick="jump('q3-hints');return false;">🚨 卡壳引导</a>
     <a class="qp-sub green" href="#q3-ref" onclick="jump('q3-ref');return false;">📖 参考答案</a>
     <a class="qp-sub green" href="#q3-eval" onclick="jump('q3-eval');return false;">🎯 候选人回答评价</a>
   </div>
 
   <div class="qp-group">
-    <div class="qp-group-title">Q4 — 冷启动 / Cold Start</div>
-    <a class="qp-sub orange" href="#q4-cold" onclick="jump('q4-cold');return false;">🎤 提问</a>
+    <div class="qp-group-title">↳ 追问 3 / Follow-up 3 — 冷启动</div>
+    <a class="qp-sub orange" href="#q4-cold" onclick="jump('q4-cold');return false;">🎤 追问</a>
     <a class="qp-sub orange" href="#q4-ref" onclick="jump('q4-ref');return false;">📖 参考答案</a>
     <a class="qp-sub orange" href="#q4-eval" onclick="jump('q4-eval');return false;">🎯 候选人回答评价</a>
   </div>
 
   <div class="qp-group">
-    <div class="qp-group-title">Q5 — 发布管线 / Release Pipeline</div>
-    <a class="qp-sub purple" href="#q5-release" onclick="jump('q5-release');return false;">🎤 提问</a>
+    <div class="qp-group-title">↳ 追问 4 / Follow-up 4 — 发布管线</div>
+    <a class="qp-sub purple" href="#q5-release" onclick="jump('q5-release');return false;">🎤 追问</a>
     <a class="qp-sub purple" href="#q5-ref" onclick="jump('q5-ref');return false;">📖 参考答案</a>
     <a class="qp-sub purple" href="#q5-eval" onclick="jump('q5-eval');return false;">🎯 候选人回答评价</a>
   </div>
@@ -334,7 +335,7 @@
 <!-- ===== MAIN ===== -->
 <div class="container">
 
-<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A</h1>
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~20 min</span></h1>
 
 <div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
   <h4>🎤 引导进入技术问答 / Introduce Technical Q&A</h4>
@@ -350,31 +351,32 @@
 <h2 id="flow">⏱️ Flow</h2>
 <div class="card">
   <p style="margin-bottom:10px;color:var(--text-muted);font-size:18px;">
-    每个简历问题（resume bullet）是 Flow 的一个 step，每个 step 内部由若干个递进式追问组成。<br>
-    <span class="en-text">Each resume bullet is one Flow step, made up of several progressive follow-ups.</span>
+    每一行 = 简历里的<strong>一个 bullet</strong>。每个 bullet 内部由 <strong>1 个主问题 + 若干递进追问</strong>组成（详情见下方各 section）。<br>
+    <span class="en-text">Each row = one resume bullet. Inside each bullet: <strong>1 main question + several progressive follow-ups</strong> (see sections below).</span>
   </p>
   <table>
-    <thead><tr><th>#</th><th>Content</th><th>Time</th></tr></thead>
+    <thead><tr><th>#</th><th>简历 Bullet / Resume Bullet</th><th>结构 / Structure</th><th>Time</th></tr></thead>
     <tbody>
       <tr style="background:#f5f3ff;">
         <td><strong style="color:var(--accent);">①</strong></td>
-        <td><strong>简历问题 1：Voice 库扩容 (500+ voices) / Resume Question 1: Voice Library Scaling</strong></td>
+        <td>
+          <strong>Voice 库扩容 (tens → 500+ voices)</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Scaled voice library from tens to 500+ voices, leveraging advanced orchestration stacks (Kubernetes, KEDA, Southfork, ZeroScaler, Southpaw, Southspot, Prometheus, Grafana, Istio, Redis etc.)."</span>
+        </td>
+        <td>1 主问题 + 4 追问<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 4 follow-ups</span></td>
         <td><strong>~12 min</strong></td>
       </tr>
-      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q1 开门：扩容全貌 / Big Picture <em>(开放题)</em></td><td>~2 min</td></tr>
-      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q2 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Lifecycle <em>(核心)</em></td><td>~3 min</td></tr>
-      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q3 请求路由 / Request Routing <em>(核心)</em></td><td>~3 min</td></tr>
-      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q4 冷启动 / Cold Start <em>(深挖)</em></td><td>~2 min</td></tr>
-      <tr><td></td><td style="padding-left:32px;color:#475569;">↳ Q5 发布管线 / Release Pipeline <em>(深挖)</em></td><td>~2 min</td></tr>
       <tr style="opacity:0.55;">
         <td>②</td>
-        <td><em>简历问题 2 / Resume Question 2 — 待添加 (TBD)</em></td>
+        <td><em>简历 Bullet ② / Resume Bullet ② — 待添加 (TBD)</em></td>
         <td><em>TBD</em></td>
+        <td><em>~4 min</em></td>
       </tr>
       <tr style="opacity:0.55;">
         <td>③</td>
-        <td><em>简历问题 3 / Resume Question 3 — 待添加 (TBD)</em></td>
+        <td><em>简历 Bullet ③ / Resume Bullet ③ — 待添加 (TBD)</em></td>
         <td><em>TBD</em></td>
+        <td><em>~4 min</em></td>
       </tr>
     </tbody>
   </table>
@@ -383,11 +385,11 @@
 <hr class="separator">
 
 <!-- ====================================================================== -->
-<!-- ============== FLOW STEP ① : RESUME QUESTION 1 ====================== -->
-<!-- ============== Voice Library Scaling deep-dive ====================== -->
+<!-- ============== RESUME BULLET ① : VOICE LIBRARY SCALING ============= -->
+<!-- ============== 1 main question (Q1) + 4 follow-ups (Q2-Q5) ========== -->
 <!-- ====================================================================== -->
 <h2 id="topic-voice-scaling" style="background:#f5f3ff;border-left:6px solid var(--accent);color:var(--accent);font-size:28px;">
-  📌 Flow ① · 简历问题 1：Voice 库扩容 / Resume Question 1: Voice Library Scaling
+  📌 简历 Bullet ① : Voice 库扩容 / Resume Bullet ①: Voice Library Scaling
   <span class="tag tag-time">~12 min total</span>
 </h2>
 
@@ -396,10 +398,14 @@
   <blockquote style="border-left-color:var(--accent);background:#fff;">
     <span class="en-text">"Scaled voice library from tens to 500+ voices, leveraging advanced orchestration stacks (Kubernetes, KEDA, Southfork, ZeroScaler, Southpaw, Southspot, Prometheus, Grafana, Istio, Redis etc.)."</span>
   </blockquote>
-  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">本节包含 5 个递进式追问 (Q1-Q5)，按从全貌到细节的顺序展开。<br><span class="en-text">This section contains 5 progressive follow-ups (Q1-Q5), unfolding from big-picture to specifics.</span></p>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
+    ✅ <strong>主问题 / Main question</strong>：Q1 开门题（扩容全貌）——带到这个 bullet 后只需要读这一题。<br>
+    ➜ <strong>追问 / Follow-ups</strong>：Q2–Q5 是<strong>递进式追问</strong>，根据候选人回答深度选性展开，不必按顺序全部问完。<br>
+    <span class="en-text">✅ <strong>Main question</strong>: Q1 (Big Picture) is the only opener you read out. ➜ <strong>Follow-ups</strong>: Q2–Q5 are progressive probes — fire selectively based on how deep the answer goes; not all need to be asked.</span>
+  </p>
 </div>
 
-<h3 id="q1-open" style="font-size:22px;color:var(--accent);margin-top:24px;">Q1 · 🌐 开门：扩容全貌 / Big Picture <span class="tag tag-time">~2 min</span></h3>
+<h3 id="q1-open" style="font-size:24px;color:var(--accent);margin-top:24px;">🎯 主问题 / Main Question · 🌐 开门：扩容全貌 / Big Picture <span class="tag tag-time">~2 min</span></h3>
 
 <details open>
   <summary>🎤 提问 / Ask</summary>
@@ -419,7 +425,7 @@
 </details>
 
 <details id="q1-ref">
-  <summary>📖 面试官参考答案 / Interviewer Reference Answer — Q1 开门</summary>
+  <summary>📖 面试官参考答案 / Interviewer Reference Answer — 主问题 · 开门</summary>
   <div class="detail-body">
     <p><strong>合理的挑战维度 / Reasonable challenge dimensions a strong candidate should mention:</strong></p>
     <ul>
@@ -435,7 +441,7 @@
 </details>
 
 <details id="q1-eval">
-  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation — Q1</summary>
+  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation — 主问题</summary>
   <div class="detail-body">
     <p><strong>🟢 强回答 / Strong answers:</strong></p>
     <ul>
@@ -459,7 +465,7 @@
 <!-- ====================================================================== -->
 <!--                     Q2: GPU MEMORY & LIFECYCLE                         -->
 <!-- ====================================================================== -->
-<h3 id="q2-gpu" style="font-size:22px;color:var(--accent);margin-top:24px;">Q2 · 🎯 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle <span class="tag tag-time">~3 min</span></h3>
+<h3 id="q2-gpu" style="font-size:20px;color:#475569;margin-top:24px;border-left:4px solid var(--blue);padding-left:12px;">➜ 追问 1 / Follow-up 1 · 🎯 GPU 显存 &amp; Voice 生命周期 / GPU Memory &amp; Voice Lifecycle <span class="tag tag-time">~3 min</span></h3>
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 单张 H100 = 80GB 显存；假设每个 voice 模型 ~1GB，单卡最多装 ~70 个 voice；500+ voice 必须动态调度。<br><span class="en-text">A single H100 has 80GB of memory. If each voice ~1GB, one card fits ~70 voices max. 500+ voices must be dynamically scheduled.</span></p>
@@ -478,7 +484,7 @@
 </details>
 
 <details id="q2-hints">
-  <summary>🚨 Q2 卡壳引导 / Hints When Stuck</summary>
+  <summary>🚨 追问 1 卡壳引导 / Follow-up 1 Hints When Stuck</summary>
   <div class="detail-body">
     <p><span class="hint-chip hint-light">Light</span></p>
     <blockquote class="ask-en">"What does the voice request distribution look like in practice? Is it uniform, or long-tail?"</blockquote>
@@ -495,7 +501,7 @@
 </details>
 
 <details id="q2-ref">
-  <summary>📖 Q2 面试官参考答案 / Interviewer Reference Answer</summary>
+  <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Interviewer Reference Answer</summary>
   <div class="detail-body">
     <div class="card">
       <blockquote class="interviewer-note">
@@ -539,7 +545,7 @@
 </details>
 
 <details id="q2-eval">
-  <summary>🎯 Q2 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <summary>🎯 追问 1 候选人回答评价 / Follow-up 1 Candidate Answer Evaluation</summary>
   <div class="detail-body">
     <p><strong>🟢 强回答 / Strong answers:</strong></p>
     <ul>
@@ -565,7 +571,7 @@
 <!-- ====================================================================== -->
 <!--                     Q3: REQUEST ROUTING                                -->
 <!-- ====================================================================== -->
-<h3 id="q3-route" style="font-size:22px;color:var(--accent);margin-top:24px;">Q3 · 🔀 请求路由 / Request Routing <span class="tag tag-time">~3 min</span></h3>
+<h3 id="q3-route" style="font-size:20px;color:#475569;margin-top:24px;border-left:4px solid var(--green);padding-left:12px;">➜ 追问 2 / Follow-up 2 · 🔀 请求路由 / Request Routing <span class="tag tag-time">~3 min</span></h3>
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 客户请求里指定 voice ID。K8s 默认 round-robin LB 会让请求随机落到任何 pod 上，cache 命中率惨不忍睹。<br><span class="en-text">Request specifies a voice ID. K8s default round-robin LB scatters requests across pods, killing cache hit rate.</span></p>
@@ -584,7 +590,7 @@
 </details>
 
 <details id="q3-hints">
-  <summary>🚨 Q3 卡壳引导 / Hints When Stuck</summary>
+  <summary>🚨 追问 2 卡壳引导 / Follow-up 2 Hints When Stuck</summary>
   <div class="detail-body">
     <p><span class="hint-chip hint-light">Light</span></p>
     <blockquote class="ask-en">"Imagine 100 pods, and only 20 of them have voice 'Aria' loaded. How does the request find one of those 20?"</blockquote>
@@ -601,7 +607,7 @@
 </details>
 
 <details id="q3-ref">
-  <summary>📖 Q3 面试官参考答案 / Interviewer Reference Answer</summary>
+  <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference Answer</summary>
   <div class="detail-body">
     <h4>✅ 路由层架构 / Router Architecture</h4>
     <ul>
@@ -637,7 +643,7 @@
 </details>
 
 <details id="q3-eval">
-  <summary>🎯 Q3 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <summary>🎯 追问 2 候选人回答评价 / Follow-up 2 Candidate Answer Evaluation</summary>
   <div class="detail-body">
     <p><strong>🟢 强回答 / Strong answers:</strong></p>
     <ul>
@@ -662,7 +668,7 @@
 <!-- ====================================================================== -->
 <!--                     Q4: COLD START                                     -->
 <!-- ====================================================================== -->
-<h3 id="q4-cold" style="font-size:22px;color:var(--accent);margin-top:24px;">Q4 · ⚡ 冷启动 / Cold Start <span class="tag tag-time">~2 min</span></h3>
+<h3 id="q4-cold" style="font-size:20px;color:#475569;margin-top:24px;border-left:4px solid #ea580c;padding-left:12px;">➜ 追问 3 / Follow-up 3 · ⚡ 冷启动 / Cold Start <span class="tag tag-time">~2 min</span></h3>
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 加载一个 ~1GB 模型从磁盘到 GPU 显存大约 5–30s。冷门 voice 直接命中冷启动，用户体验灾难。<br><span class="en-text">Loading a ~1GB model from disk to GPU memory takes ~5–30s. Long-tail voices hit cold-start directly — a UX disaster.</span></p>
@@ -681,7 +687,7 @@
 </details>
 
 <details id="q4-ref">
-  <summary>📖 Q4 面试官参考答案 / Interviewer Reference Answer</summary>
+  <summary>📖 追问 3 面试官参考答案 / Follow-up 3 Interviewer Reference Answer</summary>
   <div class="detail-body">
     <h4>✅ 冷启动延迟分解 / Cold-start Latency Breakdown</h4>
     <ul>
@@ -709,7 +715,7 @@
 </details>
 
 <details id="q4-eval">
-  <summary>🎯 Q4 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <summary>🎯 追问 3 候选人回答评价 / Follow-up 3 Candidate Answer Evaluation</summary>
   <div class="detail-body">
     <p><strong>🟢 强回答 / Strong answers:</strong></p>
     <ul>
@@ -734,7 +740,7 @@
 <!-- ====================================================================== -->
 <!--                     Q5: RELEASE PIPELINE                               -->
 <!-- ====================================================================== -->
-<h3 id="q5-release" style="font-size:22px;color:var(--accent);margin-top:24px;">Q5 · 🚀 发布管线 / Release Pipeline <span class="tag tag-time">~2 min</span></h3>
+<h3 id="q5-release" style="font-size:20px;color:#475569;margin-top:24px;border-left:4px solid var(--accent);padding-left:12px;">➜ 追问 4 / Follow-up 4 · 🚀 发布管线 / Release Pipeline <span class="tag tag-time">~2 min</span></h3>
 
 <div class="card">
   <p style="color:var(--text-muted);">📌 关联背景 / Background: 500 个 voice × 多版本 × 持续训练新版本 = 发布频率极高。手动发布在这个规模下不可能。<br><span class="en-text">500 voices × multiple versions × ongoing retraining = extremely high release cadence. Manual release impossible at this scale.</span></p>
@@ -753,7 +759,7 @@
 </details>
 
 <details id="q5-ref">
-  <summary>📖 Q5 面试官参考答案 / Interviewer Reference Answer</summary>
+  <summary>📖 追问 4 面试官参考答案 / Follow-up 4 Interviewer Reference Answer</summary>
   <div class="detail-body">
     <h4>✅ Model Registry / Artifact 管理</h4>
     <ul>
@@ -790,7 +796,7 @@
 </details>
 
 <details id="q5-eval">
-  <summary>🎯 Q5 候选人回答评价 / Candidate Answer Evaluation</summary>
+  <summary>🎯 追问 4 候选人回答评价 / Follow-up 4 Candidate Answer Evaluation</summary>
   <div class="detail-body">
     <p><strong>🟢 强回答 / Strong answers:</strong></p>
     <ul>
@@ -862,11 +868,11 @@
   <table>
     <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
     <tbody>
-      <tr><td>Q1: 开门 — 主动 frame 哪些真问题</td><td></td><td></td></tr>
-      <tr><td>Q2: GPU 显存 — 分层 / evict / 并发</td><td></td><td></td></tr>
-      <tr><td>Q3: 路由 — voice-aware / consistent hash / 索引</td><td></td><td></td></tr>
-      <tr><td>Q4: 冷启动 — 数字 + mitigation 手段</td><td></td><td></td></tr>
-      <tr><td>Q5: 发布 — pipeline / canary / 回滚 / 多 region</td><td></td><td></td></tr>
+      <tr><td>主问题（开门）— 主动 frame 哪些真问题</td><td></td><td></td></tr>
+      <tr><td>追问 1 GPU 显存 — 分层 / evict / 并发</td><td></td><td></td></tr>
+      <tr><td>追问 2 路由 — voice-aware / consistent hash / 索引</td><td></td><td></td></tr>
+      <tr><td>追问 3 冷启动 — 数字 + mitigation 手段</td><td></td><td></td></tr>
+      <tr><td>追问 4 发布 — pipeline / canary / 回滚 / 多 region</td><td></td><td></td></tr>
       <tr><td>Stack 脱黑话能力（ZeroScaler / Southfork 等）</td><td></td><td></td></tr>
       <tr><td>系统全局观（多问题串联）</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>

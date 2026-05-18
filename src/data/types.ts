@@ -41,6 +41,13 @@ export interface AgendaSection {
   introEn: string;
   /** Chinese script the interviewer reads to introduce the section. */
   introZh: string;
+  /**
+   * Optional heading shown above the interviewer intro script
+   * (e.g. "🎤 引导进入系统设计 / Introduce System Design").
+   * If omitted, a sensible default is used based on the section id
+   * (s1=自我介绍, s2=技术问答, s3=编程测试, s4=候选人提问).
+   */
+  introHeading?: string;
 }
 
 export interface CandidateConfig {
