@@ -360,6 +360,25 @@
     </div>
   </details>
 
+  <a class="qp-link" href="#topic-tts-backend" onclick="jump('topic-tts-backend');return false;" style="background:#f0fdf4;color:var(--green);font-weight:700;margin-top:10px;border-left-color:var(--green);">📌 简历 Bullet ② · Neural TTS Backend 架构</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title" style="color:var(--green);">🎯 主问题 / Main Question</div>
+    <a class="qp-sub green" href="#q6-open" onclick="jump('q6-open');return false;">🎤 提问（背景 + 最终架构）</a>
+    <a class="qp-sub green" href="#q6-ref" onclick="jump('q6-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub green" href="#q6-eval" onclick="jump('q6-eval');return false;">🎯 候选人回答评价</a>
+  </div>
+
+  <details class="qp-followups">
+    <summary>↳ 追问 / Follow-ups（4 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub blue" href="#q7-interop" onclick="jump('q7-interop');return false;">追问 1 — C#/C++ 边界</a>
+      <a class="qp-sub green" href="#q8-cuda" onclick="jump('q8-cuda');return false;">追问 2 — GPU CUDA 优化</a>
+      <a class="qp-sub orange" href="#q9-frontend" onclick="jump('q9-frontend');return false;">追问 3 — TTS 文本前端</a>
+      <a class="qp-sub purple" href="#q10-docker" onclick="jump('q10-docker');return false;">追问 4 — 服务拆分</a>
+    </div>
+  </details>
+
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
 </div>
@@ -399,17 +418,14 @@
         <td>1 主问题 + 4 追问<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 4 follow-ups</span></td>
         <td><strong>~12 min</strong></td>
       </tr>
-      <tr style="opacity:0.55;">
-        <td>②</td>
-        <td><em>简历 Bullet ② / Resume Bullet ② — 待添加 (TBD)</em></td>
-        <td><em>TBD</em></td>
-        <td><em>~4 min</em></td>
-      </tr>
-      <tr style="opacity:0.55;">
-        <td>③</td>
-        <td><em>简历 Bullet ③ / Resume Bullet ③ — 待添加 (TBD)</em></td>
-        <td><em>TBD</em></td>
-        <td><em>~4 min</em></td>
+      <tr style="background:#f0fdf4;">
+        <td><strong style="color:var(--green);">③</strong></td>
+        <td>
+          <strong>Neural TTS Backend 架构 / Architected Neural TTS Backend</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Architected Neural TTS backend from scratch: C# engine, C++ runtime, Dockerized services, GPU CUDA optimization. Added features and improved data flow in TTS frontend."</span>
+        </td>
+        <td>1 主问题 + 4 追问<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 4 follow-ups</span></td>
+        <td><strong>~10 min</strong></td>
       </tr>
     </tbody>
   </table>
@@ -873,6 +889,499 @@
 
 <hr class="separator">
 
+<!-- ====================================================================== -->
+<!-- ============== RESUME BULLET ② : NEURAL TTS BACKEND ARCHITECTURE === -->
+<!-- ============== 1 main question (Q6) + 4 follow-ups (Q7-Q10) ======== -->
+<!-- ====================================================================== -->
+<h2 id="topic-tts-backend" style="background:#f0fdf4;border-left:6px solid var(--green);color:var(--green);font-size:28px;">
+  📌 简历 Bullet ② : Neural TTS Backend 架构 / Resume Bullet ②: Neural TTS Backend Architecture
+  <span class="tag tag-time">~10 min total</span>
+</h2>
+
+<div class="card" style="border-left:4px solid var(--green);">
+  <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
+  <blockquote style="border-left-color:var(--green);background:#fff;">
+    <span class="en-text">"Architected Neural TTS backend from scratch: C# engine, C++ runtime, Dockerized services, GPU CUDA optimization. Added features and improved data flow in TTS frontend."</span>
+  </blockquote>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
+    ✅ <strong>主问题 / Main question</strong>：Q6 开门题（背景 + 最终架构）—— 让候选人讲设计故事。<br>
+    ➜ <strong>追问 / Follow-ups</strong>：Q7–Q10 分别打 C#/C++ 边界、GPU CUDA 真深度、TTS frontend 陷阱、服务拆分粒度。<br>
+    <span class="en-text">✅ <strong>Main question</strong>: Q6 (Background + Final Architecture) — let the candidate tell the design story. ➜ <strong>Follow-ups</strong>: Q7–Q10 probe language boundary, CUDA depth, TTS frontend trap, service decomposition.</span>
+  </p>
+</div>
+
+<h3 id="q6-open" style="font-size:24px;color:var(--green);margin-top:24px;">🎯 主问题 / Main Question · 🏗️ 背景 + 最终架构 / Background &amp; Final Architecture <span class="tag tag-time">~3 min</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <p style="margin-bottom:8px;"><strong>第一轮 — 背景 / Part 1 — Background:</strong></p>
+    <blockquote class="ask-en">
+      "Walk me back to when you started this. What was the situation that pushed you to architect a new Neural TTS backend from scratch — what existed before, what was wrong with it?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "带我回到你开始做这件事的时候——当时是什么背景/痛点让你决定要从零设计一个新的 Neural TTS backend？之前有什么、问题在哪？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 先问"背景"，等候选人答完（~1 min）再追"架构"。<strong>不要一口气抛 2 个问题</strong>，否则候选人会挑着答。<br>
+      <strong>Interviewer note</strong> — Ask "background" first, wait for full answer (~1 min), then ask "architecture". Don't fire both at once.
+    </blockquote>
+
+    <p style="margin-top:12px;"><strong>第二轮 — 架构 / Part 2 — Architecture:</strong></p>
+    <blockquote class="ask-en">
+      "OK — now give me a high-level picture of what you actually ended up building. Walk me through the architecture: major components, where the language boundaries are, what runs on CPU vs GPU."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "好，那你最后到底建了一个什么样的架构？画个大图——主要组件是什么、语言边界在哪、CPU 跑什么、GPU 跑什么？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q6-ref">
+  <summary>📖 面试官参考答案 / Interviewer Reference Answer — 主问题 · 背景 + 架构</summary>
+  <div class="detail-body">
+    <h4>✅ 合理的"为什么从零做"理由 / Reasonable "why from scratch" motivations</h4>
+    <ul>
+      <li>🟢 旧 backend 是 <strong>concatenative / parametric TTS</strong>（pre-neural 时代），与 neural model 完全不匹配，硬塞代价大于重写<br><span class="en-text">Legacy backend was concatenative / parametric TTS — fundamentally incompatible with neural models</span></li>
+      <li>🟢 旧 stack <strong>没有 GPU 支持 / 单体 / 无容器化</strong>，neural inference 跑不动，scale 不出去<br><span class="en-text">No GPU support / monolithic / no containerization — couldn't run neural inference or scale</span></li>
+      <li>🟢 业务要求支持 <strong>neural voice 质量 + 多语言 + Custom Voice</strong>，旧架构延展性不够<br><span class="en-text">Business required neural quality + multi-language + Custom Voice — old architecture wasn't extensible</span></li>
+      <li>🟢 <strong>性能瓶颈</strong>：旧 backend latency 高、MOS 低<br><span class="en-text">Performance bottleneck — high latency, low MOS</span></li>
+    </ul>
+
+    <h4>✅ 合理的"最终架构"轮廓 / Reasonable final architecture sketch</h4>
+    <ul>
+      <li><strong>Frontend Service (C#)</strong>：文本前端流水线 — text normalization → G2P → prosody prediction → 输出 linguistic features</li>
+      <li><strong>Engine Service (C#)</strong>：业务编排 / API 接入 / 配置管理 / observability / SDK 集成</li>
+      <li><strong>Runtime (C++)</strong>：真正跑 neural inference 的 hot path——acoustic model + vocoder，通过 P/Invoke 或共享内存与 C# engine 通信</li>
+      <li><strong>GPU Layer</strong>：acoustic + vocoder 用 CUDA 加速，可能用 TensorRT / ONNX Runtime / 自写 kernel</li>
+      <li><strong>Docker 拆分</strong>：service-level 拆分（如 frontend 单独 + engine/runtime 合一）便于独立扩缩容、模型 isolation</li>
+      <li><strong>K8s 编排</strong>：每个 service = 一个 Deployment，HPA / KEDA 弹性</li>
+    </ul>
+
+    <h4>✅ 关键设计决策应该提到的 reasoning / Key reasoning behind decisions</h4>
+    <ul>
+      <li><strong>为什么 C# 而不是 Python</strong>？— Azure 内部 C# 生态成熟、性能优于 Python、与 Cognitive Service 平台无缝集成</li>
+      <li><strong>为什么 C++ runtime 而不是全 C#</strong>？— C++ 直通 CUDA / TensorRT C++ API、无 GC 抖动、热路径低延迟</li>
+      <li><strong>为什么 Docker 而不是 bare metal</strong>？— 隔离、独立扩缩容、k8s 调度、CI/CD 友好</li>
+      <li><strong>为什么自己写而不是用现成 framework</strong>？— 现成 framework 不支持流式 TTS、SSML、Custom Voice 的多租户隔离</li>
+    </ul>
+  </div>
+</details>
+
+<details id="q6-eval">
+  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation — 主问题</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>立刻说出<strong>具体技术痛点</strong>（旧 backend 不支持 neural / GPU / 容器化），不是"业务要求"这种空话 — <span class="en-text">Names concrete technical pain points</span><br>→ 真正经历过转折点 / Lived through the transition</li>
+      <li>能<strong>画清楚架构图</strong>：哪个 service 在哪个语言、CPU/GPU 边界清晰 — <span class="en-text">Draws a clear architecture diagram with clean CPU/GPU boundaries</span><br>→ 真架构师 / Real architect</li>
+      <li>能讲出<strong>关键设计决策的 reasoning</strong>（为什么 C# + C++、为什么这样拆服务）— <span class="en-text">Articulates design rationale</span><br>→ 不只是执行者 / Not just an executor</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>能列出大概组件，但讲不清"为什么从零做"或"为什么这样设计" — <span class="en-text">Names components but vague on rationale</span><br>→ 参与了但未必主导设计 / Participated but didn't drive design</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"老板让做的" / "因为业务要新功能"——讲不出技术背景 — <span class="en-text">"Boss told us" / "Business wanted new features" — no technical motivation</span><br>→ 🚩 没真正主导 / Wasn't the real driver</li>
+      <li>架构只能 list stack 名字（C# / C++ / Docker / GPU），不能 connect 起来 — <span class="en-text">Lists stack names but can't connect them</span><br>→ 🚩 在简历上写关键词但没设计 / Keyword resume</li>
+      <li>把 "TTS frontend" 答成 web UI — <span class="en-text">Confuses "TTS frontend" with web UI</span><br>→ 🚩 不懂 TTS 领域 / Doesn't know TTS domain</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q7: C# / C++ INTEROP                               -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-blue" id="q7-interop">
+<summary>➜ 追问 1 / Follow-up 1 · 🔗 C# / C++ 语言边界 &amp; Interop / Language Boundary &amp; Interop <span class="tag tag-time">~2 min</span></summary>
+<div class="followup-body">
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: C# 偏业务编排、CLR 友好；C++ 偏 hot path、直通 CUDA。两者间的 interop 是 latency 与维护成本的关键。<br><span class="en-text">C# = business orchestration / CLR-friendly; C++ = hot path / direct CUDA access. Interop is the key to latency vs maintainability.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Engine in C#, runtime in C++ — why this split? Where exactly is the boundary? How do they talk — P/Invoke, gRPC, shared memory? And what's the marshalling cost on the hot path?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "Engine 用 C#、runtime 用 C++——为什么这么拆？边界画在哪？两边怎么通信——P/Invoke、gRPC、共享内存？热路径上 marshalling cost 多少？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q7-hints">
+  <summary>🚨 追问 1 卡壳引导 / Follow-up 1 Hints When Stuck</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote class="ask-en">"If both languages can do the job, why not all C++ or all C#?"</blockquote>
+    <blockquote class="ask-cn">"如果两种语言都能做，为什么不全 C++ 或全 C#？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote class="ask-en">"How do you pass a tensor (or audio samples) from C# to C++ without copying it twice?"</blockquote>
+    <blockquote class="ask-cn">"你怎么把 tensor（或音频样本）从 C# 传到 C++ 而不发生两次拷贝？"</blockquote>
+
+    <p><span class="hint-chip hint-heavy">Heavy</span></p>
+    <blockquote class="ask-en">"What's the cost of a single P/Invoke call, and how many times per request do you cross the boundary?"</blockquote>
+    <blockquote class="ask-cn">"一次 P/Invoke 调用 cost 大约多少？一次请求里你跨多少次边界？"</blockquote>
+  </div>
+</details>
+
+<details id="q7-ref">
+  <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Reference Answer</summary>
+  <div class="detail-body">
+    <h4>✅ 为什么这样拆 / Why split this way</h4>
+    <ul>
+      <li><strong>C# engine</strong>：业务逻辑、API endpoint、配置、observability、Azure SDK 集成——CLR/GC 友好，开发效率高<br><span class="en-text">Business logic / API / config / observability / Azure SDK — CLR &amp; GC friendly, fast dev</span></li>
+      <li><strong>C++ runtime</strong>：张量内存管理、CUDA 调用、kernel 启动——直通 native，无 GC 抖动<br><span class="en-text">Tensor memory, CUDA calls, kernel launches — native speed, no GC jitter</span></li>
+      <li><strong>不全 C++</strong>：业务层 C# 开发/维护成本低很多；与 Azure stack 无缝集成<br><span class="en-text">Not all-C++: business layer cheaper to build/maintain in C#</span></li>
+      <li><strong>不全 C#</strong>：GC pause 不可控、张量内存管理麻烦、CUDA 调用要额外 wrapper<br><span class="en-text">Not all-C#: GC pauses, awkward tensor memory, CUDA wrapper overhead</span></li>
+    </ul>
+
+    <h4>✅ 边界设计 / Boundary design</h4>
+    <ul>
+      <li>典型边界画在 <strong>"linguistic features → acoustic model 输入"之前</strong>——C# 负责到 frontend feature；C++ 接管 acoustic + vocoder + 输出 audio bytes<br><span class="en-text">Boundary just before acoustic model input — C# does frontend features, C++ does acoustic+vocoder+audio</span></li>
+      <li>典型 interop：<strong>P/Invoke + 指向 unmanaged memory 的 pointer</strong>（pinned buffer / Marshal.AllocHGlobal）<br><span class="en-text">P/Invoke + pointer to unmanaged memory (pinned buffer)</span></li>
+      <li>张量传递：C# 写到 pinned native buffer，C++ 直接读，<strong>避免 marshalling copy</strong><br><span class="en-text">Tensors via pinned native buffer to avoid marshalling copy</span></li>
+      <li>大对象用<strong>共享内存 / memory-mapped region</strong>；小标量用 P/Invoke 直传<br><span class="en-text">Large objects via shared memory; small scalars via P/Invoke direct</span></li>
+    </ul>
+
+    <h4>✅ Marshalling 成本控制 / Marshalling cost control</h4>
+    <ul>
+      <li>单次 P/Invoke ~几十 ns 函数 overhead + 参数 marshalling（取决于类型）<br><span class="en-text">Each P/Invoke ~tens of ns overhead + marshalling</span></li>
+      <li><strong>一次请求只跨一次边界</strong>：整批 feature 打包传过去，C++ 内部跑完一次性返回<br><span class="en-text">Cross boundary once per request — batch features through, return audio once</span></li>
+      <li>避免在循环里频繁 P/Invoke（典型反模式）<br><span class="en-text">Avoid frequent P/Invoke in loops (classic anti-pattern)</span></li>
+    </ul>
+
+    <h4>✅ 备选方案 / Alternatives</h4>
+    <ul>
+      <li><strong>gRPC over loopback</strong>：清晰边界、跨进程隔离，但有序列化 + 网络栈 overhead（μs ~ ms 级，对 streaming 不友好）<br><span class="en-text">Clean boundary + isolation, but serialization + network stack overhead</span></li>
+      <li><strong>C++/CLI</strong>：写起来痛苦，不推荐<br><span class="en-text">C++/CLI: painful, not recommended</span></li>
+      <li><strong>ONNX Runtime C# binding</strong>：如果只是 inference，可以避免自己写 C++ runtime<br><span class="en-text">ONNX Runtime C# binding can skip writing your own C++ runtime</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q7-eval">
+  <summary>🎯 追问 1 候选人回答评价 / Follow-up 1 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>能说清<strong>边界画在哪</strong>（feature → acoustic 之前）并解释 reasoning — <span class="en-text">Names exact boundary + reasoning</span><br>→ 真设计过 / Designed it</li>
+      <li>讲到 <strong>P/Invoke 指针 + pinned buffer</strong> 避免拷贝，知道 marshalling cost — <span class="en-text">P/Invoke + pinned buffer to avoid copy</span><br>→ 真懂 interop / Real interop depth</li>
+      <li>"一次请求只跨一次边界"——批量传递的工程意识 — <span class="en-text">Cross boundary once per request</span><br>→ 性能 mindset / Perf mindset</li>
+      <li>能讨论 gRPC / ONNX Runtime 等备选方案 trade-off — <span class="en-text">Discusses alternatives</span><br>→ 方案空间认知 / Knows the option space</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道用 P/Invoke 或 gRPC，但说不清 marshalling cost 或 pinned buffer — <span class="en-text">Names mechanism but vague on cost</span><br>→ 用过没深挖 / Used but not deep</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>说不清为什么不全 C# 或全 C++，只说"团队习惯" — <span class="en-text">"Team habit" — no real reasoning</span><br>→ 🚩 没做决策 / Didn't make decision</li>
+      <li>"我们用 JSON / REST 在 C# 和 C++ 之间通信"——latency 灾难 — <span class="en-text">"JSON/REST between C# and C++" — latency disaster</span><br>→ 🚩 没有性能意识 / No perf awareness</li>
+      <li>不知道 P/Invoke 是什么 — <span class="en-text">Doesn't know what P/Invoke is</span><br>→ 🚩 简历水分 / Resume padding</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end Q7 wrapper -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q8: GPU CUDA OPTIMIZATION                          -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-green" id="q8-cuda">
+<summary>➜ 追问 2 / Follow-up 2 · 🚀 GPU CUDA 优化 / GPU &amp; CUDA Optimization <span class="tag tag-time">~3 min</span></summary>
+<div class="followup-body">
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: Neural TTS 的 acoustic model 和 vocoder 是 GPU-bound。真正的 CUDA 工程师能说出具体优化（batching / kernel fusion / FP16 / TensorRT）；调 API 党只会说"我们用了 PyTorch"。<br><span class="en-text">Neural TTS acoustic + vocoder are GPU-bound. Real CUDA engineers name specific optimizations; API tourists just say "we used PyTorch".</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Your resume calls out GPU CUDA optimization. What did you actually do — dynamic batching, kernel fusion, FP16/INT8, TensorRT, custom kernels? What was the biggest perf win? Give me a number, before vs after."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你简历里特别提到 GPU CUDA optimization——你具体做了什么？dynamic batching、kernel fusion、FP16/INT8、TensorRT、自写 kernel？最大的一笔性能提升是哪个？给个数字，before vs after。"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q8-hints">
+  <summary>🚨 追问 2 卡壳引导 / Follow-up 2 Hints When Stuck</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote class="ask-en">"What did your GPU utilization look like before vs after optimization?"</blockquote>
+    <blockquote class="ask-cn">"你优化之前 GPU 利用率大概是多少？之后呢？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote class="ask-en">"If a single TTS request uses only 5% of a GPU, how would you bring utilization up?"</blockquote>
+    <blockquote class="ask-cn">"如果单个 TTS 请求只占 GPU 5%，你会怎么把利用率提上去？"</blockquote>
+
+    <p><span class="hint-chip hint-heavy">Heavy</span></p>
+    <blockquote class="ask-en">"Have you used TensorRT or ONNX Runtime? What about FP16 / INT8 quantization — what's the quality impact?"</blockquote>
+    <blockquote class="ask-cn">"你用过 TensorRT 或 ONNX Runtime 吗？FP16 / INT8 量化呢——对质量影响多大？"</blockquote>
+  </div>
+</details>
+
+<details id="q8-ref">
+  <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Reference Answer</summary>
+  <div class="detail-body">
+    <h4>✅ Dynamic Batching</h4>
+    <ul>
+      <li>多并发请求合一 batch 一次 GPU 调用——利用率从 ~10-20% 提到 60-80%<br><span class="en-text">Coalesce concurrent requests into a batch — utilization jumps from ~10-20% to 60-80%</span></li>
+      <li>Trade-off：waiting window 增加 latency（典型 5-20 ms）<br><span class="en-text">Trade-off: waiting window adds 5-20ms latency</span></li>
+      <li>实现：custom batcher、Triton Inference Server、vLLM 等<br><span class="en-text">Custom batcher, Triton, vLLM</span></li>
+    </ul>
+
+    <h4>✅ Kernel Fusion</h4>
+    <ul>
+      <li>把 conv + batchnorm + activation 等连续 op 融成一个 kernel——减少 launch overhead 和 HBM 读写<br><span class="en-text">Fuse conv+bn+activation — fewer launches, less HBM traffic</span></li>
+      <li>工具：TensorRT、torch.compile、自写 CUDA kernel<br><span class="en-text">Tools: TensorRT, torch.compile, custom CUDA</span></li>
+      <li>典型收益：20-40% inference 加速<br><span class="en-text">Typical 20-40% inference speedup</span></li>
+    </ul>
+
+    <h4>✅ FP16 / INT8 量化</h4>
+    <ul>
+      <li><strong>FP16</strong>：throughput ~2× 提升、显存减半、MOS 几乎无损<br><span class="en-text">FP16: ~2× throughput, half memory, MOS nearly unchanged</span></li>
+      <li><strong>INT8</strong>：throughput 再 ~2× 但 acoustic model 易听感劣化，需 QAT (Quantization-Aware Training)<br><span class="en-text">INT8: another ~2× but acoustic model degrades; needs QAT</span></li>
+      <li>Vocoder 对量化更敏感，常常保留 FP16<br><span class="en-text">Vocoder more sensitive — often kept FP16</span></li>
+    </ul>
+
+    <h4>✅ TensorRT / ONNX Runtime</h4>
+    <ul>
+      <li><strong>TensorRT</strong>：NVIDIA 自家 inference engine，graph 优化 + kernel autotuning，最大化 H100/A100 利用<br><span class="en-text">NVIDIA's inference engine — graph optimization + kernel autotuning</span></li>
+      <li><strong>ONNX Runtime</strong>：跨硬件，集成 TensorRT EP / CUDA EP，C# / C++ binding 都有<br><span class="en-text">Cross-hardware, integrates TensorRT/CUDA execution providers</span></li>
+      <li>典型 PyTorch → TensorRT：2-5× throughput 提升<br><span class="en-text">Typical PyTorch→TensorRT: 2-5× throughput</span></li>
+    </ul>
+
+    <h4>✅ 其他常见优化 / Other common optimizations</h4>
+    <ul>
+      <li><strong>CUDA streams</strong>：多 stream 并发 inference，overlap memcpy 与 compute<br><span class="en-text">Multiple streams overlap memcpy &amp; compute</span></li>
+      <li><strong>Pinned memory</strong>：host↔device 拷贝从 pageable → pinned 提速 2-3×<br><span class="en-text">Pageable → pinned memory: 2-3× transfer speedup</span></li>
+      <li><strong>KV-cache / state reuse</strong>：streaming TTS 跨 chunk 复用 state<br><span class="en-text">Reuse state across streaming chunks</span></li>
+      <li><strong>Custom CUDA kernels</strong>：vocoder 里的小算子手写更快<br><span class="en-text">Hand-written kernels for small vocoder ops</span></li>
+    </ul>
+
+    <h4>✅ 诊断工具 / Profiling tools</h4>
+    <ul>
+      <li><code>nvprof</code> / <code>nsys</code> / <code>ncu</code>（NVIDIA Nsight Systems / Compute）</li>
+      <li>看 SM occupancy / kernel duration / HBM bandwidth 利用<br><span class="en-text">Watch SM occupancy / kernel duration / HBM bandwidth</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q8-eval">
+  <summary>🎯 追问 2 候选人回答评价 / Follow-up 2 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>说出<strong>至少 2-3 个具体优化</strong>（如 batching + FP16 + TensorRT）<strong>带具体数字</strong>（"throughput 翻倍"、"GPU 利用率 30%→80%"）— <span class="en-text">Names 2-3 concrete optimizations with numbers</span><br>→ 真做过且看过 dashboard / Real CUDA engineer</li>
+      <li>知道 <strong>profiling 工具</strong>（nsys / ncu / nvprof）和怎么读 SM occupancy — <span class="en-text">Knows profiling tools + how to read them</span><br>→ 真 deep work / Deep work</li>
+      <li>能讨论 <strong>quality vs perf trade-off</strong>（FP16 几乎无损 / INT8 需 QAT）— <span class="en-text">Discusses quality vs perf trade-offs</span><br>→ 平衡感 / Balanced thinking</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>说出 TensorRT / ONNX Runtime 名字但讲不清具体收益 — <span class="en-text">Names tools but vague on numbers</span><br>→ 用过没量化 / Used without measuring</li>
+      <li>知道 dynamic batching 概念但没讨论 latency trade-off — <span class="en-text">Knows batching but skips trade-off</span><br>→ 浅 / Shallow</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"我们用了 PyTorch / 直接跑模型"——零具体优化 — <span class="en-text">"We just used PyTorch" — zero specifics</span><br>→ 🚩 简历夸张 / Resume exaggeration</li>
+      <li>说不出 batch size / throughput / latency 任何数字 — <span class="en-text">No numbers at all</span><br>→ 🚩 没看过指标 / Never watched metrics</li>
+      <li>不知道 FP16 / INT8 是什么 — <span class="en-text">Doesn't know FP16/INT8</span><br>→ 🚩 不是 inference 工程师 / Not an inference engineer</li>
+      <li>"GPU 不够就加卡"——没成本意识，也连不到 bullet ① 的 COGS — <span class="en-text">"Just buy more GPUs" — no cost awareness; contradicts COGS bullet</span><br>→ 🚩 无成本观 / No cost mindset</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end Q8 wrapper -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q9: TTS FRONTEND (TEXT FRONTEND) — TRAP            -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-orange" id="q9-frontend">
+<summary>➜ 追问 3 / Follow-up 3 · 🔤 TTS Frontend（文本前端）/ TTS Frontend (Text Frontend) <span class="tag tag-time">~1.5 min</span></summary>
+<div class="followup-body">
+
+<div class="card" style="border-left:3px solid #d63031;background:#fff5f5;">
+  <p style="color:var(--text);"><strong>⚠️ 陷阱词警告 / Trap-word warning</strong>: 在 TTS 语境里 <strong>"frontend" = 文本前端</strong>（text normalization / G2P / prosody），<strong>不是 Web UI</strong>。如果候选人答成 JavaScript / Razor，是大红旗。<br><span class="en-text">In TTS, "frontend" means the <strong>text frontend</strong> (text normalization / G2P / prosody), NOT a web UI. If the candidate answers JS/Razor, that's a major red flag.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "You wrote 'added features and improved data flow in TTS frontend'. What do you mean by 'frontend' here — what specific features did you add, and what data-flow problem were you fixing?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你写了 'added features and improved data flow in TTS frontend'——这里的 'frontend' 是指什么？具体加了什么 feature？data flow 之前哪儿不顺？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 关键观察 / Key signal</strong> — 听候选人<strong>第一反应</strong>：<br>
+      • 立刻说 "text frontend / 文本前端 / G2P / 文本归一化" → ✅ 真懂 TTS<br>
+      • 答 "web UI / Razor / JavaScript / Outlook plugin" → 🚩 红旗（可能把这条 bullet 和 web portal bullet 混了）<br>
+      • 反问 "你是说哪个 frontend？" → 🟡 至少有意识 ambiguity
+    </blockquote>
+  </div>
+</details>
+
+<details id="q9-ref">
+  <summary>📖 追问 3 面试官参考答案 / Follow-up 3 Reference Answer</summary>
+  <div class="detail-body">
+    <h4>✅ TTS Frontend 包含的典型组件 / Typical text-frontend pipeline</h4>
+    <ul>
+      <li><strong>Text Normalization (TN)</strong>：数字 "$3.14" → "three dollars fourteen cents"、缩写 "Dr." → "Doctor"、日期、单位、电话号码<br><span class="en-text">Numbers, abbreviations, dates, units, phone numbers</span></li>
+      <li><strong>Tokenization / Sentence Splitting</strong>：处理标点、长文本切句<br><span class="en-text">Punctuation handling, sentence splitting</span></li>
+      <li><strong>Grapheme-to-Phoneme (G2P)</strong>：字母→音素；英文 CMU dict + LSTM/Transformer fallback；中文字到拼音 + 多音字消歧<br><span class="en-text">Letters→phonemes; CMU dict + neural fallback; Chinese characters→pinyin</span></li>
+      <li><strong>Homograph Disambiguation</strong>：同形异音（"read" 现在 vs 过去时；中文"行" háng/xíng）<br><span class="en-text">Homographs</span></li>
+      <li><strong>Prosody Prediction</strong>：重音、停顿、语调——影响自然度<br><span class="en-text">Stress, pause, intonation — affects naturalness</span></li>
+      <li><strong>SSML Parsing</strong>：&lt;break&gt;、&lt;emphasis&gt;、&lt;say-as&gt;、&lt;phoneme&gt; 等<br><span class="en-text">SSML tags</span></li>
+      <li><strong>Multi-language / Code-switching</strong>：句子里中英混杂（"我去 Starbucks 买咖啡"）<br><span class="en-text">Multi-lang / code-switching</span></li>
+    </ul>
+
+    <h4>✅ 可能的 "features added" / Likely feature additions</h4>
+    <ul>
+      <li>新增某种语言的 TN 规则集（如中文金额、特殊语种日期格式）<br><span class="en-text">New language TN rule set</span></li>
+      <li>引入<strong>神经 G2P</strong> 替代规则 G2P，提升 OOV (out-of-vocabulary) 词发音准确率<br><span class="en-text">Neural G2P for better OOV accuracy</span></li>
+      <li>SSML tag 支持扩展（如 &lt;emotion&gt;、&lt;voice&gt; 切换）<br><span class="en-text">Extended SSML tag support</span></li>
+      <li>多音字消歧的上下文模型<br><span class="en-text">Context model for homograph disambiguation</span></li>
+    </ul>
+
+    <h4>✅ 可能的 "improved data flow" / Likely data-flow improvements</h4>
+    <ul>
+      <li>原本 pipeline 串行 → 改并行 / 流式<br><span class="en-text">Serial pipeline → parallel / streaming</span></li>
+      <li>中间表示 (intermediate representation) 重构——之前每阶段重新 parse，改成 token graph 一路传<br><span class="en-text">Refactored intermediate representation — token graph passed through</span></li>
+      <li>把 prosody feature 从 backend 提到 frontend，让 acoustic model 不重算<br><span class="en-text">Move prosody from backend to frontend</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q9-eval">
+  <summary>🎯 追问 3 候选人回答评价 / Follow-up 3 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>立刻确认是<strong>文本前端</strong>，能列出 TN / G2P / prosody / SSML 中至少 2-3 个组件 — <span class="en-text">Confirms text frontend, names 2-3 components</span><br>→ 真懂 TTS 领域 / Real TTS domain expert</li>
+      <li>能说出具体加了什么 feature（哪个语言/组件）和具体 data-flow 改进场景 — <span class="en-text">Specific features and data-flow scenarios</span><br>→ 真做过 / Did it</li>
+      <li>能讨论 multi-language / code-switching / OOV 等典型难点 — <span class="en-text">Discusses hard problems</span><br>→ 深度 / Depth</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道 text frontend，但只能笼统说 "text processing"，说不出具体组件 — <span class="en-text">Knows it's text frontend but vague</span><br>→ 听过没深做 / Heard of but didn't deep-do</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>🚩 <strong>答成 Web UI / Razor / JavaScript / Outlook plugin</strong>——把 web portal bullet 和 TTS frontend bullet 混了 — <span class="en-text">Confuses web portal with TTS frontend</span><br>→ 整条 bullet 极可能不是他主导 / Likely didn't drive this bullet</li>
+      <li>说 "frontend 就是 API 层"——基本概念错 — <span class="en-text">"Frontend = API layer" — wrong</span><br>→ 🚩 不懂 TTS 术语 / Doesn't know TTS terminology</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end Q9 wrapper -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                     Q10: DOCKERIZED SERVICE DECOMPOSITION              -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-purple" id="q10-docker">
+<summary>➜ 追问 4 / Follow-up 4 · 📦 Dockerized 服务拆分粒度 / Service Decomposition <span class="tag tag-time">~1.5 min</span></summary>
+<div class="followup-body">
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: "Dockerized services" 看似简单，但服务粒度（frontend / acoustic / vocoder 各一个 service 还是合一个）直接决定 latency 和扩缩容灵活度的 trade-off。<br><span class="en-text">"Dockerized services" looks simple but service granularity directly affects latency vs scalability trade-offs.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "When you say 'Dockerized services' — how did you slice it? Is frontend, acoustic model, and vocoder each its own service, or bundled? Why that granularity? How did you weigh the extra network hop latency for streaming TTS?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你说 'Dockerized services'——你是怎么切分的？frontend、acoustic model、vocoder 是各一个 service 还是打包在一起？为什么这样切？streaming TTS 多一跳网络的 latency 你怎么权衡？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q10-ref">
+  <summary>📖 追问 4 面试官参考答案 / Follow-up 4 Reference Answer</summary>
+  <div class="detail-body">
+    <h4>✅ 典型拆分方案 / Typical decomposition options</h4>
+    <ul>
+      <li><strong>Option A — 全合一</strong>：frontend + acoustic + vocoder 同 process，单 container；最低 latency，但模型更新必须整体重启<br><span class="en-text">All-in-one: lowest latency, but model update = full restart</span></li>
+      <li><strong>Option B — Frontend 单独 + Engine (acoustic+vocoder) 合并</strong>：CPU 任务和 GPU 任务隔离扩缩容，independent deploy，最少额外 hop<br><span class="en-text">Frontend separate + Engine merged: CPU/GPU split for scaling, minimal extra hop</span></li>
+      <li><strong>Option C — 全拆</strong>：frontend / acoustic / vocoder 各一个 service；最灵活但每请求 2-3 次跨服务 RPC，streaming 不友好<br><span class="en-text">All-split: most flexible but 2-3 RPCs per request, streaming-unfriendly</span></li>
+      <li>实际生产 <strong>Option B 最常见</strong><br><span class="en-text">Option B is most common in production</span></li>
+    </ul>
+
+    <h4>✅ 关键 trade-off / Key trade-offs</h4>
+    <ul>
+      <li><strong>Latency</strong>：每多一跳 = ms 级延迟；streaming TTS first-byte 敏感（用户感知）<br><span class="en-text">Each hop adds ms-level latency; streaming TTS first-byte is user-visible</span></li>
+      <li><strong>独立扩缩容</strong>：frontend = CPU-bound、engine = GPU-bound——分开能省成本<br><span class="en-text">Independent scaling: frontend CPU-bound, engine GPU-bound</span></li>
+      <li><strong>模型 isolation</strong>：拆分后某个模型崩了不影响其他；OOM 也 contained<br><span class="en-text">Model isolation: crash/OOM contained</span></li>
+      <li><strong>部署复杂度</strong>：service 数量翻倍 → 监控/CI 也要更复杂<br><span class="en-text">Deployment complexity: more services = more monitoring/CI overhead</span></li>
+    </ul>
+
+    <h4>✅ GPU 共享策略 / GPU sharing</h4>
+    <ul>
+      <li>多 service 想共享同一 GPU → 同 pod 多 container + 共享 GPU device<br><span class="en-text">Multi-service GPU share: multi-container pod with shared device</span></li>
+      <li>或 <strong>MIG (Multi-Instance GPU)</strong> 切分 H100；或 <strong>MPS (Multi-Process Service)</strong> 并发<br><span class="en-text">MIG to slice H100; MPS for multi-process</span></li>
+    </ul>
+
+    <h4>✅ 与 K8s 关系 / Relation to K8s</h4>
+    <ul>
+      <li>每个 service = 一个 K8s Deployment，独立 HPA / KEDA 扩缩容<br><span class="en-text">Each service = K8s Deployment with independent HPA/KEDA</span></li>
+      <li>同 voice 请求 frontend → engine 用 gRPC + voice-aware routing（连到 bullet ① 追问 2）<br><span class="en-text">Frontend→engine via gRPC + voice-aware routing (ties to Bullet ① follow-up 2)</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q10-eval">
+  <summary>🎯 追问 4 候选人回答评价 / Follow-up 4 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>能说出具体拆分方案（哪个 service 包什么）并解释 trade-off — <span class="en-text">Names specific split + trade-off reasoning</span><br>→ 真做过设计 / Real design experience</li>
+      <li>讨论 <strong>streaming 场景多跳 latency</strong> 的代价，并给避免方法 — <span class="en-text">Discusses streaming latency cost + mitigation</span><br>→ 性能 mindset / Perf mindset</li>
+      <li>提到 <strong>CPU-bound vs GPU-bound</strong> 独立扩缩容的成本收益 — <span class="en-text">CPU vs GPU independent scaling</span><br>→ 平台思维 / Platform mindset</li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道拆了几个 service 但讲不清为什么这样拆 — <span class="en-text">Knows what but not why</span><br>→ 沿用既有方案 / Inherited the design</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"拆得越细越好"——不考虑 latency — <span class="en-text">"More microservices is always better" — ignores latency</span><br>→ 🚩 没生产经验 / No prod experience</li>
+      <li>"一个大单体 Docker 就行"——不考虑独立扩缩容 — <span class="en-text">"One big monolith Docker" — ignores independent scaling</span><br>→ 🚩 没规模化思维 / No scale mindset</li>
+      <li>"Docker 就是 VM"——基础概念错 — <span class="en-text">"Docker is just a VM" — fundamentally wrong</span><br>→ 🚩 简历水分 / Resume padding</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end Q10 wrapper -->
+
+<hr class="separator">
+
 <!-- ==================== RUBRIC ==================== -->
 <h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
 
@@ -880,11 +1389,16 @@
   <h4><span class="badge badge-pass">✅ Senior Bar</span> 达标</h4>
   <table>
     <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
-    <tr><td>开门题主动 frame 出 GPU 显存 / 路由 / 冷启动等真问题</td><td>真正参与过架构<br><span class="en-text">Was a real participant in the architecture</span></td></tr>
-    <tr><td>能解释 voice 热/冷分层和某种 evict 策略</td><td>有 serving 调度经验<br><span class="en-text">Has serving scheduling experience</span></td></tr>
-    <tr><td>能说出 voice-aware routing 不能用 round-robin，提出某种索引方案</td><td>理解 cache 命中重要性<br><span class="en-text">Understands cache-hit importance</span></td></tr>
-    <tr><td>能说出至少一种冷启动 mitigation 手段</td><td>有 production 经验<br><span class="en-text">Has production experience</span></td></tr>
-    <tr><td>能描述自动化发布 pipeline + canary 概念</td><td>有平台工程意识<br><span class="en-text">Has platform engineering awareness</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 开门题主动 frame 出 GPU 显存 / 路由 / 冷启动等真问题</td><td>真正参与过架构<br><span class="en-text">Was a real participant in the architecture</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能解释 voice 热/冷分层和某种 evict 策略</td><td>有 serving 调度经验<br><span class="en-text">Has serving scheduling experience</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能说出 voice-aware routing 不能用 round-robin，提出某种索引方案</td><td>理解 cache 命中重要性<br><span class="en-text">Understands cache-hit importance</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能说出至少一种冷启动 mitigation 手段</td><td>有 production 经验<br><span class="en-text">Has production experience</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能描述自动化发布 pipeline + canary 概念</td><td>有平台工程意识<br><span class="en-text">Has platform engineering awareness</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 能说出“为什么从零重写”的具体技术痛点（旧 stack 不支持 neural / GPU / 容器化）</td><td>真正经历过转折点<br><span class="en-text">Lived through the architecture transition</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 能画出架构图：C# / C++ 边界 · CPU / GPU 边界 · 服务划分</td><td>真架构师而不是参与者<br><span class="en-text">Real architect, not bystander</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 能说清 C# / C++ interop 方式（P/Invoke + pinned buffer 或 shared memory）</td><td>有 native interop 实战经验<br><span class="en-text">Real native-interop experience</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 能说出至少一个 CUDA 具体优化 + 具体收益数字</td><td>真做过 GPU 优化<br><span class="en-text">Real GPU optimization work</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 答“TTS frontend”时第一反应是文本前端（TN / G2P / prosody）</td><td>懂 TTS 领域术语<br><span class="en-text">Knows TTS domain terminology</span></td></tr>
   </table>
 </div>
 
@@ -892,11 +1406,16 @@
   <h4><span class="badge badge-strong">🌟 Strong Signal</span></h4>
   <table>
     <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
-    <tr><td>能给出<strong>具体数字</strong>：单 GPU 装多少 voice / 冷启动几秒 / 灰度比例</td><td>真负责过、看过 dashboard<br><span class="en-text">Real owner, watched dashboards</span></td></tr>
-    <tr><td>能讨论 evict 时的<strong>并发安全</strong>（refcount / drain）</td><td>注重工程细节<br><span class="en-text">Attentive to engineering detail</span></td></tr>
-    <tr><td>能讨论 consistent hashing 在 pod 增删时的 rebalance 优势</td><td>系统设计深度<br><span class="en-text">Deep systems thinking</span></td></tr>
-    <tr><td>能用通用术语解释微软内部 stack（ZeroScaler / Southfork 等）</td><td>脱黑话能力<br><span class="en-text">Can articulate without company jargon</span></td></tr>
-    <tr><td>能把多个问题串起来（routing × cold start × COGS）</td><td>系统全局观<br><span class="en-text">Holistic system view</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能给出<strong>具体数字</strong>：单 GPU 装多少 voice / 冷启动几秒 / 灰度比例</td><td>真负责过、看过 dashboard<br><span class="en-text">Real owner, watched dashboards</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能讨论 evict 时的<strong>并发安全</strong>（refcount / drain）</td><td>注重工程细节<br><span class="en-text">Attentive to engineering detail</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能讨论 consistent hashing 在 pod 增删时的 rebalance 优势</td><td>系统设计深度<br><span class="en-text">Deep systems thinking</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能用通用术语解释微软内部 stack（ZeroScaler / Southfork 等）</td><td>脱黑话能力<br><span class="en-text">Can articulate without company jargon</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 能把多个问题串起来（routing × cold start × COGS）</td><td>系统全局观<br><span class="en-text">Holistic system view</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 能说出设计决策的 reasoning（为什么 C# + C++ 而不是全 C++）</td><td>不只是执行者<br><span class="en-text">Not just an executor</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 能讲 P/Invoke 成本与<strong>一次请求只跨一次边界</strong>的工程意识</td><td>真懂 native interop 性能<br><span class="en-text">Real native interop perf mindset</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> CUDA 优化能同时说出 <strong>2-3 个具体手段</strong>（batching + FP16 + TensorRT等）带数字</td><td>真 CUDA 工程师<br><span class="en-text">Real CUDA engineer</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 能讨论文本前端的深点：OOV / homograph / code-switching / SSML</td><td>真懂 TTS 领域难点<br><span class="en-text">Real TTS domain depth</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 能讨论服务拆分中 streaming TTS 多跳 latency 的 trade-off</td><td>服务设计性能平衡感<br><span class="en-text">Service design perf balance</span></td></tr>
   </table>
 </div>
 
@@ -904,11 +1423,15 @@
   <h4><span class="badge badge-fail">🚩 Red Flags</span></h4>
   <table>
     <tr><th>表现 / Behavior</th><th>说明 / Explanation</th></tr>
-    <tr><td>"每个 voice 独立 pod / Deployment"</td><td>没意识到 GPU 显存约束<br><span class="en-text">Hasn't grasped GPU memory constraint</span></td></tr>
-    <tr><td>"K8s / Istio 自动处理"</td><td>把责任甩给不懂业务语义的中间件<br><span class="en-text">Shifts responsibility to middleware unaware of business semantics</span></td></tr>
-    <tr><td>"我们没遇到过冷启动问题"</td><td>500 voice 不可能没冷启动；要么没做过，要么没意识到<br><span class="en-text">Impossible at 500-voice scale</span></td></tr>
-    <tr><td>列了一堆 stack 但说不出每个在系统里干嘛</td><td>buzzword bingo，可能只是 stack 用户而非设计者<br><span class="en-text">Buzzword bingo — likely user not designer</span></td></tr>
-    <tr><td>把发布讲成手动 + 没 canary 概念</td><td>500 voice 规模根本不可能这么干<br><span class="en-text">Manual + no canary is impossible at this scale</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> "每个 voice 独立 pod / Deployment"</td><td>没意识到 GPU 显存约束<br><span class="en-text">Hasn't grasped GPU memory constraint</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> "K8s / Istio 自动处理"</td><td>把责任甩给不懂业务语义的中间件<br><span class="en-text">Shifts responsibility to middleware unaware of business semantics</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> "我们没遇到过冷启动问题"</td><td>500 voice 不可能没冷启动<br><span class="en-text">Impossible at 500-voice scale</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 列了一堆 stack 但说不出每个在系统里干嘛</td><td>buzzword bingo<br><span class="en-text">Buzzword bingo</span></td></tr>
+    <tr><td><strong style="color:var(--accent);">[Bullet ①]</strong> 把发布讲成手动 + 没 canary 概念</td><td>500 voice 规模根本不可能这么干<br><span class="en-text">Manual + no canary impossible at this scale</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> "TTS frontend" 答成 <strong>Web UI / Razor / JavaScript / Outlook plugin</strong></td><td>把这条 bullet 和 web portal bullet 混了 — 极可能不是他主导<br><span class="en-text">Confused with web portal bullet — likely not the driver</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> "GPU CUDA optimization" 说不出任何具体优化（只说"用了 PyTorch"）</td><td>简历夸张，不是 inference 工程师<br><span class="en-text">Resume exaggeration, not an inference engineer</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> C# 和 C++ 之间用 JSON / REST 通信</td><td>latency 灾难，没有性能意识<br><span class="en-text">Latency disaster, no perf awareness</span></td></tr>
+    <tr><td><strong style="color:var(--green);">[Bullet ②]</strong> 不知道 P/Invoke / FP16 / INT8 是什么</td><td>简历水分<br><span class="en-text">Resume padding</span></td></tr>
   </table>
 </div>
 
@@ -921,13 +1444,21 @@
   <table>
     <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
     <tbody>
-      <tr><td>主问题（开门）— 主动 frame 哪些真问题</td><td></td><td></td></tr>
-      <tr><td>追问 1 GPU 显存 — 分层 / evict / 并发</td><td></td><td></td></tr>
-      <tr><td>追问 2 路由 — voice-aware / consistent hash / 索引</td><td></td><td></td></tr>
-      <tr><td>追问 3 冷启动 — 数字 + mitigation 手段</td><td></td><td></td></tr>
-      <tr><td>追问 4 发布 — pipeline / canary / 回滚 / 多 region</td><td></td><td></td></tr>
-      <tr><td>Stack 脱黑话能力（ZeroScaler / Southfork 等）</td><td></td><td></td></tr>
-      <tr><td>系统全局观（多问题串联）</td><td></td><td></td></tr>
+      <tr style="background:#f5f3ff;"><td colspan="3" style="font-weight:700;color:var(--accent);">简历 Bullet ① · Voice 库扩容 / Voice Library Scaling</td></tr>
+      <tr><td>① 主问题（开门）— 主动 frame 哪些真问题</td><td></td><td></td></tr>
+      <tr><td>① 追问 1 GPU 显存 — 分层 / evict / 并发</td><td></td><td></td></tr>
+      <tr><td>① 追问 2 路由 — voice-aware / consistent hash / 索引</td><td></td><td></td></tr>
+      <tr><td>① 追问 3 冷启动 — 数字 + mitigation 手段</td><td></td><td></td></tr>
+      <tr><td>① 追问 4 发布 — pipeline / canary / 回滚 / 多 region</td><td></td><td></td></tr>
+      <tr style="background:#f0fdf4;"><td colspan="3" style="font-weight:700;color:var(--green);">简历 Bullet ② · Neural TTS Backend 架构</td></tr>
+      <tr><td>② 主问题（开门）— 背景是否说清 + 架构是否画清</td><td></td><td></td></tr>
+      <tr><td>② 追问 1 C#/C++ 边界 — 边界 / interop / marshalling cost</td><td></td><td></td></tr>
+      <tr><td>② 追问 2 GPU CUDA 优化 — 具体手段 + 数字</td><td></td><td></td></tr>
+      <tr><td>② 追问 3 TTS Frontend — 文本前端（陷阱检测）</td><td></td><td></td></tr>
+      <tr><td>② 追问 4 服务拆分 — 粒度 / trade-off / GPU 共享</td><td></td><td></td></tr>
+      <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
+      <tr><td>Stack 脱黑话能力（ZeroScaler / Southfork / Hyena 等）</td><td></td><td></td></tr>
+      <tr><td>系统全局观（多问题串联 / 两个 bullet 之间的联动）</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
     </tbody>
   </table>
