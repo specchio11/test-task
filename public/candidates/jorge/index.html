@@ -1,0 +1,26 @@
+<!--
+  Redirect shim — preserves the existing "← Overview" link inside every
+  static section guide under this candidate's folder.
+
+  Those links look like `href="../index.html"`. After build, that resolves
+  to `<base>/candidates/jorge/index.html` (this file), which forwards the
+  browser to the React-routed agenda overview.
+
+  Do NOT add visible content here.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Loading…</title>
+    <meta http-equiv="refresh" content="0; url=../../#/candidate/jorge">
+    <script>
+      // ../../ goes from /candidates/jorge/ back up to the app root, then
+      // append the hash route. Works under any Vite base.
+      location.replace('../../#/candidate/jorge');
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to <a href="../../#/candidate/jorge">Jorge's agenda overview</a>…</p>
+  </body>
+</html>
