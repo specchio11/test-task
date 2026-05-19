@@ -1326,6 +1326,194 @@
   </div>
 </details>
 
+<!-- ===== Conditional sub-questions: cursor encoding + race condition ===== -->
+<details id="q-be-pagination-conditional">
+  <summary>🌿 条件追问 / Conditional Probes — <strong>针对不同应答轨道展开</strong> / Fire based on Step-1/2 trajectory</summary>
+  <div class="detail-body">
+    <div class="card">
+      <blockquote class="interviewer-note">
+        <strong>⚠️ 使用说明 / How to use</strong> — 这两个 sub-Q 是<strong>设计细节级</strong>追问，不是必问。打开规则：<br>
+        • <strong>Sub-Q1（cursor encoding）</strong>：仅当 Step 1 答 cursor / next-page token，或 Step 2 主动提了 cursor 优势时再展开。如果她用 offset 且对 cursor 零接触，跳过这题。<br>
+        • <strong>Sub-Q2（race condition）</strong>：仅当是移动端 + infinite scroll 场景时展开（Copi 是 RN dashboard，默认适用）。web admin 后台跳过。<br>
+        <strong>Interviewer note</strong> — Both are <strong>design-detail</strong> probes, not mandatory. Fire Sub-Q1 only if Step 1 = cursor or Step 2 voluntarily mentioned cursor's edge. Fire Sub-Q2 only for mobile + infinite scroll (Copi RN dashboard — default yes).
+      </blockquote>
+    </div>
+
+    <!-- ============ Sub-Q1: Cursor Encoding Design ============ -->
+    <h4 style="color:#0d9488;font-size:20px;margin-top:18px;">▸ Sub-Q1 — Cursor 设计细节 / Cursor Encoding Design</h4>
+
+    <details open>
+      <summary>🎤 提问 / Ask · Sub-Q1</summary>
+      <div class="detail-body">
+        <blockquote class="ask-en">
+          "Stay on cursor for a second. What's actually encoded inside your cursor? Just the row ID, or composite? Is it base64? Does it carry a direction (forward / backward)? Walk me through the design choices you made."
+        </blockquote>
+        <blockquote class="ask-cn">
+          "在 cursor 上多停留一下。你的 cursor 里面到底 encode 了什么？只是 row ID 还是 composite？是不是 base64？带不带方向（forward / backward）？把你当时的设计选择讲一下。"
+        </blockquote>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 Sub-Q1 参考答案 / Reference</summary>
+      <div class="detail-body">
+        <h4>📦 Cursor 内容 / What goes inside</h4>
+        <ul>
+          <li>🟢 <strong>Composite：sort key + tiebreaker</strong>——例如 <code>{ createdAt: "2024-03-15T10:23:45.123Z", id: "txn_uuid" }</code><br><span class="en-text">Composite: sort key + tiebreaker (e.g. <code>createdAt + id</code>)</span></li>
+          <li>🟢 <strong>必须 deterministic</strong>：只用 <code>createdAt</code> 不够——同一毫秒可能多条交易（状态同步 / batch import），不加 tiebreaker 会漏数据或重复<br><span class="en-text">Must be deterministic — timestamp alone breaks on same-millisecond rows; tiebreaker is non-optional</span></li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🔐 Encoding / 编码选择</h4>
+        <ul>
+          <li>🟢 <strong>Base64 (JSON 转码)</strong>——业界惯例。三个原因：<ul>
+            <li>URL-safe (不需要 percent-encode JSON)</li>
+            <li><strong>Opaque token</strong>——客户端看不懂就不会去解析、拼接、依赖它的格式（服务端未来能改 schema 不破坏 client）</li>
+            <li>能加上 HMAC 签名防篡改（可选，金融场景推荐）</li>
+          </ul></li>
+          <li>🟡 <strong>加密</strong>一般不需要，cursor 不含敏感信息；需要防篡改用 HMAC 足够</li>
+          <li>🚩 <strong>明文暴露 primary key</strong>（如 <code>?cursor=12345</code>）——client 能猜下一个、能猜总量、能伪造请求，IDOR 风险</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">↔️ 方向 / Direction</h4>
+        <ul>
+          <li><strong>Forward-only</strong>（infinite scroll 场景）：只给 <code>nextCursor</code>，cursor 体不带方向 — 90% 场景够用<br><span class="en-text">Forward-only for infinite scroll — simplest, covers 90% of cases</span></li>
+          <li><strong>Bidirectional</strong>（需要“上一页”）：返回 <code>nextCursor</code> + <code>prevCursor</code>，cursor 里 encode <code>direction</code> 字段，服务端根据 direction 变 <code>&lt;</code> 或 <code>&gt;</code> 查询</li>
+          <li>🟢 能主动说 "我当时只需要 forward，所以没加 bidirectional" = 明确 trade-off 意识</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">💥 Cursor 失效 / Invalidation</h4>
+        <ul>
+          <li>cursor 指向的行被删了怎么办？<ul>
+            <li>🟢 <strong>降级到邻近行</strong>：查询仍用 <code>(created_at, id) &lt; (cursor.ts, cursor.id)</code>，本质上以 cursor 位置为上界，删行不影响后面查询 — 大部分场景这样处理就行</li>
+            <li>🟢 或 sort key 选 immutable 字段（如 <code>created_at</code> 不变）——甚至不需要被指行存在</li>
+            <li>🟡 返回 410 Gone / 400 + 让 client refresh — 复杂且 UX 差</li>
+          </ul></li>
+          <li>cursor 指向的行被修改了怎么办（如 transaction 被 Plaid amend）？<ul>
+            <li>如果 sort key 变了（如按 amount 排序，amount 被改）→ 能跳记录。这也是为什么 sort key 要选 immutable 字段</li>
+          </ul></li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+        <ul>
+          <li>🚩 cursor = 明文 primary key → client 可以猜 / 伪造 / 玩 IDOR</li>
+          <li>🚩 cursor 是明文 JSON → client 会去解析它、依赖 schema，你后面不能改</li>
+          <li>🚩 单字段 timestamp 没 tiebreaker → 同秒多条 transaction 会漏</li>
+          <li>🚩 拿 <code>updated_at</code> 这种会变的字段做 sort key → 行被更新后 cursor 跳项</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 Sub-Q1 候选人回答评价 / Evaluation</summary>
+      <div class="detail-body">
+        <p><strong>🟢 强 / Strong:</strong></p>
+        <ul>
+          <li>主动说出 <strong>composite (sort key + tiebreaker)</strong> 并能解释为什么需要 tiebreaker</li>
+          <li>说出 base64 是为了 <strong>opaque token</strong>（不让 client 依赖 schema），而不是“因为好看”</li>
+          <li>主动提 forward-only vs bidirectional 是 trade-off，说明自己选哪个 + 原因</li>
+          <li>能谈 cursor 失效的处理（降级到邻近行 / 选 immutable sort key）</li>
+          <li>Bonus：提到 HMAC 签名 / 避免选可变字段做 sort key</li>
+        </ul>
+        <p><strong>🟡 中等 / Okay:</strong></p>
+        <ul>
+          <li>知道 cursor 是个 token 但说不出具体 encode 什么</li>
+          <li>用了 base64 但说不出为什么（“就是习惯”）</li>
+          <li>没想过 cursor 失效，但被问到后能推出合理方案</li>
+        </ul>
+        <p style="color:var(--red);"><strong>🔴 弱 / Weak:</strong></p>
+        <ul>
+          <li>cursor 就是 primary key 明文 → 🚩 没考虑过 client 篡改 / IDOR</li>
+          <li>单字段 timestamp 没 tiebreaker 还说 "足够了" → 🚩 金融场景会漏数据</li>
+          <li>“我不知道 cursor 里面是什么 — 库自动生的” → 🚩 只是库的使用者，不算 "designed contracts"</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- ============ Sub-Q2: Race Condition (pull-to-refresh + in-flight page load) ============ -->
+    <h4 style="color:#0d9488;font-size:20px;margin-top:24px;">▸ Sub-Q2 — Race Condition：Pull-to-refresh + In-flight 翻页 / Pull-to-refresh vs in-flight pagination</h4>
+
+    <details open>
+      <summary>🎤 提问 / Ask · Sub-Q2</summary>
+      <div class="detail-body">
+        <blockquote class="ask-en">
+          "Real-world scenario. User is scrolling and your app is mid-flight fetching page 5. At the same time they yank down and pull-to-refresh. What actually happens in your app? How did you handle that race condition?"
+        </blockquote>
+        <blockquote class="ask-cn">
+          "一个真实场景。用户正在 scroll，你的 app 正在 in-flight fetch 第 5 页。同时他下拉 pull-to-refresh。你的 app 里面实际会发生什么？这个 race condition 你怎么处理的？"
+        </blockquote>
+        <blockquote class="interviewer-note">
+          <strong>⚠️ 面试官小提示</strong> — 这题金在<strong>“实际会发生什么”</strong>。真上过线的人会先描述 bug（“如果什么不做，list 会变成 [refreshed top] + [stale page 5]，跳记录或重复”），再说解决方案。直接开始背方案不提 bug 本身 = 🚩 没观察过。<br>
+          <strong>Interviewer note</strong> — The gold is in <strong>"what actually happens"</strong>. People who've shipped this describe the bug first ("if you do nothing, list becomes [refreshed top] + [stale page 5] → skip or dupe"), then the fix. Jumping straight to solutions without naming the bug = 🚩 never observed it.
+        </blockquote>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 Sub-Q2 参考答案 / Reference</summary>
+      <div class="detail-body">
+
+        <h4>🐛 不处理的 bug / The naive bug</h4>
+        <ul>
+          <li><strong>时间线</strong>：T0 fetch page 5 发出 → T1 用户 pull-to-refresh → T2 refresh response 到，list 变成最新顶部 → T3 page 5 response 到，被 append 在末尾</li>
+          <li>结果：list = [refresh 后的顶部（含新交易）] + [stale page 5（基于旧状态的 cursor / offset）] → <u>跳记录 / 重复记录 / 空洞</u></li>
+          <li>重点：这不是 offset vs cursor 的问题——cursor 同样会中招，因为如果 refresh 后 cursor space 变了，老 cursor 的 page 5 结果也 stale</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">✅ 解决方案 / Solutions（从简到繁）</h4>
+        <ul>
+          <li>🟢 <strong>方案 1 — In-flight cancellation (AbortController)</strong>：refresh 触发时 abort 所有 in-flight pagination requests，然后从第一页重拉。最干净。<br><span class="en-text">Cancel in-flight pagination via AbortController on refresh — cleanest</span></li>
+          <li>🟢 <strong>方案 2 — Request generation counter</strong>：每次 refresh 让 generation++，response 回来检查是否 generation === current，不是就丢。适合不能 cancel 的场景。<br><span class="en-text">Bump a generation counter on refresh; discard responses whose generation ≠ current</span></li>
+          <li>🟢 <strong>方案 3 — React Query / SWR 的 queryKey 机制</strong>：refresh 让 queryKey 变（或 invalidate），旧 query 自动 stale，response 不会被接受。<u>如果她用了这些库，问她是否意识到这个机制。</u><br><span class="en-text">Or rely on React Query / SWR queryKey invalidation — ask if she actually understands the mechanism</span></li>
+          <li>🟢 <strong>方案 4 — Tag request with cursor state</strong>：in-flight request 打上发起时的 cursor，response 到时比对 current cursor state，不匹配则丢。最符合 cursor pagination 设计哲学</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">📱 Mobile-specific 坑 / Mobile pitfalls</h4>
+        <ul>
+          <li>RN 原生 <code>fetch</code> 不像 React Query 那样自动丢 stale response — 容易踩</li>
+          <li>慢网络下 page 5 和 refresh 同时 in-flight 是<strong>常态</strong>，不是 edge case</li>
+          <li>用户快速 scroll 可能同时触发 page 4 / page 5 / page 6 三个 in-flight requests — 顺序返回不保证</li>
+          <li>冷启动 + auto-refresh-on-focus 同时发生也会踩</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+        <ul>
+          <li>🚩 “我没遇到过 race condition” → 从未观察过慢网用户</li>
+          <li>🚩 “React Query 自己处理的” 但说不出 queryKey / invalidate 机制 → 只是使用者，不是设计者</li>
+          <li>🚩 “我在 loading 时 disable pull-to-refresh” → 回避问题不是解决，UX 也差（用户需要能随时拉新）</li>
+          <li>🚩 blindly append 所有 response 不检查是哪个 request 发的 → 必踩 bug</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 Sub-Q2 候选人回答评价 / Evaluation</summary>
+      <div class="detail-body">
+        <p><strong>🟢 强 / Strong:</strong></p>
+        <ul>
+          <li><strong>先描述 bug 再谈解决</strong>——能具体说出 stale page 5 被 append 到 refresh 后列表中间导致跳 / 重<br><span class="en-text">Describes the bug first, then the fix</span></li>
+          <li>能说出至少一个具体机制（AbortController / generation counter / queryKey invalidation）且能解释原理</li>
+          <li>主动提到 "慢网络上这是常态不是 edge case" — 领域经验信号</li>
+          <li>说出快速 scroll 多 in-flight 顺序乱返回的场景 — 真踩过</li>
+        </ul>
+        <p><strong>🟡 中等 / Okay:</strong></p>
+        <ul>
+          <li>意识到有 race 但解决方案模糊（“好像会有问题…我记得处理了但不记得怎么处理的”）</li>
+          <li>能说出 AbortController 但只是概念，讲不出什么时机调用</li>
+          <li>“用了 React Query 所以不用操心” 但能推出说是 queryKey 变了</li>
+        </ul>
+        <p style="color:var(--red);"><strong>🔴 弱 / Weak:</strong></p>
+        <ul>
+          <li>“我没遇到过这个问题” → 🚩 未观察过真用户</li>
+          <li>“React Query 什么都处理了” 但说不出什么机制 → 🚩 只是使用者</li>
+          <li>“loading 时 disable pull-to-refresh” → 🚩 避问题，UX 差</li>
+          <li>blindly append 所有 response 还说 "反正都是同一个列表" → 🚩 不理解问题本身</li>
+        </ul>
+      </div>
+    </details>
+
+  </div>
+</details>
+
 <details id="q-be-pagination-ref">
   <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Interviewer Reference</summary>
   <div class="detail-body">
@@ -1537,6 +1725,8 @@ LIMIT 20;</pre>
       <tr><td>Q1 主问题 — 项目背景 + 框架选型 + 选型理由</td><td></td><td></td></tr>
       <tr><td>追问 1 Step 1 — Pagination contract 形态（cursor vs offset）</td><td></td><td></td></tr>
       <tr><td>追问 1 Step 2 — SQL 性能差异（scan+discard vs index seek，CORE）</td><td></td><td></td></tr>
+      <tr><td>追问 1 Sub-Q1 — Cursor encoding 设计（条件）</td><td></td><td></td></tr>
+      <tr><td>追问 1 Sub-Q2 — Pull-to-refresh + in-flight race condition（条件）</td><td></td><td></td></tr>
       <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构 owner vs 执行者 信号</td><td></td><td></td></tr>
