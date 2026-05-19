@@ -2,9 +2,8 @@ import type { CandidateConfig } from '../data/types';
 
 /**
  * Samarth Sharma — 60-min formal (onsite-style) interview scaffolded
- * on 2026-05-18. This is NOT a phone screen — it's the full technical loop,
- * same format as Xinfeng (4 sections: self-intro / resume Q&A / coding /
- * candidate Q).
+ * on 2026-05-18. This is NOT a phone screen — it's the full technical loop.
+ * 5 sections: self-intro / resume Q&A / coding 1 / coding 2 / candidate Q.
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
  * interview material is prepared. The static section pages under
@@ -75,16 +74,32 @@ export const samarth: CandidateConfig = {
     {
       id: 's4',
       num: '④',
+      emoji: '💻',
+      titleZh: '编程测试 2',
+      titleEn: 'Coding Test 2',
+      navLabel: '④ Coding 2',
+      time: '~15 min',
+      keyPoints: '（待填写 · 第二轮编程题）',
+      accent: 's4',
+      href: 'codingTest2/interview-guide.html',
+      introEn: '(TBD)',
+      introZh: '（待填写）',
+      introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',
+    },
+    {
+      id: 's5',
+      num: '⑤',
       emoji: '❓',
       titleZh: '候选人提问',
       titleEn: 'Candidate Q&A',
-      navLabel: '④ 候选人提问',
+      navLabel: '⑤ 候选人提问',
       time: '~5 min',
       keyPoints: '（待填写）',
-      accent: 's4',
+      accent: 's5',
       href: 'candidateQuestions/interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
+      introHeading: '🎤 引导候选人提问 / Invite Candidate Questions',
     },
   ],
 };
