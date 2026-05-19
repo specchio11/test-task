@@ -261,16 +261,6 @@
   td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
   tr:hover td { background: #f0f7ff; }
 
-  .hint-chip {
-    display: inline-block;
-    padding: 2px 8px; border-radius: 4px;
-    font-size: 18px; font-weight: 700;
-    margin-right: 4px;
-  }
-  .hint-light  { background: #d4edda; color: #155724; }
-  .hint-medium { background: #fff3cd; color: #856404; }
-  .hint-heavy  { background: #f8d7da; color: #721c24; }
-
   .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
   .tag-time { background: #e8f0fe; color: #0550ae; }
   .tag-tbd  { background: #f1f5f9; color: #64748b; }
@@ -535,23 +525,6 @@
   </div>
 </details>
 
-<details id="q3-hints">
-  <summary>🚨 追问 1 卡壳引导 / Follow-up 1 Hints When Stuck</summary>
-  <div class="detail-body">
-    <p><span class="hint-chip hint-light">Light</span></p>
-    <blockquote class="ask-en">"Did Zustand, Jotai, or Redux Toolkit come up at all when you were deciding?"</blockquote>
-    <blockquote class="ask-cn">"决定的时候，Zustand、Jotai、Redux Toolkit 这些有进入过你的视野吗？"</blockquote>
-
-    <p><span class="hint-chip hint-medium">Medium</span></p>
-    <blockquote class="ask-en">"What happens to the consumers of a Context when one piece of state inside it changes?"</blockquote>
-    <blockquote class="ask-cn">"Context 里某个 state 变了，所有 consume 这个 Context 的组件会怎么反应？"</blockquote>
-
-    <p><span class="hint-chip hint-heavy">Heavy</span></p>
-    <blockquote class="ask-en">"Hint — Context has a known re-render trap when you put many things in one provider. What's the typical workaround, and at what scale does it start to hurt?"</blockquote>
-    <blockquote class="ask-cn">"提示一下——Context 在一个 provider 里塞太多东西时有个著名的重渲染陷阱。常见的绕开方法是什么？项目到什么规模会真的开始痛？"</blockquote>
-  </div>
-</details>
-
 <details id="q3-ref">
   <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Interviewer Reference</summary>
   <div class="detail-body">
@@ -652,17 +625,6 @@
     <blockquote class="ask-cn">
       "现在说点深入的——当数据量变大（比如几千个点），或者数据是实时更新的（行情推送、持仓刷新）的时候，你怎么保证图表不卡？你具体做了什么？"
     </blockquote>
-  </div>
-</details>
-
-<details>
-  <summary>🚨 追问 2 卡壳引导 / Follow-up 2 Hints When Stuck</summary>
-  <div class="detail-body">
-    <ul>
-      <li><strong>Light hint</strong> — "数据量过千或实时推送时，naive 实现会有什么瓶颈？" / "What's the bottleneck of a naive implementation at &gt;1k points or with realtime push?"</li>
-      <li><strong>Medium hint</strong> — "想想 SVG 和 Canvas 在节点数上的差别；想想 React 重渲染和 chart instance 重建之间的区别。" / "Think about SVG vs Canvas at scale; think about React re-render vs recreating the chart instance."</li>
-      <li><strong>Heavy hint</strong> — "提示几个常见手段：数据降采样 (LTTB)、关掉 update 时的 animation、用 chart.update() 而不是 unmount+remount、把 options 对象 memoize、real-time 流要 throttle。" / "Common levers: downsampling (LTTB), disable animation on update, use chart.update() instead of unmount+remount, memoize the options object, throttle realtime streams."</li>
-    </ul>
   </div>
 </details>
 
