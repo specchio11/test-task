@@ -344,7 +344,6 @@
       <a class="qp-sub teal" href="#q-be-frontend-sync" onclick="jump('q-be-frontend-sync');return false;">追问 3 — 前端联动 (Race &amp; UX)</a>
     </div>
   </details>
-  <a class="qp-link" href="#flow-3-ai" onclick="jump('flow-3-ai');return false;" style="background:#fff7ed;color:#ea580c;font-weight:700;margin-top:10px;border-left-color:#ea580c;">📌 FLOW 3 · Multi-Agent AI <span class="tag tag-tbd">TBD</span></a>
 
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
   <a class="qp-link" href="#notes"  onclick="jump('notes');return false;">📝 Notes</a>
@@ -394,17 +393,7 @@
         <td>1 主问题 + 1 追问 (more 追问 TBD)<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 1 follow-up (more TBD)</span></td>
         <td><strong>~7 min (so far)</strong></td>
       </tr>
-      <tr style="background:#fff7ed;">
-        <td><strong style="color:#ea580c;">FLOW 3</strong></td>
-        <td>
-          <strong>Multi-Agent AI Chat (LangGraph + RAG + evals)</strong><br>
-          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Built production multi-agent AI chat interface with streaming responses and evals system improving expert approval from 36% to 92% using LangGraph, and RAG over financial documents, eliminating LLM hallucinations."</span>
-        </td>
-        <td><span class="tag tag-tbd">TBD</span></td>
-        <td><strong>~10 min</strong></td>
-      </tr>
-    </tbody>
-  </table>
+    </tbody>  </table>
 </div>
 
 <hr class="separator">
@@ -2049,20 +2038,6 @@ ORDER BY posted_at IS NULL, posted_at, id;</pre>本质：先按 "是否 NULL" �
 
 <hr class="separator">
 
-<!-- ====================================================================== -->
-<!--                          FLOW 3 PLACEHOLDER                            -->
-<!-- ====================================================================== -->
-<h2 id="flow-3-ai" style="background:#fff7ed;border-left:6px solid #ea580c;color:#ea580c;font-size:28px;">
-  📌 FLOW 3 · Multi-Agent AI Chat
-  <span class="tag tag-tbd">TBD</span>
-</h2>
-
-<div class="tbd-card">
-  待填充 / TBD — 针对简历 "Built production multi-agent AI chat interface with streaming responses and evals system improving expert approval from 36% to 92% using LangGraph, and RAG over financial documents…" 这一段。
-</div>
-
-<hr class="separator">
-
 <!-- ==================== RUBRIC ==================== -->
 <h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
 
@@ -2134,7 +2109,6 @@ ORDER BY posted_at IS NULL, posted_at, id;</pre>本质：先按 "是否 NULL" �
       <tr><td>追问 3 Q1 — Pull-to-refresh + In-flight 翻页 race condition</td><td></td><td></td></tr>
       <tr><td>追问 3 Q2 — Concurrent update 导致 row 漂移（Plaid amend 真场景）</td><td></td><td></td></tr>
       <tr><td>追问 3 Q3 — 没 tiebreaker → PG plan 漂移（深度吹牛探针）</td><td></td><td></td></tr>
-      <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构 owner vs 执行者 信号</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
