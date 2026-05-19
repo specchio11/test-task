@@ -1332,10 +1332,11 @@
   <div class="detail-body">
     <div class="card">
       <blockquote class="interviewer-note">
-        <strong>⚠️ 使用说明 / How to use</strong> — 这两个 sub-Q 是<strong>设计细节级</strong>追问，不是必问。打开规则：<br>
+        <strong>⚠️ 使用说明 / How to use</strong> — 这几个 sub-Q 是<strong>设计细节级</strong>追问，不是必问。打开规则：<br>
         • <strong>Sub-Q1（cursor encoding）</strong>：仅当 Step 1 答 cursor / next-page token，或 Step 2 主动提了 cursor 优势时再展开。如果她用 offset 且对 cursor 零接触，跳过这题。<br>
         • <strong>Sub-Q2（race condition）</strong>：仅当是移动端 + infinite scroll 场景时展开（Copi 是 RN dashboard，默认适用）。web admin 后台跳过。<br>
-        <strong>Interviewer note</strong> — Both are <strong>design-detail</strong> probes, not mandatory. Fire Sub-Q1 only if Step 1 = cursor or Step 2 voluntarily mentioned cursor's edge. Fire Sub-Q2 only for mobile + infinite scroll (Copi RN dashboard — default yes).
+        • <strong>Sub-Q3（filter/sort 切换）</strong>：<u>默认展开</u>——任何<u>真有人用</u>的 transaction list 都会有 filter（日期区间/类别/账户）和可切 sort（日期/金额）。是<u>识别"我设计了 pagination contract"是否吹牛</u>最干净的探针之一。如果他在 Sub-Q1/Sub-Q2 已经答得很弱（cursor 概念都没建立），可跳过。<br>
+        <strong>Interviewer note</strong> — All are <strong>design-detail</strong> probes, not mandatory. Fire Sub-Q1 only if Step 1 = cursor or Step 2 voluntarily mentioned cursor's edge. Fire Sub-Q2 only for mobile + infinite scroll (Copi RN dashboard — default yes). <strong>Fire Sub-Q3 by default</strong> — any real transaction list has filter+switchable-sort; this is one of the cleanest bluff-detection probes for "I designed pagination contracts". Skip only if Sub-Q1/Sub-Q2 already exposed missing cursor fundamentals.
       </blockquote>
     </div>
 
@@ -1507,6 +1508,132 @@
           <li>“React Query 什么都处理了” 但说不出什么机制 → 🚩 只是使用者</li>
           <li>“loading 时 disable pull-to-refresh” → 🚩 避问题，UX 差</li>
           <li>blindly append 所有 response 还说 "反正都是同一个列表" → 🚩 不理解问题本身</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- ============ Sub-Q3: Filter / Sort Switch Cursor Invalidation ============ -->
+    <h4 style="color:#0d9488;font-size:20px;margin-top:24px;">▸ Sub-Q3 — Filter / Sort 切换时 cursor 的失效 / Filter &amp; Sort Switch Invalidation</h4>
+
+    <details open>
+      <summary>🎤 提问 / Ask · Sub-Q3</summary>
+      <div class="detail-body">
+        <blockquote class="ask-en">
+          "Real product scenario. Your transaction list almost certainly supports filters (date range, category, account) and switchable sort (by date, by amount, by category). The user is mid-scroll on page 4 and then flips the sort from 'date desc' to 'amount desc', or applies a new filter. What does your API do with the cursor she's currently holding — and what's the actual reason behind that decision?"
+        </blockquote>
+        <blockquote class="ask-cn">
+          "真实产品场景。你的 transaction 列表基本一定支持 filter（日期区间、类别、账户）和可切换的 sort（按日期 / 按金额 / 按类别）。如果用户翻到 page 4 时切了 sort——比如从'按日期倒序'切到'按金额倒序'——或者改了 filter，你 API 会拿她手里那个 cursor 怎么处理？为什么这么设计？"
+        </blockquote>
+        <blockquote class="interviewer-note">
+          <strong>⚠️ 面试官提示</strong> — 这题<u>没有</u>"老 cursor 还能继续用"的合理答案——切了 sort/filter 就是新的 result space。听三件事：<br>
+          1️⃣ 能不能<u>立刻</u>说 "cursor 必须丢、回到第一页"，且能讲清楚<u>为什么</u>（cursor 锚的是旧 ordering 中的位置，新 ordering 里这个位置无意义）。<br>
+          2️⃣ 有没有想过 <strong>怎么 detect</strong>（client 自觉 reset 还是 server 端 fingerprint 校验？两者优劣？）。<br>
+          3️⃣ Bonus：有没有意识到 <strong>每加一种 sort 维度 = 一个 composite index 维护成本</strong>——所以 prod 系统的 sort 选项通常是固定小集合，不是无限。<br>
+          🚨 钓鱼信号：如果他直接说 "切了 sort cursor 还能用" 或 "我们就 disable 切 sort 避免问题"——这条简历 "established pagination contracts" 基本是吹的。<br>
+          <strong>Interviewer note</strong> — There's <u>no</u> valid "old cursor still works" answer here. Listen for: (1) immediate "cursor must be discarded" + the reason (cursor anchors a position in the OLD ordering, that position has no meaning in the new one); (2) detection strategy (client-side reset vs server-side fingerprint, trade-offs); (3) bonus: awareness that each sort dimension = a composite index to maintain, so prod systems offer a small fixed set. 🚨 Tell signals: "cursor still works" or "we disabled sort switching" → the "established pagination contracts" claim is likely bluff.
+        </blockquote>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 Sub-Q3 参考答案 / Reference</summary>
+      <div class="detail-body">
+
+        <h4>🎯 核心结论 / Bottom line</h4>
+        <p>Sort 或 filter 一变 → <strong>cursor 必须作废，从第一页重新开始</strong>。原因：cursor 本质是 "在按 X 排序、过滤条件 Y 下的 result set 中，我读到了哪一行"——切换 sort/filter 后这个 result set 不存在了，cursor 指向的位置无意义。<br>
+        <span class="en-text">Sort or filter change → <strong>cursor must be invalidated, restart from page 1</strong>. A cursor is "where I am in the result set under sort=X, filter=Y" — changing either dissolves that set entirely.</span></p>
+
+        <h4 style="margin-top:14px;">🛠️ 三种实现选择 / Three implementation choices</h4>
+        <table>
+          <thead><tr><th>方案 / Approach</th><th>怎么做 / How</th><th>优点 / Pros</th><th>代价 / Cons</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Client-side discard</strong></td>
+              <td>UI 切 sort/filter 时主动 reset，发不带 cursor 的请求</td>
+              <td>最简单，server 无需感知；contract 干净</td>
+              <td>依赖 client 自觉；老 client / 第三方 client 可能不守规矩 → 翻出乱序数据 server 完全不知道</td>
+            </tr>
+            <tr>
+              <td><strong>2. Server-side fingerprint detection</strong></td>
+              <td>cursor 里 encode 当前 sort + filter 的 hash；request 时 sort/filter 跟 cursor 内 hash 不一致 → 返回 400 或 graceful 重置 + warning header</td>
+              <td>防御性强；老 client 也无法翻错；向后兼容容易演化</td>
+              <td>cursor schema 更复杂；要定义清晰的 error semantics（4xx vs 自动 reset）</td>
+            </tr>
+            <tr>
+              <td><strong>3. Cursor namespace per sort</strong></td>
+              <td>每种 sort 用独立 cursor 类型（如 <code>cursor_by_date</code> vs <code>cursor_by_amount</code> 是不同 schema）</td>
+              <td>类型系统帮忙强制隔离；编译期就 catch 误用</td>
+              <td>API surface 复杂；client 要同时维护多个 cursor 状态</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="color:var(--text-muted);margin-top:8px;">生产系统最常见组合：<strong>方案 1 + 方案 2</strong>——client 主动 reset 是 happy path，server-side fingerprint 是兜底防御。<br>
+        <span class="en-text">Production sweet spot: <strong>1 + 2</strong> — client reset is the happy path, server fingerprint is the defensive net.</span></p>
+
+        <h4 style="margin-top:14px;">🗂️ Index 层的连带成本 / Index-side cost</h4>
+        <ul>
+          <li>每加一种 "可排序维度" 理论上需要一个 composite index 才能保证 cursor 走 index seek：<ul>
+            <li><code>(user_id, created_at DESC, id DESC)</code> — 按日期排</li>
+            <li><code>(user_id, amount DESC, id DESC)</code> — 按金额排</li>
+            <li><code>(user_id, category, created_at DESC, id DESC)</code> — 按类别 + 子排序</li>
+          </ul></li>
+          <li>"任意 filter 组合 × 任意 sort 都建 index" = 不可能 → 写性能崩溃 + 存储爆炸 + planner cardinality 估算崩</li>
+          <li>🟢 真做过的人会主动说："我们只暴露 2-3 种 sort 选项，加 sort 维度的代价是要新建 + 维护 index，不是免费的"<br><span class="en-text">"We expose only 2-3 sort options because each new sort means a new composite index to build &amp; maintain — it's not free"</span></li>
+          <li>🟡 折中：常用 sort 建 index，长尾 sort 走 seq scan / partial index / 接受慢，并 PM 沟通 UX 取舍</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">⏰ Filter snapshot 问题 / Filter snapshot pitfall（隐藏的金融坑）</h4>
+        <ul>
+          <li>用户选 filter "Last 30 days"——是 server-side 每次解析成 <code>NOW() - INTERVAL '30 days'</code>，还是 client 把它解析成 absolute timestamp 传过来？</li>
+          <li>🚩 如果 server 每次重新解析 <code>NOW()</code>，翻到下一页时 <code>NOW()</code> 已经变了 → 窗口边界<strong>滑动</strong> → cursor 指向的 "30 天前" 那条 row 可能已经飘出窗口 → 跳行 / 重复 / 空白页</li>
+          <li>🟢 正确做法：first page request 时 server 把 "30 days" 解析成一对 absolute timestamps，<u>encode 进 cursor 一起带</u>，后续翻页都用这同一组 timestamps → 窗口 "冻结"</li>
+          <li>这跟 Plaid <code>/transactions/get</code> 的 <code>start_date</code>/<code>end_date</code> 必须是 absolute 同源——是分布式 / 翻页系统的通用要求<br><span class="en-text">Same reason Plaid <code>/transactions/get</code> requires absolute start/end dates, not relative — paginated time windows must be frozen on first request</span></li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🔧 Cursor schema 演化 / Backward-compat hook（呼应简历）</h4>
+        <ul>
+          <li>未来新增 sort/filter 维度 → cursor schema 必然演化</li>
+          <li>建议 cursor 里 encode <code>version</code> 字段：<code>{ v: 2, sort: 'amount_desc', filter_hash: 'abc...', pos: {...} }</code></li>
+          <li>解码失败 / version 不识别 → graceful degradation：返回 first page + warning header（如 <code>X-Cursor-Reset: schema-evolved</code>）</li>
+          <li>简历明确说 "backward-compatible REST APIs" → 这是 backward-compat 在 cursor 这一层的具体含义——不是 endpoint URL 不变，而是<u>老 client 拿老 cursor 也不会崩</u><br><span class="en-text">Resume says "backward-compatible REST APIs" — at the cursor layer that means "old clients with old cursors never crash", not just "endpoint URLs don't change"</span></li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+        <ul>
+          <li>🚩 切 sort 后仍把老 cursor 发过去 server 静默接受 → 结果集错乱（跳行 / 重复 / 空白页）；client 完全不知道</li>
+          <li>🚩 filter "Last 30 days" 解析成 server-side <code>NOW()</code> 不放进 cursor → 翻页时窗口滑动 → 边界飘 → 跳记录</li>
+          <li>🚩 每加一种 filter/sort 维度就建一个新 index，从不下线老 index → 写性能逐步崩溃 + planner cardinality 估算崩</li>
+          <li>🚩 "我们前端直接禁掉 sort 切换" → 回避问题不是解决；UX 极烂；声称 "established pagination contracts" 但实际只有一种 ordering = 没设计 contract，只是写了一个 endpoint</li>
+          <li>🚩 cursor 不 encode sort/filter fingerprint，依靠 client 自觉 — 第三方 client / 老版 app / postman 调试者必然踩坑</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 Sub-Q3 候选人回答评价 / Evaluation</summary>
+      <div class="detail-body">
+        <p><strong>🟢 强 / Strong:</strong></p>
+        <ul>
+          <li><u>立刻</u>说 "cursor 必须丢、回到第一页"，并能解释 cursor 本质是 "旧 ordering 中的位置"<br><span class="en-text">Immediately says "cursor must be discarded, restart from page 1" with the right reason (anchors a position in the OLD ordering)</span></li>
+          <li>主动提到 cursor 里 encode <strong>sort/filter fingerprint</strong> 来 server-side detect 不一致 + 解释清楚 client-reset 和 server-fingerprint 各自的 trade-off<br><span class="en-text">Unprompted on encoding sort/filter fingerprint server-side + articulates client-reset vs server-fingerprint trade-offs</span></li>
+          <li>主动谈 "每加一种 sort 维度 = 一个 composite index 维护成本"，所以 prod 不会无限开放 sort 选项<br><span class="en-text">Unprompted on "each sort dimension = a composite index to maintain", so prod limits the set</span></li>
+          <li>能讲清 <strong>filter snapshot</strong>（"Last 30 days" 必须 server-side 解析成 absolute timestamp 放进 cursor，否则窗口飘）<br><span class="en-text">Names filter snapshotting — relative ranges must be resolved to absolute on first request and encoded into cursor</span></li>
+          <li>Bonus：把 cursor schema evolution（version 字段 + graceful fallback）和简历 "backward-compatible REST" 主动挂钩<br><span class="en-text">Bonus: connects cursor schema evolution (version + graceful fallback) to the resume's "backward-compatible REST" claim</span></li>
+        </ul>
+        <p><strong>🟡 中等 / Okay:</strong></p>
+        <ul>
+          <li>知道 "切 sort 后 cursor 应该重头" 但说不清原因（"反正不能用了" / "会出问题"）<br><span class="en-text">Knows cursor must reset but vague on why</span></li>
+          <li>没主动想过 fingerprint detection，被提到后能 reason 出合理方案<br><span class="en-text">Hadn't thought of fingerprint detection but reasons it out when prompted</span></li>
+          <li>知道 sort 和 index 有关系但说不出具体 trade-off / 数量级<br><span class="en-text">Knows sort and index are linked but vague on concrete trade-offs</span></li>
+          <li>没想过 filter 时间窗口 snapshot，被钓后能立刻 reason 出窗口飘的 bug<br><span class="en-text">Hadn't considered window snapshotting; reasons out the drift bug when probed</span></li>
+        </ul>
+        <p style="color:var(--red);"><strong>🔴 弱 / Weak:</strong></p>
+        <ul>
+          <li>"切 sort 后 cursor 应该还能用吧？" / 答非所问 — <span class="en-text">"Cursor should still work after sort change?"</span><br>→ 🚩 没真做过 list endpoint with switchable sort / Has never shipped a list endpoint with sort switching</li>
+          <li>"filter 用 <code>NOW()</code> 就好了，没什么问题" — <span class="en-text">"Just use <code>NOW()</code> in the filter, no issues"</span><br>→ 🚩 没想过翻页期间时间窗口会飘 / Zero awareness that the window drifts mid-pagination</li>
+          <li>"每种 sort/filter 组合都建 index" — <span class="en-text">"Just index every sort/filter combo"</span><br>→ 🚩 不知道 index 维护成本 / write amplification / planner stats / Doesn't grasp index maintenance cost</li>
+          <li>"我们前端直接禁掉 sort 切换避免这个问题" — <span class="en-text">"We just disabled sort switching on the frontend"</span><br>→ 🚩 回避问题；声称 "established pagination contracts" 但实际只有一种 ordering 的 endpoint = 没设计 contract / Avoidance — claiming "established pagination contracts" while having only one ordering = no contract was designed</li>
+          <li>说不清 cursor 和 sort/filter 的<strong>耦合关系</strong>，把 cursor 当成 "通用 next-token" — <span class="en-text">Can't articulate the coupling — treats cursor as a generic next-token</span><br>→ 🚩 概念层级缺失 / Fundamental concept gap, simply hasn't built one</li>
         </ul>
       </div>
     </details>
@@ -1727,6 +1854,7 @@ LIMIT 20;</pre>
       <tr><td>追问 1 Step 2 — SQL 性能差异（scan+discard vs index seek，CORE）</td><td></td><td></td></tr>
       <tr><td>追问 1 Sub-Q1 — Cursor encoding 设计（条件）</td><td></td><td></td></tr>
       <tr><td>追问 1 Sub-Q2 — Pull-to-refresh + in-flight race condition（条件）</td><td></td><td></td></tr>
+      <tr><td>追问 1 Sub-Q3 — Filter / Sort 切换 cursor 失效（默认展开，吹牛探针）</td><td></td><td></td></tr>
       <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构 owner vs 执行者 信号</td><td></td><td></td></tr>
