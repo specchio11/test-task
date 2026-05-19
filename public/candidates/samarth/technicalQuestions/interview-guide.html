@@ -642,6 +642,143 @@
   </div>
 </details>
 
+<!-- ===== Conditional sub-questions: only fire if candidate said "yes, I've used it" ===== -->
+<details id="q4-conditional">
+  <summary>🌿 条件追问 / Conditional Probes — <strong>仅当他说"接触过 / 用过"时展开</strong> / Only fire if he says "yes, I've used it"</summary>
+  <div class="detail-body">
+    <div class="card">
+      <blockquote class="interviewer-note">
+        <strong>⚠️ 使用说明 / How to use</strong> — 候选人答 "yes / 接触过" 之后再展开下面两个 sub-question。如果他只是听说过、没真上手，<u>跳过这两题</u>，直接走下面的"参考答案"和"评价"。<br>
+        Only open the two sub-questions below after he confirms hands-on exposure. If he's only heard of it, <u>skip both</u> and go straight to the Reference + Eval cards.
+      </blockquote>
+    </div>
+
+    <!-- ============ Sub-Q1: Approaches & Differences ============ -->
+    <h4 style="color:var(--accent);font-size:20px;margin-top:18px;">▸ Sub-Q1 — 方案与差别 / Approaches &amp; Differences</h4>
+
+    <details>
+      <summary>🎤 提问 / Ask · Sub-Q1</summary>
+      <div class="detail-body">
+        <blockquote class="ask-en">
+          "Which approaches have you actually seen or used — Module Federation, single-spa, iframes, route-level splitting? Why did your project pick the one it did, and what would you say are the main differences between them?"
+        </blockquote>
+        <blockquote class="ask-cn">
+          "你实际接触过 / 用过哪些方案——Module Federation、single-spa、iframe、路由级拆分？你们当时为什么选了那个？这几种之间你觉得最主要的区别是什么？"
+        </blockquote>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 Sub-Q1 方案对比表 / Approaches Side-by-Side (Interviewer Reference)</summary>
+      <div class="detail-body">
+        <table>
+          <thead><tr><th>方案</th><th>核心优势 / Core Strength</th><th>关键代价 / Key Cost</th><th>典型踩坑 / Common Pitfall</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Module Federation</strong></td>
+              <td>运行时共享依赖 (React 单例)；React 全栈最自然</td>
+              <td>强绑定 Webpack 5；本地多 dev server 难调</td>
+              <td>Host/Remote React 版本不一致 → <code>Invalid hook call</code></td>
+            </tr>
+            <tr>
+              <td><strong>single-spa</strong></td>
+              <td>框架无关，多 framework 共存 (React + Vue + Angular)</td>
+              <td>配置链长 (root-config + importmap + SystemJS)；无自带样式隔离</td>
+              <td>子应用 mount/unmount 副作用没清干净 → 内存泄漏</td>
+            </tr>
+            <tr>
+              <td><strong>iframe</strong></td>
+              <td>JS/CSS/DOM 完全沙箱；零改造嵌入；安全性最高</td>
+              <td>每个 iframe 完整 HTML/CSS/JS，内存 2-5×；UX 割裂</td>
+              <td>跨 iframe 弹窗无法覆盖父页；键盘焦点丢失</td>
+            </tr>
+            <tr>
+              <td><strong>路由分发 (Nginx)</strong></td>
+              <td>极简，纯运维配置；CI/CD 完全解耦</td>
+              <td>本质不是"微前端"——子应用之间几乎无法交互</td>
+              <td>共享 header / nav 要复制 N 份；登录态难统一</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;color:var(--text-muted);">强候选人应能说出至少 <strong>2 种方案的核心区别</strong>（例如 "MF 的卖点是 shared deps，single-spa 的卖点是多框架共存，iframe 的卖点是安全隔离"）。<br>
+        <span class="en-text">Strong candidates name at least <strong>2 approaches with their core differentiator</strong> (e.g. MF → shared deps; single-spa → multi-framework; iframe → security isolation).</span></p>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 Sub-Q1 候选人回答评价</summary>
+      <div class="detail-body">
+        <p><strong>🟢 强 / Strong:</strong></p>
+        <ul>
+          <li>能说出 2-3 种方案 + 各自的核心 trade-off<br><span class="en-text">Names 2-3 approaches with each one's core trade-off</span></li>
+          <li>能明确指出他们项目选某种方案的<strong>具体动因</strong>（如 "我们 React 全栈、想要 shared React 实例所以选 MF"）<br><span class="en-text">Names the concrete reason their project picked one approach</span></li>
+        </ul>
+        <p><strong>🟡 中等 / Okay:</strong></p>
+        <ul>
+          <li>能说出 1-2 种方案的名字，但 trade-off 描述模糊<br><span class="en-text">Names 1-2 approaches but vague on trade-offs</span></li>
+        </ul>
+        <p style="color:var(--red);"><strong>🔴 弱 / Weak:</strong></p>
+        <ul>
+          <li>只会说一个名字（多半是 "Module Federation"），说不出对比 — <span class="en-text">Knows only one name, can't compare</span><br>→ 🚩 可能只是 setup 跑过 demo / Likely only ran a demo</li>
+          <li>把 "monorepo / 多仓库" 当微前端 — <span class="en-text">Calls repo splitting micro-FE</span><br>→ 🚩 概念混淆 / Concept confusion</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- ============ Sub-Q2: Cross-app Communication ============ -->
+    <h4 style="color:var(--accent);font-size:20px;margin-top:24px;">▸ Sub-Q2 — 子应用通信 / Cross-app Communication</h4>
+
+    <details>
+      <summary>🎤 提问 / Ask · Sub-Q2</summary>
+      <div class="detail-body">
+        <blockquote class="ask-en">
+          "Once the app is split, the sub-apps eventually need to talk to each other — auth state, the currently selected entity, navigation events, that kind of thing. How did your project handle that?"
+        </blockquote>
+        <blockquote class="ask-cn">
+          "拆完之后，子应用之间总归要互相通信——比如登录态、当前选中的实体、导航事件这类。你们当时是怎么处理的？"
+        </blockquote>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 Sub-Q2 参考答案 / Reference Answer</summary>
+      <div class="detail-body">
+        <p><strong>常见通信模式 / Common patterns (任选其一或组合):</strong></p>
+        <ul>
+          <li>🟢 <strong>共享 store</strong>（Module Federation 暴露 Redux / Zustand instance）— 最强一致性，但耦合度高<br><span class="en-text">Shared store via MF — strongest consistency, highest coupling</span></li>
+          <li>🟢 <strong>Custom Events / <code>window.dispatchEvent</code></strong> — 松耦合，最常见；定义清晰的 event payload schema 是关键<br><span class="en-text">Custom events on window — loosely coupled, most common; clear event payload schema is critical</span></li>
+          <li>🟡 <strong>Event bus / pub-sub 库</strong>（如 <code>mitt</code>）— 比裸 window event 更可测、可类型化<br><span class="en-text">Lightweight pub/sub library — more testable and typeable than raw window events</span></li>
+          <li>🟡 <strong>URL / query params</strong> — 最弱耦合，但只能传简单原语<br><span class="en-text">URL/query params — weakest coupling, primitives only</span></li>
+          <li>🟠 <strong>postMessage</strong> — iframe 方案唯一选项；需要 serialization，开销较大<br><span class="en-text">postMessage — only option for iframes; serialization overhead</span></li>
+        </ul>
+        <p><strong>必问的 follow-up / Mandatory follow-up</strong>：登录态 / token 怎么共享？通常做法是<strong>壳应用统一管理 auth</strong>，通过 store 或 cookie 下发给子应用；子应用不允许自己维护一份（否则刷新或切换时容易不一致）。<br>
+        <span class="en-text">How is auth/token shared? Usually the <strong>shell owns auth</strong>, pushes to sub-apps via store or cookie. Sub-apps must not keep their own copy (otherwise easily drift on refresh or context switch).</span></p>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 Sub-Q2 候选人回答评价</summary>
+      <div class="detail-body">
+        <p><strong>🟢 强 / Strong:</strong></p>
+        <ul>
+          <li>能说出至少 2 种通信方式并对比取舍<br><span class="en-text">Names ≥2 communication methods with a trade-off comparison</span></li>
+          <li>主动提到 <strong>auth/token 由壳应用单点管理</strong><br><span class="en-text">Unprompted mention of shell owning auth</span></li>
+          <li>提到他们定义了 event schema / 类型契约（避免子应用自由发明事件名）<br><span class="en-text">Mentions defined event schema or type contracts</span></li>
+        </ul>
+        <p><strong>🟡 中等 / Okay:</strong></p>
+        <ul>
+          <li>说得出 "用 event bus / 共享 store"，但讲不清 schema / 版本 / 演化怎么管<br><span class="en-text">Names a mechanism but vague on schema/versioning</span></li>
+        </ul>
+        <p style="color:var(--red);"><strong>🔴 弱 / Weak:</strong></p>
+        <ul>
+          <li>"通过 <code>localStorage</code> 共享" — <span class="en-text">"We just shared via localStorage"</span><br>→ 🚩 没 type 安全 / 不同源会失效 / 没有事件通知 / Not typed, breaks across origins, no event notification</li>
+          <li>"把状态塞 URL 里" 作为<u>唯一</u>手段 — <span class="en-text">"Everything goes through URL params"</span><br>→ 🚩 只能传 primitive，复杂 state 无解 / Primitives only, complex state impossible</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</details>
+
 <details id="q4-ref">
   <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference</summary>
   <div class="detail-body">
