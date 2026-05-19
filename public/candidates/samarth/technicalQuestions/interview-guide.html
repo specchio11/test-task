@@ -242,10 +242,9 @@
     font-size: 18px;
     color: var(--text);
     list-style: none;
-    display: flex; align-items: center; gap: 8px;
   }
   details > summary::before {
-    content: '▸'; display: inline-block; transition: transform .2s;
+    content: '▸'; display: inline-block; margin-right: 8px; transition: transform .2s;
   }
   details[open] > summary::before { transform: rotate(90deg); }
   details > summary::-webkit-details-marker { display: none; }
