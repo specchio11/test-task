@@ -340,11 +340,10 @@
   </div>
 
   <details class="qp-followups" open>
-    <summary>↳ 追问 / Follow-ups（3 个）</summary>
+    <summary>↳ 追问 / Follow-ups（2 个）</summary>
     <div class="qp-followups-body">
-      <a class="qp-sub blue"   href="#q2-layers"   onclick="jump('q2-layers');return false;">追问 1 — 架构怎么搭</a>
-      <a class="qp-sub green"  href="#q3-state"    onclick="jump('q3-state');return false;">追问 2 — State 选型 &amp; 为什么</a>
-      <a class="qp-sub orange" href="#q4-microfe"  onclick="jump('q4-microfe');return false;">追问 3 — 微前端接触</a>
+      <a class="qp-sub green"  href="#q3-state"    onclick="jump('q3-state');return false;">追问 1 — State 选型 &amp; 为什么</a>
+      <a class="qp-sub orange" href="#q4-microfe"  onclick="jump('q4-microfe');return false;">追问 2 — 微前端接触</a>
     </div>
   </details>
 
@@ -387,8 +386,8 @@
           <strong>Frontend Architecture (React Native + Expo)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Owned frontend architecture for a financial dashboard mobile application using React Native, TypeScript, and Expo, establishing component patterns, state management (Context + custom hooks), and type-safe API contracts…"</span>
         </td>
-        <td>1 主问题 + 3 追问<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 3 follow-ups</span></td>
-        <td><strong>~10 min</strong></td>
+        <td>1 主问题 + 2 追问<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 2 follow-ups</span></td>
+        <td><strong>~8 min</strong></td>
       </tr>
       <tr style="background:#f0fdf4;">
         <td><strong style="color:var(--green);">FLOW 2</strong></td>
@@ -416,11 +415,11 @@
 
 <!-- ====================================================================== -->
 <!-- ============================== FLOW 1 ================================ -->
-<!-- ===== 1 main question (Q1) + 3 follow-ups (Q2-Q4) =================== -->
+<!-- ===== 1 main question (Q1) + 2 follow-ups (state, micro-frontend) ==== -->
 <!-- ====================================================================== -->
 <h2 id="flow-1-frontend" style="background:#f0fdfa;border-left:6px solid var(--accent);color:var(--accent);font-size:28px;">
   📌 FLOW 1 · Frontend Architecture
-  <span class="tag tag-time">~10 min total</span>
+  <span class="tag tag-time">~8 min total</span>
 </h2>
 
 <div class="card" style="border-left:4px solid var(--accent);">
@@ -430,8 +429,8 @@
   </blockquote>
   <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
     ✅ <strong>主问题 / Main question</strong>：Q1 先校验 ownership 的真实范围。<br>
-    ➜ <strong>追问 / Follow-ups</strong>：Q2（架构具体长什么样）→ Q3（state 选型动机，<u>核心考察</u>）→ Q4（微前端，stretch）。按候选人深度选性展开。<br>
-    <span class="en-text">✅ <strong>Main question</strong> validates the real scope of ownership. ➜ Follow-ups: Q2 (what the architecture looks like) → Q3 (state-management rationale, <u>core probe</u>) → Q4 (micro-frontend, stretch). Fire selectively based on depth.</span>
+    ➜ <strong>追问 / Follow-ups</strong>：追问 1（state 选型 — landscape 再 reasoning，<u>核心考察</u>）→ 追问 2（微前端，stretch）。按候选人深度选性展开。<br>
+    <span class="en-text">✅ <strong>Main question</strong> validates the real scope of ownership. ➜ Follow-ups: #1 (state management — landscape, then reasoning; <u>core probe</u>) → #2 (micro-frontend, stretch). Fire selectively based on depth.</span>
   </p>
 </div>
 
@@ -449,8 +448,8 @@
     </blockquote>
 
     <blockquote class="interviewer-note">
-      <strong>⚠️ 面试官提示</strong> — 这一问的目的是先校准"own"的真实含义。如果他说"前端就我一个"，那后面 Q2/Q3 的答案可以完全代表他个人；如果他说"我们有 2-3 人，我 lead"，要追问"另外几位的 level 是什么、谁拍板架构 decision"。<br>
-      <strong>Interviewer note</strong> — Calibrate what "own" means before the deep dive. If he was the sole frontend, his Q2/Q3 answers fully represent him. If he led 2-3 people, follow up on the others' seniority and who made the architecture calls.
+      <strong>⚠️ 面试官提示</strong> — 这一问的目的是先校准"own"的真实含义。如果他说"前端就我一个"，那后面追问的答案可以完全代表他个人；如果他说"我们有 2-3 人，我 lead"，要追问"另外几位的 level 是什么、谁拍板架构 decision"。<br>
+      <strong>Interviewer note</strong> — Calibrate what "own" means before the deep dive. If he was the sole frontend, the follow-up answers fully represent him. If he led 2-3 people, follow up on the others' seniority and who made the architecture calls.
     </blockquote>
   </div>
 </details>
@@ -494,143 +493,49 @@
 <hr class="separator">
 
 <!-- ====================================================================== -->
-<!--                  Q2: 架构具体怎么搭 / Layers in practice                -->
-<!-- ====================================================================== -->
-<details class="followup-section fu-blue" id="q2-layers" open>
-<summary>➜ 追问 1 / Follow-up 1 · 🎯 架构具体怎么搭 / How the App is Structured <span class="tag tag-time">~3 min</span></summary>
-<div class="followup-body">
-
-<div class="card">
-  <p style="color:var(--text-muted);">📌 关联背景 / Background: 简历明确写到 "component patterns, state management (Context + custom hooks), type-safe API contracts" — 这三块都是 Q2 期待他主动覆盖的范围。<br><span class="en-text">The resume already lists component patterns, state management (Context + custom hooks), and type-safe API contracts — Q2 expects him to walk through each.</span></p>
-</div>
-
-<details open>
-  <summary>🎤 提问 / Ask</summary>
-  <div class="detail-body">
-    <blockquote class="ask-en">
-      "Walk me through how you actually structured the app. How did you organize navigation, data flow, and the reusable pieces?"
-    </blockquote>
-    <blockquote class="ask-cn">
-      "给我讲讲你具体是怎么把这个 app 搭起来的——navigation、数据流、可复用的组件这些你是怎么分的？"
-    </blockquote>
-  </div>
-</details>
-
-<details id="q2-hints">
-  <summary>🚨 追问 1 卡壳引导 / Follow-up 1 Hints When Stuck</summary>
-  <div class="detail-body">
-    <p><span class="hint-chip hint-light">Light</span></p>
-    <blockquote class="ask-en">"Start with navigation — what did you pick, and roughly how many top-level routes?"</blockquote>
-    <blockquote class="ask-cn">"先从 navigation 说起——你选了哪个方案，大概几个顶层路由？"</blockquote>
-
-    <p><span class="hint-chip hint-medium">Medium</span></p>
-    <blockquote class="ask-en">"Where does the code that calls your backend actually live? Inside the screen components, or extracted somewhere?"</blockquote>
-    <blockquote class="ask-cn">"调你 backend 的代码到底放在哪里？直接写在 screen 里，还是抽到别的地方？"</blockquote>
-
-    <p><span class="hint-chip hint-heavy">Heavy</span></p>
-    <blockquote class="ask-en">"Think of it as four buckets — navigation, data, UI primitives, and the glue between them. Tell me what lives in each."</blockquote>
-    <blockquote class="ask-cn">"可以分成四块来想——navigation、数据、UI 基础组件、以及它们之间的胶水代码。每一块里都放了什么。"</blockquote>
-  </div>
-</details>
-
-<details id="q2-ref">
-  <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Interviewer Reference</summary>
-  <div class="detail-body">
-    <div class="card">
-      <blockquote class="interviewer-note">
-        <strong>⚠️ 面试官专用</strong> — 不要念给候选人。用于评估回答完整度。<br>
-        <strong>Interviewer-only</strong> — Do not read to candidate. Use to evaluate answer completeness.
-      </blockquote>
-    </div>
-
-    <h4>✅ Navigation 层 / Navigation Layer</h4>
-    <ul>
-      <li>Expo 项目里典型选 <strong>Expo Router</strong>（file-based）或 <strong>React Navigation</strong>（manual config）<br><span class="en-text">Either Expo Router (file-based) or React Navigation (manual)</span></li>
-      <li>Auth 状态怎么影响路由——一般用 protected route / redirect 模式<br><span class="en-text">How auth gates routes — protected-route / redirect pattern</span></li>
-    </ul>
-
-    <h4>✅ State / 数据流分层 / State &amp; Data Flow Layering</h4>
-    <ul>
-      <li><strong>3 类 state 必须分开管</strong>：<ul>
-        <li>① 局部 UI state — 直接 <code>useState</code></li>
-        <li>② 跨页面共享的 client state（user session、theme 等）— <strong>Context + custom hooks</strong>（简历自陈）</li>
-        <li>③ Server state（账户、交易列表等）— 真正的 senior 答案是 <strong>React Query / SWR</strong>，<u>而不是塞进 Context</u></li>
-      </ul></li>
-      <li>如果他把所有 state 都塞 Context，是<strong>红旗</strong>——server state 的 caching/invalidation/refetch 用 Context 写会非常痛苦<br><span class="en-text">Cramming server state into Context is a red flag — caching/invalidation/refetch would be painful</span></li>
-    </ul>
-
-    <h4>✅ API Client 层 / API Client Layer</h4>
-    <ul>
-      <li>统一的 fetch wrapper / axios instance，带 auth header 注入、错误归一化、超时<br><span class="en-text">Centralized fetch wrapper with auth header injection, error normalization, timeout</span></li>
-      <li>API 方法不在 component 里直接调用，而是封装成 <code>useAccounts()</code> 这类 hook（也对应他自陈的"custom hooks"模式）<br><span class="en-text">Components don't call fetch directly — wrapped in <code>useAccounts()</code>-style hooks (matches his "custom hooks" claim)</span></li>
-    </ul>
-
-    <h4>✅ Type-safe API Contract / 类型安全契约</h4>
-    <ul>
-      <li>典型实现：<strong>后端 OpenAPI/Swagger + codegen</strong>，或 <strong>tRPC</strong>，或 <strong>GraphQL + codegen</strong>，最差是手写 types 双向 sync<br><span class="en-text">Typical: OpenAPI + codegen, or tRPC, or GraphQL + codegen; worst case is hand-rolled types</span></li>
-      <li>关键 follow-up: schema 漂移谁来检测——CI 里跑 type check，还是依赖人工<br><span class="en-text">Drift detection — CI type check, or manual</span></li>
-    </ul>
-
-    <h4>✅ UI 组件 / Reusable UI Layer</h4>
-    <ul>
-      <li>一套 design system primitives（Button、Card、Input），上面是 feature-specific components<br><span class="en-text">Design system primitives, then feature-specific composites on top</span></li>
-      <li>金融 app 关键 primitive：<strong>金额格式化</strong>、<strong>currency-aware input</strong>、<strong>date range picker</strong>——他能否主动提及<br><span class="en-text">Fintech primitives: money formatting, currency-aware input, date range picker — does he mention them?</span></li>
-    </ul>
-  </div>
-</details>
-
-<details id="q2-eval">
-  <summary>🎯 追问 1 候选人回答评价 / Follow-up 1 Candidate Answer Evaluation</summary>
-  <div class="detail-body">
-    <p><strong>🟢 强回答 / Strong answers:</strong></p>
-    <ul>
-      <li>主动区分 <strong>3 类 state</strong>（local / shared client / server），并明确 server state 用 React Query 或类似工具——而<u>不是</u> Context<br><span class="en-text">Distinguishes 3 kinds of state and uses React Query (not Context) for server state</span></li>
-      <li>能说出 <strong>API 契约的 source of truth</strong>（OpenAPI / tRPC / GraphQL codegen），以及 schema 漂移怎么检测<br><span class="en-text">Names a single source of truth for API types and how drift is caught</span></li>
-      <li>能说出至少一个金融场景特有的 primitive（金额格式化 / 多 currency 输入框）<br><span class="en-text">Surfaces at least one fintech-specific primitive</span></li>
-    </ul>
-    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
-    <ul>
-      <li>能说出 4 层结构但没区分 client state vs server state — <span class="en-text">Lists layers but doesn't separate client vs server state</span><br>→ 追问 "transaction list 拉下来之后存哪里、cache 多久" / Probe: where do you keep the transaction list, how long do you cache?</li>
-      <li>提到 API contract 但说"手写 types" — <span class="en-text">Mentions API types but rolls them by hand</span><br>→ 中性：小项目可以接受，但要确认他知道有更好的方案 / OK for small projects but verify he knows codegen exists</li>
-    </ul>
-    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
-    <ul>
-      <li>"用了 Context 把 user info、accounts list、settings 都塞进去" — <span class="en-text">Stuffs user info + accounts + settings all into Context</span><br>→ 🚩 没意识到 server state 的特殊性（cache / refetch / invalidation）/ Hasn't grasped server state's special needs</li>
-      <li>讲不出 navigation / API client / UI 三层的边界，混在一起说 — <span class="en-text">Can't separate navigation / API / UI layers, blends them</span><br>→ 🚩 没真正做过 architect / Hasn't actually done architecture work</li>
-    </ul>
-  </div>
-</details>
-
-</div>
-</details><!-- end 追问 1 -->
-
-<hr class="separator">
-
-<!-- ====================================================================== -->
-<!--    Q3: State 选型 & 为什么 / State Choice Rationale  (CORE PROBE)       -->
+<!--    追问 1: State 选型 & 为什么 / State Choice Rationale  (CORE PROBE)   -->
 <!-- ====================================================================== -->
 <details class="followup-section fu-green" id="q3-state" open>
-<summary>➜ 追问 2 / Follow-up 2 · 🎯 State 选型 &amp; 为什么 / State Choice &amp; Rationale <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
+<summary>➜ 追问 1 / Follow-up 1 · 🎯 State 选型 &amp; 为什么 / State Choice &amp; Rationale <span class="tag tag-time">~4 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
 <div class="followup-body">
 
 <div class="card">
-  <p style="color:var(--text-muted);">📌 关联背景 / Background: 简历明确写 "state management (Context + custom hooks)"。这一问聚焦动机和取舍——是 default 选了 Context，还是真的对比过 Zustand / Jotai / Redux Toolkit 后做的决定？<br><span class="en-text">Resume specifies "Context + custom hooks". This probe targets motivation — was it a default, or a deliberate trade-off against Zustand / Jotai / Redux Toolkit?</span></p>
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 简历明确写 "state management (Context + custom hooks)"。这一问<strong>分两步</strong>——先让他 map 出 state 管理的 landscape（看眼界），再问 Copi 为什么选了 Context（看 reasoning）。<br><span class="en-text">Resume specifies "Context + custom hooks". This probe runs in <strong>two steps</strong>: first map the landscape (breadth), then ask why Context for Copi (reasoning).</span></p>
 </div>
 
 <details open>
-  <summary>🎤 提问 / Ask</summary>
+  <summary>🎤 提问 / Ask（两步走 / two steps）</summary>
   <div class="detail-body">
+    <p style="color:var(--text-muted);font-size:16px;margin:0 0 10px;">
+      <strong>先问第一步，等他答完再问第二步。</strong><br>
+      <span class="en-text"><strong>Ask step 1 first, wait for the answer, then ask step 2.</strong></span>
+    </p>
+
+    <h4 style="color:var(--green);margin-top:14px;">▸ 第一步 / Step 1 — Landscape</h4>
     <blockquote class="ask-en">
-      "You went with Context plus custom hooks for state. Walk me through that choice — what alternatives did you consider, and what made Context the right fit for this project?"
+      "Let's stay on state management for a bit. First — can you walk me through the main state-management options you know? What's actually out there in the React ecosystem?"
     </blockquote>
     <blockquote class="ask-cn">
-      "你 state 管理选的是 Context + custom hooks。聊聊这个决定——你考虑过哪些备选方案？为什么 Context 在这个项目里更合适？"
+      "我们在 state 管理这块停留一下。先问你——你了解的 state 管理方案都有哪几种？React 生态里都有什么？"
+    </blockquote>
+
+    <h4 style="color:var(--green);margin-top:14px;">▸ 第二步 / Step 2 — Choice</h4>
+    <blockquote class="ask-en">
+      "Got it. So why did you go with Context plus custom hooks for Copi? What made it the right fit over the others you just mentioned?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "嗯。那当时 Copi 这个项目，你为什么选了 Context + custom hooks？跟你刚说的那几个比起来，为什么 Context 在这里更合适？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — <strong>第一步本身就是信号</strong>。如果他只能说出 1-2 个方案（比如只知道 Redux），眼界就已经定级了；这种情况下第二步的 "why" 答案 weight 会下降。如果他能流利列出 4-5 种（Context / Redux / Zustand / Jotai / Recoil）并主动区分出 React Query / SWR 这类 server-state 工具，第二步要重点听 <strong>trade-off reasoning</strong>。<br>
+      <strong>Interviewer note</strong> — <strong>Step 1 is already a signal.</strong> If he names only 1-2 options (e.g. just Redux), his breadth is already calibrated and step 2's "why" carries less weight. If he fluently lists 4-5 (Context / Redux / Zustand / Jotai / Recoil) and separately surfaces React Query/SWR for server state, focus step 2 on his <strong>trade-off reasoning</strong>.
     </blockquote>
   </div>
 </details>
 
 <details id="q3-hints">
-  <summary>🚨 追问 2 卡壳引导 / Follow-up 2 Hints When Stuck</summary>
+  <summary>🚨 追问 1 卡壳引导 / Follow-up 1 Hints When Stuck</summary>
   <div class="detail-body">
     <p><span class="hint-chip hint-light">Light</span></p>
     <blockquote class="ask-en">"Did Zustand, Jotai, or Redux Toolkit come up at all when you were deciding?"</blockquote>
@@ -647,7 +552,7 @@
 </details>
 
 <details id="q3-ref">
-  <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference</summary>
+  <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Interviewer Reference</summary>
   <div class="detail-body">
 
     <h4>✅ Context 适合的场景 / Where Context Fits</h4>
@@ -683,7 +588,7 @@
 </details>
 
 <details id="q3-eval">
-  <summary>🎯 追问 2 候选人回答评价 / Follow-up 2 Candidate Answer Evaluation</summary>
+  <summary>🎯 追问 1 候选人回答评价 / Follow-up 1 Candidate Answer Evaluation</summary>
   <div class="detail-body">
     <p><strong>🟢 强回答 / Strong answers:</strong></p>
     <ul>
@@ -706,15 +611,15 @@
 </details>
 
 </div>
-</details><!-- end 追问 2 -->
+</details><!-- end 追问 1 -->
 
 <hr class="separator">
 
 <!-- ====================================================================== -->
-<!--      Q4: 微前端 / Micro-frontend Exposure (STRETCH)                     -->
+<!--      追问 2: 微前端 / Micro-frontend Exposure (STRETCH)                 -->
 <!-- ====================================================================== -->
 <details class="followup-section fu-orange" id="q4-microfe" open>
-<summary>➜ 追问 3 / Follow-up 3 · 🎯 微前端接触 / Micro-frontend Exposure <span class="tag tag-time">~2 min</span> <span class="tag" style="background:#fef9c3;color:#854d0e;">STRETCH</span></summary>
+<summary>➜ 追问 2 / Follow-up 2 · 🎯 微前端接触 / Micro-frontend Exposure <span class="tag tag-time">~2 min</span> <span class="tag" style="background:#fef9c3;color:#854d0e;">STRETCH</span></summary>
 <div class="followup-body">
 
 <div class="card">
@@ -738,7 +643,7 @@
 </details>
 
 <details id="q4-ref">
-  <summary>📖 追问 3 面试官参考答案 / Follow-up 3 Interviewer Reference</summary>
+  <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference</summary>
   <div class="detail-body">
 
     <h4>✅ 微前端真正的适用场景 / When Micro-frontends Actually Help</h4>
@@ -773,7 +678,7 @@
 </details>
 
 <details id="q4-eval">
-  <summary>🎯 追问 3 候选人回答评价 / Follow-up 3 Candidate Answer Evaluation</summary>
+  <summary>🎯 追问 2 候选人回答评价 / Follow-up 2 Candidate Answer Evaluation</summary>
   <div class="detail-body">
     <p><strong>🟢 强回答 / Strong answers:</strong></p>
     <ul>
@@ -793,7 +698,7 @@
 </details>
 
 </div>
-</details><!-- end 追问 3 -->
+</details><!-- end 追问 2 -->
 
 <hr class="separator">
 
@@ -839,22 +744,16 @@
         <td>"we all owned" / 罗列 stack 但说不出谁定的</td>
       </tr>
       <tr>
-        <td><strong>架构分层意识</strong></td>
-        <td>清楚分 navigation / state / API client / UI 层；区分 client vs server state</td>
-        <td>知道有分层但层之间边界不清</td>
-        <td>把 server state 也塞 Context；混在一起讲</td>
+        <td><strong>State 眼界（Step 1）</strong></td>
+        <td>流利列出 4-5 种方案 + 主动区分 server state vs client state</td>
+        <td>列出 2-3 种主流方案</td>
+        <td>只知道 Context / 只知道 Redux</td>
       </tr>
       <tr>
-        <td><strong>取舍 reasoning</strong></td>
-        <td>能说出 Context re-render 陷阱 + 项目规模阈值 + 备选方案</td>
+        <td><strong>取舍 reasoning（Step 2）</strong></td>
+        <td>能说出 Context re-render 陷阱 + 项目规模阈值 + 为什么不选其他方案</td>
         <td>知道有备选但说不清取舍</td>
         <td>"A 比 B 简单" 没有真比较过</td>
-      </tr>
-      <tr>
-        <td><strong>类型契约管理</strong></td>
-        <td>有 single source of truth（codegen / tRPC / GraphQL）+ CI 检测漂移</td>
-        <td>手写 types + 人工 sync</td>
-        <td>没意识到这是问题</td>
       </tr>
       <tr>
         <td><strong>眼界（微前端）</strong></td>
@@ -875,9 +774,9 @@
     <tbody>
       <tr style="background:#f0fdfa;"><td colspan="3" style="font-weight:700;color:var(--accent);">FLOW 1 · Frontend Architecture</td></tr>
       <tr><td>Q1 主问题 — Ownership 边界清晰度</td><td></td><td></td></tr>
-      <tr><td>Q2 追问 1 — 架构分层完整度</td><td></td><td></td></tr>
-      <tr><td>Q3 追问 2 — State 选型取舍 reasoning（CORE）</td><td></td><td></td></tr>
-      <tr><td>Q4 追问 3 — 微前端眼界（STRETCH）</td><td></td><td></td></tr>
+      <tr><td>追问 1 Step 1 — State 管理 landscape 眼界</td><td></td><td></td></tr>
+      <tr><td>追问 1 Step 2 — Context 选型取舍 reasoning（CORE）</td><td></td><td></td></tr>
+      <tr><td>追问 2 — 微前端眼界（STRETCH）</td><td></td><td></td></tr>
       <tr style="background:#f0fdf4;"><td colspan="3" style="font-weight:700;color:var(--green);">FLOW 2 · Backend (TBD)</td></tr>
       <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
