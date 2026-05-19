@@ -337,7 +337,13 @@
     </div>
   </details>
 
-  <a class="qp-link" href="#flow-2-backend" onclick="jump('flow-2-backend');return false;" style="background:#f0fdf4;color:var(--green);font-weight:700;margin-top:10px;border-left-color:var(--green);">📌 FLOW 2 · Backend Services <span class="tag tag-tbd">TBD</span></a>
+  <a class="qp-link" href="#flow-2-backend" onclick="jump('flow-2-backend');return false;" style="background:#f0fdf4;color:var(--green);font-weight:700;margin-top:10px;border-left-color:var(--green);">📌 FLOW 2 · Backend Services</a>
+  <div class="qp-group">
+    <div class="qp-group-title" style="color:var(--green);">🎯 主问题 / Main Question</div>
+    <a class="qp-sub green" href="#q-be-context" onclick="jump('q-be-context');return false;">🎤 提问（项目 &amp; 框架 &amp; 选型）</a>
+    <a class="qp-sub green" href="#q-be-context-ref" onclick="jump('q-be-context-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub green" href="#q-be-context-eval" onclick="jump('q-be-context-eval');return false;">🎯 候选人回答评价</a>
+  </div>
   <a class="qp-link" href="#flow-3-ai" onclick="jump('flow-3-ai');return false;" style="background:#fff7ed;color:#ea580c;font-weight:700;margin-top:10px;border-left-color:#ea580c;">📌 FLOW 3 · Multi-Agent AI <span class="tag tag-tbd">TBD</span></a>
 
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
@@ -385,8 +391,8 @@
           <strong>Backend Services (Node / Express + Plaid)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Architected and owned end-to-end backend services… establishing backward-compatible REST APIs, pagination contracts, and service boundaries… Designed fault-tolerant Plaid integration achieving 98.9% pipeline reliability…"</span>
         </td>
-        <td><span class="tag tag-tbd">TBD</span></td>
-        <td><strong>~10 min</strong></td>
+        <td>1 主问题 (more 追问 TBD)<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + follow-ups TBD</span></td>
+        <td><strong>~3 min (so far)</strong></td>
       </tr>
       <tr style="background:#fff7ed;">
         <td><strong style="color:#ea580c;">FLOW 3</strong></td>
@@ -1112,16 +1118,152 @@
 <hr class="separator">
 
 <!-- ====================================================================== -->
-<!--                          FLOW 2 PLACEHOLDER                            -->
+<!--                          FLOW 2 · BACKEND SERVICES                     -->
 <!-- ====================================================================== -->
 <h2 id="flow-2-backend" style="background:#f0fdf4;border-left:6px solid var(--green);color:var(--green);font-size:28px;">
-  📌 FLOW 2 · Backend Services
-  <span class="tag tag-tbd">TBD</span>
+  📌 FLOW 2 · Backend Services (Node/Express + Plaid)
+  <span class="tag tag-time">~3 min (so far)</span>
 </h2>
 
-<div class="tbd-card">
-  待填充 / TBD — 针对简历 "Architected and owned end-to-end backend services… REST APIs, pagination contracts, service boundaries…" 以及 "Designed fault-tolerant Plaid integration achieving 98.9% pipeline reliability" 这两段。
+<div class="card" style="border-left:4px solid var(--green);">
+  <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
+  <blockquote style="border-left-color:var(--green);background:#fff;">
+    <span class="en-text">"Architected and owned end-to-end backend services… establishing backward-compatible REST APIs, pagination contracts, and service boundaries… Designed fault-tolerant Plaid integration achieving 98.9% pipeline reliability."</span>
+  </blockquote>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
+    ✅ <strong>主问题 / Main question</strong>：Q1 先锚定<strong>项目背景 + 框架选型 + 选型理由</strong>——所谓"architected"到底架了什么、为什么。<br>
+    ➜ <strong>追问 / Follow-ups</strong>：<span class="tag tag-tbd">TBD</span>（计划方向：REST 契约 &amp; 向后兼容、pagination、service boundaries、Plaid 容错与 98.9% 数字的来源）。<br>
+    <span class="en-text">✅ <strong>Main question</strong> anchors <strong>project context + framework + reasoning</strong> — what does "architected" actually mean here? ➜ Follow-ups TBD (planned: REST contracts &amp; backward-compat, pagination, service boundaries, Plaid fault tolerance + 98.9% number).</span>
+  </p>
 </div>
+
+<!-- ============================ Q1: ARCHITECTURE CONTEXT ============================ -->
+<h3 id="q-be-context" style="font-size:24px;color:var(--green);margin-top:24px;">🎯 主问题 / Main Question · 🏗️ 项目背景 &amp; 框架 &amp; 选型 / Project Context · Stack · Rationale <span class="tag tag-time">~3 min</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Let's switch gears to the backend side. Your resume says you 'architected and owned end-to-end backend services' at Copi. Before we go into specifics — can you set the context for me? What was this backend actually for, what did you end up building (framework, database, where it ran), and walk me through why you picked that stack over the alternatives you considered."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "切到后端这边——简历上写你在 Copi 'architected and owned end-to-end backend services'。在聊具体的之前，先帮我把背景铺一下：这个后端到底是给谁用的、你最终搭了什么（框架、数据库、跑在哪），然后讲一下你为什么选了这套——当时还考虑过别的什么方案？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 这一问<u>不是</u>纯简历复读，要在他答完之后立刻校准：<br>
+      1️⃣ <strong>团队规模</strong>：是他一个人做的，还是有别的后端？("end-to-end"对一个人和对一个团队完全两个含义)<br>
+      2️⃣ <strong>"Architected" vs "Implemented"</strong>：他是从 0 搭起的，还是接手已有 codebase 加 feature？前者才配得上 architected。<br>
+      3️⃣ <strong>选型理由</strong>：必须能说出至少 1 个被<u>否决</u>的替代方案 + 否决理由。如果只会说"用了 Node/Express 因为快"——记一个红旗。<br>
+      <strong>Interviewer note</strong> — Don't take it as a resume read-out. Immediately calibrate: (1) Team size — solo or with other backend devs? "End-to-end" means very different things. (2) "Architected" vs "Implemented" — built from scratch or added features to existing code? (3) Rationale — must name at least 1 alternative <u>rejected</u> + why. If the only answer is "we used Node/Express because it's fast", flag it.
+    </blockquote>
+  </div>
+</details>
+
+<details id="q-be-context-ref">
+  <summary>📖 面试官参考答案 / Interviewer Reference — 项目背景 &amp; 选型</summary>
+  <div class="detail-body">
+
+    <p><strong>📌 背景假设 / Background assumption</strong>：Copi 是 Vancouver 小型 fintech 创业公司，按"7 个月任期 + 一个人同时 own 前端 + 后端"推断，<strong>后端大概率也是他一个人</strong>，serving 的是同一个 RN financial dashboard 移动 app。Plaid 集成 = 用户绑定银行账户 + 拉 transaction / balance 数据。</p>
+
+    <h4>✅ 合理的 stack 选型 / Reasonable stack choices</h4>
+    <table>
+      <thead><tr><th>层 / Layer</th><th>常见 / Likely</th><th>合理 / 可接受</th><th>红旗 / Red flag</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Web 框架</strong></td>
+          <td>Node + <strong>Express</strong>（简历明示），或 <strong>NestJS</strong>（更"architected"）</td>
+          <td>Fastify、Koa、Hono</td>
+          <td>"我搭了 microservices" — 1 人后端 = over-engineering 🚩</td>
+        </tr>
+        <tr>
+          <td><strong>语言</strong></td>
+          <td>TypeScript（和 RN 前端共享 type）</td>
+          <td>JS</td>
+          <td>"用 Python" — 和前端 stack 割裂，对小团队不合理</td>
+        </tr>
+        <tr>
+          <td><strong>数据库</strong></td>
+          <td><strong>PostgreSQL</strong>（金融数据 = ACID / relational）</td>
+          <td>MySQL；Mongo（部分接受）</td>
+          <td>"用 Mongo 存 transaction" — 金融数据无 ACID = 🚩</td>
+        </tr>
+        <tr>
+          <td><strong>ORM / Query</strong></td>
+          <td><strong>Prisma</strong>（TS-first，最主流），TypeORM，Drizzle</td>
+          <td>Knex 手写 SQL</td>
+          <td>裸 <code>pg</code> driver 拼 SQL 字符串 → SQL injection 风险</td>
+        </tr>
+        <tr>
+          <td><strong>部署</strong></td>
+          <td>Render / Railway / Fly.io / Heroku（小团队首选）</td>
+          <td>AWS ECS / EC2（需要 DevOps 经验）</td>
+          <td>"跑在我的笔记本上" / 说不清楚跑在哪 🚩</td>
+        </tr>
+        <tr>
+          <td><strong>Auth</strong></td>
+          <td>Auth0 / Clerk / Supabase Auth（managed，省事）</td>
+          <td>Passport.js 自己写</td>
+          <td>"我自己 hash 密码 + 自己签 JWT" 但说不清 refresh / rotation → 安全隐患</td>
+        </tr>
+        <tr>
+          <td><strong>CI / CD</strong></td>
+          <td>GitHub Actions（最常见）</td>
+          <td>CircleCI / GitLab CI</td>
+          <td>说不出有没有 CI / "我手动 ssh 上去 git pull" 🚩</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-top:14px;">🏛️ 服务边界 / Service Boundaries（呼应简历"service boundaries"）</h4>
+    <ul>
+      <li>🟢 <strong>Modular monolith</strong>（按 domain 切 module：<code>auth/</code>、<code>users/</code>、<code>accounts/</code>、<code>plaid/</code>、<code>transactions/</code>），跑在一个进程 — Copi 规模的<u>正确答案</u><br><span class="en-text">Modular monolith split by domain modules — the right answer at Copi scale</span></li>
+      <li>🟡 <strong>真 microservices</strong> 拆 2-3 个 service — 只有团队 ≥5 后端工程师才合理；1 人做 microservices = pain<br><span class="en-text">True microservices — only justified at ≥5 backend devs</span></li>
+      <li>🟢 <strong>边界判定</strong>：Plaid 集成应当是<u>独立 module</u>（外部依赖、有自己 retry/circuit-breaker），不和 transaction 业务耦合<br><span class="en-text">Plaid integration as a dedicated module — external dep, owns its retry/circuit-breaker</span></li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🎯 "Architected" 的可信度信号 / Signals that "architected" is legit</h4>
+    <ul>
+      <li>能说出至少 <strong>1 个被否决的方案 + 否决理由</strong>（"考虑过 NestJS 但 onboarding 成本太高对一个人来说"，或反之 "选 NestJS 是因为 modules + DI 让我一个人也能保持结构"）</li>
+      <li>能说出 <strong>哪些 decision 是和 PM/CTO 一起拍的</strong>（database 选型这种 decision 通常不是 IC 一个人定，但小创业公司 IC 推荐 + founder 同意是正常的）</li>
+      <li>能说出 <strong>架构演化</strong>：v0 长什么样，遇到什么瓶颈或需求后改成了 v1</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+    <ul>
+      <li>🚩 答 "We used Node and Express" 然后停住，问"为什么不用 X" 答不出来</li>
+      <li>🚩 把 <strong>"用了什么"</strong> 当成 <strong>"为什么"</strong>（"我们用 PostgreSQL 因为 PostgreSQL 很好"）</li>
+      <li>🚩 1 人后端搭了 5 个 microservice 还为此自豪</li>
+      <li>🚩 "Architected" 但本质是接手前任的 boilerplate 加 endpoint</li>
+    </ul>
+  </div>
+</details>
+
+<details id="q-be-context-eval">
+  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation — Q1 Backend Context</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>清楚铺出"服务谁 / 解决什么问题 / 团队规模"三件套<br><span class="en-text">Lays out who-it-serves / what-it-solves / team-size cleanly</span></li>
+      <li>说出 stack 各层（framework / DB / hosting / auth / CI）+ <strong>至少一个层级</strong>给出对比 reasoning（"考虑过 X，否决因为 Y"）<br><span class="en-text">Names full stack + ≥1 layer with comparison reasoning</span></li>
+      <li>主动提到 <strong>modular monolith</strong>（或解释为什么 Copi 规模不适合 microservice）<br><span class="en-text">Unprompted mention of modular monolith / why microservice doesn't fit Copi scale</span></li>
+      <li>谈到<strong>架构演化</strong>："v0 是 X，遇到 Y 后改成 Z"——senior 信号<br><span class="en-text">Talks about evolution v0 → v1 (senior signal)</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>能说出 stack 全貌但<strong>选型理由</strong>泛泛（"Express 因为我熟"，但能承认还考虑过别的）<br><span class="en-text">Names stack but rationale is generic; admits considering alternatives</span></li>
+      <li>能说项目背景但说不清自己 vs 团队的分工边界<br><span class="en-text">Knows project context but vague on his vs team split</span></li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"用了 Node 和 Express 因为快" — <span class="en-text">"We used Node + Express because it's fast"</span><br>→ 🚩 "Architected" 的 owner 不可能没考虑过替代方案 / An architect must have considered alternatives</li>
+      <li>答不出数据库 / 部署在哪 — <span class="en-text">Can't name DB or where it's deployed</span><br>→ 🚩 "end-to-end" 名不副实 / "End-to-end" is just a buzzword here</li>
+      <li>"我搭了 microservices" 但团队 ≤2 人 — <span class="en-text">Built microservices for a ≤2-person team</span><br>→ 🚩 over-engineering，反映判断力缺失 / Judgment red flag</li>
+      <li>把 <strong>"用了什么"</strong> 直接答成 <strong>"为什么"</strong>，循环论证 — <span class="en-text">Conflates "what was used" with "why" (circular)</span><br>→ 🚩 没真的做过选型决策 / Never actually made the call</li>
+      <li>"Architected" 但描述听起来像在已有 codebase 上加 endpoint — <span class="en-text">"Architected" but description sounds like adding endpoints to existing code</span><br>→ 🚩 简历夸大，要校准后面所有 backend 问题的可信度 / Resume inflation; recalibrate trust for all backend probes</li>
+    </ul>
+  </div>
+</details>
 
 <hr class="separator">
 
@@ -1200,7 +1342,8 @@
       <tr><td>追问 2 Step 1 — 图表库选型 + 选型理由（CORE）</td><td></td><td></td></tr>
       <tr><td>追问 2 Step 2 — 大数据量 / 动画渲染性能（CORE）</td><td></td><td></td></tr>
       <tr><td>追问 3 — 微前端眼界（STRETCH）</td><td></td><td></td></tr>
-      <tr style="background:#f0fdf4;"><td colspan="3" style="font-weight:700;color:var(--green);">FLOW 2 · Backend (TBD)</td></tr>
+      <tr style="background:#f0fdf4;"><td colspan="3" style="font-weight:700;color:var(--green);">FLOW 2 · Backend (Node/Express + Plaid)</td></tr>
+      <tr><td>Q1 主问题 — 项目背景 + 框架选型 + 选型理由</td><td></td><td></td></tr>
       <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构 owner vs 执行者 信号</td><td></td><td></td></tr>
