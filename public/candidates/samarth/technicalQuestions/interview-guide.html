@@ -343,7 +343,8 @@
     <summary>↳ 追问 / Follow-ups（2 个）</summary>
     <div class="qp-followups-body">
       <a class="qp-sub green"  href="#q3-state"    onclick="jump('q3-state');return false;">追问 1 — State 选型 &amp; 为什么</a>
-      <a class="qp-sub orange" href="#q4-microfe"  onclick="jump('q4-microfe');return false;">追问 2 — 微前端接触</a>
+      <a class="qp-sub blue"   href="#q5-charts"   onclick="jump('q5-charts');return false;">追问 2 — 图表方案 &amp; 渲染性能</a>
+      <a class="qp-sub orange" href="#q4-microfe"  onclick="jump('q4-microfe');return false;">追问 3 — 微前端接触</a>
     </div>
   </details>
 
@@ -386,8 +387,8 @@
           <strong>Frontend Architecture (React Native + Expo)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Owned frontend architecture for a financial dashboard mobile application using React Native, TypeScript, and Expo, establishing component patterns, state management (Context + custom hooks), and type-safe API contracts…"</span>
         </td>
-        <td>1 主问题 + 2 追问<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 2 follow-ups</span></td>
-        <td><strong>~8 min</strong></td>
+        <td>1 主问题 + 3 追问<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 3 follow-ups</span></td>
+        <td><strong>~11 min</strong></td>
       </tr>
       <tr style="background:#f0fdf4;">
         <td><strong style="color:var(--green);">FLOW 2</strong></td>
@@ -419,7 +420,7 @@
 <!-- ====================================================================== -->
 <h2 id="flow-1-frontend" style="background:#f0fdfa;border-left:6px solid var(--accent);color:var(--accent);font-size:28px;">
   📌 FLOW 1 · Frontend Architecture
-  <span class="tag tag-time">~8 min total</span>
+  <span class="tag tag-time">~11 min total</span>
 </h2>
 
 <div class="card" style="border-left:4px solid var(--accent);">
@@ -429,8 +430,8 @@
   </blockquote>
   <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
     ✅ <strong>主问题 / Main question</strong>：Q1 先校验 ownership 的真实范围。<br>
-    ➜ <strong>追问 / Follow-ups</strong>：追问 1（state 选型 — landscape 再 reasoning，<u>核心考察</u>）→ 追问 2（微前端，stretch）。按候选人深度选性展开。<br>
-    <span class="en-text">✅ <strong>Main question</strong> validates the real scope of ownership. ➜ Follow-ups: #1 (state management — landscape, then reasoning; <u>core probe</u>) → #2 (micro-frontend, stretch). Fire selectively based on depth.</span>
+    ➜ <strong>追问 / Follow-ups</strong>：追问 1（state 选型 — landscape 再 reasoning，<u>核心考察</u>）→ 追问 2（图表方案 &amp; 渲染性能，<u>核心考察</u>，直接对应简历的 financial dashboard）→ 追问 3（微前端，stretch）。按候选人深度选性展开。<br>
+    <span class="en-text">✅ <strong>Main question</strong> validates the real scope of ownership. ➜ Follow-ups: #1 (state management — landscape, then reasoning; <u>core</u>) → #2 (charting library + rendering perf; <u>core</u>, directly tied to the resume's "financial dashboard") → #3 (micro-frontend, stretch). Fire selectively based on depth.</span>
   </p>
 </div>
 
@@ -616,10 +617,139 @@
 <hr class="separator">
 
 <!-- ====================================================================== -->
-<!--      追问 2: 微前端 / Micro-frontend Exposure (STRETCH)                 -->
+<!--      追问 2: 图表方案 & 渲染性能 / Charting & Rendering Perf  (CORE)    -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-blue" id="q5-charts" open>
+<summary>➜ 追问 2 / Follow-up 2 · 🎯 图表方案 &amp; 渲染性能 / Charting &amp; Rendering Perf <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
+<div class="followup-body">
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 简历写的是 "financial dashboard"——dashboard 几乎必然涉及图表（资产走势 / 成交量 / 持仓饼图）。这一问<strong>分两步</strong>：先问技术选型（用了什么库 / 为什么），再问大数据量与频繁更新下的渲染性能（真正区分 senior vs mid 的地方）。<br><span class="en-text">Resume says "financial dashboard" — almost certainly involves charts (asset trend / volume / allocation). Two steps: (1) lib choice + why, (2) perf under large data + frequent updates — the real senior/mid divider.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask — Step 1: 选型 / Library Choice</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Quick one on the dashboard itself — did the financial dashboard render any charts? If yes, what did you draw them with — Highcharts, Recharts, Chart.js, D3, something else? And why that one over the alternatives?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "关于 dashboard 本身——你们当时在 financial dashboard 里画了图表吗？如果画了，用的是什么库——Highcharts、Recharts、Chart.js、D3 还是别的？为什么选了那个而不是别的？"
+    </blockquote>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 如果他说"没画图表，只是表格 / 卡片"，那不要硬问 Step 2 的图表性能，<u>转向问表格的虚拟化和大数据渲染</u>（同样能验证性能意识）。如果他说"画了"，立刻进入 Step 2。<br>
+      <strong>Interviewer note</strong> — If he says "no charts, just tables/cards", don't force step 2's chart perf — <u>pivot to table virtualization &amp; large-dataset rendering</u> instead. If he says "yes", go straight to step 2.
+    </blockquote>
+  </div>
+</details>
+
+<details open>
+  <summary>🎤 提问 / Ask — Step 2: 大数据量 &amp; 动画性能 / Large Data &amp; Animation Perf</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Now the interesting part — when the dataset got large, say thousands of data points, or when the data was updating in real time (stream of price ticks, refreshed positions), how did you keep the chart from janking? What did you actually do?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "现在说点深入的——当数据量变大（比如几千个点），或者数据是实时更新的（行情推送、持仓刷新）的时候，你怎么保证图表不卡？你具体做了什么？"
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>🚨 追问 2 卡壳引导 / Follow-up 2 Hints When Stuck</summary>
+  <div class="detail-body">
+    <ul>
+      <li><strong>Light hint</strong> — "数据量过千或实时推送时，naive 实现会有什么瓶颈？" / "What's the bottleneck of a naive implementation at &gt;1k points or with realtime push?"</li>
+      <li><strong>Medium hint</strong> — "想想 SVG 和 Canvas 在节点数上的差别；想想 React 重渲染和 chart instance 重建之间的区别。" / "Think about SVG vs Canvas at scale; think about React re-render vs recreating the chart instance."</li>
+      <li><strong>Heavy hint</strong> — "提示几个常见手段：数据降采样 (LTTB)、关掉 update 时的 animation、用 chart.update() 而不是 unmount+remount、把 options 对象 memoize、real-time 流要 throttle。" / "Common levers: downsampling (LTTB), disable animation on update, use chart.update() instead of unmount+remount, memoize the options object, throttle realtime streams."</li>
+    </ul>
+  </div>
+</details>
+
+<details id="q5-ref">
+  <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference</summary>
+  <div class="detail-body">
+
+    <h4>📚 Step 1 — 常见图表库 landscape / Library Landscape</h4>
+    <table>
+      <thead><tr><th>库</th><th>渲染层</th><th>核心定位</th><th>适合场景 / 陷阱</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Highcharts</strong></td><td>SVG</td><td>商业付费，最成熟、最全功能（金融模块 Highstock）</td><td>商业 license 贵；自带丰富金融指标</td></tr>
+        <tr><td><strong>Recharts</strong></td><td>SVG</td><td>声明式 React 优先，DX 最舒服</td><td>&gt;1k 点容易卡；options 对象不 memoize 会全量重渲</td></tr>
+        <tr><td><strong>Chart.js</strong></td><td>Canvas</td><td>开源主流，比 SVG 库快</td><td>React 集成需要 wrapper；动画自定义不够灵活</td></tr>
+        <tr><td><strong>ECharts (Apache)</strong></td><td>Canvas</td><td>开源，大数据 / 复杂图最强（数十万点不卡）</td><td>API 偏命令式；bundle 大</td></tr>
+        <tr><td><strong>uPlot</strong></td><td>Canvas</td><td>时间序列性能王者（&gt;100k 点）</td><td>API 极简但定制成本高</td></tr>
+        <tr><td><strong>Victory</strong></td><td>SVG</td><td>React/RN 友好，appearance 漂亮</td><td>性能弱，&gt;500 点开始挣扎</td></tr>
+        <tr><td><strong>D3</strong></td><td>SVG / Canvas</td><td>最底层，完全自定义</td><td>开发成本最高；和 React 协作有 reconciliation 冲突</td></tr>
+        <tr><td><strong>Victory Native / react-native-svg-charts</strong></td><td>SVG</td><td>RN 通用方案</td><td>性能弱；RN 上 SVG 本来就慢</td></tr>
+        <tr><td><strong>react-native-skia + charts</strong></td><td>Skia (GPU)</td><td>RN 现代高性能方案</td><td>较新，文档/生态仍在成长</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-muted);">强候选人应能 (a) 说出他们用的库，(b) 解释为什么不选另一个（典型理由：bundle size / SVG vs Canvas / React 集成度 / license）。</p>
+
+    <h4 style="margin-top:18px;">🚀 Step 2 — 大数据量优化 / Large-Dataset Techniques</h4>
+    <ul>
+      <li>🟢 <strong>数据降采样 (Downsampling)</strong> — 经典算法 <code>LTTB</code> (Largest Triangle Three Buckets) 在保留视觉趋势的同时把点数从 N→K（如 50k→500）<br><span class="en-text">Downsampling via LTTB preserves visual trend while collapsing N→K</span></li>
+      <li>🟢 <strong>服务端聚合</strong> — 只传当前 zoom level 需要的精度（K 线每个时间窗口给 OHLC 而不是每 tick）<br><span class="en-text">Server-side aggregation — only ship the precision needed for current zoom level (OHLC per window vs every tick)</span></li>
+      <li>🟢 <strong>用 Canvas / WebGL 而非 SVG</strong> — SVG 一个点 = 一个 DOM 节点，&gt;5k 点必卡<br><span class="en-text">Canvas/WebGL over SVG — each SVG node is a DOM node, &gt;5k points = slow</span></li>
+      <li>🟡 <strong>Web Worker 预处理</strong> — 把数据清洗 / 降采样移出主线程<br><span class="en-text">Web Worker for preprocessing — move cleaning/downsampling off the main thread</span></li>
+      <li>🟡 <strong>Progressive rendering</strong> — 大数据分批 / 异步渲染，避免一次性 block UI<br><span class="en-text">Render in chunks via requestIdleCallback to avoid blocking UI</span></li>
+    </ul>
+
+    <h4 style="margin-top:18px;">⚡ Step 2 — 频繁更新 / 动画性能 / Update &amp; Animation Perf</h4>
+    <ul>
+      <li>🟢 <strong>用 chart.update() / partial update API</strong>，<u>不要</u> unmount + remount 整个 chart 实例（最常见的性能事故）<br><span class="en-text">Use the chart's update API; do NOT unmount+remount on data change (most common perf bug)</span></li>
+      <li>🟢 <strong>memoize options 对象</strong> — Recharts / Highcharts 的 options 是引用比较，每次新对象 = 全量重渲<br><span class="en-text">Memoize the options object — most libs reference-compare; new object = full re-render</span></li>
+      <li>🟢 <strong>实时流要 throttle / debounce</strong> — WebSocket 行情 60+ updates/sec，必须节流到 ~10 FPS 渲染<br><span class="en-text">Throttle realtime streams — 60+ updates/sec must be throttled to ~10 FPS</span></li>
+      <li>🟢 <strong>更新时关掉 animation</strong> — animation 只在<strong>首次</strong>挂载时开，data update 时禁用（否则插值动画会和新数据打架）<br><span class="en-text">Disable animation on update — keep it for initial mount only, otherwise interpolation fights new data</span></li>
+      <li>🟡 <strong>React.memo + 自定义 comparator</strong> — 父组件 re-render 时阻止 chart 重渲<br><span class="en-text">React.memo + custom comparator — prevent re-render when parent re-renders</span></li>
+      <li>🟡 <strong>requestAnimationFrame 批量化</strong> — 把多个 quick updates 合并到下一帧<br><span class="en-text">Batch updates via requestAnimationFrame</span></li>
+    </ul>
+
+    <h4 style="margin-top:18px;">🚫 典型反模式 / Anti-patterns</h4>
+    <ul>
+      <li>🚩 每次 data update 都 <code>new Chart()</code> 或 unmount&amp;remount → 全量重建 DOM + 失去动画</li>
+      <li>🚩 直接把 5k+ raw points 塞 Recharts → SVG DOM 节点爆炸</li>
+      <li>🚩 行情流 setState 不做 throttle → React 一秒 reconcile 60 次</li>
+      <li>🚩 把 chart options 写在 JSX 内联 → 每次 render 都是新引用，全量重画</li>
+    </ul>
+  </div>
+</details>
+
+<details id="q5-eval">
+  <summary>🎯 追问 2 候选人回答评价 / Follow-up 2 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>明确说出用了哪个库 + 能给出选型理由（bundle size / Canvas vs SVG / React 集成度 / license 成本）<br><span class="en-text">Names the lib + concrete selection reason</span></li>
+      <li>能至少说出 <strong>2 个 Step 2 优化手段</strong>：典型组合是 "options memoize + 关 update 动画 + throttle 实时流"<br><span class="en-text">Names ≥2 concrete perf techniques (e.g. options memoize + disable update animation + throttle realtime)</span></li>
+      <li>主动提到 SVG vs Canvas 的节点数极限，或者降采样 / 服务端聚合（架构级解法）<br><span class="en-text">Unprompted mention of SVG vs Canvas DOM-node limit OR downsampling/server aggregation</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>说出库 + 1 个性能手段（比如 "我们 throttle 了" / "我们用 React.memo"），但不能 articulate 其他选项<br><span class="en-text">Names lib + 1 perf technique but can't articulate alternatives</span></li>
+      <li>泛泛地说 "加了缓存" / "用了 worker"，但说不清具体怎么集成<br><span class="en-text">Vague mentions of caching/workers without integration details</span></li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"我们就直接传 data 进去，没遇到性能问题" — <span class="en-text">"We just passed data in, never hit perf issues"</span><br>→ 🚩 financial dashboard 不可能没有 perf 痛，要么是数据量小（说明 dashboard scope 很小），要么是没真正 own 过</li>
+      <li>每次 update 都 unmount + remount chart — <span class="en-text">Unmount+remount on every data update</span><br>→ 🚩 完全不懂 chart lib 的更新机制</li>
+      <li>说不出 SVG vs Canvas 的差别 — <span class="en-text">Doesn't know SVG vs Canvas trade-off</span><br>→ 🚩 senior frontend 在 dashboard 场景下属于基本功缺失</li>
+      <li>把"懒加载"当性能优化主答案 — <span class="en-text">Lazy-loading as the main perf answer</span><br>→ 🚩 答非所问，懒加载解决 first-paint，不是渲染卡顿</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 2 -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--      追问 3: 微前端 / Micro-frontend Exposure (STRETCH)                 -->
 <!-- ====================================================================== -->
 <details class="followup-section fu-orange" id="q4-microfe" open>
-<summary>➜ 追问 2 / Follow-up 2 · 🎯 微前端接触 / Micro-frontend Exposure <span class="tag tag-time">~2 min</span> <span class="tag" style="background:#fef9c3;color:#854d0e;">STRETCH</span></summary>
+<summary>➜ 追问 3 / Follow-up 3 · 🎯 微前端接触 / Micro-frontend Exposure <span class="tag tag-time">~2 min</span> <span class="tag" style="background:#fef9c3;color:#854d0e;">STRETCH</span></summary>
 <div class="followup-body">
 
 <div class="card">
@@ -835,7 +965,7 @@
 </details>
 
 </div>
-</details><!-- end 追问 2 -->
+</details><!-- end 追问 3 -->
 
 <hr class="separator">
 
@@ -893,6 +1023,18 @@
         <td>"A 比 B 简单" 没有真比较过</td>
       </tr>
       <tr>
+        <td><strong>图表选型 (追问 2 Step 1)</strong></td>
+        <td>说出库 + 选型理由（bundle / Canvas vs SVG / license）</td>
+        <td>只说库，理由模糊</td>
+        <td>说不出用了什么 / 把表格当图表</td>
+      </tr>
+      <tr>
+        <td><strong>渲染性能 (追问 2 Step 2)</strong></td>
+        <td>≥2 个具体优化手段 + 主动提 SVG/Canvas 或降采样</td>
+        <td>1 个手段，模糊提到 throttle / memoize</td>
+        <td>"没遇到性能问题" / unmount+remount</td>
+      </tr>
+      <tr>
         <td><strong>眼界（微前端）</strong></td>
         <td>清楚使用场景与代价；recognize Copi 不需要</td>
         <td>听过但没用过，描述准确</td>
@@ -913,7 +1055,9 @@
       <tr><td>Q1 主问题 — Ownership 边界清晰度</td><td></td><td></td></tr>
       <tr><td>追问 1 Step 1 — State 管理 landscape 眼界</td><td></td><td></td></tr>
       <tr><td>追问 1 Step 2 — Context 选型取舍 reasoning（CORE）</td><td></td><td></td></tr>
-      <tr><td>追问 2 — 微前端眼界（STRETCH）</td><td></td><td></td></tr>
+      <tr><td>追问 2 Step 1 — 图表库选型 + 选型理由（CORE）</td><td></td><td></td></tr>
+      <tr><td>追问 2 Step 2 — 大数据量 / 动画渲染性能（CORE）</td><td></td><td></td></tr>
+      <tr><td>追问 3 — 微前端眼界（STRETCH）</td><td></td><td></td></tr>
       <tr style="background:#f0fdf4;"><td colspan="3" style="font-weight:700;color:var(--green);">FLOW 2 · Backend (TBD)</td></tr>
       <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
