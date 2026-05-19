@@ -2,31 +2,335 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>interview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samarth · Coding Test 2 — Interview Guide</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #ffedd5; color: #c2410c; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #ea580c;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #c2410c; }
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --card: #fff7ed;
+      --accent: #ea580c;
+      --accent-dark: #c2410c;
+      --text: #1e293b;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --code-text: #0f766e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding-bottom: 80px;
+    }
+
+    /* ===== TOP NAV ===== */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+    .topbar a.back {
+      color: var(--accent); text-decoration: none;
+      font-weight: 600; font-size: 15px;
+      padding: 6px 12px; border-radius: 6px;
+      border: 1px solid var(--border);
+      transition: background .15s ease;
+    }
+    .topbar a.back:hover { background: var(--card); }
+    .topbar .brand {
+      font-weight: 700; color: var(--accent);
+      font-size: 16px; margin-left: auto;
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 920px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 32px;
+      box-shadow: 0 1px 3px rgba(15,23,42,.04);
+      margin-bottom: 24px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent); color: #fff;
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-size: 26px; color: #0f172a;
+      margin: 0 0 8px; line-height: 1.3;
+    }
+    .hero .subtitle {
+      color: var(--text-muted); font-size: 15px;
+    }
+    .hero .meta {
+      margin-top: 14px;
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 3px 10px; border-radius: 4px;
+      font-size: 13px; font-weight: 600;
+    }
+    .tag-time { background: #e0f2fe; color: #075985; }
+    .tag-diff { background: #fef3c7; color: #92400e; }
+    .tag-topic { background: #f3e8ff; color: #6b21a8; }
+
+    /* ===== SECTION CARD ===== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 28px;
+      box-shadow: 0 1px 3px rgba(15,23,42,.04);
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 20px; color: #0f172a;
+      margin: 0 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--card);
+    }
+    .card h3 {
+      font-size: 16px; color: #334155;
+      margin: 18px 0 8px;
+      font-weight: 700;
+    }
+    .card p { margin-bottom: 10px; color: var(--text); font-size: 15.5px; }
+    .card ul, .card ol { margin: 8px 0 12px 22px; }
+    .card li { margin-bottom: 6px; font-size: 15.5px; }
+    .card strong { color: #0f172a; }
+
+    code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 14px;
+      color: var(--code-text);
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 18px;
+      overflow-x: auto;
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.55;
+      margin: 10px 0 16px;
+    }
+    pre .kw   { color: #f9a8d4; }
+    pre .ty   { color: #93c5fd; }
+    pre .com  { color: #94a3b8; font-style: italic; }
+
+    /* ===== EXAMPLE BOX ===== */
+    .example {
+      background: var(--card);
+      border-left: 4px solid var(--accent);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin: 10px 0;
+      font-size: 15px;
+    }
+    .example .label {
+      display: inline-block;
+      font-weight: 700; color: var(--accent-dark);
+      margin-right: 6px;
+    }
+    .example pre {
+      margin: 6px 0 0;
+      background: #1e293b;
+      font-size: 13px;
+    }
+
+    /* ===== CONSTRAINTS BOX ===== */
+    .constraints {
+      background: #f8fafc;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 14px;
+      color: #334155;
+      white-space: pre;
+    }
+
+    /* ===== TBD MARKER ===== */
+    .tbd {
+      color: var(--text-muted);
+      font-style: italic;
+      background: #fef3c7;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-left: 3px solid #f59e0b;
+      font-size: 14px;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Samarth Sharma · Coding Test 2</div>
-    <h1>④ 编程测试 2 / Coding Test 2</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- Top nav -->
+<div class="topbar">
+  <a class="back" href="../index.html">← Back to Overview</a>
+  <span class="brand">📝 Samarth · ④ Coding Test 2</span>
+</div>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="badge">Coding Exercise · Round 2</span>
+    <h1>Task Scheduling with Deadlines</h1>
+    <p class="subtitle">Single-machine scheduling — maximize the number of tasks finished before each task's deadline.</p>
+    <div class="meta">
+      <span class="tag tag-time">⏱ ~15 min</span>
+      <span class="tag tag-diff">Difficulty · Medium / Hard</span>
+      <span class="tag tag-topic">Greedy · Priority Queue</span>
+    </div>
   </div>
+
+  <!-- Problem -->
+  <div class="card">
+    <h2>📋 Problem Statement</h2>
+
+    <p>
+      You are given a list of <strong>n</strong> tasks. Each task <code>i</code> is described by:
+    </p>
+    <ul>
+      <li><code>duration[i]</code> — the number of continuous time units required to finish it</li>
+      <li><code>deadline[i]</code> — the task must be <strong>finished at or before</strong> this time</li>
+    </ul>
+
+    <h3>Rules</h3>
+    <ul>
+      <li>You start at time <code>t = 0</code>.</li>
+      <li>You can only work on <strong>one task at a time</strong> (single machine).</li>
+      <li>Once a task starts, it must run to completion — <strong>no preemption, no interleaving</strong>.</li>
+      <li>You may pick any subset of tasks and execute them in any order.</li>
+      <li>A task counts as <em>completed</em> only if its <strong>finish time ≤ its deadline</strong>.</li>
+      <li>You are allowed to skip tasks.</li>
+    </ul>
+
+    <h3>Goal</h3>
+    <p>Return the <strong>maximum number of tasks</strong> you can complete.</p>
+  </div>
+
+  <!-- Function signature -->
+  <div class="card">
+    <h2>🔧 Function Signature</h2>
+    <p><code>tasks[i] = [duration_i, deadline_i]</code> · pick your preferred language:</p>
+<pre><span class="com">// C++</span>
+<span class="ty">int</span> scheduleTasks(vector&lt;vector&lt;<span class="ty">int</span>&gt;&gt;&amp; tasks);
+
+<span class="com">// C#</span>
+<span class="ty">int</span> ScheduleTasks(<span class="ty">int</span>[][] tasks);
+
+<span class="com"># Python</span>
+<span class="kw">def</span> schedule_tasks(tasks: <span class="ty">list</span>[<span class="ty">list</span>[<span class="ty">int</span>]]) -&gt; <span class="ty">int</span>:
+
+<span class="com">// TypeScript</span>
+<span class="kw">function</span> scheduleTasks(tasks: <span class="ty">number</span>[][]): <span class="ty">number</span>;</pre>
+  </div>
+
+  <!-- Constraints -->
+  <div class="card">
+    <h2>📐 Constraints</h2>
+    <div class="constraints">1 ≤ n ≤ 10^4
+1 ≤ duration[i], deadline[i] ≤ 10^4</div>
+  </div>
+
+  <!-- Examples -->
+  <div class="card">
+    <h2>🧪 Examples</h2>
+
+    <div class="example">
+      <span class="label">Example 1</span>
+<pre>Input:  tasks = [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]
+Output: 3
+
+One valid schedule:
+  do   [100,  200]  -&gt; finish at t = 100   (≤ 200  ✓)
+  do   [200,  1300] -&gt; finish at t = 300   (≤ 1300 ✓)
+  skip [1000, 1250]
+  do   [2000, 3200] -&gt; finish at t = 2300  (≤ 3200 ✓)
+=&gt; 3 tasks completed.</pre>
+    </div>
+
+    <div class="example">
+      <span class="label">Example 2</span>
+<pre>Input:  tasks = [[1, 2]]
+Output: 1</pre>
+    </div>
+
+    <div class="example">
+      <span class="label">Example 3</span>
+<pre>Input:  tasks = [[3, 2], [4, 3]]
+Output: 0
+(Every task is longer than its own deadline — impossible.)</pre>
+    </div>
+
+    <div class="example">
+      <span class="label">Example 4</span>
+<pre>Input:  tasks = [[5, 5], [4, 6], [2, 6]]
+Output: 2
+(Best: take [2,6] then [4,6] -&gt; finish at t=2, t=6.
+ Taking [5,5] alone gives only 1.)</pre>
+    </div>
+  </div>
+
+  <!-- Discussion prompts -->
+  <div class="card">
+    <h2>💬 Discuss Before Coding</h2>
+    <ol>
+      <li>In what order should tasks be considered?</li>
+      <li>When a new task does <strong>not</strong> fit, can you still improve the schedule?</li>
+      <li>What data structure helps you answer (2) efficiently?</li>
+      <li>What is the time / space complexity of your approach?</li>
+    </ol>
+  </div>
+
+  <!-- TBD: solution + follow-ups -->
+  <div class="card">
+    <h2>✅ Reference Solution &amp; Follow-ups</h2>
+    <p class="tbd">📌 待填写 / TBD — 参考解、复杂度分析、追问、评分标准将在确认题面后补充。</p>
+  </div>
+
+  <div class="footer">
+    Samarth Sharma · Onsite Interview · ④ Coding Test 2 · ~15 min
+  </div>
+</div>
+
 </body>
 </html>
