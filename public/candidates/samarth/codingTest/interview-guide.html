@@ -290,6 +290,9 @@
 
   .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; white-space: nowrap; flex-shrink: 0; }
   .tag-time { background: #e8f0fe; color: #0550ae; }
+  .tag-lang { background: #dde7ff; color: #1a3a8f; }
+  .tag-py   { background: #fef9c3; color: #854d0e; }
+  .tag-ts   { background: #d1ecf1; color: #0c5460; }
   .tag-diff-1 { background: #d4edda; color: #155724; }
   .tag-diff-2 { background: #fff3cd; color: #7a5800; }
   .tag-diff-3 { background: #fdd; color: #a00; }
@@ -895,55 +898,95 @@ return -1;  // or return null;</code></pre>
 </div>
 
 <div class="card">
-  <h4>代码：写法一 — 迭代 (Iterative)</h4>
-  <pre><code>function g(f, y) {
-    let low = 0;
-    let high = y;   // Because f(x) >= x, so x <= y
+  <h4>代码 / Reference Code <span style="font-size:14px;color:var(--text-muted);font-weight:500;">(C++ / Python / TypeScript · 默认折叠 · click to expand)</span></h4>
+  <p style="margin:8px 0 0;color:var(--text-muted);">三个语言的参考答案都采用<strong>迭代</strong>二分（production 首选：O(1) 额外空间、无栈溢出风险）。如果候选人写递归版（同样正确），可追问："空间复杂度是多少？y 极大时会不会爆栈？" 主动提起迭代更适合生产是加分项。<br>
+  <span class="en-text">All three reference answers use the <strong>iterative</strong> form (production default: O(1) extra space, no stack-overflow risk). If the candidate writes a recursive version (equally correct), follow up with: "What's the space complexity? Could it stack-overflow for very large y?" Volunteering "iterative is safer for production" is a plus.</span></p>
+</div>
 
-    while (low &lt;= high) {
-        const mid = Math.floor((low + high) / 2);
-        const result = f(mid);
-
-        if (result === y) {
-            return mid;
-        } else if (result &lt; y) {
-            low = mid + 1;
-        } else {
-            high = mid - 1;
-        }
+<details id="ref-cpp">
+  <summary>📖 C++ 参考答案 / C++ Reference Answer <span class="tag tag-lang">C++17</span></summary>
+  <div class="detail-body">
+<pre><code>ll g(ll y) {
+    // f(x) &gt;= x for monotonic f on non-negative integers,
+    // so x is guaranteed to lie in [0, y]. Binary-search it.
+    ll lo = 0, hi = y;
+    while (lo &lt;= hi) {
+        ll mid = lo + (hi - lo) / 2;   // avoid (lo+hi) overflow
+        ll v = f(mid);
+        if (v == y) return mid;
+        else if (v &lt; y) lo = mid + 1;
+        else            hi = mid - 1;
     }
-
-    throw new Error("No valid x found");
+    throw std::runtime_error("no x satisfies f(x) == y");
 }</code></pre>
-</div>
+    <p style="color:var(--text-muted);margin:8px 0 0;font-size:14px;">需加 <code>#include &lt;stdexcept&gt;</code>；starter 模板里已定义 <code>using ll = long long;</code>。</p>
+  </div>
+</details>
 
-<div class="card">
-  <h4>代码：写法二 — 递归 (Recursive)</h4>
-  <pre><code>function g(f, y, low = 0, high = y) {
-    if (low > high) throw new Error("No valid x found");
+<details id="ref-py">
+  <summary>🐍 Python 参考答案 / Python Reference Answer <span class="tag tag-py">Python 3</span></summary>
+  <div class="detail-body">
+<pre><code>def g(y):
+    # f(x) &gt;= x for monotonic f on non-negative integers,
+    # so x is guaranteed to lie in [0, y]. Binary-search it.
+    lo, hi = 0, y
+    while lo &lt;= hi:
+        mid = (lo + hi) // 2
+        v = f(mid)
+        if v == y:
+            return mid
+        elif v &lt; y:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    raise ValueError(f"no x satisfies f(x) == {y}")</code></pre>
+  </div>
+</details>
 
-    const mid = Math.floor((low + high) / 2);
-    const result = f(mid);
-
-    if (result === y) return mid;
-    if (result &lt; y) return g(f, y, mid + 1, high);
-    return g(f, y, low, mid - 1);
+<details id="ref-ts">
+  <summary>📘 TypeScript 参考答案 / TypeScript Reference Answer <span class="tag tag-ts">TypeScript</span></summary>
+  <div class="detail-body">
+<pre><code>function g(y: number): number {
+    // f(x) &gt;= x for monotonic f on non-negative integers,
+    // so x is guaranteed to lie in [0, y]. Binary-search it.
+    let lo = 0, hi = y;
+    while (lo &lt;= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        const v = f(mid);
+        if (v === y) return mid;
+        else if (v &lt; y) lo = mid + 1;
+        else            hi = mid - 1;
+    }
+    throw new Error(`no x satisfies f(x) == ${y}`);
 }</code></pre>
-</div>
+  </div>
+</details>
 
-<div class="card">
-  <h4>两种写法对比 / Comparison</h4>
-  <table>
-    <tr><th></th><th>迭代 (While)</th><th>递归 (Recursion)</th></tr>
-    <tr><td><strong>空间复杂度</strong></td><td>O(1)</td><td>O(log y) 调用栈</td></tr>
-    <tr><td><strong>可读性</strong></td><td>更直观，工程常见</td><td>更贴近数学定义</td></tr>
-    <tr><td><strong>栈溢出风险</strong></td><td>无</td><td>y 极大时可能爆栈</td></tr>
-    <tr><td><strong>尾递归优化</strong></td><td>N/A</td><td>JS 几乎不支持（仅 Safari）</td></tr>
-  </table>
-  <blockquote class="interviewer-note">
-    <strong>⚠️ 面试官注意：</strong>候选人写哪种都可以。如果写了递归版，追问："空间复杂度是多少？有没有栈溢出风险？" 如果候选人能主动说出迭代版更适合生产环境，这是加分项。
-  </blockquote>
-</div>
+<details id="sample-io">
+  <summary>📥 Sample input + expected output <span class="tag">test data</span></summary>
+  <div class="detail-body">
+    <p>把下面 7 行粘进 HackerRank 的 <strong>Custom Input</strong> 框（或保存为 <code>input.txt</code> 后 <code>cat input.txt | …</code>）：</p>
+<pre><code>3
+5
+7
+9
+11
+21
+1003</code></pre>
+    <p style="margin-top:16px;">正确实现 <code>g</code> 后候选人会看到（✓/✗ 由 starter 的 auto-judge 框架打印，不需候选人实现）：</p>
+<pre><code>g(3) = 0  ✓
+g(5) = 1  ✓
+g(7) = 2  ✓
+g(9) = 3  ✓
+g(11) = 4  ✓
+g(21) = 9  ✓
+g(1003) = 500  ✓
+--------------------------------
+Result: 7 / 7 correct</code></pre>
+    <p style="color:var(--text-muted);margin-top:12px;font-size:14px;">未修改的占位 <code>g</code> 会输出 <code>Result: 3 / 7 correct</code>（混合 ✓/✗）——以此提醒候选人"占位是错的，需要替换"。<br>
+    <span class="en-text">The placeholder <code>g</code> (untouched starter) prints <code>Result: 3 / 7 correct</code> (a mix of ✓/✗), signaling to the candidate that the placeholder is wrong and needs replacing.</span></p>
+  </div>
+</details>
 
 <div class="card">
   <h4>复杂度 / Complexity</h4>
