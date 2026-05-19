@@ -1,7 +1,10 @@
 import type { CandidateConfig } from '../data/types';
 
 /**
- * Samarth Sharma — phone screen scaffolded on 2026-05-18.
+ * Samarth Sharma — 60-min formal (onsite-style) interview scaffolded
+ * on 2026-05-18. This is NOT a phone screen — it's the full technical loop,
+ * same format as Xinfeng (4 sections: self-intro / resume Q&A / coding /
+ * candidate Q).
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
  * interview material is prepared. The static section pages under
@@ -14,8 +17,8 @@ export const samarth: CandidateConfig = {
   shortName: 'Samarth',
   initials: 'SS',
   role: 'TBD',
-  totalMin: 30,
-  brand: '📋 Phone Screen Guide',
+  totalMin: 60,
+  brand: '📝 Onsite Interview Guide',
   accent: '#ea580c',
   scheduledAt: '2026-05-20T10:00:00',
 
@@ -44,11 +47,11 @@ export const samarth: CandidateConfig = {
       id: 's2',
       num: '②',
       emoji: '💬',
-      titleZh: '技术问答',
+      titleZh: '简历技术问答',
       titleEn: 'Resume-based Technical Q&A',
       navLabel: '② 技术问答',
-      time: '~10 min',
-      keyPoints: '（待填写）',
+      time: '~20 min',
+      keyPoints: '基于简历挑 2–3 个 bullet 深挖，每个 bullet = 1 主问题 + 若干递进追问',
       accent: 's2',
       href: 'technicalQuestions/interview-guide.html',
       introEn: '(TBD)',
@@ -61,12 +64,13 @@ export const samarth: CandidateConfig = {
       titleZh: '编程测试',
       titleEn: 'Coding Test',
       navLabel: '③ Coding',
-      time: '~10 min',
-      keyPoints: '（待填写）',
+      time: '~15 min',
+      keyPoints: '（待填写 · 根据 Samarth 背景选题）',
       accent: 's3',
       href: 'codingTest/interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
+      introHeading: '🎤 引导进入编程测试 / Introduce Coding Exercise',
     },
     {
       id: 's4',
