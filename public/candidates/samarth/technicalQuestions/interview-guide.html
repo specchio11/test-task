@@ -1,32 +1,912 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>interview</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #ffedd5; color: #c2410c; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #ea580c;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #c2410c; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samarth · 技术问答</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #0d9488;
+    --accent2: #14b8a6;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== QUICK JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #0d9488; }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.purple { border-left: 2px solid #0d9488; }
+  .qp-sub.green  { border-left: 2px solid #059669; }
+  .qp-sub.blue   { border-left: 2px solid #0984e3; }
+  .qp-sub.orange { border-left: 2px solid #ea580c; }
+  details.qp-followups {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 8px 0 4px;
+  }
+  details.qp-followups > summary {
+    padding: 6px 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #475569;
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  details.qp-followups[open] > summary {
+    background: #f0fdfa; color: #0f766e; border-left-color: #0d9488;
+    margin-bottom: 4px;
+  }
+  details.qp-followups .qp-followups-body { padding: 2px 0 4px 6px; }
+  details.followup-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0 10px 10px 0;
+    margin: 24px 0 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  details.followup-section > summary {
+    padding: 14px 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #475569;
+    background: #f8fafc;
+    border-radius: 0 8px 0 0;
+  }
+  details.followup-section[open] > summary {
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--border);
+  }
+  details.followup-section.fu-blue   { border-left: 4px solid var(--blue); }
+  details.followup-section.fu-green  { border-left: 4px solid var(--green); }
+  details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
+  details.followup-section.fu-purple { border-left: 4px solid var(--accent); }
+  .followup-body { padding: 14px 18px 18px; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: #0d9488; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
+
+  /* ===== MAIN ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 280px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #f0fdfa;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+  blockquote.ask-en {
+    border-left-color: #d97706;
+    background: #fef9ee;
+    color: var(--text);
+  }
+  blockquote.ask-cn {
+    border-left: none;
+    background: none;
+    padding: 8px 0 8px 16px;
+    color: #78350f;
+    font-size: 18px;
+  }
+  .en-text { font-style: normal; color: #475569; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  .hint-chip {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 18px; font-weight: 700;
+    margin-right: 4px;
+  }
+  .hint-light  { background: #d4edda; color: #155724; }
+  .hint-medium { background: #fff3cd; color: #856404; }
+  .hint-heavy  { background: #f8d7da; color: #721c24; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+  .tag-tbd  { background: #f1f5f9; color: #64748b; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+
+  .tbd-card {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    color: #64748b;
+    font-style: italic;
+  }
+</style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Samarth Sharma · Technical Q&amp;A</div>
-    <h1>② 技术问答</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a class="nav-btn" style="background:#0d9488;color:#fff;border-color:#0d9488;text-decoration:none;font-weight:700;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;opacity:0.7;">④ 候选人提问</a>
+</nav>
+
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
+
+  <a class="qp-link" href="#flow-1-frontend" onclick="jump('flow-1-frontend');return false;" style="background:#f0fdfa;color:var(--accent);font-weight:700;margin-top:10px;border-left-color:var(--accent);">📌 FLOW 1 · Frontend Architecture</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title" style="color:var(--accent);">🎯 主问题 / Main Question</div>
+    <a class="qp-sub purple" href="#q1-open" onclick="jump('q1-open');return false;">🎤 提问（Ownership 边界）</a>
+    <a class="qp-sub purple" href="#q1-ref" onclick="jump('q1-ref');return false;">📖 参考答案</a>
+    <a class="qp-sub purple" href="#q1-eval" onclick="jump('q1-eval');return false;">🎯 候选人回答评价</a>
   </div>
+
+  <details class="qp-followups" open>
+    <summary>↳ 追问 / Follow-ups（3 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub blue"   href="#q2-layers"   onclick="jump('q2-layers');return false;">追问 1 — 架构怎么搭</a>
+      <a class="qp-sub green"  href="#q3-state"    onclick="jump('q3-state');return false;">追问 2 — State 选型 &amp; 为什么</a>
+      <a class="qp-sub orange" href="#q4-microfe"  onclick="jump('q4-microfe');return false;">追问 3 — 微前端接触</a>
+    </div>
+  </details>
+
+  <a class="qp-link" href="#flow-2-backend" onclick="jump('flow-2-backend');return false;" style="background:#f0fdf4;color:var(--green);font-weight:700;margin-top:10px;border-left-color:var(--green);">📌 FLOW 2 · Backend Services <span class="tag tag-tbd">TBD</span></a>
+  <a class="qp-link" href="#flow-3-ai" onclick="jump('flow-3-ai');return false;" style="background:#fff7ed;color:#ea580c;font-weight:700;margin-top:10px;border-left-color:#ea580c;">📌 FLOW 3 · Multi-Agent AI <span class="tag tag-tbd">TBD</span></a>
+
+  <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
+  <a class="qp-link" href="#notes"  onclick="jump('notes');return false;">📝 Notes</a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~30 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入技术问答 / Introduce Technical Q&A</h4>
+  <blockquote class="ask-en">
+    "Thanks for that intro. Before we get into coding, I want to spend some time on your most recent role at Copi — there are three pieces of it I'd like to dig into."
+  </blockquote>
+  <blockquote class="ask-cn">
+    "谢谢你的自我介绍。在进入 coding 之前，我想花一些时间聊聊你最近在 Copi 的这段经历——里面有三块我想深入了解一下。"
+  </blockquote>
+</div>
+
+<!-- ==================== FLOW OVERVIEW ==================== -->
+<h2 id="flow">⏱️ Flow</h2>
+<div class="card">
+  <p style="margin-bottom:10px;color:var(--text-muted);font-size:18px;">
+    所有问题都锚定 Copi 简历里的<strong>三条 bullet</strong>。每个 FLOW 内部由 <strong>1 个主问题 + 若干递进追问</strong>组成。<br>
+    <span class="en-text">Every question is anchored to one of the <strong>three Copi bullets</strong>. Each FLOW = <strong>1 main question + several progressive follow-ups</strong>.</span>
+  </p>
+  <table>
+    <thead><tr><th>#</th><th>简历 Bullet / Resume Bullet</th><th>结构 / Structure</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr style="background:#f0fdfa;">
+        <td><strong style="color:var(--accent);">FLOW 1</strong></td>
+        <td>
+          <strong>Frontend Architecture (React Native + Expo)</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Owned frontend architecture for a financial dashboard mobile application using React Native, TypeScript, and Expo, establishing component patterns, state management (Context + custom hooks), and type-safe API contracts…"</span>
+        </td>
+        <td>1 主问题 + 3 追问<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 3 follow-ups</span></td>
+        <td><strong>~10 min</strong></td>
+      </tr>
+      <tr style="background:#f0fdf4;">
+        <td><strong style="color:var(--green);">FLOW 2</strong></td>
+        <td>
+          <strong>Backend Services (Node / Express + Plaid)</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Architected and owned end-to-end backend services… establishing backward-compatible REST APIs, pagination contracts, and service boundaries… Designed fault-tolerant Plaid integration achieving 98.9% pipeline reliability…"</span>
+        </td>
+        <td><span class="tag tag-tbd">TBD</span></td>
+        <td><strong>~10 min</strong></td>
+      </tr>
+      <tr style="background:#fff7ed;">
+        <td><strong style="color:#ea580c;">FLOW 3</strong></td>
+        <td>
+          <strong>Multi-Agent AI Chat (LangGraph + RAG + evals)</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Built production multi-agent AI chat interface with streaming responses and evals system improving expert approval from 36% to 92% using LangGraph, and RAG over financial documents, eliminating LLM hallucinations."</span>
+        </td>
+        <td><span class="tag tag-tbd">TBD</span></td>
+        <td><strong>~10 min</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!-- ============================== FLOW 1 ================================ -->
+<!-- ===== 1 main question (Q1) + 3 follow-ups (Q2-Q4) =================== -->
+<!-- ====================================================================== -->
+<h2 id="flow-1-frontend" style="background:#f0fdfa;border-left:6px solid var(--accent);color:var(--accent);font-size:28px;">
+  📌 FLOW 1 · Frontend Architecture
+  <span class="tag tag-time">~10 min total</span>
+</h2>
+
+<div class="card" style="border-left:4px solid var(--accent);">
+  <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
+  <blockquote style="border-left-color:var(--accent);background:#fff;">
+    <span class="en-text">"Owned frontend architecture for a financial dashboard mobile application using React Native, TypeScript, and Expo, establishing component patterns, state management (Context + custom hooks), and type-safe API contracts that enabled rapid iteration without breaking changes."</span>
+  </blockquote>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
+    ✅ <strong>主问题 / Main question</strong>：Q1 先校验 ownership 的真实范围。<br>
+    ➜ <strong>追问 / Follow-ups</strong>：Q2（架构具体长什么样）→ Q3（state 选型动机，<u>核心考察</u>）→ Q4（微前端，stretch）。按候选人深度选性展开。<br>
+    <span class="en-text">✅ <strong>Main question</strong> validates the real scope of ownership. ➜ Follow-ups: Q2 (what the architecture looks like) → Q3 (state-management rationale, <u>core probe</u>) → Q4 (micro-frontend, stretch). Fire selectively based on depth.</span>
+  </p>
+</div>
+
+<!-- ============================ Q1: OPEN ============================ -->
+<h3 id="q1-open" style="font-size:24px;color:var(--accent);margin-top:24px;">🎯 主问题 / Main Question · 🌐 Ownership 边界 / Scope of Ownership <span class="tag tag-time">~2 min</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Your resume says you owned the frontend architecture for the Copi mobile app. Before we go into the design itself — can you tell me what 'owned' means in your case? How big was the frontend team, and which calls were yours to make?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "简历上写你 own 了 Copi 移动端的前端架构。在聊设计之前，先想搞清楚 ownership 的边界——前端一共几个人？哪些决定是你拍板的？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 这一问的目的是先校准"own"的真实含义。如果他说"前端就我一个"，那后面 Q2/Q3 的答案可以完全代表他个人；如果他说"我们有 2-3 人，我 lead"，要追问"另外几位的 level 是什么、谁拍板架构 decision"。<br>
+      <strong>Interviewer note</strong> — Calibrate what "own" means before the deep dive. If he was the sole frontend, his Q2/Q3 answers fully represent him. If he led 2-3 people, follow up on the others' seniority and who made the architecture calls.
+    </blockquote>
+  </div>
+</details>
+
+<details id="q1-ref">
+  <summary>📖 面试官参考答案 / Interviewer Reference — Q1 Ownership</summary>
+  <div class="detail-body">
+    <p><strong>Copi 背景假设 / Background assumption</strong>：Copi 是 Vancouver 的小型 fintech 创业公司，按 7 个月工作期 + 简历"owned"措辞推断，<strong>大概率前端就 1 人（他自己）</strong>，或 1-2 人小组。</p>
+
+    <p><strong>合理的 ownership 维度 / Reasonable scope a real owner should cover:</strong></p>
+    <ul>
+      <li>🟢 <strong>Tech stack 选型</strong>：选 RN + Expo 而不是 Flutter / 原生 / Web 的理由<br><span class="en-text">Tech stack choice — RN+Expo vs Flutter/native/web and why</span></li>
+      <li>🟢 <strong>架构 layer 划分</strong>：navigation、state、API client、UI 组件、theme 等谁先谁后<br><span class="en-text">Layering — navigation, state, API client, UI primitives, theme</span></li>
+      <li>🟢 <strong>跨端协作契约</strong>：和 backend 怎么对 API schema、和 design 怎么对组件库<br><span class="en-text">Cross-team contracts — API schema with backend, component library with design</span></li>
+      <li>🟡 <strong>发布管线</strong>：EAS Build / OTA update / app store 流程<br><span class="en-text">Release pipeline — EAS Build / OTA / app store</span></li>
+      <li>🟡 <strong>Code review 制度</strong>：自己提的 PR 谁来 review？是否有 staff/lead 在上面把关<br><span class="en-text">Code review — who reviews his PRs? Is there a senior gatekeeper?</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q1-eval">
+  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation — Q1</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>诚实给出团队规模（"前端就我一个" 或 "我加一个 junior"），并清晰列出 <strong>哪些决定是自己拍板</strong>、哪些和别人 align 后定<br><span class="en-text">Honest team size + clear list of which decisions were his vs co-decided</span></li>
+      <li>主动 frame 出 "我也要和 backend 对 API 契约 / 和 design 对组件库" 这类<strong>边界 contract</strong> 意识<br><span class="en-text">Frames cross-team contracts unprompted (a senior signal)</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>给出了团队规模但说不清自己的决定边界 — <span class="en-text">Gives team size but vague on his own decision boundary</span><br>→ 追问具体一个 decision example（比如"上 Expo 是谁决定的？"）/ Probe with a concrete decision example</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"整个团队都是 owner / We all owned it together" — <span class="en-text">"We all owned it together"</span><br>→ 🚩 含糊推卸，可能没真正主导 / Vague hedging, possibly not the real driver</li>
+      <li>列了一堆<strong>用了什么</strong>（React Native、Expo、TypeScript）但答不出<strong>谁定的</strong> — <span class="en-text">Lists tech used but can't say who picked it</span><br>→ 🚩 user 视角而非 owner 视角 / User perspective, not owner perspective</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                  Q2: 架构具体怎么搭 / Layers in practice                -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-blue" id="q2-layers" open>
+<summary>➜ 追问 1 / Follow-up 1 · 🎯 架构具体怎么搭 / How the App is Structured <span class="tag tag-time">~3 min</span></summary>
+<div class="followup-body">
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 简历明确写到 "component patterns, state management (Context + custom hooks), type-safe API contracts" — 这三块都是 Q2 期待他主动覆盖的范围。<br><span class="en-text">The resume already lists component patterns, state management (Context + custom hooks), and type-safe API contracts — Q2 expects him to walk through each.</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Walk me through how you actually structured the app. How did you organize navigation, data flow, and the reusable pieces?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "给我讲讲你具体是怎么把这个 app 搭起来的——navigation、数据流、可复用的组件这些你是怎么分的？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q2-hints">
+  <summary>🚨 追问 1 卡壳引导 / Follow-up 1 Hints When Stuck</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote class="ask-en">"Start with navigation — what did you pick, and roughly how many top-level routes?"</blockquote>
+    <blockquote class="ask-cn">"先从 navigation 说起——你选了哪个方案，大概几个顶层路由？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote class="ask-en">"Where does the code that calls your backend actually live? Inside the screen components, or extracted somewhere?"</blockquote>
+    <blockquote class="ask-cn">"调你 backend 的代码到底放在哪里？直接写在 screen 里，还是抽到别的地方？"</blockquote>
+
+    <p><span class="hint-chip hint-heavy">Heavy</span></p>
+    <blockquote class="ask-en">"Think of it as four buckets — navigation, data, UI primitives, and the glue between them. Tell me what lives in each."</blockquote>
+    <blockquote class="ask-cn">"可以分成四块来想——navigation、数据、UI 基础组件、以及它们之间的胶水代码。每一块里都放了什么。"</blockquote>
+  </div>
+</details>
+
+<details id="q2-ref">
+  <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Interviewer Reference</summary>
+  <div class="detail-body">
+    <div class="card">
+      <blockquote class="interviewer-note">
+        <strong>⚠️ 面试官专用</strong> — 不要念给候选人。用于评估回答完整度。<br>
+        <strong>Interviewer-only</strong> — Do not read to candidate. Use to evaluate answer completeness.
+      </blockquote>
+    </div>
+
+    <h4>✅ Navigation 层 / Navigation Layer</h4>
+    <ul>
+      <li>Expo 项目里典型选 <strong>Expo Router</strong>（file-based）或 <strong>React Navigation</strong>（manual config）<br><span class="en-text">Either Expo Router (file-based) or React Navigation (manual)</span></li>
+      <li>Auth 状态怎么影响路由——一般用 protected route / redirect 模式<br><span class="en-text">How auth gates routes — protected-route / redirect pattern</span></li>
+    </ul>
+
+    <h4>✅ State / 数据流分层 / State &amp; Data Flow Layering</h4>
+    <ul>
+      <li><strong>3 类 state 必须分开管</strong>：<ul>
+        <li>① 局部 UI state — 直接 <code>useState</code></li>
+        <li>② 跨页面共享的 client state（user session、theme 等）— <strong>Context + custom hooks</strong>（简历自陈）</li>
+        <li>③ Server state（账户、交易列表等）— 真正的 senior 答案是 <strong>React Query / SWR</strong>，<u>而不是塞进 Context</u></li>
+      </ul></li>
+      <li>如果他把所有 state 都塞 Context，是<strong>红旗</strong>——server state 的 caching/invalidation/refetch 用 Context 写会非常痛苦<br><span class="en-text">Cramming server state into Context is a red flag — caching/invalidation/refetch would be painful</span></li>
+    </ul>
+
+    <h4>✅ API Client 层 / API Client Layer</h4>
+    <ul>
+      <li>统一的 fetch wrapper / axios instance，带 auth header 注入、错误归一化、超时<br><span class="en-text">Centralized fetch wrapper with auth header injection, error normalization, timeout</span></li>
+      <li>API 方法不在 component 里直接调用，而是封装成 <code>useAccounts()</code> 这类 hook（也对应他自陈的"custom hooks"模式）<br><span class="en-text">Components don't call fetch directly — wrapped in <code>useAccounts()</code>-style hooks (matches his "custom hooks" claim)</span></li>
+    </ul>
+
+    <h4>✅ Type-safe API Contract / 类型安全契约</h4>
+    <ul>
+      <li>典型实现：<strong>后端 OpenAPI/Swagger + codegen</strong>，或 <strong>tRPC</strong>，或 <strong>GraphQL + codegen</strong>，最差是手写 types 双向 sync<br><span class="en-text">Typical: OpenAPI + codegen, or tRPC, or GraphQL + codegen; worst case is hand-rolled types</span></li>
+      <li>关键 follow-up: schema 漂移谁来检测——CI 里跑 type check，还是依赖人工<br><span class="en-text">Drift detection — CI type check, or manual</span></li>
+    </ul>
+
+    <h4>✅ UI 组件 / Reusable UI Layer</h4>
+    <ul>
+      <li>一套 design system primitives（Button、Card、Input），上面是 feature-specific components<br><span class="en-text">Design system primitives, then feature-specific composites on top</span></li>
+      <li>金融 app 关键 primitive：<strong>金额格式化</strong>、<strong>currency-aware input</strong>、<strong>date range picker</strong>——他能否主动提及<br><span class="en-text">Fintech primitives: money formatting, currency-aware input, date range picker — does he mention them?</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q2-eval">
+  <summary>🎯 追问 1 候选人回答评价 / Follow-up 1 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>主动区分 <strong>3 类 state</strong>（local / shared client / server），并明确 server state 用 React Query 或类似工具——而<u>不是</u> Context<br><span class="en-text">Distinguishes 3 kinds of state and uses React Query (not Context) for server state</span></li>
+      <li>能说出 <strong>API 契约的 source of truth</strong>（OpenAPI / tRPC / GraphQL codegen），以及 schema 漂移怎么检测<br><span class="en-text">Names a single source of truth for API types and how drift is caught</span></li>
+      <li>能说出至少一个金融场景特有的 primitive（金额格式化 / 多 currency 输入框）<br><span class="en-text">Surfaces at least one fintech-specific primitive</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>能说出 4 层结构但没区分 client state vs server state — <span class="en-text">Lists layers but doesn't separate client vs server state</span><br>→ 追问 "transaction list 拉下来之后存哪里、cache 多久" / Probe: where do you keep the transaction list, how long do you cache?</li>
+      <li>提到 API contract 但说"手写 types" — <span class="en-text">Mentions API types but rolls them by hand</span><br>→ 中性：小项目可以接受，但要确认他知道有更好的方案 / OK for small projects but verify he knows codegen exists</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"用了 Context 把 user info、accounts list、settings 都塞进去" — <span class="en-text">Stuffs user info + accounts + settings all into Context</span><br>→ 🚩 没意识到 server state 的特殊性（cache / refetch / invalidation）/ Hasn't grasped server state's special needs</li>
+      <li>讲不出 navigation / API client / UI 三层的边界，混在一起说 — <span class="en-text">Can't separate navigation / API / UI layers, blends them</span><br>→ 🚩 没真正做过 architect / Hasn't actually done architecture work</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 1 -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--    Q3: State 选型 & 为什么 / State Choice Rationale  (CORE PROBE)       -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-green" id="q3-state" open>
+<summary>➜ 追问 2 / Follow-up 2 · 🎯 State 选型 &amp; 为什么 / State Choice &amp; Rationale <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
+<div class="followup-body">
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 简历明确写 "state management (Context + custom hooks)"。这一问聚焦动机和取舍——是 default 选了 Context，还是真的对比过 Zustand / Jotai / Redux Toolkit 后做的决定？<br><span class="en-text">Resume specifies "Context + custom hooks". This probe targets motivation — was it a default, or a deliberate trade-off against Zustand / Jotai / Redux Toolkit?</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "You went with Context plus custom hooks for state. Walk me through that choice — what alternatives did you consider, and what made Context the right fit for this project?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你 state 管理选的是 Context + custom hooks。聊聊这个决定——你考虑过哪些备选方案？为什么 Context 在这个项目里更合适？"
+    </blockquote>
+  </div>
+</details>
+
+<details id="q3-hints">
+  <summary>🚨 追问 2 卡壳引导 / Follow-up 2 Hints When Stuck</summary>
+  <div class="detail-body">
+    <p><span class="hint-chip hint-light">Light</span></p>
+    <blockquote class="ask-en">"Did Zustand, Jotai, or Redux Toolkit come up at all when you were deciding?"</blockquote>
+    <blockquote class="ask-cn">"决定的时候，Zustand、Jotai、Redux Toolkit 这些有进入过你的视野吗？"</blockquote>
+
+    <p><span class="hint-chip hint-medium">Medium</span></p>
+    <blockquote class="ask-en">"What happens to the consumers of a Context when one piece of state inside it changes?"</blockquote>
+    <blockquote class="ask-cn">"Context 里某个 state 变了，所有 consume 这个 Context 的组件会怎么反应？"</blockquote>
+
+    <p><span class="hint-chip hint-heavy">Heavy</span></p>
+    <blockquote class="ask-en">"Hint — Context has a known re-render trap when you put many things in one provider. What's the typical workaround, and at what scale does it start to hurt?"</blockquote>
+    <blockquote class="ask-cn">"提示一下——Context 在一个 provider 里塞太多东西时有个著名的重渲染陷阱。常见的绕开方法是什么？项目到什么规模会真的开始痛？"</blockquote>
+  </div>
+</details>
+
+<details id="q3-ref">
+  <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference</summary>
+  <div class="detail-body">
+
+    <h4>✅ Context 适合的场景 / Where Context Fits</h4>
+    <ul>
+      <li>状态层级<strong>浅</strong>、变更频率<strong>低</strong>（user session、theme、locale、auth token）<br><span class="en-text">Shallow state, low change frequency (user session, theme, locale, auth token)</span></li>
+      <li>项目规模小到中等，不需要 time-travel debugging / 复杂 middleware<br><span class="en-text">Small-to-medium project, no need for time-travel or complex middleware</span></li>
+      <li>不引入额外依赖，对 bundle size 友好<br><span class="en-text">No extra dependency, friendly to bundle size</span></li>
+    </ul>
+
+    <h4>⚠️ Context 的代价 / Context Costs (a senior should mention)</h4>
+    <ul>
+      <li><strong>重渲染陷阱</strong>：provider value 里任何一个字段变了，<u>所有</u> consume 这个 Context 的组件都会重新渲染<br><span class="en-text">Any change in the provider value re-renders <u>every</u> consumer</span></li>
+      <li>缓解手段：<ul>
+        <li>把 Context <strong>拆细</strong>（user / theme / auth 各自独立 provider）</li>
+        <li>provider value 用 <code>useMemo</code> 稳定引用</li>
+        <li>需要细粒度订阅时换 Zustand / Jotai</li>
+      </ul></li>
+      <li>不适合放 <strong>server state</strong>：cache、refetch、stale-while-revalidate、retry 这些用 Context 手写极难维护，应该用 React Query / SWR<br><span class="en-text">Server state belongs in React Query / SWR, not Context</span></li>
+    </ul>
+
+    <h4>📊 备选方案对比 / Alternatives Trade-off</h4>
+    <table>
+      <thead><tr><th>方案</th><th>适合</th><th>不适合</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Context + hooks</strong></td><td>少量浅层共享 state</td><td>状态多、变更频繁、跨组件细粒度订阅</td></tr>
+        <tr><td><strong>Zustand</strong></td><td>中等复杂度、想要 selector 细粒度订阅、minimal API</td><td>需要严格的 reducer + middleware 标准化</td></tr>
+        <tr><td><strong>Jotai</strong></td><td>原子化 state，本地推导 derived state 多</td><td>不熟悉 atom 心智模型的团队</td></tr>
+        <tr><td><strong>Redux Toolkit</strong></td><td>大团队、严格规范、time-travel debug</td><td>小项目过重</td></tr>
+        <tr><td><strong>React Query / SWR</strong></td><td><u>所有 server state</u>（cache、refetch、invalidation）</td><td>纯 client state</td></tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<details id="q3-eval">
+  <summary>🎯 追问 2 候选人回答评价 / Follow-up 2 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>主动提到 <strong>Context 的 re-render 陷阱</strong>，并说明用 <strong>provider 拆细 + <code>useMemo</code></strong> 或换 Zustand 的迁移条件<br><span class="en-text">Names the re-render trap and the mitigation (split providers + useMemo, or migrate to Zustand)</span></li>
+      <li>明确把 <strong>server state 单独处理</strong>（"账户和交易我用 React Query / SWR，Context 只放 auth + theme"）<br><span class="en-text">Treats server state separately (React Query/SWR), Context only for auth + theme</span></li>
+      <li>能给出项目规模阈值（"如果 state 变成 20+ 个域，我会迁移到 Zustand"）<br><span class="en-text">Names a scale threshold for migration</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道有 Zustand / Redux 但说不清取舍 — <span class="en-text">Knows alternatives exist but vague on trade-offs</span><br>→ 追问 "Redux 你最后没选是因为什么？" / Probe why Redux was rejected</li>
+      <li>"Context 简单不用引入依赖" 是<u>合理的</u>但 surface 的回答 — <span class="en-text">"Context is simpler, no extra dep" is reasonable but shallow</span><br>→ 追问 "项目变大什么信号会让你换？" / Probe the migration signal</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>没听说过 re-render 陷阱 — <span class="en-text">Hasn't heard of the re-render trap</span><br>→ 🚩 自陈"owned 架构"但对最基本的性能特性不了解 / Claims to own arch but doesn't know its core perf characteristic</li>
+      <li>所有 state（包括 transaction list）都塞 Context — <span class="en-text">All state including transaction list goes in Context</span><br>→ 🚩 cache 失效 / refetch 全部自己手写，工程债大 / Will hand-roll cache & refetch — big engineering debt</li>
+      <li>"Redux 太复杂所以选 Context" 没有真正比较过 — <span class="en-text">"Redux is too complex" without ever trying it</span><br>→ 🚩 决策靠传闻而非评估 / Decided on hearsay, not evaluation</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 2 -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--      Q4: 微前端 / Micro-frontend Exposure (STRETCH)                     -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-orange" id="q4-microfe" open>
+<summary>➜ 追问 3 / Follow-up 3 · 🎯 微前端接触 / Micro-frontend Exposure <span class="tag tag-time">~2 min</span> <span class="tag" style="background:#fef9c3;color:#854d0e;">STRETCH</span></summary>
+<div class="followup-body">
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: Copi 移动端不太可能用微前端（项目规模太小），所以这是一个 <strong>stretch 题</strong>——目的是看候选人有没有意识到"微前端是大组织才需要的工具"、能否说出适用场景与代价。<br><span class="en-text">A Copi-scale mobile app almost never needs micro-frontends. Stretch probe: does he recognize that micro-FE is a tool for large orgs, and can he articulate use cases + costs?</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Switching gears for a second — have you ever worked with a micro-frontend setup? Anywhere, not just at Copi."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "换个话题问一下——你接触过微前端架构吗？任何项目都行，不限 Copi。"
+    </blockquote>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 如果他说"用过"，立刻深问具体方案（Module Federation / single-spa / iframe）和团队规模。如果他说"没接触过"，<u>不要纠缠</u>——让他口头推理"什么场景才需要微前端"，看他能不能 reason 出来。<br>
+      <strong>Interviewer note</strong> — If he says yes, drill into the specific approach (Module Federation / single-spa / iframe) and team size. If no, <u>don't grind</u> — ask him to reason out when micro-FE would be needed.
+    </blockquote>
+  </div>
+</details>
+
+<details id="q4-ref">
+  <summary>📖 追问 3 面试官参考答案 / Follow-up 3 Interviewer Reference</summary>
+  <div class="detail-body">
+
+    <h4>✅ 微前端真正的适用场景 / When Micro-frontends Actually Help</h4>
+    <ul>
+      <li>多团队并行开发同一个 web app，且<strong>每个团队想独立部署</strong>（避免大一统 monorepo build）<br><span class="en-text">Multiple teams shipping into one app, each wanting independent deploys</span></li>
+      <li>需要<strong>技术栈隔离</strong>（一部分用 React，一部分迁移中的 legacy Angular/Vue）<br><span class="en-text">Tech stack isolation (e.g. React + legacy Angular co-existing)</span></li>
+      <li>典型规模：50+ 工程师 / 多产品线 / 多 BU<br><span class="en-text">Typical scale: 50+ engineers, multi-product, multi-BU</span></li>
+    </ul>
+
+    <h4>⚠️ 微前端的代价 / Micro-frontend Costs</h4>
+    <ul>
+      <li>共享依赖（React 版本、router 版本）需要协调，否则 bundle 会重复且行为冲突<br><span class="en-text">Shared deps need coordination, otherwise bundle bloat + version conflicts</span></li>
+      <li>跨 micro-app 的<strong>状态共享</strong>困难（不能直接 prop drill）<br><span class="en-text">Cross-app state sharing is hard (can't just prop-drill)</span></li>
+      <li>整体加载时间和构建管线复杂度<u>大幅上升</u><br><span class="en-text">Total load time and pipeline complexity jump significantly</span></li>
+      <li>Design system 和组件库必须严格集中治理<br><span class="en-text">Design system and component library must be strictly centralized</span></li>
+    </ul>
+
+    <h4>🛠️ 常见技术方案 / Common Approaches</h4>
+    <ul>
+      <li><strong>Webpack Module Federation</strong>：现在最主流，运行时动态加载 remote bundle</li>
+      <li><strong>single-spa</strong>：早期方案，把多个 SPA 挂载到同一个 shell</li>
+      <li><strong>iframe</strong>：最强隔离但 UX 最差（跨 iframe 通信 / 滚动条 / 弹窗都难处理）</li>
+      <li><strong>Build-time composition</strong>（npm packages + monorepo）：本质不是微前端，是模块化</li>
+    </ul>
+
+    <h4>🚫 移动端微前端 / Mobile Micro-frontends?</h4>
+    <ul>
+      <li>RN 几乎没有真正的"微前端"——可以做 <strong>code splitting / dynamic bundles</strong>（Re.Pack、Repack），但概念和 web 微前端差距很大<br><span class="en-text">RN doesn't really have micro-frontends; closest is dynamic bundles (Re.Pack)</span></li>
+      <li>Copi 这种规模的金融 app 应用微前端 = <strong>over-engineering</strong><br><span class="en-text">A Copi-scale fintech app applying micro-FE = over-engineering</span></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q4-eval">
+  <summary>🎯 追问 3 候选人回答评价 / Follow-up 3 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>真用过 Module Federation / single-spa，并能说出<strong>最大的痛点</strong>（shared deps / 跨 app state）<br><span class="en-text">Has used Module Federation/single-spa and names a real pain point</span></li>
+      <li>没用过但能清晰 reason 出"什么规模、什么组织结构才需要"——明确指出 Copi 不需要、移动端基本无相关方案<br><span class="en-text">Hasn't used it but reasons clearly about when it's warranted, recognizes Copi-scale doesn't need it</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道概念能描述但没用过，给不出代价分析 — <span class="en-text">Knows the concept but no cost-side analysis</span><br>→ 中性，不扣分 / Neutral, no penalty</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"微前端就是把前端拆成多个仓库" — <span class="en-text">"Micro-FE is just splitting into multiple repos"</span><br>→ 🚩 把 monorepo / 仓库拆分和微前端混淆 / Confuses repo split with micro-FE</li>
+      <li>"完全没听说过，那是什么" — <span class="en-text">"Never heard of it"</span><br>→ ⚠️ 对自陈 senior frontend 来说有点出戏，但<u>不是 deal-breaker</u>（很多 RN 工程师确实不接触）/ Mildly off-narrative for a self-described senior FE; not a deal-breaker</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 3 -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                          FLOW 2 PLACEHOLDER                            -->
+<!-- ====================================================================== -->
+<h2 id="flow-2-backend" style="background:#f0fdf4;border-left:6px solid var(--green);color:var(--green);font-size:28px;">
+  📌 FLOW 2 · Backend Services
+  <span class="tag tag-tbd">TBD</span>
+</h2>
+
+<div class="tbd-card">
+  待填充 / TBD — 针对简历 "Architected and owned end-to-end backend services… REST APIs, pagination contracts, service boundaries…" 以及 "Designed fault-tolerant Plaid integration achieving 98.9% pipeline reliability" 这两段。
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--                          FLOW 3 PLACEHOLDER                            -->
+<!-- ====================================================================== -->
+<h2 id="flow-3-ai" style="background:#fff7ed;border-left:6px solid #ea580c;color:#ea580c;font-size:28px;">
+  📌 FLOW 3 · Multi-Agent AI Chat
+  <span class="tag tag-tbd">TBD</span>
+</h2>
+
+<div class="tbd-card">
+  待填充 / TBD — 针对简历 "Built production multi-agent AI chat interface with streaming responses and evals system improving expert approval from 36% to 92% using LangGraph, and RAG over financial documents…" 这一段。
+</div>
+
+<hr class="separator">
+
+<!-- ==================== RUBRIC ==================== -->
+<h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>维度 / Dimension</th><th>🟢 Strong</th><th>🟡 Okay</th><th>🔴 Weak</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Ownership 真实性</strong></td>
+        <td>清楚团队规模 + 自己 decision 边界 + 能给具体 decision 例子</td>
+        <td>清楚团队规模但 decision 边界模糊</td>
+        <td>"we all owned" / 罗列 stack 但说不出谁定的</td>
+      </tr>
+      <tr>
+        <td><strong>架构分层意识</strong></td>
+        <td>清楚分 navigation / state / API client / UI 层；区分 client vs server state</td>
+        <td>知道有分层但层之间边界不清</td>
+        <td>把 server state 也塞 Context；混在一起讲</td>
+      </tr>
+      <tr>
+        <td><strong>取舍 reasoning</strong></td>
+        <td>能说出 Context re-render 陷阱 + 项目规模阈值 + 备选方案</td>
+        <td>知道有备选但说不清取舍</td>
+        <td>"A 比 B 简单" 没有真比较过</td>
+      </tr>
+      <tr>
+        <td><strong>类型契约管理</strong></td>
+        <td>有 single source of truth（codegen / tRPC / GraphQL）+ CI 检测漂移</td>
+        <td>手写 types + 人工 sync</td>
+        <td>没意识到这是问题</td>
+      </tr>
+      <tr>
+        <td><strong>眼界（微前端）</strong></td>
+        <td>清楚使用场景与代价；recognize Copi 不需要</td>
+        <td>听过但没用过，描述准确</td>
+        <td>把仓库拆分当微前端</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================== NOTES ==================== -->
+<h2 id="notes">📝 Notes</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr style="background:#f0fdfa;"><td colspan="3" style="font-weight:700;color:var(--accent);">FLOW 1 · Frontend Architecture</td></tr>
+      <tr><td>Q1 主问题 — Ownership 边界清晰度</td><td></td><td></td></tr>
+      <tr><td>Q2 追问 1 — 架构分层完整度</td><td></td><td></td></tr>
+      <tr><td>Q3 追问 2 — State 选型取舍 reasoning（CORE）</td><td></td><td></td></tr>
+      <tr><td>Q4 追问 3 — 微前端眼界（STRETCH）</td><td></td><td></td></tr>
+      <tr style="background:#f0fdf4;"><td colspan="3" style="font-weight:700;color:var(--green);">FLOW 2 · Backend (TBD)</td></tr>
+      <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
+      <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
+      <tr><td>架构 owner vs 执行者 信号</td><td></td><td></td></tr>
+      <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note-area">面试官在此记录候选人技术问答的表现 / Interviewer notes on candidate technical Q&amp;A…</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'DETAILS') el.open = true;
+  const parent = el.closest('details');
+  if (parent) parent.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
 </body>
 </html>
