@@ -1,30 +1,6 @@
 # ============================================================
-#  Task Scheduling with Deadlines — Coding Exercise (Python 3)
-# ============================================================
-#  Sample input (one JSON array per line; already loaded in
-#  the Input box of HackerRank's Custom Input):
-#
-#      [[100,200],[200,1300],[1000,1250],[2000,3200]]
-#      [[1,2]]
-#      [[3,2],[4,3]]
-#      [[5,5],[4,6],[2,6]]
-#      []
-#      [[1,5],[2,5],[3,5]]
-#      [[10,10],[1,11],[2,12],[3,13]]
-#
-#  Expected output once schedule_tasks is correctly implemented
-#  (the runner self-checks each call against a hardcoded
-#  expected[] array — you do NOT need to print anything):
-#
-#      schedule_tasks([[100,200],[200,1300],[1000,1250],[2000,3200]]) = 3  ✓
-#      schedule_tasks([[1,2]]) = 1  ✓
-#      schedule_tasks([[3,2],[4,3]]) = 0  ✓
-#      schedule_tasks([[5,5],[4,6],[2,6]]) = 2  ✓
-#      schedule_tasks([]) = 0  ✓
-#      schedule_tasks([[1,5],[2,5],[3,5]]) = 2  ✓
-#      schedule_tasks([[10,10],[1,11],[2,12],[3,13]]) = 3  ✓
-#      --------------------------------
-#      Result: 7 / 7 correct
+#  Task Scheduling with Deadlines · Python 3
+#  Problem statement is on the left. Only edit schedule_tasks below.
 # ============================================================
 
 import json
@@ -34,16 +10,9 @@ import sys
 # ============================================================
 # 👇 ONLY EDIT THIS FUNCTION
 # ============================================================
-#
-#  Given `tasks` (each task is a 2-element list [duration, deadline]),
-#  return the maximum number of tasks that can be finished on or
-#  before their deadlines on a single machine starting at t = 0.
-#
-#  You MAY mutate (e.g., tasks.sort) `tasks` if that helps.
-#
 def schedule_tasks(tasks):
-    # TODO: replace this function.
-    return len(tasks)
+    # TODO: return the maximum number of tasks finished on time.
+    return len(tasks)  # placeholder — replace with your code
 # ============================================================
 # 👆 ONLY EDIT ABOVE  ·  Do NOT modify anything below
 # ============================================================

@@ -1,39 +1,6 @@
 // ============================================================
-//  Inverse of a Monotonic Function — Coding Exercise (C#)
-// ============================================================
-//  Task
-//    Implement G(y) so that for every input y, it returns the
-//    non-negative integer x such that F(x) = y.
-//
-//  Rules
-//    - You can ONLY CALL F(x). Treat F as a true black box.
-//    - F is strictly monotonically increasing on non-negative
-//      integers (i.e., for any a < b, F(a) < F(b)).
-//    - You may assume that for every input y a valid x exists.
-//    - You only need to fill in the body of G(y) below.
-//
-//  Sample input (already loaded in the Input box):
-//
-//      3
-//      5
-//      7
-//      9
-//      11
-//      21
-//      1003
-//
-//  Expected output once G is correctly implemented (the runner
-//  self-checks each call via F(G(y)) == y):
-//
-//      g(3) = 0  ✓
-//      g(5) = 1  ✓
-//      g(7) = 2  ✓
-//      g(9) = 3  ✓
-//      g(11) = 4  ✓
-//      g(21) = 9  ✓
-//      g(1003) = 500  ✓
-//      --------------------------------
-//      Result: 7 / 7 correct
+//  Inverse of a Monotonic Function · C#
+//  Problem statement is on the left. Only edit G(y) below.
 // ============================================================
 
 using System;
@@ -46,22 +13,10 @@ class Solution
     // ============================================================
     // 👇 ONLY EDIT THIS FUNCTION
     // ============================================================
-    //
-    //  Given y, return the non-negative integer x such that F(x) = y.
-    //
     static long G(long y)
     {
-        // TODO: implement. Return the integer x such that F(x) == y.
-        //
-        // You can call F(x) as a black box for any integer x, e.g.:
-        //     long probe  = F(0);     // what is F at 0?
-        //     long probe2 = F(1000);  // what is F at 1000?
-        // Use such probes to search for the x that satisfies F(x) == y.
-        //
-        // The placeholder call below is intentionally wrong on most
-        // inputs (you'll see a mix of ✓ and ✗) — replace it with your
-        // real algorithm to get 7 / 7 correct.
-        return MockInverse(y);
+        // TODO: return x such that F(x) == y. You may call F(x) freely.
+        return MockInverse(y);  // placeholder — replace with your code
     }
     // ============================================================
     // 👆 ONLY EDIT ABOVE  ·  Do NOT modify anything below
