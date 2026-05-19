@@ -1466,7 +1466,7 @@ LIMIT 20;</pre>
 <!--    追问 2: Cursor 设计细节 / Cursor Design (lifted from old Sub-Q1+Q3)   -->
 <!-- ====================================================================== -->
 <details class="followup-section fu-teal" id="q-be-cursor-design" open>
-<summary>➜ 追问 2 / Follow-up 2 · 🎯 Cursor 设计细节 / Cursor Design <span class="tag tag-time">~6 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
+<summary>➜ 追问 2 / Follow-up 2 · 🎯 Cursor 设计细节 / Cursor Design <span class="tag tag-time">~9 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
 <div class="followup-body">
 
 <div class="card" style="border-left:4px solid #0d9488;">
@@ -1474,8 +1474,9 @@ LIMIT 20;</pre>
   <p style="color:var(--text-muted);font-size:15px;margin-top:8px;">
     🎯 <strong>Q1</strong>: 🔍 Cursor 里 encode 了什么（composite / base64 / direction）<br>
     🎯 <strong>Q2</strong>: 🔀 Filter / Sort 切换时 cursor 的失效（默认必问，吹牛探针）<br>
-    💡 <strong>触发规则 / When to fire</strong>：Q1 仅当 追问 1 Step 1 答 cursor / next-page token，或 Step 2 主动提了 cursor 优势时再展开；如果他用 offset 且对 cursor 零接触，整个追问 2 跳过。Q2 默认展开——任何<u>真有人用</u>的 transaction list 都有 filter + 可切 sort，是最干净的吹牛探针之一。<br>
-    <span class="en-text">Fire Q1 only if Follow-up 1 Step 1 = cursor, or Step 2 voluntarily mentioned cursor's edge. Fire Q2 by default — every real transaction list has filter + switchable sort; cleanest bluff-detection probe.</span>
+    🎯 <strong>Q3</strong>: ⚠️ NULL 排序 + 三值逻辑（深度吹牛探针，Q1 强答后追）<br>
+    💡 <strong>触发规则 / When to fire</strong>：Q1 仅当 追问 1 Step 1 答 cursor / next-page token，或 Step 2 主动提了 cursor 优势时再展开；如果他用 offset 且对 cursor 零接触，整个追问 2 跳过。Q2 默认展开——任何<u>真有人用</u>的 transaction list 都有 filter + 可切 sort，是最干净的吹牛探针之一。Q3 是 cursor 高阶吹牛探针——只有真在生产 ship 过 cursor + 处理过 nullable sort key 数据的人才答得出 <code>x &lt; NULL</code> 的三值逻辑陷阱，仅在 Q1 答得清晰时追加。<br>
+    <span class="en-text">Fire Q1 only if Follow-up 1 Step 1 = cursor, or Step 2 voluntarily mentioned cursor's edge. Fire Q2 by default — every real transaction list has filter + switchable sort; cleanest bluff-detection probe. Q3 is an advanced cursor-bluff probe — fire only after a clean Q1; trivially exposes anyone who's never debugged a real cursor with nullable sort keys.</span>
   </p>
 </div>
 
@@ -1697,6 +1698,101 @@ LIMIT 20;</pre>
   </div>
 </details>
 
+<hr style="margin:24px 0;border:none;border-top:1px dashed #94d5cb;">
+
+<!-- ============ Q3: NULL Sort + Three-Valued Logic ============ -->
+<h3 id="q-cursor-null-3vl" style="font-size:22px;color:#0d9488;margin-top:18px;">🎯 Q3 · ⚠️ NULL 排序 + 三值逻辑 / NULL Ordering &amp; Three-Valued Logic <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#fee2e2;color:#991b1b;">BLUFF PROBE</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask · Q3</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "One more cursor wrinkle. Say your sort key can be NULL — some transactions are still pending and their <code>posted_at</code> is NULL. What happens to your cursor comparison? Where do those NULL rows land in your pagination, and how does your actual SQL handle them?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "再追一个 cursor 的细节。如果你的 sort key 可能是 NULL——比如有的 transaction 还 pending，<code>posted_at</code> 是 NULL——你的 cursor 比较会发生什么？这些 NULL 行在你的分页里排在哪里？SQL 实际是怎么处理的？"
+    </blockquote>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官小提示</strong> — cursor 的<strong>核心吹牛探针</strong>之一。看似 trivia，实际：(1) 真生产环境跑过 cursor + 有过 nullable sort key 数据的人，<u>一定</u>踩过 <code>WHERE posted_at &lt; cursor.ts</code> 静悄悄漏 NULL 行的 bug；(2) 没踩过的人会直觉地说 "NULL 会排在末尾吧"——但说不出<strong>为什么</strong>，也说不出 <code>NULLS FIRST/LAST</code> 是方言相关且 PG / MySQL 默认相反。Q1 强答之后追，30 秒分辨真假经验。<br>
+      <span class="en-text">A cursor bluff-probe disguised as trivia. Anyone who's actually run cursor pagination on data with nullable sort keys has been bitten by <code>WHERE posted_at &lt; cursor.ts</code> silently dropping NULL rows. People who haven't will guess "NULLs end up at the bottom" but won't be able to explain <em>why</em>, won't know NULLS FIRST/LAST is dialect-dependent (PG ≠ MySQL default). Fire after a clean Q1 — tells you in 30 seconds whether they really shipped this.</span>
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📖 Q3 参考答案 / Reference</summary>
+  <div class="detail-body">
+    <h4>💥 根本问题 / The Trap</h4>
+    <ul>
+      <li><code>x &lt; NULL</code> 在 SQL 里结果是 <strong>NULL</strong>（不是 <code>false</code>）——SQL 三值逻辑（true / false / NULL），<code>WHERE</code> 子句只保留 <code>true</code> 的行</li>
+      <li>所以 <code>WHERE (posted_at, id) &gt; (cursor.ts, cursor.id)</code> 在 <code>posted_at IS NULL</code> 的行上整体求值为 NULL → <strong>这些行从分页结果里"静悄悄消失"</strong>——不报错、不警告</li>
+      <li>线下测试不易暴露（test fixture 一般 fully populated）；线上一旦有 NULL 数据进来才发现 "用户少了一些 transaction"</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🗂️ NULL 在 ORDER BY 里的位置 / NULL Ordering</h4>
+    <ul>
+      <li>SQL standard 不规定 NULL 在 ORDER BY 里的位置——<strong>方言相关</strong>：<ul>
+        <li><strong>PostgreSQL</strong>：ASC → <code>NULLS LAST</code>，DESC → <code>NULLS FIRST</code>（默认）</li>
+        <li><strong>MySQL</strong>：ASC → <code>NULLS FIRST</code>，DESC → <code>NULLS LAST</code>（跟 PG 完全相反）</li>
+        <li><strong>SQLite</strong>：ASC → <code>NULLS FIRST</code>（跟 MySQL 一样）</li>
+      </ul></li>
+      <li>🟢 <strong>显式写 <code>NULLS FIRST</code> / <code>NULLS LAST</code></strong> 避免方言陷阱（PG / Oracle / SQLite 3.30+ 支持）</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🔧 解决方案 / Fixes</h4>
+    <ul>
+      <li>🟢 <strong>方案 A · 选 NOT NULL 字段做 sort key</strong>：<code>created_at</code> / <code>id</code> 这种 immutable + NOT NULL 字段——最干净，唯一代价是 ordering 不能 100% 贴合产品要求</li>
+      <li>🟢 <strong>方案 B · 三值逻辑显式处理 cursor 比较</strong>：<pre style="font-size:13px;background:#f1f5f9;padding:8px;border-radius:4px;">-- 把 NULL-ness 提升到比较的<strong>第一层</strong>
+WHERE (posted_at IS NULL, posted_at, id)
+    &gt; (cursor.ts IS NULL, cursor.ts, cursor.id)
+ORDER BY posted_at IS NULL, posted_at, id;</pre>本质：先按 "是否 NULL" 分组，再在组内按值排序——<code>IS NULL</code> 结果是 boolean 而不是 NULL，规避三值逻辑</li>
+      <li>🟢 <strong>方案 C · COALESCE 成 sentinel</strong>：<code>ORDER BY COALESCE(posted_at, '9999-12-31'::timestamp), id</code>——简洁但<strong>破坏 index seek</strong>（函数作用在列上，需要 expression index 才能用上），写入也要保证 sentinel 永远 &gt; 真实值</li>
+      <li>🟡 <strong>方案 D · partial index</strong>：<code>CREATE INDEX ... WHERE posted_at IS NOT NULL</code> + 分两段查 NULL 段和非 NULL 段——复杂度高，只在性能压力大且方案 B 跑不动时考虑</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🐛 真实踩坑信号 / Real-world Tells</h4>
+    <ul>
+      <li>能说 "<u>线下测试都过了，线上才发现少了 pending transaction</u>" 这种具体故事 = 真踩过</li>
+      <li>能直接说 PG / MySQL 默认 NULL 位置相反 = 看过两边的 docs 或踩过迁移坑</li>
+      <li>主动提 <strong>index 的 NULL 排序方向必须匹配 <code>ORDER BY</code> 的 NULL 位置</strong>，否则即使有 index 也走 sort（PG 9.2+ 支持 <code>CREATE INDEX ... NULLS FIRST/LAST</code>）= 跑过 EXPLAIN ANALYZE 的人</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+    <ul>
+      <li>"NULL 跟其他值正常比较" → 直接踩三值逻辑陷阱</li>
+      <li>"我加了 ORDER BY 就有顺序了"（不显式 NULLS FIRST/LAST，跨数据库迁移踩坑）</li>
+      <li>"我们的 sort key 不会有 NULL" → 必须追问 schema 怎么保证（NOT NULL constraint？还是只是"目前没有"？）</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>📊 Q3 评价标准 / Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强 / Strong：</strong></p>
+    <ul>
+      <li>第一反应说出 <code>x &lt; NULL</code> 结果是 NULL（三值逻辑），导致 cursor 比较直接漏 NULL 行</li>
+      <li>知道 <code>NULLS FIRST / LAST</code> 是方言相关，能讲 PG ≠ MySQL 默认</li>
+      <li>能讲清至少 2 个解决方案（IS NULL 显式 / COALESCE / 选 NOT NULL key）并说出 trade-off</li>
+      <li>主动提 index 的 NULL 排序方向必须跟 ORDER BY 匹配，否则失去 index seek</li>
+      <li>能讲 "线下没暴露线上才发现" 的具体故事 — 真踩过</li>
+    </ul>
+    <p><strong>🟡 中等 / Okay：</strong></p>
+    <ul>
+      <li>知道 "NULL 会有问题" 但说不出是三值逻辑导致 cursor 比较返回 NULL</li>
+      <li>"我们的 sort key 不会 NULL" 作为回避（如果属实可接受，但要追问 schema 怎么保证）</li>
+      <li>能想到 ORDER BY 加 NULLS LAST 但讲不出为什么需要</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱 / Weak：</strong></p>
+    <ul>
+      <li>"NULL 应该自动排末尾吧" — 直觉但讲不出机制；🚩 没真跑过 nullable sort key 的 cursor 翻页</li>
+      <li>"NULL 跟值正常比较" — 完全没意识三值逻辑；🚩 SQL 基础缺失</li>
+      <li>"这种问题让 DB 自己处理" — 概念缺失；🚩 没设计意识</li>
+      <li>声称 "我们 ship 了 cursor + 有 nullable 数据" 但答不出 → 🚩 跟 Q1 强答冲突时是最强 bluff 信号</li>
+    </ul>
+  </div>
+</details>
+
 </div>
 </details><!-- end 追问 2 -->
 
@@ -1706,16 +1802,18 @@ LIMIT 20;</pre>
 <!--    追问 3: 前端联动 / Frontend Coordination (lifted from old Sub-Q2)     -->
 <!-- ====================================================================== -->
 <details class="followup-section fu-teal" id="q-be-frontend-sync" open>
-<summary>➜ 追问 3 / Follow-up 3 · 🎯 前端联动 / Frontend Coordination (Race &amp; UX) <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
+<summary>➜ 追问 3 / Follow-up 3 · 🎯 前端联动 / Frontend Coordination (Race &amp; UX) <span class="tag tag-time">~9 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
 <div class="followup-body">
 
 <div class="card" style="border-left:4px solid #0d9488;">
   <p style="color:var(--text-muted);">📌 <strong>关联背景 / Background</strong>：pagination 不只是后端 contract 的事——分页和 client 端交互（pull-to-refresh、in-flight 翻页、focus 触发自动刷新、tab 切换）紧密耦合。简历明确说 backend + RN frontend 都是他做的——这一类问题专门考察他有没有真处理过"<u>后端 response 回来时前端状态已经变了</u>"这类典型 fullstack 协作问题。<br><span class="en-text">Pagination doesn't end at the backend contract. It's tightly coupled with client interactions (pull-to-refresh, in-flight pagination, focus-triggered refresh, tab switch). Resume claims both backend and RN frontend — these probes test whether he's actually handled "response arrives after client state moved on" coordination problems.</span></p>
   <p style="color:var(--text-muted);font-size:15px;margin-top:8px;">
     🎯 <strong>Q1</strong>: ⚡ Pull-to-refresh + In-flight 翻页 race condition<br>
-    🎯 <strong>Q2-N</strong>: <span class="tag tag-tbd">TBD</span>（计划方向：infinite-scroll fetch 时机 &amp; debounce / list 实时插入 vs cursor 锚 / cache 失效与 stale data 显示 / 慢网 + offline mode UX）<br>
-    💡 <strong>触发规则 / When to fire</strong>：默认展开——Copi 是 RN dashboard，pull-to-refresh + infinite scroll 是 default UX。web admin 后台或 SSR list 跳过。<br>
-    <span class="en-text">Fire by default — Copi is RN dashboard, pull-to-refresh + infinite scroll is the default UX. Skip for web admin or SSR list.</span>
+    🎯 <strong>Q2</strong>: 🌀 Concurrent update 导致 row 漂移（Plaid amend 真场景，吹牛探针）<br>
+    🎯 <strong>Q3</strong>: 🎲 没 tiebreaker → PG 在不同 page 走不同 plan（深度吹牛探针）<br>
+    🎯 <strong>Q4-N</strong>: <span class="tag tag-tbd">TBD</span>（候选方向：infinite-scroll fetch 时机 &amp; debounce / list 实时插入 vs cursor 锚 / cache 失效与 stale data 显示 / 慢网 + offline mode UX）<br>
+    💡 <strong>触发规则 / When to fire</strong>：Q1 默认展开（Copi 是 RN dashboard，pull-to-refresh + infinite scroll 是 default UX）。Q2 默认展开——Plaid <code>/transactions/sync</code> 推 modified array 是 Copi 真场景，必踩。Q3 仅在候选人声称 ship 过 cursor + 使用 PG 时追加，且只在 追问 1 / 追问 2 主问题表现强（不弱）时打开。web admin 后台或 SSR list 整个追问 3 跳过。<br>
+    <span class="en-text">Fire Q1 + Q2 by default — RN dashboard + Plaid sync is Copi's real scenario. Fire Q3 only when candidate claimed PG-backed cursor pagination AND held up on Follow-up 1/2 main questions. Skip the whole follow-up for web admin / SSR list.</span>
   </p>
 </div>
 
@@ -1797,6 +1895,180 @@ LIMIT 20;</pre>
       <li>"React Query 什么都处理了" 但说不出什么机制 → 🚩 只是使用者</li>
       <li>"loading 时 disable pull-to-refresh" → 🚩 避问题，UX 差</li>
       <li>blindly append 所有 response 还说 "反正都是同一个列表" → 🚩 不理解问题本身</li>
+    </ul>
+  </div>
+</details>
+
+<hr style="margin:24px 0;border:none;border-top:1px dashed #94d5cb;">
+
+<!-- ============ Q2: Concurrent Update Row Drift ============ -->
+<h3 id="q-frontend-rowdrift" style="font-size:22px;color:#0d9488;margin-top:18px;">🎯 Q2 · 🌀 Concurrent update 导致 row 漂移 / Row Drift From Concurrent Updates <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#fee2e2;color:#991b1b;">BLUFF PROBE</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask · Q2</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Different concurrency angle. User is cursor-paginating sorted by <code>amount desc</code>. Between page 3 and page 4 loading, Plaid pushes a transaction update — and that update happens to be on the row that was your cursor anchor at the end of page 3. What does she actually see on page 4? Walk me through the failure mode."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "换一个并发角度。用户在用 cursor 按 <code>amount desc</code> 翻页。在 page 3 加载完到 page 4 加载之间，Plaid 推了一个 transaction update——正好改的是 page 3 末尾那条 cursor 锚的行。她在 page 4 实际会看到什么？把这个失败模式讲一下。"
+    </blockquote>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官小提示</strong> — 极强的 <strong>fullstack 协作探针</strong>。Plaid <code>/transactions/sync</code> 推 modified array 是 Copi 真场景，<code>pending → posted</code> 时 amount 经常从授权值变成 settlement 值（外汇 / 小费）。真做过这个集成的人马上能描述 skip / dupe 的具体机制；没做过的人会含糊说 "就更新一下啊"，完全没意识到 sort key 改变 = cursor 锚已经 "漂" 了。<br>
+      <span class="en-text">A strong fullstack-collab probe. Plaid <code>/transactions/sync</code> pushes a modified array — Copi's real scenario. <code>pending → posted</code> commonly mutates <code>amount</code> (FX, tip). Engineers who shipped this integration describe the skip / dupe mechanic immediately. Those who didn't will say "just update it" with zero awareness that mutating the sort key has drifted the cursor anchor.</span>
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📖 Q2 参考答案 / Reference</summary>
+  <div class="detail-body">
+    <h4>💥 失败模式 / Failure Mode</h4>
+    <ul>
+      <li>cursor 锚的行的 sort key 被 update 改了 → <code>WHERE amount &lt; cursor.amount</code> 比较的是 page 3 末尾时的 <code>cursor.amount</code> <em>快照</em>，但 row 本身已经 "漂" 到 list 别的位置</li>
+      <li>两种漂移方向：<ul>
+        <li><strong>amount 变小</strong>（pending → posted 金额变低）→ 该行漂到 page 4/5/...，但 cursor 比较还卡在原 amount → page 4 头部可能<u>跳过</u>原本应出现的中间数据</li>
+        <li><strong>amount 变大</strong>（少见但有：tip 加上后 settlement amount 变大）→ 该行漂回 page 1/2 → page 4 拉取时这条行还满足 <code>amount &lt; cursor.amount</code> → <u>重复出现</u></li>
+      </ul></li>
+      <li>真场景：Plaid <code>/transactions/sync</code> 的 modified array — Copi 必踩</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🔧 解决方案 / Fixes</h4>
+    <ul>
+      <li>🟢 <strong>方案 A · 用 immutable sort key</strong>：<code>created_at</code> / <code>id</code> — 这种字段写入后不会被 update 改 → 不会漂。代价：ordering 跟产品要求（按金额 / 状态）可能不一致，需要产品折中</li>
+      <li>🟢 <strong>方案 B · cursor 里 snapshot 时间戳 + server 端 dedup hint</strong>：cursor 带 <code>{ amount, id, snapshot_ts }</code>，server 返回 <code>modified_since_snapshot: [...]</code>，client 在新 page append 时按 id 做 dedup + 把 modified set 从其他 page 移除 / 插入</li>
+      <li>🟡 <strong>方案 C · MVCC snapshot isolation</strong>：整个分页会话用一个 server-side snapshot（PG 的 <code>REPEATABLE READ</code> + <code>SET TRANSACTION SNAPSHOT</code>）。理论干净，<u>实操几乎不可行</u>——长会话会拖住 vacuum 导致 bloat；stateless API 也不好维持 snapshot</li>
+      <li>🟢 <strong>方案 D · 接受 eventual consistency + UX 兜底</strong>：承认 "翻页期间数据可能变"，UI 提示 "Pull to refresh for latest" / 用 generation token 让用户感知到 list 已陈旧。Copi 金融场景这个最现实</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">📱 前端协作 / Frontend Coordination</h4>
+    <ul>
+      <li>client 端 dedup：所有 page response 按 <code>id</code> 入 Map，再按当前 sort 重排</li>
+      <li>对 Plaid 这种 source-of-truth 异步推 update，前端应该有 "rows updated" 信号区分 "新加的" vs "更新的" — 否则同一行在多 page 出现没办法分清是 bug 还是设计</li>
+      <li>infinite scroll 场景特别危险：用户看过 page 3，scroll 回去再 scroll 下来时，client cache 里的 page 3 可能跟新拉的 page 4 重叠 / 跳跃</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+    <ul>
+      <li>用 <code>amount</code> / <code>status</code> 这种 mutable 字段做 sort key 还不带 client-side dedup → 必踩 skip / dupe</li>
+      <li>"我们的 transaction 不会变" → 没考虑 Plaid pending → posted / amend 推送</li>
+      <li>blindly trust cursor 永远对 → 没观察过线上数据 / 没看 Plaid <code>/transactions/sync</code> docs</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>📊 Q2 评价标准 / Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强 / Strong：</strong></p>
+    <ul>
+      <li>立刻识别 <strong>mutable sort key 是问题根源</strong>——cursor 锚的 sort 值已经飘了</li>
+      <li>能讲清 <strong>skip 和 duplicate 两个方向</strong>的具体机制（amount 变小 vs 变大）</li>
+      <li>主动提 Plaid <code>/transactions/sync</code> modified array 或 pending → posted amount drift</li>
+      <li>能讨论 immutable-key vs snapshot-isolation vs accept-eventual 三个方向的 trade-off，并对 Copi 场景给出选择</li>
+      <li>能讲前端 dedup 策略（id-based Map + 重排）</li>
+    </ul>
+    <p><strong>🟡 中等 / Okay：</strong></p>
+    <ul>
+      <li>意识到 "可能有问题" 但讲不清是 sort key mutation 引起</li>
+      <li>想到 "用 created_at 就不会变" 但说不出为什么（讲不出 cursor anchor drift 机制）</li>
+      <li>能讲 dedup 但没讲到 server / client 的责任划分</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱 / Weak：</strong></p>
+    <ul>
+      <li>"我们的 transaction 不会变" → 没考虑 Plaid pending → posted / amend；🚩 没真用过 Plaid <code>/sync</code></li>
+      <li>"就更新一下啊" → 完全没意识 sort key 漂移；🚩 没设计过分页 + 异步 update 共存的系统</li>
+      <li>blindly trust 每次 cursor → 没观察过线上数据；🚩 没线上 ownership</li>
+    </ul>
+  </div>
+</details>
+
+<hr style="margin:24px 0;border:none;border-top:1px dashed #94d5cb;">
+
+<!-- ============ Q3: No Tiebreaker → PG Plan Drift ============ -->
+<h3 id="q-frontend-plandrift" style="font-size:22px;color:#0d9488;margin-top:18px;">🎯 Q3 · 🎲 没 tiebreaker → PG 在不同 page 走不同 plan / No Tiebreaker → PG Plan Drift <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#fee2e2;color:#991b1b;">BLUFF PROBE</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask · Q3</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Postgres-specific failure mode. Suppose your cursor sort key is just <code>created_at</code>, no tiebreaker. As your user pages through, what can the Postgres planner do between page calls that the frontend would actually observe? And why does the result look inconsistent even when the underlying data hasn't changed?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "Postgres 特有的失败模式。假设你的 cursor sort key 只有 <code>created_at</code>，没有 tiebreaker。用户翻页时，Postgres planner 在不同 page 调用之间能做什么、前端实际会观察到什么？为什么底层数据没变前端还会看到不一致的结果？"
+    </blockquote>
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官小提示</strong> — cursor 相关<strong>最深的吹牛探针</strong>。99% 的人会答 "加 tiebreaker 就行"——但这只是<u>解决方案</u>。真问题是：<strong>为什么没 tiebreaker 会出错？</strong>答案不是 "数据变了"——是 Postgres planner 在不同 call 之间可能选不同 plan（Index Scan vs Bitmap Heap + Sort），不同 plan 对同 <code>created_at</code> 多行的相对 ordering 不被保证。能说出 "plan 漂移" 和 "statistics-driven 计划选择" 的，就是真在线上跑过 EXPLAIN ANALYZE 和被生产 bug 教育过的人。<br>
+      <span class="en-text">Deepest cursor probe. 99% of candidates jump to "add a tiebreaker" — but that's the <em>fix</em>. The real question is <em>why</em> the bug exists without one. Not "data changed" — it's that PG's planner can pick different plans across calls (Index Scan vs Bitmap Heap + Sort), and the relative ordering of same-<code>created_at</code> rows is plan-dependent. Engineers who can articulate "plan drift" and statistics-driven plan selection have actually been bitten in production.</span>
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📖 Q3 参考答案 / Reference</summary>
+  <div class="detail-body">
+    <h4>💥 真实失败模式 / Real Failure Mode</h4>
+    <ul>
+      <li>没 tiebreaker → 同 <code>created_at</code> 多行的相对 ordering <strong>由 planner 自由决定</strong>（SQL standard 不规定，PG 也不保证）</li>
+      <li>planner 在 page 3 可能走 <strong>Index Scan</strong>（按 index 顺序 = 物理插入顺序）；page 4 可能走 <strong>Bitmap Heap Scan + Sort</strong>（按 heap 物理顺序拉，再 in-memory sort）— 同时间戳行的 tie-breaking 顺序<u>完全不同</u></li>
+      <li>结果：page 3 末尾的同 <code>created_at</code> 行，到 page 4 可能在头部又出现（dup），或者直接消失（skip）— 跟数据是否被改无关</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🎲 触发 plan 切换的因素 / What Causes Plan Switch</h4>
+    <ul>
+      <li><strong>statistics 更新</strong>（autovacuum / ANALYZE 跑过）→ planner 重估 cost</li>
+      <li><strong>LIMIT 值不同</strong> → 小 LIMIT 倾向 Index Scan，大 LIMIT 倾向 Bitmap + Sort</li>
+      <li><strong>cache warmup 状态</strong> → buffer hit rate 变化影响 cost 估算</li>
+      <li><strong>WHERE 子句不同</strong>（不同 cursor 值导致 selectivity 估算变化）</li>
+      <li>注意：<u>同 connection、同 prepared statement</u> 都可能切 plan（PG 12+ <code>plan_cache_mode</code>），不是要重连才会切</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🔧 解决方案 / Fix</h4>
+    <ul>
+      <li>🟢 <strong>cursor 永远加 unique tiebreaker</strong>：<code>(created_at, id)</code> 复合 — id 是 PK 保证 unique，组合后 ordering 完全确定，planner 没 "自由发挥" 空间</li>
+      <li>🟢 <strong>index 必须匹配 cursor key 的复合顺序</strong>：<code>CREATE INDEX ... ON tx (created_at, id)</code> — 否则 planner 仍可能不用这个 index，回到 Bitmap + Sort</li>
+      <li>🟢 ORDER BY 也必须 <code>ORDER BY created_at, id</code> 完整列出 — 不能只写 <code>ORDER BY created_at</code> 期望 PG "懂"</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🛠️ 验证手段 / Verification</h4>
+    <ul>
+      <li>同 query 多次跑 <code>EXPLAIN (ANALYZE, BUFFERS)</code>，对比不同 LIMIT / 不同 cursor 值下的 plan 是否稳定</li>
+      <li>生产开 <code>pg_stat_statements</code> + 看 <code>plan_id</code> 是否在同 queryid 下变化</li>
+      <li>autovacuum / 大批量 insert 后立刻 ANALYZE，再跑分页对比结果稳定性</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+    <ul>
+      <li>只 <code>ORDER BY single non-unique column</code> 还期待 "差不多就行" — 必踩</li>
+      <li>线下小 dataset 走 Seq Scan 看不出问题，线上才暴露 — "我本地测了没问题" 是这个 bug 的经典特征</li>
+      <li>"重启 connection 就好了" — 不知道 statistics-driven plan 选择，治标不治本</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>📊 Q3 评价标准 / Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强 / Strong：</strong></p>
+    <ul>
+      <li>立刻说出 "planner 在不同 call 可能选不同 plan"——不是数据变了，是 plan 变了</li>
+      <li>能讲为什么同 <code>created_at</code> 多行的相对顺序<u>不被保证</u>（plan-dependent，SQL standard 不规定）</li>
+      <li>能举出至少 2 个触发 plan 切换的因素（statistics / LIMIT / cache / autovacuum）</li>
+      <li>用 EXPLAIN ANALYZE 验证过 plan 稳定性 — 真在线上跑过</li>
+      <li>明确说 cursor 必须 unique tiebreaker + index 复合匹配 + ORDER BY 完整列出（三件套）</li>
+    </ul>
+    <p><strong>🟡 中等 / Okay：</strong></p>
+    <ul>
+      <li>知道 "没 tiebreaker 会有问题" 但说不出 plan drift 是机制 — 只能模糊说 "顺序不确定"</li>
+      <li>想到 ORDER BY id 兜底但讲不清为什么 — 知其然不知其所以然</li>
+      <li>能想到加 EXPLAIN 但没真跑过</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱 / Weak：</strong></p>
+    <ul>
+      <li>"ORDER BY 就保证顺序了" — 完全没意识 plan-dependent ordering；🚩 SQL 心智模型缺失</li>
+      <li>"重启就好了" — 不理解 statistics-driven plan；🚩 没线上数据库 ownership</li>
+      <li>线下没遇到过 / 觉得 "加了 ORDER BY 就万事大吉" → 🚩 没在生产规模上跑过分页</li>
+      <li>声称 ship 过分页但答不出 → 🚩 跟 追问 1 / 追问 2 强答冲突时 bluff 信号最强</li>
     </ul>
   </div>
 </details>
@@ -1887,7 +2159,10 @@ LIMIT 20;</pre>
       <tr><td>追问 1 Step 2 — SQL 性能差异（scan+discard vs index seek，CORE）</td><td></td><td></td></tr>
       <tr><td>追问 2 Q1 — Cursor 内容与编码（composite / base64 / direction）</td><td></td><td></td></tr>
       <tr><td>追问 2 Q2 — Filter / Sort 切换 cursor 失效（默认必问，吹牛探针）</td><td></td><td></td></tr>
+      <tr><td>追问 2 Q3 — NULL 排序 + 三值逻辑（深度吹牛探针，Q1 强答后追）</td><td></td><td></td></tr>
       <tr><td>追问 3 Q1 — Pull-to-refresh + In-flight 翻页 race condition</td><td></td><td></td></tr>
+      <tr><td>追问 3 Q2 — Concurrent update 导致 row 漂移（Plaid amend 真场景）</td><td></td><td></td></tr>
+      <tr><td>追问 3 Q3 — 没 tiebreaker → PG plan 漂移（深度吹牛探针）</td><td></td><td></td></tr>
       <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构 owner vs 执行者 信号</td><td></td><td></td></tr>
