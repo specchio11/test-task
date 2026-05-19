@@ -152,6 +152,8 @@
   details.followup-section.fu-green  { border-left: 4px solid var(--green); }
   details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
   details.followup-section.fu-purple { border-left: 4px solid var(--accent); }
+  details.followup-section.fu-teal   { border-left: 4px solid #0d9488; }
+  .qp-sub.teal   { color: #0d9488; border-left: 3px solid #0d9488; }
   .followup-body { padding: 14px 18px 18px; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
@@ -344,6 +346,13 @@
     <a class="qp-sub green" href="#q-be-context-ref" onclick="jump('q-be-context-ref');return false;">📖 参考答案</a>
     <a class="qp-sub green" href="#q-be-context-eval" onclick="jump('q-be-context-eval');return false;">🎯 候选人回答评价</a>
   </div>
+
+  <details class="qp-followups" open>
+    <summary>↳ 追问 / Follow-ups（1 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub teal" href="#q-be-pagination" onclick="jump('q-be-pagination');return false;">追问 1 — Pagination contract &amp; SQL 性能</a>
+    </div>
+  </details>
   <a class="qp-link" href="#flow-3-ai" onclick="jump('flow-3-ai');return false;" style="background:#fff7ed;color:#ea580c;font-weight:700;margin-top:10px;border-left-color:#ea580c;">📌 FLOW 3 · Multi-Agent AI <span class="tag tag-tbd">TBD</span></a>
 
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
@@ -391,8 +400,8 @@
           <strong>Backend Services (Node / Express + Plaid)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Architected and owned end-to-end backend services… establishing backward-compatible REST APIs, pagination contracts, and service boundaries… Designed fault-tolerant Plaid integration achieving 98.9% pipeline reliability…"</span>
         </td>
-        <td>1 主问题 (more 追问 TBD)<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + follow-ups TBD</span></td>
-        <td><strong>~3 min (so far)</strong></td>
+        <td>1 主问题 + 1 追问 (more 追问 TBD)<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main + 1 follow-up (more TBD)</span></td>
+        <td><strong>~7 min (so far)</strong></td>
       </tr>
       <tr style="background:#fff7ed;">
         <td><strong style="color:#ea580c;">FLOW 3</strong></td>
@@ -1122,7 +1131,7 @@
 <!-- ====================================================================== -->
 <h2 id="flow-2-backend" style="background:#f0fdf4;border-left:6px solid var(--green);color:var(--green);font-size:28px;">
   📌 FLOW 2 · Backend Services (Node/Express + Plaid)
-  <span class="tag tag-time">~3 min (so far)</span>
+  <span class="tag tag-time">~7 min (so far)</span>
 </h2>
 
 <div class="card" style="border-left:4px solid var(--green);">
@@ -1132,8 +1141,9 @@
   </blockquote>
   <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
     ✅ <strong>主问题 / Main question</strong>：Q1 先锚定<strong>项目背景 + 框架选型 + 选型理由</strong>——所谓"architected"到底架了什么、为什么。<br>
-    ➜ <strong>追问 / Follow-ups</strong>：<span class="tag tag-tbd">TBD</span>（计划方向：REST 契约 &amp; 向后兼容、pagination、service boundaries、Plaid 容错与 98.9% 数字的来源）。<br>
-    <span class="en-text">✅ <strong>Main question</strong> anchors <strong>project context + framework + reasoning</strong> — what does "architected" actually mean here? ➜ Follow-ups TBD (planned: REST contracts &amp; backward-compat, pagination, service boundaries, Plaid fault tolerance + 98.9% number).</span>
+    ➜ <strong>追问 1 / Follow-up 1</strong>：📑 <strong>Pagination contract</strong>——先确认 contract 形态（cursor vs offset），再深挖 SQL 层性能差异（<u>核心考察</u>，直接戳穿"我设计了 pagination contract"是真懂还是念词）。<br>
+    ➜ <strong>其余追问 / Other follow-ups</strong>：<span class="tag tag-tbd">TBD</span>（计划方向：REST 契约 &amp; 向后兼容、service boundaries、Plaid 容错与 98.9% 数字的来源）。<br>
+    <span class="en-text">✅ <strong>Main question</strong> anchors <strong>project context + framework + reasoning</strong>. ➜ <strong>Follow-up 1</strong>: pagination contract shape + SQL performance (CORE — tests whether "designed pagination contracts" is real or vocab). ➜ Other follow-ups TBD (REST contracts, service boundaries, Plaid 98.9%).</span>
   </p>
 </div>
 
@@ -1268,6 +1278,187 @@
 <hr class="separator">
 
 <!-- ====================================================================== -->
+<!--    追问 1: Pagination Contract — API 形式 + SQL 性能  (CORE PROBE)      -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-teal" id="q-be-pagination" open>
+<summary>➜ 追问 1 / Follow-up 1 · 📑 Pagination Contract — API 形式 + SQL 性能 / Contract Shape + SQL Perf <span class="tag tag-time">~4 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
+<div class="followup-body">
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 关联背景 / Background: 简历写 "<u>establishing pagination contracts</u>"——这词 fancy 但最容易吹。这一问<strong>分两步</strong>：先 nail down 她系统<u>实际</u>用的是什么 contract（事实 baseline + 表达清晰度信号），再深挖 SQL 层 offset 和 cursor / keyset 的性能差异（真功夫）。<br><span class="en-text">Resume claims "establishing pagination contracts" — fancy term, easy to bluff. Run in <strong>two steps</strong>: first nail down what contract her system actually uses (factual baseline + clarity signal), then dig into the SQL-layer performance difference between offset vs cursor/keyset (the real depth probe).</span></p>
+</div>
+
+<details open>
+  <summary>🎤 提问 / Ask（两步走 / two steps）</summary>
+  <div class="detail-body">
+    <p style="color:var(--text-muted);font-size:16px;margin:0 0 10px;">
+      <strong>先问第一步，等他答完再问第二步。</strong><br>
+      <span class="en-text"><strong>Ask step 1 first, wait for the answer, then ask step 2.</strong></span>
+    </p>
+
+    <h4 style="color:#0d9488;margin-top:14px;">▸ 第一步 / Step 1 — Contract 形态 / Contract Shape</h4>
+    <blockquote class="ask-en">
+      "Let's zoom in on the pagination part. When your mobile app fetches a list of transactions, what does the actual contract look like? Are you returning a cursor or next-page token, or is the client passing <code>offset</code> + <code>limit</code> (or <code>page</code> + <code>pageSize</code>)?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "具体看 pagination 这块。你的移动端拉 transaction 列表的时候，contract 长什么样？你是返回一个 cursor / next page token，还是 client 直接传 <code>offset</code> + <code>limit</code>（或者 <code>page</code> + <code>pageSize</code>）？"
+    </blockquote>
+
+    <h4 style="color:#0d9488;margin-top:14px;">▸ 第二步 / Step 2 — SQL 性能差异 / SQL Performance Difference</h4>
+    <blockquote class="ask-en">
+      "OK. Now zoom into the SQL side — when your backend actually queries Postgres for, say, page 50 of a user's transactions, what's the performance difference between an offset/limit query and a cursor / keyset approach? Where does it bite?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "好。那 SQL 层面——你 backend 真的去 Postgres 查比如第 50 页 transaction 的时候，offset/limit 跟 cursor / keyset 这两种方式性能差别在哪儿？什么时候会咬人？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — Step 1 本身就是信号：真做过 "pagination contract" 的人应该<u>立刻</u>说清楚自己用的哪种、参数名是什么。含糊回答（"嗯…就是 page 和 pageSize 吧"）= 🚩。<br>
+      <strong>第二步是真功夫考察</strong>，重点听三件事：<br>
+      1️⃣ 能不能说清 <strong>offset 为什么慢</strong>——DB 要真的 scan 并 discard 前 N 行，<u>不是</u>因为"数据多"。<br>
+      2️⃣ 能不能说清 <strong>cursor 为什么快</strong>——靠 index seek 直接定位，每页 O(limit) 恒定。<br>
+      3️⃣ Bonus：主动提到 cursor 的 trade-off（不能 jump page、total count 难拿、需要 deterministic sort + tiebreaker）→ senior 信号。<br>
+      🚨 <strong>金融数据特别 trap</strong>：transaction 列表频繁有新插入——如果他说他用 offset 还<u>毫无察觉</u>这会导致跳记录/重复记录，等于自己暴露没真观察过线上数据。<br>
+      <strong>Interviewer note</strong> — Step 1 is itself a signal: anyone who really designed a pagination contract should immediately name the scheme and parameters. Vague answers ("uh, page + pageSize?") = 🚩.<br>
+      <strong>Step 2 is the depth probe.</strong> Listen for: (1) <em>Why offset is slow</em> — DB physically scans and discards N rows, NOT just "more data". (2) <em>Why cursor is fast</em> — index seek, O(limit) per page. (3) Bonus: unprompted mention of cursor's trade-offs (no page jump, total count hard, requires deterministic sort + tiebreaker) → senior signal.<br>
+      🚨 <strong>Financial-data trap</strong>: transaction lists have frequent inserts — if he uses offset and shows zero awareness of skipped/duplicated rows on scroll, he's never actually watched prod data.
+    </blockquote>
+  </div>
+</details>
+
+<details id="q-be-pagination-ref">
+  <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Interviewer Reference</summary>
+  <div class="detail-body">
+
+    <h4>📋 两种 contract 形态对比 / Contract Shape Comparison</h4>
+    <table>
+      <thead><tr><th></th><th>Offset / Limit (or page+pageSize)</th><th>Cursor / Next-page token (keyset)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>请求示例 / Request</strong></td>
+          <td><code>GET /transactions?offset=200&amp;limit=20</code></td>
+          <td><code>GET /transactions?cursor=eyJ0c...&amp;limit=20</code></td>
+        </tr>
+        <tr>
+          <td><strong>响应 / Response</strong></td>
+          <td><code>{ items: [...], total: 5234, page: 11 }</code></td>
+          <td><code>{ items: [...], nextCursor: "eyJ0c..." | null }</code></td>
+        </tr>
+        <tr>
+          <td><strong>能否跳页 / Random page jump</strong></td>
+          <td>✅ 可以直接跳到第 47 页</td>
+          <td>❌ 只能 forward / backward 顺序翻</td>
+        </tr>
+        <tr>
+          <td><strong>Total count</strong></td>
+          <td>✅ 容易拿（一次 COUNT(*)）</td>
+          <td>⚠️ 不直接给，单独 endpoint 或近似值</td>
+        </tr>
+        <tr>
+          <td><strong>新数据插入时的稳定性</strong></td>
+          <td>🚩 不稳定：会跳记录或重复记录</td>
+          <td>✅ 稳定：cursor 锚定具体行，不受插入影响</td>
+        </tr>
+        <tr>
+          <td><strong>深页性能</strong></td>
+          <td>🚩 越深越慢（线性恶化）</td>
+          <td>✅ 恒定（每页 O(limit)）</td>
+        </tr>
+        <tr>
+          <td><strong>典型场景</strong></td>
+          <td>admin 后台、需要跳页、数据相对静态</td>
+          <td>移动端 infinite scroll、feed、log、transaction list</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-top:14px;">🔬 SQL 层性能差异 / SQL-layer Performance（核心 / CORE）</h4>
+
+    <p><strong>① Offset / Limit 查询：</strong></p>
+    <pre style="background:#0f172a;color:#e2e8f0;padding:10px;border-radius:6px;font-size:13px;overflow-x:auto;">SELECT * FROM transactions
+WHERE user_id = $1
+ORDER BY created_at DESC, id DESC
+LIMIT 20 OFFSET 10000;</pre>
+    <ul>
+      <li>DB 必须沿 index 顺序<strong>真的读出</strong>前 10,000 行然后<strong>丢掉</strong>，才能返回第 10,001~10,020 行<br><span class="en-text">DB must physically <u>read</u> 10,000 rows along the index then <u>discard</u> them before returning rows 10,001-10,020</span></li>
+      <li>成本：<strong>O(offset + limit)</strong>——offset 越大越慢，<u>线性恶化</u></li>
+      <li>50 万 transaction 的用户翻到深页 → 几百毫秒甚至秒级</li>
+      <li><strong>错觉来源</strong>：很多人以为 "我加了 index 就 OK 了"——index 让 ORDER BY 不需要 sort，但<u>不能让 DB 跳过</u> N 行；B-tree 不支持 "skip ahead"</li>
+    </ul>
+
+    <p style="margin-top:10px;"><strong>② Cursor / Keyset 查询：</strong></p>
+    <pre style="background:#0f172a;color:#e2e8f0;padding:10px;border-radius:6px;font-size:13px;overflow-x:auto;">SELECT * FROM transactions
+WHERE user_id = $1
+  AND (created_at, id) &lt; ($2, $3)   -- $2,$3 来自上一页最后一行
+ORDER BY created_at DESC, id DESC
+LIMIT 20;</pre>
+    <ul>
+      <li>用 composite index <code>(user_id, created_at DESC, id DESC)</code> 直接<strong>index seek</strong> 定位到 cursor 位置，然后顺序读 20 行<br><span class="en-text">Index seek straight to the cursor position, then sequential read of 20 rows</span></li>
+      <li>成本：<strong>O(log n + limit)</strong>——每页恒定，跟翻到多深无关</li>
+      <li>⚠️ <strong>关键</strong>：必须有 <u>deterministic sort</u>（sort key + tiebreaker，如 <code>created_at + id</code>）；只用 <code>created_at</code> 会在同一秒多条 transaction 时漏数据</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">💰 金融 transaction 列表为什么必须 cursor / Why Cursor for Transaction Lists</h4>
+    <ul>
+      <li>银行 transaction 实时流入 → 用 offset 翻页时新插入会让所有 offset shift，导致<strong>跳记录 / 重复显示</strong>。<br><span class="en-text">Real-time inserts shift all offsets → users see skipped or duplicated rows on scroll.</span></li>
+      <li>移动端只做 infinite scroll，<u>不需要 jump page</u>，cursor 没有任何缺点</li>
+      <li>Plaid 自家 <code>/transactions/sync</code> 用的也是 cursor (<code>cursor</code> 字段)——熟悉 Plaid 的人应该顺手提到</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🎯 Cursor 设计细节 / Cursor Design Details（区分 "会做" vs "念词"）</h4>
+    <ul>
+      <li><strong>Cursor 内容</strong>：sort key + tiebreaker（<code>{ createdAt: "2024-...", id: "uuid" }</code>），base64 encode 防止 client 篡改/解析</li>
+      <li><strong>Sort 必须 deterministic</strong>：单字段 <code>created_at</code> 不够，必须 <code>(created_at, id)</code> 作 composite key</li>
+      <li><strong>Bidirectional</strong>：要不要支持往回翻？API 设计选择，影响 cursor encoding（要不要带 direction）</li>
+      <li><strong>Cursor 失效</strong>：如果 cursor 指向的行被删了怎么办？降级到 timestamp 邻近行 or 报错？</li>
+      <li><strong>不要让 client 解析 cursor</strong>——这是 opaque token，未来想换 schema 不破坏 client</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+    <ul>
+      <li>🚩 给 transaction 列表用 offset 并且 "没遇到过问题" → 说明没真观察过用户在 prod 翻页</li>
+      <li>🚩 cursor 只 encode 一个 timestamp，没有 tiebreaker → 同秒多条交易时会漏</li>
+      <li>🚩 cursor 直接暴露 DB primary key，client 解析它做业务逻辑 → 等于把 internal schema 泄漏到 API</li>
+      <li>🚩 "我加了 index 所以 offset 也快" → 没真跑过 <code>EXPLAIN ANALYZE</code></li>
+    </ul>
+  </div>
+</details>
+
+<details id="q-be-pagination-eval">
+  <summary>🎯 追问 1 候选人回答评价 / Follow-up 1 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>Step 1 立刻说清自己用的形态（cursor 或 offset），含参数名 + response 形状<br><span class="en-text">Names contract shape immediately with params + response shape</span></li>
+      <li>Step 2 解释清楚 offset 是 <strong>"scan + discard"</strong>，cursor 是 <strong>"index seek"</strong>，能口头给 SQL 例子<br><span class="en-text">Explains offset = "scan + discard", cursor = "index seek"; can sketch SQL verbally</span></li>
+      <li>主动提到 <strong>deterministic sort 需要 tiebreaker</strong>（不能只用 <code>created_at</code>）<br><span class="en-text">Unprompted: deterministic sort needs tiebreaker (not just <code>created_at</code>)</span></li>
+      <li>主动提到 <strong>金融数据频繁插入</strong> → offset 会跳/重复 → 所以选 cursor<br><span class="en-text">Unprompted: frequent inserts → offset skips/duplicates → cursor is right choice</span></li>
+      <li>能说出 cursor 的 trade-off（不能 jump page、total count 难拿、cursor 失效的处理）→ senior 信号<br><span class="en-text">Names cursor's trade-offs (no jump, total count hard, cursor invalidation handling) — senior signal</span></li>
+      <li>Bonus：提到 Plaid <code>/transactions/sync</code> 本身也是 cursor-based / 跑过 <code>EXPLAIN ANALYZE</code><br><span class="en-text">Bonus: notes Plaid <code>/transactions/sync</code> is cursor-based / has run <code>EXPLAIN ANALYZE</code></span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道 cursor 比 offset "快" 但说不清原理 — <span class="en-text">Knows cursor is "faster" but vague on why</span><br>→ 追问 "DB 做 offset 的时候<u>具体</u>怎么执行的？" / Probe "what exactly does the DB do for an OFFSET?"</li>
+      <li>用 offset 但承认深页慢，没主动提到金融数据 insert 问题 — <span class="en-text">Uses offset, admits deep-page slow, but misses the insert/skip issue</span><br>→ 追问 "如果用户一边下拉一边新交易进来，会发生什么？" / Probe the insert-during-scroll scenario</li>
+      <li>知道 cursor 这个词但说不出 encode 什么、为什么要 tiebreaker — <span class="en-text">Knows the term but can't describe encoding or tiebreaker</span><br>→ 🟡 概念懂，落地经验不足</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>说不清自己用的什么 contract / 参数名都记不清 — <span class="en-text">Can't name contract shape or parameters</span><br>→ 🚩 "establishing pagination contracts" 是吹的 / Resume claim is bluff</li>
+      <li>"Offset 慢是因为数据多了" / 完全不知道 scan+discard 机制 — <span class="en-text">"Offset is slow because there's more data" — no scan+discard awareness</span><br>→ 🚩 没真观察过 DB 执行 / Has never looked at a query plan</li>
+      <li>没听过 cursor / keyset pagination — <span class="en-text">Never heard of cursor / keyset pagination</span><br>→ 🚩 "designed pagination contracts" 但不知道主流方案之一 / Claims to design contracts but doesn't know a mainstream pattern</li>
+      <li>给 transaction 列表用 offset 还觉得 "没问题" — <span class="en-text">Uses offset for transaction list and sees no issue</span><br>→ 🚩 没真上过线 / 没真处理过 prod incident / Never shipped to prod with real user load</li>
+      <li>"我加了 index 所以 offset 也很快" — <span class="en-text">"I added an index so offset is also fast"</span><br>→ 🚩 误解了 index 作用 — index 让 sort 不用做，但 B-tree 不能 skip rows / Misunderstands index — it skips sort, not rows</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 1 -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
 <!--                          FLOW 3 PLACEHOLDER                            -->
 <!-- ====================================================================== -->
 <h2 id="flow-3-ai" style="background:#fff7ed;border-left:6px solid #ea580c;color:#ea580c;font-size:28px;">
@@ -1344,6 +1535,8 @@
       <tr><td>追问 3 — 微前端眼界（STRETCH）</td><td></td><td></td></tr>
       <tr style="background:#f0fdf4;"><td colspan="3" style="font-weight:700;color:var(--green);">FLOW 2 · Backend (Node/Express + Plaid)</td></tr>
       <tr><td>Q1 主问题 — 项目背景 + 框架选型 + 选型理由</td><td></td><td></td></tr>
+      <tr><td>追问 1 Step 1 — Pagination contract 形态（cursor vs offset）</td><td></td><td></td></tr>
+      <tr><td>追问 1 Step 2 — SQL 性能差异（scan+discard vs index seek，CORE）</td><td></td><td></td></tr>
       <tr style="background:#fff7ed;"><td colspan="3" style="font-weight:700;color:#ea580c;">FLOW 3 · Multi-Agent AI (TBD)</td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构 owner vs 执行者 信号</td><td></td><td></td></tr>
