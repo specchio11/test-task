@@ -666,6 +666,187 @@
   </div>
 </details>
 
+<!-- ===== Conditional sub-questions: real-time stream + interactivity ===== -->
+<details id="q5-conditional">
+  <summary>🌿 条件追问 / Conditional Probes — <strong>仅当 Step 2 答得好 / 项目命中场景</strong>时展开 / Only fire if Step 2 was strong AND the scenario fits</summary>
+  <div class="detail-body">
+    <div class="card">
+      <blockquote class="interviewer-note">
+        <strong>⚠️ 使用说明 / How to use</strong> — 这两个 sub-Q 是<strong>架构级</strong>追问，不是必问。打开规则：<br>
+        • <strong>Sub-Q1（实时流）</strong>：仅当他在 Step 2 主动或被问出有 realtime / streaming data（行情、自动刷新持仓、推送）时再展开。如果他说"数据是用户拉刷新的"，跳过这题。<br>
+        • <strong>Sub-Q2（交互）</strong>：仅当他说有 zoom / pan / 多 panel 联动 / mobile gesture 时再展开。简单只读卡片 dashboard 跳过。<br>
+        <strong>Interviewer note</strong> — Both are <strong>architectural</strong> probes, not mandatory. Open Sub-Q1 only if he has live/streaming data. Open Sub-Q2 only if there's real interactivity (zoom, pan, multi-panel sync, mobile gestures). Skip otherwise.
+      </blockquote>
+    </div>
+
+    <!-- ============ Sub-Q1: Real-time Data Stream Architecture ============ -->
+    <h4 style="color:var(--blue);font-size:20px;margin-top:18px;">▸ Sub-Q1 — 实时数据流架构 / Real-time Data Stream Architecture</h4>
+
+    <details open>
+      <summary>🎤 提问 / Ask · Sub-Q1</summary>
+      <div class="detail-body">
+        <blockquote class="ask-en">
+          "If your dashboard had live data — say streaming price ticks, or auto-refreshed positions — how did you handle the streaming side? Specifically: what does your reconnect look like, do you backfill missed ticks when you reconnect, and what happens when the user backgrounds the tab for a while?"
+        </blockquote>
+        <blockquote class="ask-cn">
+          "如果你们 dashboard 有实时数据——比如行情推送，或者持仓自动刷新——你是怎么处理流式那一层的？具体说：你们的断线重连长什么样？连上之后会不会补齐这段时间漏掉的 tick？用户把 tab 切到后台一段时间再回来，又会怎么处理？"
+        </blockquote>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 Sub-Q1 参考答案 / Reference</summary>
+      <div class="detail-body">
+        <h4>🔌 传输协议选型 / Transport choice</h4>
+        <ul>
+          <li><strong>WebSocket</strong> — 双向、低延迟，行情/聊天/协作的标配</li>
+          <li><strong>SSE (Server-Sent Events)</strong> — 单向 server→client，比 WS 简单，HTTP/2 友好，<u>自带断线重连</u></li>
+          <li><strong>Long polling</strong> — 兜底方案；现代项目几乎不再用</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🔁 断线重连 / Reconnection strategy</h4>
+        <ul>
+          <li>🟢 <strong>指数退避 + jitter</strong>（1s → 2s → 4s → 8s + 随机偏移），避免雪崩重连<br><span class="en-text">Exponential backoff with jitter to avoid thundering-herd reconnects</span></li>
+          <li>🟢 <strong>区分错误类型</strong>：网络断 vs auth 失效 vs 服务端 5xx → 重连策略不同<br><span class="en-text">Distinguish network drop vs auth expiry vs 5xx — different reconnect strategy</span></li>
+          <li>🟡 <strong>最大重连次数 + 用户提示</strong>，长时间断要降级 UI（show stale banner）<br><span class="en-text">Max retries + degraded UI banner ("data may be stale")</span></li>
+        </ul>
+
+        <h4 style="margin-top:14px;">⏪ Backfill / 补齐漏 tick</h4>
+        <ul>
+          <li>🟢 重连之后用 REST 拉 <code>[lastSeenTs, now]</code> 这段历史，合并进 buffer，再 resume 流<br><span class="en-text">On reconnect: REST-fetch <code>[lastSeenTs, now]</code> gap, merge, then resume stream</span></li>
+          <li>🟢 <strong>去重</strong>：每条消息带 sequence number 或 timestamp；merge 时按 seq 去重<br><span class="en-text">Dedupe via sequence number or timestamp on merge</span></li>
+          <li>🟢 <strong>乱序处理</strong>：late tick 按 seq 插回正确位置，或丢弃（依赖业务容忍度）<br><span class="en-text">Out-of-order ticks: reorder by seq or drop based on tolerance</span></li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🌒 Tab 后台 / Page visibility</h4>
+        <ul>
+          <li>🟢 <strong>Page Visibility API</strong> 监听 <code>visibilitychange</code></li>
+          <li>选择策略（两种都合理）：<br>
+            (a) <strong>暂停 / throttle</strong> 渲染但保持 WS 连接 → 切回来重新 render 最新 snapshot<br>
+            (b) <strong>断开</strong> WS 节省资源 → 切回来走 reconnect + backfill 流程</li>
+          <li>🚩 红旗：tab 后台时仍然 60 FPS 渲染，电量爆炸</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">💾 内存 / 缓冲管理</h4>
+        <ul>
+          <li>🟢 <strong>Ring buffer</strong> 或 max-N 限制——长时间运行的 dashboard，无上限 buffer 必 OOM<br><span class="en-text">Ring buffer / capped buffer — unbounded buffer = OOM in long-running dashboards</span></li>
+          <li>🟢 <strong>组件 unmount 时 cleanup</strong>：close WS、clear interval、abort fetch（典型 RN 多页面切换坑）<br><span class="en-text">Cleanup on unmount — close WS / clear intervals / abort fetches</span></li>
+        </ul>
+
+        <h4 style="margin-top:14px;">📈 业务层细节 / Domain edge cases (金融特有)</h4>
+        <ul>
+          <li><strong>市场闭市 gap</strong>：周末 / 收盘后没 tick — 显示 null gap / interpolation / 还是 connect-the-dots？通常显示 break + 闭市 banner</li>
+          <li><strong>停牌 / halt</strong>：tick 突然消失但又不是断网，需要服务端推 halt 信号</li>
+          <li><strong>时区</strong>：tick 时间戳是 exchange local（NYSE = ET）还是 UTC？聚合 OHLC 时按哪个时区切日界？</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 Sub-Q1 候选人回答评价</summary>
+      <div class="detail-body">
+        <p><strong>🟢 强 / Strong:</strong></p>
+        <ul>
+          <li>主动说出 <strong>reconnect + backfill + dedupe</strong> 三件套<br><span class="en-text">Names reconnect + backfill + dedupe unprompted</span></li>
+          <li>提到 Page Visibility API / tab 后台的处理决策<br><span class="en-text">Mentions Page Visibility / tab background handling</span></li>
+          <li>主动提到 buffer cap / memory 管理<br><span class="en-text">Unprompted on buffer cap / memory</span></li>
+          <li>能聊业务层 edge case（闭市 gap、stale data UI 提示）<br><span class="en-text">Talks about domain edge cases (market close gap, stale banner)</span></li>
+        </ul>
+        <p><strong>🟡 中等 / Okay:</strong></p>
+        <ul>
+          <li>知道要重连但没想过 backfill；模糊提到"会处理乱序但记不清细节"<br><span class="en-text">Knows about reconnect but no backfill plan; vague on ordering</span></li>
+        </ul>
+        <p style="color:var(--red);"><strong>🔴 弱 / Weak:</strong></p>
+        <ul>
+          <li>"用 socket.io 自带就行了" — <span class="en-text">"socket.io handles it for us"</span><br>→ 🚩 socket.io 的 reconnect 不包括 backfill / dedupe / 业务层 gap，这答案说明没真处理过线上 incident</li>
+          <li>"buffer 一直涨没问题，浏览器有 GC" — <span class="en-text">"Buffer grows fine, browser will GC"</span><br>→ 🚩 GC 不会回收你 ref 着的数组，纯概念错误</li>
+          <li>tab 切后台没想过，"反正能播放就行" — 🚩 长跑 dashboard 必踩坑</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- ============ Sub-Q2: Interactivity — Zoom / Pan / Cross-chart Sync ============ -->
+    <h4 style="color:var(--blue);font-size:20px;margin-top:24px;">▸ Sub-Q2 — 图表交互 / Interactivity: Zoom · Pan · Cross-chart Sync</h4>
+
+    <details open>
+      <summary>🎤 提问 / Ask · Sub-Q2</summary>
+      <div class="detail-body">
+        <blockquote class="ask-en">
+          "On the interactivity side — did users need to zoom or pan the chart? Were there multiple charts that needed to sync on hover (e.g. hover on the price chart and the volume chart shows the same crosshair)? And if it's mobile, what about pinch and two-finger pan? How did you actually implement that?"
+        </blockquote>
+        <blockquote class="ask-cn">
+          "在交互这一层——用户需要 zoom / pan 吗？有没有多个图表 hover 联动的场景（比如 hover 价格图，下面成交量图也同步显示 crosshair）？如果是移动端，pinch 和双指 pan 又怎么处理的？你具体是怎么实现的？"
+        </blockquote>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 Sub-Q2 参考答案 / Reference</summary>
+      <div class="detail-body">
+        <h4>🔍 Zoom on large data</h4>
+        <ul>
+          <li>🟢 <strong>多分辨率预聚合</strong>：服务端按 zoom level 预生成 1m / 5m / 1h / 1d bars，前端按当前 viewport 拉对应粒度（典型 K 线方案）<br><span class="en-text">Multi-resolution pre-aggregation server-side; client requests the resolution that fits the viewport</span></li>
+          <li>🟡 <strong>客户端 re-downsample</strong>：zoom 时用 LTTB 重新算（适合数据量不大、不想加 server 复杂度）<br><span class="en-text">Client-side re-downsample via LTTB — simpler but heavier client compute</span></li>
+          <li>🟢 <strong>Viewport-based fetching</strong>：pan 时按时间范围 lazy fetch，类似无限滚动列表<br><span class="en-text">Viewport-based / range-request fetching as user pans</span></li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🔗 跨图同步 / Cross-chart sync</h4>
+        <ul>
+          <li>🟢 <strong>共享 hover state</strong> — Context / Zustand / Jotai 存当前 hover 的时间戳，所有 chart 订阅并画 crosshair<br><span class="en-text">Shared hover state in store; each chart subscribes and renders its own crosshair</span></li>
+          <li>🟢 <strong>事件总线</strong> — 一个 chart hover 时 dispatch event，其他 chart 监听（更松耦合）<br><span class="en-text">Event bus — looser coupling than shared store</span></li>
+          <li>🟡 <strong>chart lib 自带</strong> — Highcharts 有 <code>Highcharts.Pointer.onContainerMouseMove</code> + <code>syncCharts</code> 范例；Recharts / Chart.js 通常要自己接线<br><span class="en-text">Some libs have built-in sync (Highcharts demo); most need wiring</span></li>
+          <li>性能要点：hover state 更新要 <strong>throttle 到 ~30 FPS</strong>，否则 mousemove 一秒触发 ~60 次 → 多 chart 都重渲</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">📱 Mobile 手势 / Mobile gestures (RN 强相关)</h4>
+        <ul>
+          <li><strong>Web</strong>：用 Pointer Events（统一 mouse/touch/pen），或 PointerEvent + Pointer Lock；pinch 通过 2 个 active pointer 算距离差</li>
+          <li><strong>React Native</strong>：<code>react-native-gesture-handler</code> + <code>react-native-reanimated</code> 的 worklet — 手势处理跑在 UI thread 上，<u>不经过 JS bridge</u>，60 FPS 流畅<br><span class="en-text">RN: gesture-handler + Reanimated worklets — gesture runs on UI thread, no JS bridge</span></li>
+          <li><strong>Pinch zoom</strong>：scale 应用到 chart 的 x-axis domain，而不是 CSS transform（CSS transform 会糊）<br><span class="en-text">Pinch → x-axis domain change, NOT CSS transform (transform = blurry)</span></li>
+          <li><strong>双指 pan</strong> 和 <strong>单指 scroll</strong> 要区分（典型坑：单指 pan chart 会和页面 scroll 冲突，要 <code>preventDefault</code> / <code>touch-action: none</code>）</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🪟 Brush / Range selection</h4>
+        <ul>
+          <li>用户拖一个区间 → main chart 缩放到该区间 + fetch 该区间高精度数据</li>
+          <li>典型 UI：上方一个 overview chart（全量低精度）+ 下方 detail chart（区间高精度）</li>
+        </ul>
+
+        <h4 style="margin-top:14px;">🚫 反模式 / Anti-patterns</h4>
+        <ul>
+          <li>🚩 zoom 时不重新降采样，仍然渲染 50k 个 SVG 节点</li>
+          <li>🚩 多图同步用 <code>setState</code> 在 mousemove 里直接调，没 throttle → 一秒 60 次 reconcile</li>
+          <li>🚩 mobile pinch 用 CSS transform scale → 文字 / 线条糊掉，axis label 不更新</li>
+          <li>🚩 没处理 page scroll 冲突，用户在 chart 上 pan 结果页面跟着滚</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 Sub-Q2 候选人回答评价</summary>
+      <div class="detail-body">
+        <p><strong>🟢 强 / Strong:</strong></p>
+        <ul>
+          <li>能说出 zoom 时<strong>重新降采样 / 切换分辨率</strong>，不是傻渲染所有点<br><span class="en-text">Re-downsample / switch resolution on zoom — not rendering all points</span></li>
+          <li>跨图同步用 shared store / event bus，并主动提到 <strong>throttle mousemove</strong><br><span class="en-text">Shared store/event bus + throttling mousemove</span></li>
+          <li>如果是 RN：知道 <code>react-native-gesture-handler</code> + Reanimated worklet 不走 JS bridge<br><span class="en-text">For RN: knows gesture-handler + Reanimated worklets bypass JS bridge</span></li>
+          <li>主动提到 pinch zoom 不能用 CSS transform / 单指 pan 与页面 scroll 冲突的坑<br><span class="en-text">Mentions pinch-via-CSS-transform pitfall or page-scroll conflict</span></li>
+        </ul>
+        <p><strong>🟡 中等 / Okay:</strong></p>
+        <ul>
+          <li>实现过 zoom / pan 但说不清是不是 re-downsample；跨图同步答得出但 throttle 没想到<br><span class="en-text">Implemented zoom/pan but vague on re-downsampling; sync OK but no throttle mention</span></li>
+        </ul>
+        <p style="color:var(--red);"><strong>🔴 弱 / Weak:</strong></p>
+        <ul>
+          <li>"chart lib 自带 zoom，没遇到问题" — <span class="en-text">"Lib has built-in zoom, no issues"</span><br>→ 🚩 dataset 不大时确实没事；如果他声称做的是 fintech dashboard，这答案说明数据量很小（→ 削弱 Q1 ownership 真实性信号）</li>
+          <li>跨图同步用 ref + 直接调对方 setState — <span class="en-text">Direct setState calls via refs</span><br>→ 🚩 紧耦合，扩展不动</li>
+          <li>RN 项目用 <code>PanResponder</code> 还写不出 worklet — <span class="en-text">RN: still on PanResponder, doesn't know worklets</span><br>→ ⚠️ 不是 deal-breaker，但 senior RN 应知道 Reanimated 2+ 的现代方案</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</details>
+
 <details id="q5-ref">
   <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference</summary>
   <div class="detail-body">
@@ -910,7 +1091,7 @@
 </details>
 
 <details id="q4-ref">
-  <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference</summary>
+  <summary>📖 追问 3 面试官参考答案 / Follow-up 3 Interviewer Reference</summary>
   <div class="detail-body">
 
     <h4>✅ 微前端真正的适用场景 / When Micro-frontends Actually Help</h4>
@@ -945,7 +1126,7 @@
 </details>
 
 <details id="q4-eval">
-  <summary>🎯 追问 2 候选人回答评价 / Follow-up 2 Candidate Answer Evaluation</summary>
+  <summary>🎯 追问 3 候选人回答评价 / Follow-up 3 Candidate Answer Evaluation</summary>
   <div class="detail-body">
     <p><strong>🟢 强回答 / Strong answers:</strong></p>
     <ul>
