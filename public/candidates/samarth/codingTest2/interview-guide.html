@@ -1,336 +1,579 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Samarth · Coding Test 2 — Interview Guide</title>
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --card: #fff7ed;
-      --accent: #ea580c;
-      --accent-dark: #c2410c;
-      --text: #1e293b;
-      --text-muted: #475569;
-      --border: #e2e8f0;
-      --code-bg: #f1f5f9;
-      --code-text: #0f766e;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                   "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      padding-bottom: 80px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>interview</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #d63031;
+    --accent2: #6c5ce7;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #00a676;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
 
-    /* ===== TOP NAV ===== */
-    .topbar {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(255,255,255,.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 24px;
-      display: flex; align-items: center; gap: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.04);
-    }
-    .topbar a.back {
-      color: var(--accent); text-decoration: none;
-      font-weight: 600; font-size: 15px;
-      padding: 6px 12px; border-radius: 6px;
-      border: 1px solid var(--border);
-      transition: background .15s ease;
-    }
-    .topbar a.back:hover { background: var(--card); }
-    .topbar .brand {
-      font-weight: 700; color: var(--accent);
-      font-size: 16px; margin-left: auto;
-    }
+  /* ===== NAV BAR (sticky top) ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .navbar .brand {
+    font-weight: 700; font-size: 18px; color: var(--accent);
+    margin-right: 12px; white-space: nowrap;
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
 
-    /* ===== LAYOUT ===== */
-    .container {
-      max-width: 920px;
-      margin: 32px auto;
-      padding: 0 24px;
-    }
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
 
-    /* ===== HERO ===== */
-    .hero {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px 32px;
-      box-shadow: 0 1px 3px rgba(15,23,42,.04);
-      margin-bottom: 24px;
-    }
-    .badge {
-      display: inline-block;
-      background: var(--accent); color: #fff;
-      padding: 4px 12px; border-radius: 999px;
-      font-size: 12px; font-weight: 700;
-      letter-spacing: .08em; text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-    .hero h1 {
-      font-size: 26px; color: #0f172a;
-      margin: 0 0 8px; line-height: 1.3;
-    }
-    .hero .subtitle {
-      color: var(--text-muted); font-size: 15px;
-    }
-    .hero .meta {
-      margin-top: 14px;
-      display: flex; flex-wrap: wrap; gap: 8px;
-    }
-    .tag {
-      display: inline-block;
-      padding: 3px 10px; border-radius: 4px;
-      font-size: 13px; font-weight: 600;
-    }
-    .tag-time { background: #e0f2fe; color: #075985; }
-    .tag-diff { background: #fef3c7; color: #92400e; }
-    .tag-topic { background: #f3e8ff; color: #6b21a8; }
+  /* ===== QUICK JUMP PANEL (sidebar) ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #059669; }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.red { border-left: 2px solid var(--red); }
+  .qp-sub.purple { border-left: 2px solid #6c5ce7; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: #059669; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
 
-    /* ===== SECTION CARD ===== */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px 28px;
-      box-shadow: 0 1px 3px rgba(15,23,42,.04);
-      margin-bottom: 20px;
-    }
-    .card h2 {
-      font-size: 20px; color: #0f172a;
-      margin: 0 0 14px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--card);
-    }
-    .card h3 {
-      font-size: 16px; color: #334155;
-      margin: 18px 0 8px;
-      font-weight: 700;
-    }
-    .card p { margin-bottom: 10px; color: var(--text); font-size: 15.5px; }
-    .card ul, .card ol { margin: 8px 0 12px 22px; }
-    .card li { margin-bottom: 6px; font-size: 15.5px; }
-    .card strong { color: #0f172a; }
+  /* ===== MAIN CONTENT ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 280px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
 
-    code {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-family: "SF Mono", "Fira Code", Consolas, monospace;
-      font-size: 14px;
-      color: var(--code-text);
-    }
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
 
-    pre {
-      background: #0f172a;
-      color: #e2e8f0;
-      border-radius: 8px;
-      padding: 14px 18px;
-      overflow-x: auto;
-      font-family: "SF Mono", "Fira Code", Consolas, monospace;
-      font-size: 13.5px;
-      line-height: 1.55;
-      margin: 10px 0 16px;
-    }
-    pre .kw   { color: #f9a8d4; }
-    pre .ty   { color: #93c5fd; }
-    pre .com  { color: #94a3b8; font-style: italic; }
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
 
-    /* ===== EXAMPLE BOX ===== */
-    .example {
-      background: var(--card);
-      border-left: 4px solid var(--accent);
-      border-radius: 6px;
-      padding: 12px 16px;
-      margin: 10px 0;
-      font-size: 15px;
-    }
-    .example .label {
-      display: inline-block;
-      font-weight: 700; color: var(--accent-dark);
-      margin-right: 6px;
-    }
-    .example pre {
-      margin: 6px 0 0;
-      background: #1e293b;
-      font-size: 13px;
-    }
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #f0edfa;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
 
-    /* ===== CONSTRAINTS BOX ===== */
-    .constraints {
-      background: #f8fafc;
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-family: "SF Mono", "Fira Code", Consolas, monospace;
-      font-size: 14px;
-      color: #334155;
-      white-space: pre;
-    }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
 
-    /* ===== TBD MARKER ===== */
-    .tbd {
-      color: var(--text-muted);
-      font-style: italic;
-      background: #fef3c7;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border-left: 3px solid #f59e0b;
-      font-size: 14px;
-    }
+  /* TBD placeholder */
+  .tbd {
+    color: var(--text-muted);
+    font-style: italic;
+    background: #fef9ee;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 3px solid var(--yellow);
+    font-size: 16px;
+  }
 
-    /* ===== FOOTER ===== */
-    .footer {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 13px;
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-  </style>
+  /* collapsible */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  /* tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  /* hint chips */
+  .hint-chip {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 18px; font-weight: 700;
+    margin-right: 4px;
+  }
+  .hint-light { background: #d4edda; color: #155724; }
+  .hint-medium { background: #fff3cd; color: #856404; }
+  .hint-heavy { background: #f8d7da; color: #721c24; }
+
+  /* code blocks */
+  pre {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 10px 0;
+  }
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 18px;
+    color: #24292f;
+  }
+  :not(pre) > code {
+    background: #e8f0fe;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #0550ae;
+  }
+
+  /* evaluation badges */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 18px; font-weight: 700; margin-right: 4px; }
+  .badge-fail { background: #fdd; color: #a00; font-weight: 700; }
+  .badge-weak { background: #fff3cd; color: #7a5800; font-weight: 700; }
+  .badge-pass { background: #d4edda; color: #155724; font-weight: 700; }
+  .badge-strong { background: #ccfbf1; color: #0f766e; font-weight: 700; }
+
+  /* flow chart */
+  .flow-chart {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'Cascadia Code', monospace;
+    font-size: 18px;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* scroll to top */
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+
+  .version-tabs { display: flex; gap: 4px; margin: 12px 0 0; }
+  .vtab {
+    padding: 6px 14px; border-radius: 6px 6px 0 0;
+    background: var(--card); color: var(--text-muted);
+    border: 1px solid var(--border); border-bottom: none; cursor: pointer; font-size: 18px;
+  }
+  .vtab.active { background: var(--surface); color: var(--accent); font-weight: 600; border-color: var(--border); }
+  .version-content { display: none; }
+  .version-content.active { display: block; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; white-space: nowrap; flex-shrink: 0; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+  .tag-lang { background: #dde7ff; color: #1a3a8f; }
+  .tag-py   { background: #fef9c3; color: #854d0e; }
+  .tag-ts   { background: #d1ecf1; color: #0c5460; }
+  .tag-diff-1 { background: #d4edda; color: #155724; }
+  .tag-diff-2 { background: #fff3cd; color: #7a5800; }
+  .tag-diff-3 { background: #fdd; color: #a00; }
+  .tag-diff-4 { background: #ccfbf1; color: #0f766e; }
+</style>
 </head>
 <body>
 
-<!-- Top nav -->
-<div class="topbar">
-  <a class="back" href="../index.html">← Back to Overview</a>
-  <span class="brand">📝 Samarth · ④ Coding Test 2</span>
-</div>
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="background:#0d9488;color:#fff;border-color:#0d9488;text-decoration:none;opacity:0.7;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;font-weight:700;">④ Coding 2</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;opacity:0.7;">⑤ 候选人提问</a>
+</nav>
 
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#problem" onclick="jump('problem');return false;">📋 题面</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title">🚨 卡壳提示</div>
+    <a class="qp-sub red" href="#stuck0" onclick="jump('stuck0');return false;">0 — TBD</a>
+    <a class="qp-sub red" href="#stuck1" onclick="jump('stuck1');return false;">1 — TBD</a>
+    <a class="qp-sub red" href="#stuck2" onclick="jump('stuck2');return false;">2 — TBD</a>
+    <a class="qp-sub red" href="#stuck3" onclick="jump('stuck3');return false;">3 — TBD</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">💬 拓展追问</div>
+    <a class="qp-sub purple" href="#followup1" onclick="jump('followup1');return false;">1 — TBD ⭐</a>
+    <a class="qp-sub purple" href="#followup2" onclick="jump('followup2');return false;">2 — TBD ⭐⭐</a>
+    <a class="qp-sub purple" href="#followup3" onclick="jump('followup3');return false;">3 — TBD ⭐⭐⭐</a>
+  </div>
+
+  <a class="qp-link" href="#checkpoints" onclick="jump('checkpoints');return false;">🔍 考察节点</a>
+  <a class="qp-link" href="#solution" onclick="jump('solution');return false;">💡 标准答案</a>
+  <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
+  <a class="qp-link" href="#flowchart" onclick="jump('flowchart');return false;">🗺️ 流程图</a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
 <div class="container">
 
-  <!-- Hero -->
-  <div class="hero">
-    <span class="badge">Coding Exercise · Round 2</span>
-    <h1>Task Scheduling with Deadlines</h1>
-    <p class="subtitle">Single-machine scheduling — maximize the number of tasks finished before each task's deadline.</p>
-    <div class="meta">
-      <span class="tag tag-time">⏱ ~15 min</span>
-      <span class="tag tag-diff">Difficulty · Medium / Hard</span>
-      <span class="tag tag-topic">Greedy · Priority Queue</span>
-    </div>
-  </div>
+<h1>🎯 Onsite 编程测试 (2) ：任务调度 / Task Scheduling with Deadlines</h1>
 
-  <!-- Problem -->
-  <div class="card">
-    <h2>📋 Problem Statement</h2>
-
-    <p>
-      You are given a list of <strong>n</strong> tasks. Each task <code>i</code> is described by:
-    </p>
-    <ul>
-      <li><code>duration[i]</code> — the number of continuous time units required to finish it</li>
-      <li><code>deadline[i]</code> — the task must be <strong>finished at or before</strong> this time</li>
-    </ul>
-
-    <h3>Rules</h3>
-    <ul>
-      <li>You start at time <code>t = 0</code>.</li>
-      <li>You can only work on <strong>one task at a time</strong> (single machine).</li>
-      <li>Once a task starts, it must run to completion — <strong>no preemption, no interleaving</strong>.</li>
-      <li>You may pick any subset of tasks and execute them in any order.</li>
-      <li>A task counts as <em>completed</em> only if its <strong>finish time ≤ its deadline</strong>.</li>
-      <li>You are allowed to skip tasks.</li>
-    </ul>
-
-    <h3>Goal</h3>
-    <p>Return the <strong>maximum number of tasks</strong> you can complete.</p>
-  </div>
-
-  <!-- Function signature -->
-  <div class="card">
-    <h2>🔧 Function Signature</h2>
-    <p><code>tasks[i] = [duration_i, deadline_i]</code> · pick your preferred language:</p>
-<pre><span class="com">// C++</span>
-<span class="ty">int</span> scheduleTasks(vector&lt;vector&lt;<span class="ty">int</span>&gt;&gt;&amp; tasks);
-
-<span class="com">// C#</span>
-<span class="ty">int</span> ScheduleTasks(<span class="ty">int</span>[][] tasks);
-
-<span class="com"># Python</span>
-<span class="kw">def</span> schedule_tasks(tasks: <span class="ty">list</span>[<span class="ty">list</span>[<span class="ty">int</span>]]) -&gt; <span class="ty">int</span>:
-
-<span class="com">// TypeScript</span>
-<span class="kw">function</span> scheduleTasks(tasks: <span class="ty">number</span>[][]): <span class="ty">number</span>;</pre>
-  </div>
-
-  <!-- Constraints -->
-  <div class="card">
-    <h2>📐 Constraints</h2>
-    <div class="constraints">1 ≤ n ≤ 10^4
-1 ≤ duration[i], deadline[i] ≤ 10^4</div>
-  </div>
-
-  <!-- Examples -->
-  <div class="card">
-    <h2>🧪 Examples</h2>
-
-    <div class="example">
-      <span class="label">Example 1</span>
-<pre>Input:  tasks = [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]
-Output: 3
-
-One valid schedule:
-  do   [100,  200]  -&gt; finish at t = 100   (≤ 200  ✓)
-  do   [200,  1300] -&gt; finish at t = 300   (≤ 1300 ✓)
-  skip [1000, 1250]
-  do   [2000, 3200] -&gt; finish at t = 2300  (≤ 3200 ✓)
-=&gt; 3 tasks completed.</pre>
-    </div>
-
-    <div class="example">
-      <span class="label">Example 2</span>
-<pre>Input:  tasks = [[1, 2]]
-Output: 1</pre>
-    </div>
-
-    <div class="example">
-      <span class="label">Example 3</span>
-<pre>Input:  tasks = [[3, 2], [4, 3]]
-Output: 0
-(Every task is longer than its own deadline — impossible.)</pre>
-    </div>
-
-    <div class="example">
-      <span class="label">Example 4</span>
-<pre>Input:  tasks = [[5, 5], [4, 6], [2, 6]]
-Output: 2
-(Best: take [2,6] then [4,6] -&gt; finish at t=2, t=6.
- Taking [5,5] alone gives only 1.)</pre>
-    </div>
-  </div>
-
-  <!-- Discussion prompts -->
-  <div class="card">
-    <h2>💬 Discuss Before Coding</h2>
-    <ol>
-      <li>In what order should tasks be considered?</li>
-      <li>When a new task does <strong>not</strong> fit, can you still improve the schedule?</li>
-      <li>What data structure helps you answer (2) efficiently?</li>
-      <li>What is the time / space complexity of your approach?</li>
-    </ol>
-  </div>
-
-  <!-- TBD: solution + follow-ups -->
-  <div class="card">
-    <h2>✅ Reference Solution &amp; Follow-ups</h2>
-    <p class="tbd">📌 待填写 / TBD — 参考解、复杂度分析、追问、评分标准将在确认题面后补充。</p>
-  </div>
-
-  <div class="footer">
-    Samarth Sharma · Onsite Interview · ④ Coding Test 2 · ~15 min
-  </div>
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise</h4>
+  <blockquote style="background: #ecfdf5;">
+    "Great work on the first one. Let's do one more short coding exercise — different topic this time. I'll describe the problem, and we can work through it together."
+  </blockquote>
+  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
+    "刚才那道做得不错。我们再做一道短的编程题——这次换个方向。我会描述一下题目，我们一起讨论。"
+  </blockquote>
 </div>
+
+<!-- ==================== PROBLEM ==================== -->
+<h2 id="problem">📋 题面 / Problem Statement</h2>
+
+<div class="version-tabs">
+  <button class="vtab active" onclick="showVersion('formal')">📄 正式版</button>
+  <button class="vtab" onclick="showVersion('conversational')">🗣️ 口语版（推荐）</button>
+  <button class="vtab" onclick="showVersion('plain')">🧸 最简化版</button>
+</div>
+
+<div id="version-formal" class="version-content active card">
+  <h4>English:</h4>
+  <blockquote>
+    You are given a list of tasks. Each task takes a fixed amount of <strong>continuous, uninterruptible</strong> time to finish and has a <strong>deadline</strong> by which it must be completed. You schedule the tasks on a <strong>single machine</strong>, one at a time.<br><br>
+    Schedule a subset of the tasks so that <strong>as many tasks as possible</strong> finish on or before their own deadline.
+    <ul style="margin-top: 8px;">
+      <li>You start at time <code>t = 0</code>.</li>
+      <li>Only ONE task runs at a time (single machine).</li>
+      <li>Once a task starts, it must run to completion — no preemption, no interleaving.</li>
+      <li>You may pick any subset of tasks and run them in any order.</li>
+      <li>A task counts as completed only if its <strong>finish time ≤ its deadline</strong>.</li>
+      <li>You may skip tasks.</li>
+    </ul>
+    <br>
+    <strong>Input:</strong> <code>tasks</code> — a list of <code>[duration, deadline]</code> pairs.<br>
+    <strong>Output:</strong> the maximum number of tasks that can be completed on or before their deadlines.<br><br>
+    <strong>Example:</strong> <code>tasks = [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]</code> → answer is <code>3</code>.
+  </blockquote>
+  <h4>中文:</h4>
+  <blockquote>
+    给你一组任务。每个任务需要一段<strong>连续不可中断</strong>的时间来完成，并且有一个必须完成的截止时刻（deadline）。你在<strong>一台机器</strong>上一次一个地调度这些任务。<br><br>
+    请安排一个子集，使得<strong>尽可能多</strong>的任务都能在它自己的 deadline 之前（含）完成。
+    <ul style="margin-top: 8px;">
+      <li>时间从 <code>t = 0</code> 开始。</li>
+      <li>同一时刻<strong>只能执行一个</strong>任务（单机调度）。</li>
+      <li>任务一旦开始，必须连续做完——不可抢占、不可交错。</li>
+      <li>你可以选择任意子集，并以任意顺序执行。</li>
+      <li>任务"完成"的标准：它的<strong>结束时间 ≤ 它的 deadline</strong>。</li>
+      <li>你可以跳过任何任务。</li>
+    </ul>
+    <br>
+    <strong>输入：</strong> <code>tasks</code> —— 一个 <code>[duration, deadline]</code> 二元组列表。<br>
+    <strong>输出：</strong> 能在各自 deadline 之前完成的任务的<strong>最大数量</strong>。<br><br>
+    <strong>示例：</strong> <code>tasks = [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]</code> → 答案为 <code>3</code>。
+  </blockquote>
+</div>
+
+<div id="version-conversational" class="version-content card">
+  <p style="color:var(--green);font-weight:600;margin-bottom:8px;">🗣️ 推荐面试时直接用这个版本念给候选人</p>
+  <h4>English:</h4>
+  <blockquote>
+    "Alright, here's the problem. You've got a queue of tasks — each one takes a certain amount of time to finish, and each one has its own deadline. You can only run one task at a time on one machine, and once you start a task, you have to see it through to the end — <strong>no pausing, no switching back and forth</strong>. But you're free to pick which tasks to do, skip the ones that don't fit, and run them in whatever order you want.<br><br>
+    The goal is to <strong>get as many of them as possible finished before their deadlines</strong>. So I give you a list of <code>(duration, deadline)</code> pairs, and you tell me the largest number of those that can be scheduled successfully. Make sense? Let's go."
+  </blockquote>
+  <h4>中文:</h4>
+  <blockquote>
+    "好，题目是这样。你有一队任务，每个任务有自己的耗时和 deadline。你只有一台机器，一次只能跑一个任务，而且任务一旦开始就要做完——<strong>中间不能暂停，也不能切到别的任务</strong>。但是你可以<strong>自由选择</strong>做哪些任务、跳过哪些任务，也可以<strong>任意安排</strong>它们的顺序。<br><br>
+    目标是——<strong>让尽可能多的任务在各自 deadline 之前完成</strong>。给你一个 <code>(duration, deadline)</code> 的列表，告诉我最多能成功调度多少个。清楚了吗？开始吧。"
+  </blockquote>
+</div>
+
+<div id="version-plain" class="version-content card">
+  <p style="color:var(--yellow);font-weight:600;margin-bottom:8px;">🧸 当候选人对"调度"、"deadline"等概念不熟悉时使用</p>
+  <h4>English:</h4>
+  <blockquote>
+    "Let me strip the jargon. Picture this: you're at your desk, and you've got a stack of homework assignments. Each one tells you two things:<br>
+    &bull; How long it takes to do (say, 100 minutes)<br>
+    &bull; When it's due (say, by minute 200 from now)<br><br>
+    You can only do one assignment at a time. Once you start one, you finish it before moving on. The clock keeps ticking — if you finish an assignment <strong>after</strong> its due time, it doesn't count.<br><br>
+    You don't have to do all of them. Pick whichever ones you want, in whatever order. Your job is to <strong>figure out the most assignments you can finish on time</strong>. That's it.<br><br>
+    For example, if I hand you a list saying <code>[100min, due 200], [200min, due 1300], [1000min, due 1250], [2000min, due 3200]</code>, you tell me: I can finish <strong>3</strong> of these on time."
+  </blockquote>
+  <h4>中文:</h4>
+  <blockquote>
+    "我换个最简单的方式说。想象你坐在书桌前，桌上一堆作业。每份作业都标了两件事：<br>
+    &bull; 写完它要多久（比如 100 分钟）<br>
+    &bull; 几点之前必须交（比如第 200 分钟前要交）<br><br>
+    你一次只能写一份。一旦开始，就要写完才能写下一份。时间一直在走——如果你某份作业在 deadline <strong>之后</strong>才写完，那它就<strong>不算完成</strong>。<br><br>
+    你不需要把所有作业都做完。挑哪些、按什么顺序做都随你。你的任务是：<strong>算出最多能按时完成多少份作业</strong>。就这么简单。<br><br>
+    举个例子：我给你 <code>[100分钟, 200截止], [200分钟, 1300截止], [1000分钟, 1250截止], [2000分钟, 3200截止]</code> 这 4 份作业，你应该告诉我——最多能按时完成 <strong>3</strong> 份。"
+  </blockquote>
+</div>
+
+<div id="after-problem" class="card" style="border-left: 4px solid #059669; margin-top: 16px;">
+  <h4 style="color: #059669;">💬 读完题后的衔接语 / After reading the problem</h4>
+  <p class="tbd">📌 待填写 / TBD —— ① 询问候选人选哪个语言；② 贴入对应 starter template 后说明 input parser / test cases / 只需要改 <code>scheduleTasks</code> 函数体等。等 starter templates 准备好之后补。</p>
+</div>
+
+<hr class="separator">
+<h2 id="sticking-points">🚨 候选人卡壳情况及提示策略 / Sticking Points &amp; Hints</h2>
+
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 候选人在以下场景的提示梯度（Light / Medium / Heavy）：<br>
+    • Stuck 0 — 不理解 deadline / 调度等概念<br>
+    • Stuck 1 — 完全没思路，或直接写暴力枚举所有子集<br>
+    • Stuck 2 — 想到按 deadline 排序但不知道怎么处理"塞不下"的情况<br>
+    • Stuck 3 — 知道贪心 + 替换，但 swap 条件写不对
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FOLLOW-UPS ==================== -->
+<h2 id="followups">💬 拓展追问 / Follow-up Questions</h2>
+<p style="color:var(--text-muted);">候选人完成主题后，根据剩余时间和表现选择性使用。</p>
+
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 候选追问方向：<br>
+    • Follow-up 1 ⭐ —— 证明贪心正确性（exchange argument）<br>
+    • Follow-up 2 ⭐⭐ —— 改为最大化 reward（每个任务有不同 reward），还能贪心吗？<br>
+    • Follow-up 3 ⭐⭐⭐ —— 允许抢占（preemption）模型 / 数据规模到 10^6 时的工程优化
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== KEY CHECKPOINTS ==================== -->
+<h2 id="checkpoints">🔍 关键考察节点 / Key Checkpoints</h2>
+
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 关键考察节点（候选人应该意识到的）：<br>
+    • 节点 1 —— 识别为贪心 + 优先队列<br>
+    • 节点 2 —— 按 deadline 排序的必要性<br>
+    • 节点 3 —— "塞不下时用最长任务做替换"的 exchange argument<br>
+    • 节点 4 —— 复杂度 O(n log n) 的来源<br>
+    • 节点 5 —— 边界（空数组 / duration &gt; deadline / 同 deadline 平局）
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== MODEL SOLUTION ==================== -->
+<h2 id="solution">💡 标准答案 / Model Solution</h2>
+
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 标准解：<br>
+    • 核心思路（贪心 + 最大堆）<br>
+    • 算法流程（按 deadline 升序遍历 → 若 <code>t + d ≤ dl</code> 直接选；否则若堆顶 &gt; d 则 swap）<br>
+    • 示例 walkthrough 表格<br>
+    • C++ / Python / TypeScript / C# 参考代码<br>
+    • Sample input + expected output<br>
+    • 复杂度（时间 O(n log n)，空间 O(n)）
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== RUBRIC ==================== -->
+<h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
+
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 四档评分：<br>
+    • <span class="badge badge-fail">❌ Not Hire</span> —— 提示后仍无法识别为贪心；只能写暴力且无法优化<br>
+    • <span class="badge badge-weak">⚠️ Lean No</span> —— 知道贪心方向但 swap 条件写错 / 有 off-by-one bug<br>
+    • <span class="badge badge-pass">✅ Hire as SDE2</span> —— 无提示推导出 sort by deadline + max-heap swap；代码逻辑正确<br>
+    • <span class="badge badge-strong">🌟 Strong Hire / Senior</span> —— 主动论证 exchange argument；分析复杂度；考虑边界
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FLOW CHART ==================== -->
+<h2 id="flowchart">🗺️ 面试官速查流程图 / Quick Decision Flow</h2>
+
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 一图速查"候选人独立 / 需提示 / 写不出"对应的判定。</p>
+</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+// Jump function
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const details = el.querySelector('details') || el.closest('details');
+  if (details) details.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Version tabs
+function showVersion(name) {
+  document.querySelectorAll('.version-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.vtab').forEach(el => el.classList.remove('active'));
+  document.getElementById('version-' + name).classList.add('active');
+  const tabs = document.querySelectorAll('.vtab');
+  const map = { formal: 0, conversational: 1, plain: 2 };
+  tabs[map[name]].classList.add('active');
+}
+
+// Scroll-to-top button visibility
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const map = {
+    '0': 'stuck0', '1': 'stuck1', '2': 'stuck2', '3': 'stuck3',
+    'q': 'problem', 'a': 'solution', 'r': 'rubric', 'f': 'flowchart',
+  };
+  if (map[e.key]) { e.preventDefault(); jump(map[e.key]); }
+});
+</script>
 
 </body>
 </html>
