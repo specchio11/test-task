@@ -23,7 +23,6 @@ export const xinfeng: CandidateConfig = {
   name: 'Xinfeng Chen',
   shortName: 'Xinfeng',
   initials: 'XC',
-  completed: true,
   role: 'Senior SDE · Azure AI / TTS',
   totalMin: 45,
   brand: '📋 Onsite Interview Guide',
