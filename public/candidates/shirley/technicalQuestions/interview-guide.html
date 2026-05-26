@@ -98,6 +98,8 @@
   }
   .qp-sub:hover { background: #f1f5f9; color: #334155; }
   .qp-sub.green  { border-left: 2px solid #059669; }
+  .qp-sub.blue   { border-left: 2px solid var(--blue); }
+  .qp-sub.orange { border-left: 2px solid #ea580c; }
   details.qp-followups {
     background: transparent;
     border: none;
@@ -140,6 +142,8 @@
     border-bottom: 1px solid var(--border);
   }
   details.followup-section.fu-green  { border-left: 4px solid var(--green); }
+  details.followup-section.fu-blue   { border-left: 4px solid var(--blue); }
+  details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
   .followup-body { padding: 14px 18px 18px; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
@@ -303,9 +307,11 @@
   <a class="qp-link" href="#flow-1-mark43" onclick="jump('flow-1-mark43');return false;" style="background:#f0fdfa;color:var(--accent);font-weight:700;margin-top:10px;border-left-color:var(--accent);">📌 FLOW 1 · Mark43 Backend (MySQL × ES)</a>
 
   <details class="qp-followups" open>
-    <summary>↳ 追问 / Follow-ups（1 个）</summary>
+    <summary>↳ 追问 / Follow-ups（3 个）</summary>
     <div class="qp-followups-body">
-      <a class="qp-sub green" href="#q-mysql-es" onclick="jump('q-mysql-es');return false;">追问 1 — MySQL &amp; ES 分工 / 为什么两个</a>
+      <a class="qp-sub green"  href="#q-mysql-es"    onclick="jump('q-mysql-es');return false;">追问 1 — MySQL &amp; ES 分工 / 为什么两个</a>
+      <a class="qp-sub blue"   href="#q-sync"        onclick="jump('q-sync');return false;">追问 2 — 同步机制（双写 / MQ / CDC）</a>
+      <a class="qp-sub orange" href="#q-consistency" onclick="jump('q-consistency');return false;">追问 3 — 一致性 / 失败处理</a>
     </div>
   </details>
 
@@ -345,8 +351,8 @@
           <strong>Mark43 — Backend Data Layer (MySQL × Elasticsearch)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Developed a fullstack warrants creation workflow using React, Typescript, mySQL, and Elasticsearch."</span>
         </td>
-        <td>1 主问题（项目背景）+ 1 追问（MySQL × ES 分工）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context) + 1 follow-up (MySQL × ES roles)</span></td>
-        <td><strong>~10 min</strong></td>
+        <td>1 主问题（项目背景）+ 3 追问（分工 → 同步 → 一致性）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context) + 3 follow-ups (roles → sync → consistency)</span></td>
+        <td><strong>~15 min</strong></td>
       </tr>
       <tr style="background:#f8fafc;">
         <td colspan="4" style="text-align:center;color:#94a3b8;font-style:italic;">FLOW 2 · TBD（Zaber CRM concurrency / 50ms 性能优化 等待选定）</td>
@@ -363,7 +369,7 @@
 <!-- ====================================================================== -->
 <h2 id="flow-1-mark43" style="background:#f0fdfa;border-left:6px solid var(--accent);color:var(--accent);font-size:28px;">
   📌 FLOW 1 · Mark43 Backend Data Layer (MySQL × Elasticsearch)
-  <span class="tag tag-time">~10 min total</span>
+  <span class="tag tag-time">~15 min total</span>
 </h2>
 
 <div class="card" style="border-left:4px solid var(--accent);">
@@ -373,8 +379,8 @@
   </blockquote>
   <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
     ✅ <strong>主问题 / Main question</strong>：让她<strong>简短</strong>介绍项目背景，确认她对业务领域和自己 contribution 的理解。<br>
-    ➜ <strong>追问 / Follow-ups</strong>：追问 1（MySQL 和 ES 分别负责什么，为什么不只用一个）—— 核心架构题，看她对 source of truth vs search index 的分工理解。<br>
-    <span class="en-text">✅ <strong>Main question</strong> — get a <strong>brief</strong> project background, validate her domain &amp; contribution clarity. ➜ Follow-up 1 — core architecture question on MySQL × ES roles &amp; why two systems.</span>
+    ➜ <strong>追问 / Follow-ups</strong>：追问 1（角色分工 — MySQL vs ES，<u>核心架构</u>）→ 追问 2（同步机制 — 双写 / MQ / CDC，<u>实战经验</u>）→ 追问 3（一致性 / 失败处理 — 写后立读 + 失败重试，<u>深度信号</u>）。按候选人深度递进展开。<br>
+    <span class="en-text">✅ <strong>Main question</strong> — get a <strong>brief</strong> project background, validate her domain &amp; contribution clarity. ➜ Follow-ups: #1 (roles split — MySQL vs ES, <u>core architecture</u>) → #2 (sync mechanism — double-write / MQ / CDC, <u>hands-on experience</u>) → #3 (consistency / failure handling — read-after-write + retries, <u>depth signal</u>).</span>
   </p>
 </div>
 
@@ -593,6 +599,216 @@
 
 <hr class="separator">
 
+<!-- ====================================================================== -->
+<!--  追问 2: 同步机制 / Sync Mechanism  (HANDS-ON EXPERIENCE PROBE)         -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-blue" id="q-sync" open>
+<summary>➜ 追问 2 / Follow-up 2 · 🌊 同步机制 / Sync Mechanism (Double-Write / MQ / CDC) <span class="tag tag-time">~3 min</span></summary>
+<div class="followup-body">
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "OK — so you've got data in two places. How does data actually get from MySQL into Elasticsearch? What <strong>sync mechanism</strong> did you (or your team) use? And do you remember why that one was picked over the alternatives?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "好——既然数据在两个地方，MySQL 里的数据具体是怎么进到 Elasticsearch 里的？你们当时用的是什么<strong>同步机制</strong>？还记得为什么选了这个而不是别的吗？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 这一问目的是看她对<strong>同步方案 landscape</strong> 的认知和<strong>真实接触的方案</strong>。Intern 4 个月最可能用的是<strong>双写</strong>（最简单），如果她说 MQ 或 CDC 那是亮点。不管答什么，立刻追问"为什么选这个"。如果她说"是 senior 配好的，我没碰过"，记为 ownership 信号，跳到追问 3 看读侧一致性认知。<br>
+      <strong>Interviewer note</strong> — Probe her <strong>landscape awareness</strong> AND what she actually touched. Intern 4 months → most likely double-write. MQ or CDC = bonus. If "senior set it up, I didn't touch it" — note ownership signal, jump to follow-up 3.
+    </blockquote>
+  </div>
+</details>
+
+<details id="q-sync-ref">
+  <summary>📖 追问 2 面试官参考答案 / Follow-up 2 Interviewer Reference</summary>
+  <div class="detail-body">
+
+    <h4>🌊 4 种主流方案 / 4 Mainstream Patterns</h4>
+    <table>
+      <thead><tr><th>方案 / Pattern</th><th>怎么做</th><th>✅ 优点</th><th>❌ 缺点</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>双写 / Double-Write</strong> <span class="tag" style="background:#fef3c7;color:#92400e;">Intern 最可能</span></td>
+          <td>APP 写 MySQL 后立即写 ES（或反之）</td>
+          <td>简单，无新组件</td>
+          <td><strong>一致性脆弱</strong>—MySQL 成功但 ES 失败怎么办？无事务保证</td>
+        </tr>
+        <tr>
+          <td><strong>MQ 解耦</strong> <span class="tag" style="background:#dbeafe;color:#1e40af;">生产推荐</span></td>
+          <td>APP → MySQL，发消息到 Kafka / RabbitMQ → Consumer → ES</td>
+          <td>失败可重试（消息留在 MQ）；可批量写 ES，性能好</td>
+          <td>引入 MQ 基础设施；最终一致；业务代码仍要发消息</td>
+        </tr>
+        <tr>
+          <td><strong>CDC (Change Data Capture)</strong> <span class="tag" style="background:#dcfce7;color:#166534;">高级 · 加分</span></td>
+          <td>监听 MySQL binlog → Debezium / Canal → Kafka → Consumer → ES</td>
+          <td><strong>业务代码零侵入</strong>；数据不会漏（binlog 是 SoT）</td>
+          <td>架构最复杂；运维成本高；同步延迟 ~秒级</td>
+        </tr>
+        <tr>
+          <td><strong>定时批处理 / Batch</strong> <span class="tag" style="background:#fee2e2;color:#991b1b;">老派</span></td>
+          <td>cron 定时（按 updated_at）抽 MySQL 写 ES</td>
+          <td>实现最简单</td>
+          <td>实时性差（分钟～小时）；不适合用户面查询</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-top:14px;">🎯 Warrants 场景的合理选择 / What fits the warrants context</h4>
+    <ul>
+      <li><strong>Intern 4 个月最可能</strong>：双写（业务代码里写完 MySQL 后直接调 ES API）</li>
+      <li><strong>更成熟的实现</strong>：MQ 解耦（写 MySQL 后发 Kafka 消息，consumer 异步写 ES）</li>
+      <li><strong>顶级实现</strong>：Debezium 监听 binlog，业务代码完全无感知</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🛠 主流 CDC 工具 / Mainstream CDC tools</h4>
+    <ul>
+      <li><strong>Debezium</strong> — RedHat 开源，最流行，Kafka 生态原生集成</li>
+      <li><strong>Canal</strong> — 阿里开源，老牌中文圈选择</li>
+      <li><strong>Maxwell</strong> — Zendesk 开源，轻量</li>
+    </ul>
+  </div>
+</details>
+
+<details id="q-sync-eval">
+  <summary>🎯 追问 2 候选人回答评价 / Follow-up 2 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>明确说出方案名（双写 / MQ / CDC）+ 给出选型理由 + 诚实标注 intern 当时的局限<br><span class="en-text">Names the pattern + rationale + honest about her intern-era constraints</span></li>
+      <li>知道至少 3 种方案的存在并能简单对比<br><span class="en-text">Knows ≥3 alternatives and can briefly compare</span></li>
+      <li>主动指出双写的一致性脆弱性，自然引出"如果失败了怎么办"的话题（直接进入追问 3）<br><span class="en-text">Unprompted, calls out double-write's consistency fragility — natural bridge to follow-up 3</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>"我们就是写完 MySQL 然后调一下 ES 的 SDK" —— 答的是双写但没意识到这是一种 pattern 选择<br>→ 追问"你知道这种方式叫什么吗？有没有别的方式？" / Probe pattern awareness</li>
+      <li>知道 Kafka / 消息队列概念但说不清在同步场景下怎么用<br>→ 追问"如果用 MQ 你会怎么改造这个流程？" / Probe MQ application</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"我没碰过这块，是 senior 配好的" —— 配合 Q1 ownership 信号<br>→ 🚩 简历声称 "directed end-to-end" 但 sync 这种核心架构没参与？</li>
+      <li>"我以为 ES 会自己从 MySQL 读" —— 概念性误解<br>→ 🚩 对两个系统的关系理解有严重 gap</li>
+      <li>"没想过这个问题" —— intern 项目可能确实没遇到失败，但应该想过架构<br>→ 🚩 架构感不足</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 2 -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--  追问 3: 一致性 / 失败处理 / Consistency & Failure Handling             -->
+<!--          (DEPTH SIGNAL · 2-step probe: write side + read side)         -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-orange" id="q-consistency" open>
+<summary>➜ 追问 3 / Follow-up 3 · 🛡 一致性 / 失败处理 / Consistency &amp; Failure Handling <span class="tag tag-time">~4 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">DEPTH</span></summary>
+<div class="followup-body">
+
+<details open>
+  <summary>🎤 提问 / Ask（两步走 / two steps）</summary>
+  <div class="detail-body">
+    <p style="color:var(--text-muted);font-size:16px;margin:0 0 10px;">
+      <strong>先问第一步（写侧失败），等她答完再问第二步（读侧实时性）。</strong><br>
+      <span class="en-text"><strong>Ask step 1 (write-side failure), wait for the answer, then ask step 2 (read-side immediacy).</strong></span>
+    </p>
+
+    <h4 style="color:#ea580c;margin-top:14px;">▸ 第一步 / Step 1 — 写侧失败 / Write-side Failure</h4>
+    <blockquote class="ask-en">
+      "What happens if <strong>MySQL succeeds but the ES write fails</strong>? Maybe the network blips, or ES is temporarily down. What does your system do? And how would you even <strong>notice</strong> that ES drifted behind MySQL?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "如果 <strong>MySQL 写成功了但 ES 那边失败了</strong>呢？比如网络抖一下，或者 ES 临时挂了。你们的系统会怎么处理？而且你怎么<strong>知道</strong> ES 落后于 MySQL 了？"
+    </blockquote>
+
+    <h4 style="color:#ea580c;margin-top:14px;">▸ 第二步 / Step 2 — 读侧实时性 / Read-side Immediacy</h4>
+    <blockquote class="ask-en">
+      "Now on the read side — an officer just filled out a warrant and clicks Save. Two seconds later they search for that suspect's name. Are they <strong>guaranteed</strong> to find it? What's the actual behavior, and if it doesn't show up, what do you do?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "再从读那边看——警察刚填完一个 warrant 点保存，2 秒后他去搜这个嫌疑人的名字。他<strong>一定</strong>能搜到吗？实际行为是什么样的？如果搜不到，你怎么处理？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 这一问是 FLOW 1 的<strong>深度信号题</strong>。Step 1 测系统失败处理思维（retry / DLQ / 监控 / 对账）；Step 2 测对 ES "near real-time" 特性的理解（默认 1s refresh window）。<br>
+      • Step 1 答出 "重试 + 监控告警" 就合格；提到死信队列、对账 job 是加分。<br>
+      • Step 2 答出 "ES 有 refresh interval，写完立刻搜可能搜不到" 就是核心信号；进一步能说出 <code>refresh=true</code> 强制刷新或前端做 "创建后跳详情页绕过搜索" → 高分。<br>
+      • 完全答不出 Step 2 = ES 实操经验不深，简历声称用过但可能只调过写入 API。<br>
+      <strong>Interviewer note</strong> — Step 1 probes failure-handling thinking. Step 2 probes ES near-real-time semantics. Step 2 is the more diagnostic — if she doesn't know about refresh interval, her ES experience is shallow.
+    </blockquote>
+  </div>
+</details>
+
+<details id="q-consistency-ref">
+  <summary>📖 追问 3 面试官参考答案 / Follow-up 3 Interviewer Reference</summary>
+  <div class="detail-body">
+
+    <h4>▸ Step 1 · 写侧失败处理 / Write-side Failure Handling</h4>
+    <ul>
+      <li>🟢 <strong>重试 + 指数退避</strong>：网络抖 / ES 临时挂的情况，自动重试通常能成<br><span class="en-text">Retry with exponential backoff for transient failures</span></li>
+      <li>🟢 <strong>死信队列 (DLQ)</strong>：N 次重试仍失败的消息送入 DLQ，告警 + 人工 / 离线补偿<br><span class="en-text">Dead-letter queue for messages that exhaust retries</span></li>
+      <li>🟢 <strong>监控告警</strong>：监控 ES 写入失败率、同步延迟；阈值告警<br><span class="en-text">Monitor write-failure rate and sync lag, alert on threshold breach</span></li>
+      <li>🟢 <strong>对账 job (reconciliation)</strong>：定期跑批比对 MySQL 和 ES 的 count / checksum，发现 drift 报警 + 自动补数<br><span class="en-text">Reconciliation job — periodically compare counts/checksums, alert on drift, auto-repair</span></li>
+      <li>🟢 <strong>顺序保证</strong>：用同一 partition key（如 warrant_id）保证同一条记录的更新按顺序消费；或带 version 字段 ES 端做 optimistic concurrency check<br><span class="en-text">Ordering — same partition key or version field with optimistic concurrency</span></li>
+      <li>🚩 <strong>双写场景特别痛</strong>：用双写没事务保证 → 失败只能靠业务代码 try/catch 补偿；MQ/CDC 比双写更容易做可靠失败处理</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">▸ Step 2 · 读侧实时性 / Read-side Immediacy</h4>
+    <ul>
+      <li>🎯 <strong>核心知识点 — ES refresh interval</strong>：ES 默认每 <code>1s</code> 把内存缓冲刷成新 segment 才能被搜到。所以 "写完立刻搜" <strong>不保证能搜到</strong>。<br><span class="en-text">ES default refresh interval is 1s. "Write then immediately search" is NOT guaranteed to return.</span></li>
+      <li>🟢 <strong>方式 1：强制 refresh</strong> — 调用时带 <code>?refresh=true</code> 强制等到可搜。<strong>代价</strong>：写入吞吐严重下降（refresh 是重操作），只能用于关键场景<br><span class="en-text">Force refresh with <code>?refresh=true</code> — guaranteed visible but kills write throughput</span></li>
+      <li>🟢 <strong>方式 2：用 MySQL 兜底</strong> — 关键场景 "写完立刻看" 不走 ES，直接查 MySQL（PK lookup 很快）<br><span class="en-text">Critical read-after-write paths go directly to MySQL (PK lookup is fast)</span></li>
+      <li>🟢 <strong>方式 3：UX 绕过</strong> — 警察刚创建 warrant 后跳详情页（按 ID 直查 MySQL）而非搜索页，自然避开 "搜不到" 窗口<br><span class="en-text">UX workaround — after create, route to detail page (PK fetch), not search</span></li>
+      <li>🟢 <strong>方式 4：调短 refresh_interval</strong> — 改成 <code>200ms</code> 甚至更短，代价是 segment 碎片化 + merge 开销上涨</li>
+      <li>🟡 <strong>更深的概念</strong>：ES 的 "near real-time" 是<strong>底层设计取舍</strong> — 倒排索引 + segment 不可变 = 优秀的搜索性能，但写后立读窗口是必然代价</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">📐 一致性模型映射 / Consistency Model Map</h4>
+    <table>
+      <thead><tr><th>系统</th><th>一致性级别</th><th>写后立读</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MySQL</strong></td><td>强一致（同一连接） / RR 隔离级别下事务一致</td><td>✅ 保证</td></tr>
+        <tr><td><strong>Elasticsearch</strong></td><td>最终一致，默认 1s refresh window</td><td>❌ 不保证</td></tr>
+        <tr><td><strong>MySQL → ES sync</strong></td><td>最终一致 + 同步延迟（毫秒～秒）</td><td>❌ 不保证</td></tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<details id="q-consistency-eval">
+  <summary>🎯 追问 3 候选人回答评价 / Follow-up 3 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li><strong>Step 1</strong>：主动说出 retry + DLQ + 监控告警 + 对账 job 中至少 3 个<br><span class="en-text">Step 1: names ≥3 of retry, DLQ, monitoring, reconciliation</span></li>
+      <li><strong>Step 2</strong>：主动提到 ES <strong>refresh interval</strong> / "near real-time" 特性，并能说出至少 1 个绕过方式<br><span class="en-text">Step 2: unprompted mention of refresh interval / near-real-time + at least one workaround</span></li>
+      <li>能把两步连起来 — "因为 ES 是最终一致的，所以关键写后立读路径走 MySQL"<br><span class="en-text">Connects both steps — critical read-after-write paths use MySQL because ES is eventually consistent</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li><strong>Step 1</strong>：只说 "重试" 没考虑监控 / 对账<br>→ 追问 "重试也失败怎么办？怎么 detect？" / Probe DLQ + monitoring</li>
+      <li><strong>Step 2</strong>：知道有延迟但说不清原理（不知道 refresh interval）<br>→ 追问 "为什么会有延迟？" / Probe refresh interval root cause</li>
+      <li><strong>Step 2</strong>：说 "让前端 retry 一下就行" —— UX hack 而非系统设计<br>→ 追问 "如果一定要保证立刻可见呢？" / Probe whether she knows <code>refresh=true</code></li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li><strong>Step 1</strong>：完全没想过失败场景，"我们没遇到过"<br>→ 🚩 production 思维缺失，intern 项目可能确实没遇到但应该想象得到</li>
+      <li><strong>Step 2</strong>：以为 ES 是强一致 / 写完立刻能搜<br>→ 🚩 ES 实操经验严重不足，简历声称用过但不熟悉最基本的一致性特性</li>
+      <li><strong>Step 2</strong>：说 "我们让用户手动刷新"<br>→ 🚩 把系统问题推给用户，工程师视角缺失</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 3 -->
+
+<hr class="separator">
+
 <!-- ==================== RUBRIC ==================== -->
 <h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
 
@@ -625,10 +841,22 @@
         <td>只能复述"ES 快"这种 surface 说法</td>
       </tr>
       <tr>
-        <td><strong>追问 1 — 同步机制（bonus）</strong></td>
-        <td>主动提到双写 / MQ / CDC 中至少一个</td>
-        <td>被问到时能说"应该是双写吧"</td>
-        <td>从没想过同步问题</td>
+        <td><strong>追问 2 — 同步方案 landscape</strong></td>
+        <td>说出方案名（双写 / MQ / CDC）+ 选型理由 + 知道 ≥3 种替代</td>
+        <td>"我们写完 MySQL 就调 ES API" — 答的是双写但没意识到这是 pattern</td>
+        <td>"没碰过这块" / "ES 会自己从 MySQL 读"</td>
+      </tr>
+      <tr>
+        <td><strong>追问 3 Step 1 — 写侧失败处理</strong></td>
+        <td>主动说出 retry + DLQ + 监控 + 对账 中至少 3 个</td>
+        <td>只说 "重试一下"，没考虑监控 / 对账</td>
+        <td>"我们没遇到过" / 完全没想过失败场景</td>
+      </tr>
+      <tr>
+        <td><strong>追问 3 Step 2 — 读侧实时性（CORE 深度信号）</strong></td>
+        <td>主动提 refresh interval + ≥1 绕过方式（refresh=true / MySQL 兜底 / UX）</td>
+        <td>知道有延迟但说不清 root cause</td>
+        <td>以为 ES 强一致 / "让用户手动刷新"</td>
       </tr>
     </tbody>
   </table>
@@ -646,7 +874,9 @@
       <tr><td>Q1 主问题 — Ownership 真实性（intern scope）</td><td></td><td></td></tr>
       <tr><td>追问 1 — MySQL × ES 分工清晰度（CORE）</td><td></td><td></td></tr>
       <tr><td>追问 1 — 双向 trade-off（MySQL 不够 + ES 不够）（CORE）</td><td></td><td></td></tr>
-      <tr><td>追问 1 — 同步机制提及（BONUS）</td><td></td><td></td></tr>
+      <tr><td>追问 2 — 同步方案 landscape（双写 / MQ / CDC）</td><td></td><td></td></tr>
+      <tr><td>追问 3 Step 1 — 写侧失败处理（retry / DLQ / 监控）</td><td></td><td></td></tr>
+      <tr><td>追问 3 Step 2 — 读侧实时性 / refresh interval（CORE 深度信号）</td><td></td><td></td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构思维（owner vs 执行者）</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
