@@ -100,6 +100,7 @@
   .qp-sub.green  { border-left: 2px solid #059669; }
   .qp-sub.blue   { border-left: 2px solid var(--blue); }
   .qp-sub.orange { border-left: 2px solid #ea580c; }
+  .qp-sub.purple { border-left: 2px solid #7c3aed; }
   details.qp-followups {
     background: transparent;
     border: none;
@@ -144,6 +145,7 @@
   details.followup-section.fu-green  { border-left: 4px solid var(--green); }
   details.followup-section.fu-blue   { border-left: 4px solid var(--blue); }
   details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
+  details.followup-section.fu-purple { border-left: 4px solid #7c3aed; }
   .followup-body { padding: 14px 18px 18px; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
@@ -315,6 +317,15 @@
     </div>
   </details>
 
+  <a class="qp-link" href="#flow-2-dashboard" onclick="jump('flow-2-dashboard');return false;" style="background:#faf5ff;color:#7c3aed;font-weight:700;margin-top:10px;border-left-color:#7c3aed;">📌 FLOW 2 · Zaber Dashboard</a>
+
+  <details class="qp-followups" open>
+    <summary>↳ 追问 / Follow-ups（1 个 · 条件）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub purple" href="#q-charts" onclick="jump('q-charts');return false;">追问 1 — 图表 lib 选型 + 大数据量动画性能</a>
+    </div>
+  </details>
+
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
   <a class="qp-link" href="#notes"  onclick="jump('notes');return false;">📝 Notes</a>
 </div>
@@ -354,8 +365,14 @@
         <td>1 主问题（项目背景）+ 3 追问（分工 → 同步 → 一致性）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context) + 3 follow-ups (roles → sync → consistency)</span></td>
         <td><strong>~15 min</strong></td>
       </tr>
-      <tr style="background:#f8fafc;">
-        <td colspan="4" style="text-align:center;color:#94a3b8;font-style:italic;">FLOW 2 · TBD（Zaber CRM concurrency / 50ms 性能优化 等待选定）</td>
+      <tr style="background:#faf5ff;">
+        <td><strong style="color:#7c3aed;">FLOW 2</strong></td>
+        <td>
+          <strong>Zaber — Internal Dashboard (Sales Support tooling)</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Built a dashboard consolidating 3 systems used by Sales Support, saving 5 minutes per order."</span>
+        </td>
+        <td>1 主问题（dashboard 介绍 + 5min 怎么算）+ 1 条件追问（若有图表 → lib 选型 + 大数据量动画性能）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (dashboard intro + how the 5min metric is calculated) + 1 conditional follow-up (if charts exist → lib choice + perf under heavy data)</span></td>
+        <td><strong>~10 min</strong></td>
       </tr>
     </tbody>
   </table>
@@ -809,6 +826,211 @@
 
 <hr class="separator">
 
+<!-- ====================================================================== -->
+<!-- ============================== FLOW 2 ================================ -->
+<!-- ===== 1 main question (dashboard intro + 5min metric)              === -->
+<!-- ===== 1 conditional follow-up (if charts → lib + animation perf)   === -->
+<!-- ====================================================================== -->
+<h2 id="flow-2-dashboard" style="background:#faf5ff;border-left:6px solid #7c3aed;color:#7c3aed;font-size:28px;">
+  📌 FLOW 2 · Zaber Internal Dashboard（Sales Support tooling）
+  <span class="tag tag-time">~10 min total</span>
+</h2>
+
+<div class="card" style="border-left:4px solid #7c3aed;">
+  <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
+  <blockquote style="border-left-color:#7c3aed;background:#fff;">
+    <span class="en-text">"Built an <strong>internal dashboard</strong> that consolidates information from <strong>3 different systems</strong> used by the Sales Support team, <strong>saving 5 minutes per order</strong>."</span>
+  </blockquote>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
+    ✅ <strong>主问题 / Main question</strong>：让她介绍这个 dashboard 长什么样、整合了哪些信息、是否有图表，并解释 "save 5min per order" 的具体含义 / 计算方式（验证 metric 的真实性 + 信息架构能力）。<br>
+    ➜ <strong>条件追问 / Conditional follow-up</strong>：<u>仅当主问题答出 dashboard 含图表时才问</u> → 追问 1（图表 lib 选型 → 大数据量动画性能优化，<u>前端深度信号</u>）。<br>
+    <span class="en-text">✅ <strong>Main question</strong> — get her to describe the dashboard (layout, info, charts?) and explain what "5 min saved per order" actually means / how it was measured (validates metric honesty + IA skill). ➜ <strong>Conditional follow-up</strong>: <u>only ask if she said the dashboard has charts</u> → #1 (charting lib choice → animation perf under heavy data, <u>frontend depth signal</u>).</span>
+  </p>
+</div>
+
+<!-- ============================ Q1: DASHBOARD INTRO + 5MIN METRIC ============================ -->
+<h3 id="q-dashboard" style="font-size:24px;color:#7c3aed;margin-top:24px;">🎯 主问题 / Main Question · 🖥️ Dashboard 介绍 + 5min Metric <span class="tag tag-time">~5 min</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask（分两步问，先问 dashboard，再问 metric）</summary>
+  <div class="detail-body">
+    <h4 style="color:#7c3aed;margin-top:0;">▸ 第一步 / Step 1 — Dashboard 长什么样</h4>
+    <blockquote class="ask-en">
+      "Tell me about that <strong>dashboard you built at Zaber</strong> — what does it look like? Which 3 systems does it consolidate? What information is shown on the page, and <strong>are there any charts or visualizations</strong> on it?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "聊一下你在 Zaber build 的那个 dashboard — 它<strong>大概长什么样</strong>？把哪 3 个系统整合到了一起？页面上具体展示哪些信息？<strong>有没有图表 / 可视化</strong>的内容？"
+    </blockquote>
+
+    <h4 style="color:#7c3aed;margin-top:14px;">▸ 第二步 / Step 2 — 5min 是怎么算出来的</h4>
+    <blockquote class="ask-en">
+      "And that '<strong>5 minutes saved per order</strong> for Sales Support' number — what does that actually mean? <strong>How was it measured or calculated</strong>? Did someone time it, was it user-reported, A/B tested, or…?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "还有那个 '<strong>每个 order 给 Sales Support 省 5 分钟</strong>' 的数字 — 具体什么意思？<strong>是怎么测出来 / 算出来的</strong>？是有人计时？用户自己反馈？还是 A/B 测试？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note：</strong>两个子问题之间稍停顿，让她把 dashboard 描述完整再切到 metric。<strong>注意她讲图表时的措辞</strong>——如果她说有图表，这就是触发条件追问的信号。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+    <h4 style="color:#7c3aed;">▸ Part 1 — Dashboard 可能的样子（合理猜测 + 验证她有没有具体细节）</h4>
+    <ul>
+      <li><strong>3 个系统</strong>大概率是：CRM（Salesforce / HubSpot 之类）+ ERP / 订单系统 + 客户/产品信息系统（或物流 / 库存）</li>
+      <li><strong>页面布局</strong>常见模式：顶部 KPI 卡片（pending orders / shipped today / 异常）+ 中部主表格（order list with cross-system status）+ 侧边筛选 + 详情抽屉</li>
+      <li><strong>图表 / 可视化</strong>可能：<br>
+        - 趋势图（订单量随时间）<br>
+        - 状态分布饼图 / 堆叠柱状图<br>
+        - Funnel（quote → order → shipped）<br>
+        - Heatmap（按客户 / 按地区）<br>
+        - 或者 <strong>完全没有图表</strong>（纯表格 + 状态徽章）— 这也是合理的，dashboard ≠ 必须有 chart</li>
+      <li><strong>核心价值点</strong>：以前 Sales Support 要在 3 个系统之间反复切换查信息 → 现在一个页面看完</li>
+    </ul>
+
+    <h4 style="color:#7c3aed;">▸ Part 2 — "5 min per order" 可能的计算口径</h4>
+    <table>
+      <thead><tr><th>来源 / Source</th><th>含义</th><th>可信度</th></tr></thead>
+      <tbody>
+        <tr><td><strong>用户访谈估算</strong> / user-reported estimate</td><td>问 Sales Support "以前要多久？现在要多久？" 取差值</td><td>🟡 主观，但 intern 项目最常见也最现实</td></tr>
+        <tr><td><strong>实测计时</strong> / actual timing</td><td>找 N 个 order 实地 stopwatch，对比新旧流程</td><td>🟢 真实，但成本高，intern 项目少见</td></tr>
+        <tr><td><strong>操作步骤数 × 平均耗时</strong></td><td>旧流程：3 系统切换 × 5 个步骤 × 假设 20s/step ≈ 5min</td><td>🟡 半定量，常见 PM 做法</td></tr>
+        <tr><td><strong>A/B 或前后对比</strong></td><td>部分团队上新版，部分用旧版，对比平均处理时间</td><td>🟢 严谨，但需要 telemetry / log</td></tr>
+        <tr><td><strong>不知道 / 别人给的数字</strong></td><td>PM 或 manager 直接给的，她只是写进简历</td><td>🔴 这个回答如果坦诚说出来反而 OK，硬编也很危险</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-muted);font-size:16px;"><strong>评估核心</strong>：不要求她答出哪种方法"对"——要求她<strong>能说清楚自己当时用的是哪种</strong>。intern 老老实实说 "是 PM 根据用户访谈估的" 比硬编一套 A/B 数据更可信。</p>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li>能清楚说出 3 个系统是什么、各自提供什么信息</li>
+      <li>能描述 dashboard 的<strong>信息架构</strong>（哪些放显眼、哪些折叠、用户怎么用）</li>
+      <li>明确说出有 / 没有图表，如果有能说出图表类型和用途</li>
+      <li>5min metric <strong>诚实说出来源</strong>（哪怕是 "PM 根据用户访谈估的"），不硬编</li>
+      <li>能解释 metric 背后的<strong>用户旧痛点</strong>（以前要切几个 tab / 复制粘贴几次）</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>能说出 dashboard 大致样子，但 3 个系统说不全或说错</li>
+      <li>图表有没有支支吾吾 / 含糊带过</li>
+      <li>5min 的来源说不清，"反正用户说快了很多" 这种</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>"就是把 3 个东西放一起"，说不出具体哪 3 个、信息架构如何</li>
+      <li>对 5min 数字完全没概念，<strong>背诵简历</strong>但讲不出来源 → 🚩 数字可信度存疑</li>
+      <li>声称用了某 chart lib 但答不出基本 API / 配置 → 🚩 简历夸大</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ============================ 追问 1: CHARTS (CONDITIONAL) ============================ -->
+<details class="followup-section fu-purple" id="q-charts">
+  <summary>🔍 追问 1 · 图表 Lib 选型 + 大数据量动画性能 <span class="tag tag-time">~5-7 min</span> <span style="color:#7c3aed;font-weight:700;">[条件追问 · Conditional]</span></summary>
+  <div class="followup-body">
+
+<blockquote class="interviewer-note" style="border-left-color:#7c3aed;background:#faf5ff;color:#7c3aed;">
+  ⚠️ <strong>触发条件 / Trigger</strong>：<strong>仅当 Q1 答出 dashboard 含图表时才问这条追问。</strong>如果她说 dashboard 没有图表（纯表格 / KPI 卡片），<u>直接跳过此追问</u>，不要硬绕回来。<br>
+  ⚠️ <strong>Only ask if Q1 confirmed there are charts on the dashboard.</strong> If she said no charts, skip this follow-up entirely.
+</blockquote>
+
+<details open>
+  <summary>🎤 提问 / Ask（两步走）</summary>
+  <div class="detail-body">
+    <h4 style="color:#7c3aed;margin-top:0;">▸ 第一步 / Step 1 — 用的哪个 chart lib，为什么</h4>
+    <blockquote class="ask-en">
+      "You mentioned the dashboard has charts — <strong>which charting library did you use</strong>? Highcharts? Recharts? Chart.js? ECharts? D3? And <strong>why that one</strong> over the alternatives?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你提到 dashboard 有图表 — <strong>具体用的哪个图表库</strong>？Highcharts？Recharts？Chart.js？ECharts？D3？<strong>为什么选这个</strong>而不是别的？"
+    </blockquote>
+
+    <h4 style="color:#7c3aed;margin-top:14px;">▸ 第二步 / Step 2 — 大数据量下动画卡顿怎么办（核心深度信号）</h4>
+    <blockquote class="ask-en">
+      "Now imagine the data volume blows up — say <strong>tens of thousands of data points</strong>, or a live-streaming ticker that updates every second. Heavy chart libs like Highcharts often <strong>lag or drop frames during animations</strong> at that scale. <strong>How would you keep it smooth?</strong>"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "假设数据量爆炸 — <strong>几万个点</strong>，或者实时流式 ticker 每秒都在刷。像 Highcharts 这类比较重的库做动画时容易<strong>掉帧 / 卡顿</strong>。<strong>你会怎么让它流畅</strong>？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note</strong>：Step 1 是热身（验证她知道 lib landscape），<strong>Step 2 才是真正的深度信号</strong>。intern 大概率回答 "换轻的库" / "分页"，要看她能不能讲出至少 2-3 个真正的优化手段。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+    <h4 style="color:#7c3aed;">▸ Step 1 — 常见图表库 landscape</h4>
+    <table>
+      <thead><tr><th>库 / Lib</th><th>特点</th><th>典型场景</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Highcharts</strong></td><td>功能最全、文档好、商用要 license；SVG 为主，<strong>有 boost.js 模块走 Canvas</strong></td><td>企业 dashboard / 复杂报表</td></tr>
+        <tr><td><strong>Recharts</strong></td><td>纯 React 组件、声明式、API 友好；底层 D3 + SVG，<strong>大数据量会很慢</strong></td><td>中小数据量的 React 项目</td></tr>
+        <tr><td><strong>Chart.js</strong></td><td>轻量、Canvas 渲染、上手快</td><td>简单图表 / 嵌入式</td></tr>
+        <tr><td><strong>ECharts</strong> (Apache)</td><td>百度开源、<strong>大数据量友好（Canvas + WebGL）</strong>、地理图强</td><td>大数据量 / 实时 / 地图</td></tr>
+        <tr><td><strong>D3.js</strong></td><td>低层，最灵活但最难，做<strong>自定义可视化</strong>用</td><td>定制化可视化 / 数据新闻</td></tr>
+        <tr><td><strong>Plotly</strong></td><td>科学可视化、3D、WebGL</td><td>数据科学 / 学术</td></tr>
+        <tr><td><strong>Visx</strong> (Airbnb)</td><td>低层 React + D3 组合，灵活但要自己拼</td><td>定制化 React 项目</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-muted);font-size:16px;">选型常见理由：<strong>license</strong>（Highcharts 商用收费）/ <strong>React 生态贴合度</strong>（Recharts、Visx）/ <strong>数据量</strong>（ECharts、Highcharts boost）/ <strong>简单优先</strong>（Chart.js）。</p>
+
+    <h4 style="color:#7c3aed;margin-top:18px;">▸ Step 2 — 大数据量动画性能优化手段（按层次）</h4>
+    <table>
+      <thead><tr><th>层次</th><th>手段</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3"><strong>渲染层</strong></td><td><strong>关闭 / 简化动画</strong></td><td>Highcharts: <code>chart.animation: false</code> / <code>plotOptions.series.animation: false</code>；最简单粗暴见效快</td></tr>
+        <tr><td><strong>换 Canvas / WebGL 渲染</strong></td><td>Highcharts <strong>boost module</strong>、ECharts 自带 Canvas+WebGL；SVG 节点过多 (>1000) 浏览器会爆</td></tr>
+        <tr><td><strong>requestAnimationFrame + 批量更新</strong></td><td>实时流场景，把多次 data push 合并到一帧渲染</td></tr>
+        <tr><td rowspan="3"><strong>数据层</strong></td><td><strong>降采样 / Decimation</strong>（LTTB 算法）</td><td>10万点 → 1000 点但保形状；Chart.js 内置 decimation plugin</td></tr>
+        <tr><td><strong>按时间窗口聚合</strong></td><td>原始秒级 → 显示分钟级 / 小时级；zoom in 再加载细粒度</td></tr>
+        <tr><td><strong>视口虚拟化 / Viewport culling</strong></td><td>只渲染当前可见范围内的点（lazy load on pan / zoom）</td></tr>
+        <tr><td rowspan="2"><strong>架构层</strong></td><td><strong>Web Worker 预处理</strong></td><td>大数组的过滤 / 排序 / 聚合放到 worker，不阻塞主线程</td></tr>
+        <tr><td><strong>服务端预聚合</strong></td><td>不要前端拉 10万点；后端按时间窗口聚合好再返回（OLAP 思路）</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-muted);font-size:16px;"><strong>评估深度</strong>：能答出 <strong>≥3 个</strong>不同层次的方案（不是 3 个都在渲染层）→ 🟢；只会 "关动画 + 换库" → 🟡；只会 "换个轻的库" → 🔴。</p>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li><strong>Step 1</strong>：能说出 ≥2 个 lib 的对比 + 自己选型的具体理由（license / React 集成 / 数据量预期）</li>
+      <li><strong>Step 2</strong>：能说出 <strong>≥3 个不同层次</strong>的方案（渲染 / 数据 / 架构 至少覆盖 2 层），并能说出每个方案的<strong>取舍</strong>（例如降采样会丢峰值、Canvas 不能直接 hover SVG element）</li>
+      <li>能主动提到 <strong>Highcharts boost</strong> / <strong>LTTB 降采样</strong> / <strong>requestAnimationFrame</strong> / <strong>Web Worker</strong> 这些专有名词</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li><strong>Step 1</strong>：能说出 lib 名字但讲不清为什么选它</li>
+      <li><strong>Step 2</strong>：知道可以关动画 / 分页加载，听过 boost 但说不清原理</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li><strong>Step 1</strong>：说不出用了什么库 / 说错（声称用过但记不住名字 → 🚩）</li>
+      <li><strong>Step 2</strong>："换个更轻的库" 是唯一答案 / "我们数据量没那么大没遇到过" + 没有任何思考<br>→ 🚩 没有前端性能 sense</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 1 (q-charts) -->
+
+<hr class="separator">
+
 <!-- ==================== RUBRIC ==================== -->
 <h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
 
@@ -858,6 +1080,31 @@
         <td>知道有延迟但说不清 root cause</td>
         <td>以为 ES 强一致 / "让用户手动刷新"</td>
       </tr>
+      <tr style="background:#faf5ff;"><td colspan="4" style="font-weight:700;color:#7c3aed;">FLOW 2 · Zaber Dashboard</td></tr>
+      <tr>
+        <td><strong>Q1 — Dashboard 信息架构</strong></td>
+        <td>能清楚说出 3 个系统 + 信息布局 + 是否有图表（明确）</td>
+        <td>大致样子说得出，3 个系统说不全</td>
+        <td>"就是把 3 个东西放一起" / 说不出布局</td>
+      </tr>
+      <tr>
+        <td><strong>Q1 — 5min Metric 诚实性</strong></td>
+        <td>诚实说出 metric 来源（估算 / 实测 / 用户反馈），不硬编</td>
+        <td>说得出 "用户说快了" 但讲不出具体方法</td>
+        <td>背简历但完全不知 metric 怎么来（→ 🚩 数字可信度）</td>
+      </tr>
+      <tr>
+        <td><strong>追问 1 Step 1 — Chart Lib 选型</strong></td>
+        <td>说出 lib + 对比 ≥2 个替代 + 具体选型理由（license / 数据量 / React 集成）</td>
+        <td>说出 lib 名字但讲不清为什么选</td>
+        <td>记不住用的什么库（→ 🚩 简历夸大）</td>
+      </tr>
+      <tr>
+        <td><strong>追问 1 Step 2 — 大数据量动画性能（CORE 前端深度）</strong></td>
+        <td>≥3 个不同层次方案（渲染 / 数据 / 架构 至少 2 层）+ 知道取舍</td>
+        <td>知道关动画 + 换 lib，听过 boost 但说不清</td>
+        <td>"换个更轻的库" 是唯一答案 / 没遇到过没想过</td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -877,6 +1124,11 @@
       <tr><td>追问 2 — 同步方案 landscape（双写 / MQ / CDC）</td><td></td><td></td></tr>
       <tr><td>追问 3 Step 1 — 写侧失败处理（retry / DLQ / 监控）</td><td></td><td></td></tr>
       <tr><td>追问 3 Step 2 — 读侧实时性 / refresh interval（CORE 深度信号）</td><td></td><td></td></tr>
+      <tr style="background:#faf5ff;"><td colspan="3" style="font-weight:700;color:#7c3aed;">FLOW 2 · Zaber Dashboard</td></tr>
+      <tr><td>Q1 — Dashboard 信息架构（3 系统 + 布局 + 有无图表）</td><td></td><td></td></tr>
+      <tr><td>Q1 — 5min Metric 诚实性 / 来源</td><td></td><td></td></tr>
+      <tr><td>追问 1 Step 1 — Chart Lib 选型理由（条件）</td><td></td><td></td></tr>
+      <tr><td>追问 1 Step 2 — 大数据量动画性能（CORE 前端深度，条件）</td><td></td><td></td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构思维（owner vs 执行者）</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
