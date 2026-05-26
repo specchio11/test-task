@@ -23,7 +23,7 @@ export const shirley: CandidateConfig = {
   totalMin: 60,
   brand: '📋 Onsite Interview Guide',
   accent: '#0d9488',
-  // scheduledAt: undefined  — interview time not yet scheduled
+  scheduledAt: '2026-05-28T10:00:00',
 
   openingEn: '(TBD — opening script)',
   openingZh: '（待填写 · 开场白）',
