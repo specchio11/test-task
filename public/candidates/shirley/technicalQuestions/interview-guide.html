@@ -1,32 +1,679 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>interview</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #ccfbf1; color: #0f766e; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #0d9488;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #0f766e; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>interview</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #0d9488;
+    --accent2: #14b8a6;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== QUICK JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #0d9488; }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.green  { border-left: 2px solid #059669; }
+  details.qp-followups {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 8px 0 4px;
+  }
+  details.qp-followups > summary {
+    padding: 6px 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #475569;
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  details.qp-followups[open] > summary {
+    background: #f0fdfa; color: #0f766e; border-left-color: #0d9488;
+    margin-bottom: 4px;
+  }
+  details.qp-followups .qp-followups-body { padding: 2px 0 4px 6px; }
+  details.followup-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0 10px 10px 0;
+    margin: 24px 0 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  details.followup-section > summary {
+    padding: 14px 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #475569;
+    background: #f8fafc;
+    border-radius: 0 8px 0 0;
+  }
+  details.followup-section[open] > summary {
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--border);
+  }
+  details.followup-section.fu-green  { border-left: 4px solid var(--green); }
+  .followup-body { padding: 14px 18px 18px; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: #0d9488; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
+
+  /* ===== MAIN ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 280px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #f0fdfa;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 15px;
+  }
+  blockquote.ask-en {
+    border-left-color: #d97706;
+    background: #fef9ee;
+    color: var(--text);
+  }
+  blockquote.ask-cn {
+    border-left: none;
+    background: none;
+    padding: 8px 0 8px 16px;
+    color: #78350f;
+    font-size: 18px;
+  }
+  .en-text { font-style: normal; color: #475569; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; margin-right: 8px; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+  .tag-tbd  { background: #f1f5f9; color: #64748b; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+</style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Shirley Huang · Technical Q&amp;A</div>
-    <h1>② 简历技术问答</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a class="nav-btn" style="background:#0d9488;color:#fff;border-color:#0d9488;text-decoration:none;font-weight:700;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a href="../codingTest2/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ Coding 2</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;opacity:0.7;">⑤ 候选人提问</a>
+</nav>
+
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow</a>
+
+  <a class="qp-link" href="#flow-1-mark43" onclick="jump('flow-1-mark43');return false;" style="background:#f0fdfa;color:var(--accent);font-weight:700;margin-top:10px;border-left-color:var(--accent);">📌 FLOW 1 · Mark43 Backend (MySQL × ES)</a>
+
+  <details class="qp-followups" open>
+    <summary>↳ 追问 / Follow-ups（1 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub green" href="#q-mysql-es" onclick="jump('q-mysql-es');return false;">追问 1 — MySQL &amp; ES 分工 / 为什么两个</a>
+    </div>
+  </details>
+
+  <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
+  <a class="qp-link" href="#notes"  onclick="jump('notes');return false;">📝 Notes</a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~20 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入技术问答 / Introduce Technical Q&A</h4>
+  <blockquote class="ask-en">
+    "Thanks for that intro. Let me pull a thread from your resume — the fullstack warrants workflow you built at Mark43 caught my eye. Can we spend a bit of time there?"
+  </blockquote>
+  <blockquote class="ask-cn">
+    "谢谢你的自我介绍。我从你简历里挑一条来聊——Mark43 那个 warrants workflow 引起了我的注意，我们花点时间聊聊那块吧。"
+  </blockquote>
+</div>
+
+<!-- ==================== FLOW OVERVIEW ==================== -->
+<h2 id="flow">⏱️ Flow</h2>
+<div class="card">
+  <p style="margin-bottom:10px;color:var(--text-muted);font-size:18px;">
+    所有问题都锚定简历里的<strong>具体 bullet</strong>。每个 FLOW 内部由 <strong>1 个主问题 + 若干递进追问</strong>组成。<br>
+    <span class="en-text">Every question is anchored to a specific resume bullet. Each FLOW = <strong>1 main question + several progressive follow-ups</strong>.</span>
+  </p>
+  <table>
+    <thead><tr><th>#</th><th>简历 Bullet / Resume Bullet</th><th>结构 / Structure</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr style="background:#f0fdfa;">
+        <td><strong style="color:var(--accent);">FLOW 1</strong></td>
+        <td>
+          <strong>Mark43 — Backend Data Layer (MySQL × Elasticsearch)</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Developed a fullstack warrants creation workflow using React, Typescript, mySQL, and Elasticsearch."</span>
+        </td>
+        <td>1 主问题（项目背景）+ 1 追问（MySQL × ES 分工）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context) + 1 follow-up (MySQL × ES roles)</span></td>
+        <td><strong>~10 min</strong></td>
+      </tr>
+      <tr style="background:#f8fafc;">
+        <td colspan="4" style="text-align:center;color:#94a3b8;font-style:italic;">FLOW 2 · TBD（Zaber CRM concurrency / 50ms 性能优化 等待选定）</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!-- ============================== FLOW 1 ================================ -->
+<!-- ===== 1 main question (Q1 project context) + 1 follow-up (MySQL×ES) == -->
+<!-- ====================================================================== -->
+<h2 id="flow-1-mark43" style="background:#f0fdfa;border-left:6px solid var(--accent);color:var(--accent);font-size:28px;">
+  📌 FLOW 1 · Mark43 Backend Data Layer (MySQL × Elasticsearch)
+  <span class="tag tag-time">~10 min total</span>
+</h2>
+
+<div class="card" style="border-left:4px solid var(--accent);">
+  <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
+  <blockquote style="border-left-color:var(--accent);background:#fff;">
+    <span class="en-text">"Developed a fullstack warrants creation workflow using React, Typescript, <strong>mySQL, and Elasticsearch</strong>. Directed end-to-end feature development, including design, documentation, implementation, and testing. Deployed feature 2 weeks ahead schedule into production and is being used by over 5 police agencies."</span>
+  </blockquote>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
+    ✅ <strong>主问题 / Main question</strong>：让她<strong>简短</strong>介绍项目背景，确认她对业务领域和自己 contribution 的理解。<br>
+    ➜ <strong>追问 / Follow-ups</strong>：追问 1（MySQL 和 ES 分别负责什么，为什么不只用一个）—— 核心架构题，看她对 source of truth vs search index 的分工理解。<br>
+    <span class="en-text">✅ <strong>Main question</strong> — get a <strong>brief</strong> project background, validate her domain &amp; contribution clarity. ➜ Follow-up 1 — core architecture question on MySQL × ES roles &amp; why two systems.</span>
+  </p>
+</div>
+
+<!-- ============================ Q1: PROJECT CONTEXT ============================ -->
+<h3 id="q1-context" style="font-size:24px;color:var(--accent);margin-top:24px;">🎯 主问题 / Main Question · 🏢 项目背景 / Project Context <span class="tag tag-time">~3 min</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Before we go into the tech — can you give me a <strong>brief</strong> background on this Mark43 warrants project? What is Mark43 as a product, what does the 'warrants creation workflow' actually do for the end user, and what was <strong>your specific piece</strong> in it?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "在聊技术之前——你能<strong>简短</strong>介绍一下 Mark43 的这个 warrants 项目吗？Mark43 这个产品是做什么的？'warrants creation workflow' 对终端用户来说具体在做什么事？你<strong>个人</strong>负责的是哪一块？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 这一问只是<strong>热身和校准</strong>，目的是让她进入状态 + 确认 ownership 真实范围。<u>不要让她在这里讲超过 3 分钟</u>。如果她开始深入技术细节，主动打断："这些待会儿聊技术时我们详细看，先帮我把背景串一下。" 重点听三件事：(1) 她对 Mark43 这个产品的理解（警务 SaaS）；(2) 她对 warrants 业务流程的理解（不是普通 CRUD，是有法律约束的流程）；(3) 她在那 4 个月里实际 own 的范围（intern level vs "directed end-to-end" 的真实度）。<br>
+      <strong>Interviewer note</strong> — This is just a <strong>warm-up and calibration</strong>. Don't let her spend more than 3 min here. If she dives into tech, gently redirect: "We'll come back to tech in a moment — first help me set the context." Listen for three things: (1) does she understand Mark43 as a product (police SaaS), (2) does she understand the warrants <em>domain</em> (it's legally constrained, not just a CRUD form), (3) what was her <em>real scope</em> in those 4 months as an intern (vs the "directed end-to-end" wording on her resume).
+    </blockquote>
   </div>
+</details>
+
+<details id="q1-ref">
+  <summary>📖 面试官参考答案 / Interviewer Reference — Q1 Project Context</summary>
+  <div class="detail-body">
+
+    <h4>🏢 Mark43 是什么 / What Mark43 is</h4>
+    <ul>
+      <li><strong>警务 SaaS 平台</strong>（RMS — Records Management System），给警察局用</li>
+      <li>覆盖警务全流程：报案 → 立案 → 调查 → 证据 → 起诉</li>
+      <li>客户 = 警察局（agencies），简历的 "5+ police agencies" 就是指这些</li>
+      <li><span class="en-text">A SaaS RMS (Records Management System) used by police agencies — covers the full workflow from incident report to prosecution. "5+ agencies" in her resume = client police departments.</span></li>
+    </ul>
+
+    <h4 style="margin-top:14px;">📜 Warrants 是什么 / What warrants are</h4>
+    <ul>
+      <li><strong>法律文件</strong>，由法官签发，授权警方执行强制行为</li>
+      <li>三种主流：<strong>Arrest warrant</strong>（逮捕令）/ <strong>Search warrant</strong>（搜查令）/ <strong>Bench warrant</strong>（拘传令）</li>
+      <li>关键性质：<strong>有法律效力</strong>—— 严格签发流程、可追溯、可审计、可打印盖章</li>
+      <li><span class="en-text">Legal documents issued by a judge, authorizing police action (arrest / search / bench). Legally binding — strict workflow, auditable, printable.</span></li>
+    </ul>
+
+    <h4 style="margin-top:14px;">📝 Warrants creation workflow 实际在做什么 / What the workflow actually does</h4>
+    <p>典型多步表单流程 / Typical multi-step form workflow:</p>
+    <ol>
+      <li>选关联案件（case lookup）</li>
+      <li>选 warrant 类型（arrest / search / bench）</li>
+      <li>填表单：suspect 信息、涉嫌罪名（charges）、Probable Cause 陈述、签发法官、限制条件、附件</li>
+      <li>上级审核（supervisor approval workflow）—— 状态机：Draft → Pending Review → Approved/Rejected</li>
+      <li>提交法院（export PDF / e-file）</li>
+      <li>法官签发后回写状态（Issued / Active）</li>
+      <li>执行后回填（Served / Returned / Expired）</li>
+    </ol>
+
+    <h4 style="margin-top:14px;">🎯 Intern 4 个月合理能 own 的范围 / What an intern can realistically own in 4 months</h4>
+    <ul>
+      <li>🟢 <strong>很可能</strong>：实现 Create Warrant 这一个页面/feature（React 表单 + 校验 + 提交到 API + 后端写 MySQL/ES）</li>
+      <li>🟢 <strong>可能</strong>：实现 warrant 的列表/搜索页（ES 查询 + 分页 + 过滤）</li>
+      <li>🟢 <strong>可能</strong>：参与状态机的前端展示</li>
+      <li>🟡 <strong>不太可能完全自己 own</strong>：整套 schema 设计、ES mapping 设计、跨警局多租户架构（通常 senior/staff 定）</li>
+      <li>🚩 <strong>红旗</strong>：如果她说"整个系统都是我设计的" —— 与 intern 身份/时长不符，应深入追问</li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🔧 简历声称的 ownership 措辞 / Resume's ownership wording</h4>
+    <blockquote class="interviewer-note">
+      简历写 "<em>Directed end-to-end feature development, including design, documentation, implementation, and testing</em>" —— "directed" 这个词对 intern 来说<strong>偏重</strong>。合理追问：<br>
+      • "你说 'directed'，是指你独立设计还是和 senior 一起？"<br>
+      • "design doc 是给谁 review 的？"<br>
+      • "最后是谁批准上线的？"<br>
+      <span class="en-text">"Directed" is a heavy word for an intern. Ask: "When you say 'directed' — independently or with a senior?" / "Who reviewed your design doc?" / "Who approved release?"</span>
+    </blockquote>
+  </div>
+</details>
+
+<details id="q1-eval">
+  <summary>🎯 候选人回答评价 / Candidate Answer Evaluation — Q1</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>清晰 frame 出 <strong>三层背景</strong>：产品（Mark43 = 警务 SaaS） + 业务（warrant 是法律文件，不是普通表单） + 个人 scope（具体做了哪个 feature）<br><span class="en-text">Frames all three layers: product (police SaaS) + domain (warrant as legal doc) + personal scope</span></li>
+      <li>主动区分 <strong>她做的部分</strong> vs <strong>已有的基础设施</strong>（比如 "我做的是 create flow，list/search 是另一个 team owner 的"）<br><span class="en-text">Distinguishes what she built vs what existed (e.g., "I built the create flow, list/search was another team's")</span></li>
+      <li>能给出具体数字感（"warrant 表单大概有 ~15 个字段、3 步" / "用户主要是 patrol officer"）<br><span class="en-text">Concrete numbers (form fields, steps, primary user persona)</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>知道 Mark43 是给警察用的 SaaS，但说不清 warrant 的业务特殊性<br>→ 追问"warrant 和普通的表单提交有什么不一样的地方？" / Probe what makes a warrant different from a generic form</li>
+      <li>能介绍 feature 但模糊 own 的边界（"我和 team 一起做的"）<br>→ 追问"具体哪些部分是你写代码的？哪些是别人写好你接进去的？" / Probe what she wrote vs reused</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"就是一个表单提交到后端" —— 没有任何 domain 理解<br>→ 🚩 4 个月 intern + "directed end-to-end" 但不知道自己做的是法律文件？说明她可能只是按 spec 写组件，没真理解 context</li>
+      <li>说不清 Mark43 这个产品是干啥的（"反正是个 web 应用"）<br>→ 🚩 严重 context 缺失，怀疑她没真参与设计讨论</li>
+      <li>滔滔不绝讲技术细节但完全跳过 domain<br>→ 🚩 提示她"先讲 context"，看她能不能切换视角</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--  追问 1: MySQL & ES 分工 / Why two systems  (CORE ARCHITECTURAL PROBE) -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-green" id="q-mysql-es" open>
+<summary>➜ 追问 1 / Follow-up 1 · 🎯 MySQL &amp; Elasticsearch 分工 / Why Two Systems <span class="tag tag-time">~7 min</span> <span class="tag" style="background:#fef3c7;color:#92400e;">CORE</span></summary>
+<div class="followup-body">
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Your bullet says you used both <strong>MySQL and Elasticsearch</strong> for this. Can you walk me through — what does each one actually do in the warrants workflow? What kind of data sits where? And why couldn't you just use one of them — say, MySQL alone? What does Elasticsearch buy you that MySQL doesn't?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你 bullet 里说同时用了 <strong>MySQL 和 Elasticsearch</strong>。你能讲讲——在 warrants workflow 里，这两个分别在做什么？什么数据放在哪？为什么不只用一个？比如只用 MySQL 不行吗？Elasticsearch 给了你 MySQL 给不了的什么？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>⚠️ 面试官提示</strong> — 这是<strong>核心架构题</strong>，主要看三件事：<br>
+      (1) <strong>角色分工</strong>是否清晰：MySQL = source of truth（强一致、事务、审计），ES = 搜索副本（全文搜索、模糊匹配、复杂过滤、聚合）。<br>
+      (2) <strong>为什么 MySQL 不够</strong>：能否说出 MySQL 全文搜索（FULLTEXT / LIKE '%...%'）在 warrants 这种"模糊匹配 + 多字段组合 + 相关性排序"场景下不够用。<br>
+      (3) <strong>为什么 ES 不够</strong>：能否反过来说出 ES 没事务、最终一致、不适合作为唯一存储（万一 ES 集群挂了，warrant 不能丢——这是法律文件）。<br>
+      如果她答得好，可以滑到 sync 问题："那 MySQL 和 ES 之间怎么同步？"（这是天然的下一题，可以下次 session 再深入设计）。<br>
+      <strong>Interviewer note</strong> — Core architectural question. Listen for: (1) clear role split (MySQL = source of truth, ES = search index), (2) why MySQL alone doesn't work (FULLTEXT/LIKE limits for fuzzy + multi-field + relevance), (3) why ES alone doesn't work (no transactions, eventual consistency, can't be sole store for legal documents). If she answers well, slide into the sync question.
+    </blockquote>
+  </div>
+</details>
+
+<details id="q-mysql-es-ref">
+  <summary>📖 追问 1 面试官参考答案 / Follow-up 1 Interviewer Reference</summary>
+  <div class="detail-body">
+
+    <h4>🎯 核心定位 / Core role split</h4>
+    <blockquote>
+      <strong>MySQL = 真理之源（source of truth）</strong> · <strong>Elasticsearch = 搜索索引副本</strong><br>
+      <span class="en-text">MySQL is the system of record. Elasticsearch is a search-optimized replica. Data is written to MySQL, then propagated to ES.</span>
+    </blockquote>
+
+    <h4 style="margin-top:14px;">📊 维度对比 / Dimension comparison</h4>
+    <table>
+      <thead><tr><th>需求 / Need</th><th>MySQL 适合</th><th>ES 适合</th></tr></thead>
+      <tbody>
+        <tr><td>事务、外键、强一致</td><td>✅</td><td>❌</td></tr>
+        <tr><td>按主键查一条（detail page）</td><td>✅</td><td>⚠️ 能但浪费</td></tr>
+        <tr><td>全文搜索（"含某关键词"）</td><td>❌ FULLTEXT 简陋，LIKE '%x%' 慢</td><td>✅ 倒排索引</td></tr>
+        <tr><td>多字段模糊过滤 + 相关性排序 + 高亮</td><td>❌</td><td>✅</td></tr>
+        <tr><td>聚合分析（group by 大数据量）</td><td>⚠️ 慢</td><td>✅</td></tr>
+        <tr><td>更新一行数据</td><td>✅</td><td>⚠️ 慢（要重建分词）</td></tr>
+        <tr><td>备份恢复 / 法律审计</td><td>✅</td><td>⚠️ 不规范</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-top:14px;">🚓 在 warrants workflow 里具体怎么落地 / Concrete mapping in the warrants context</h4>
+    <ul>
+      <li><strong>MySQL 存什么</strong>：完整 warrant 记录（warrant_id, type, suspect_id, officer_id, judge_id, charges, status, probable_cause, created_at, ...）+ 外键关联到 case / suspect / officer / judge 表。<u>法律文件不能丢、不能错</u>。<br><span class="en-text">MySQL stores the full warrant record with FKs to case/suspect/officer/judge. Legal documents — can't be lost or wrong.</span></li>
+      <li><strong>ES 存什么</strong>：搜索相关字段的拍平副本（warrant_number, suspect_name, charge_text, date, officer_name, status）+ 可能冗余几个详情字段。<u>不是 source of truth</u>，可重建。<br><span class="en-text">ES stores a flat, search-optimized projection (suspect name, charge text, status, etc.). Not source of truth — fully rebuildable from MySQL.</span></li>
+      <li><strong>典型查询场景</strong>：警察输入 "John Smith DUI 2020" → ES 模糊匹配 + 多字段 + 按相关性排序 → 毫秒级返回 → 点详情时再去 MySQL 拿完整数据。<br><span class="en-text">Officer searches "John Smith DUI 2020" → ES does fuzzy + multi-field + relevance ranking → click detail → fetch full record from MySQL.</span></li>
+    </ul>
+
+    <h4 style="margin-top:14px;">❓ 为什么 MySQL 自己不够 / Why MySQL alone fails</h4>
+    <ul>
+      <li><strong>LIKE '%keyword%'</strong> 不走索引，全表扫描，慢</li>
+      <li><strong>MySQL FULLTEXT INDEX</strong> 存在但功能简陋：分词器弱、相关性打分原始、不支持高级查询 DSL（bool / nested / aggregation）、跨多字段配置麻烦</li>
+      <li><strong>没有原生的相关性排序</strong>，警察搜 "John Smith"，MySQL 不能自动按"最匹配的在前"返回</li>
+      <li><span class="en-text">LIKE '%x%' = full table scan. MySQL FULLTEXT exists but is primitive — weak tokenizer, basic relevance scoring, no rich query DSL.</span></li>
+    </ul>
+
+    <h4 style="margin-top:14px;">❓ 为什么 ES 自己也不够 / Why ES alone also fails</h4>
+    <ul>
+      <li><strong>没有事务</strong>：写两条 warrant 不能保证 atomic，warrants 这种法律文件不能容忍部分成功</li>
+      <li><strong>最终一致</strong>：默认 ~1s refresh interval，"写完立刻搜搜不到"的窗口期</li>
+      <li><strong>不规范的备份恢复</strong>：ES snapshot 流程比 MySQL 备份复杂，法律审计不喜欢</li>
+      <li><strong>没有外键 / 强 schema</strong>：warrant ↔ case ↔ officer 这种关系约束 ES 不强制</li>
+      <li><strong>集群挂了不能丢数据</strong>：如果 ES 是 source of truth，集群事故 = 全部 warrants 丢失，灾难</li>
+      <li><span class="en-text">No transactions, eventual consistency (~1s refresh), no FKs/strict schema, recovery story weaker. If ES is sole store and the cluster dies, you lose legal documents — unacceptable.</span></li>
+    </ul>
+
+    <h4 style="margin-top:14px;">🌊 同步机制（如果她答得好，可以滑到这层）/ Sync mechanism (optional next-level probe)</h4>
+    <ul>
+      <li><strong>双写</strong>：APP 同时写 MySQL + ES。简单但一致性脆弱（intern 项目大概率是这种）</li>
+      <li><strong>MQ 解耦</strong>：APP → MySQL，发消息到 Kafka/RabbitMQ → Consumer → ES。生产推荐</li>
+      <li><strong>CDC（Change Data Capture）</strong>：监听 MySQL binlog（Debezium / Canal），自动同步到 ES。最优雅但最复杂</li>
+      <li><strong>定时批处理</strong>：cron 定期抽数据写 ES。低端方案，实时性差</li>
+    </ul>
+  </div>
+</details>
+
+<details id="q-mysql-es-eval">
+  <summary>🎯 追问 1 候选人回答评价 / Follow-up 1 Candidate Answer Evaluation</summary>
+  <div class="detail-body">
+    <p><strong>🟢 强回答 / Strong answers:</strong></p>
+    <ul>
+      <li>主动 frame 出 <strong>"source of truth vs search index"</strong> 的角色分工<br><span class="en-text">Frames "source of truth vs search index" unprompted</span></li>
+      <li>同时能说出 <strong>MySQL 不够</strong>（FULLTEXT 简陋 / LIKE 慢 / 没相关性打分）和 <strong>ES 不够</strong>（没事务 / 最终一致 / 不能作为唯一存储）<br><span class="en-text">Articulates both directions — why MySQL alone fails AND why ES alone also fails</span></li>
+      <li>结合 warrants 业务说出"<strong>法律文件不能丢，所以必须 MySQL 兜底</strong>"这种 domain 推理<br><span class="en-text">Ties it back to the warrant domain — "legal docs can't be lost, so MySQL must be the system of record"</span></li>
+      <li>主动引出同步机制（双写 / MQ / CDC）—— 这是高分信号，可以顺势深入<br><span class="en-text">Unprompted mention of sync mechanism (double-write / MQ / CDC) — strong signal, can probe further</span></li>
+    </ul>
+    <p><strong>🟡 中等回答 / Okay answers:</strong></p>
+    <ul>
+      <li>"MySQL 存数据，ES 做搜索" —— 方向对但<strong>没说清为什么</strong><br>→ 追问 "MySQL 自己不能做搜索吗？FULLTEXT 不行？" / Probe why MySQL FULLTEXT isn't enough</li>
+      <li>知道 ES 适合搜索但说不清 ES 用什么数据结构（倒排索引）<br>→ 不强求，但可以追问"ES 为什么搜索那么快？" / Optionally probe inverted index</li>
+      <li>只说了 MySQL 不够，没说 ES 也有局限<br>→ 追问"那为什么不全用 ES？连 MySQL 都不要了？" / Probe why not ES alone</li>
+    </ul>
+    <p style="color:var(--red);"><strong>🔴 弱回答 / Weak answers:</strong></p>
+    <ul>
+      <li>"它们都是数据库" / 说不清角色区别<br>→ 🚩 简历声称用过 ES 但实际可能只调过 API，不理解架构</li>
+      <li>"反正架构是 senior 定的，我就用" —— 没有任何独立思考<br>→ 🚩 配合 Q1 的 ownership 信号一起评估 —— 可能确实是按 spec 实现，不是 directed</li>
+      <li>颠倒角色（"ES 存数据，MySQL 搜索"）<br>→ 🚩 根本性混淆，技术理解有严重 gap</li>
+      <li>"两个都用是因为产品要求" 没有任何技术 reasoning<br>→ 🚩 推卸到产品决策，不是工程师视角</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 1 -->
+
+<hr class="separator">
+
+<!-- ==================== RUBRIC ==================== -->
+<h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>维度 / Dimension</th><th>🟢 Strong</th><th>🟡 Okay</th><th>🔴 Weak</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Q1 — Domain 理解</strong></td>
+        <td>清楚说出 Mark43 = 警务 SaaS + warrant = 法律文件 + 自己 scope</td>
+        <td>知道是警察用的，但说不清 warrant 业务特殊性</td>
+        <td>"就是个表单提交" / 不知道 Mark43 是干啥的</td>
+      </tr>
+      <tr>
+        <td><strong>Q1 — Ownership 真实性</strong></td>
+        <td>清晰区分自己做的 vs team 已有的；给具体 scope</td>
+        <td>说"我和 team 一起做"，边界模糊</td>
+        <td>"整个系统都是我设计的"（intern 4 个月 → 🚩）</td>
+      </tr>
+      <tr>
+        <td><strong>追问 1 — MySQL × ES 分工</strong></td>
+        <td>主动 frame "source of truth vs search index" + domain 推理</td>
+        <td>方向对但说不清为什么不能合一个</td>
+        <td>颠倒角色 / "它们都是数据库" / "架构是别人定的"</td>
+      </tr>
+      <tr>
+        <td><strong>追问 1 — 双向 trade-off</strong></td>
+        <td>同时说出 MySQL 不够 AND ES 不够，两个方向都有理由</td>
+        <td>只说一个方向（通常只说 MySQL 不够）</td>
+        <td>只能复述"ES 快"这种 surface 说法</td>
+      </tr>
+      <tr>
+        <td><strong>追问 1 — 同步机制（bonus）</strong></td>
+        <td>主动提到双写 / MQ / CDC 中至少一个</td>
+        <td>被问到时能说"应该是双写吧"</td>
+        <td>从没想过同步问题</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================== NOTES ==================== -->
+<h2 id="notes">📝 Notes</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr style="background:#f0fdfa;"><td colspan="3" style="font-weight:700;color:var(--accent);">FLOW 1 · Mark43 Backend (MySQL × ES)</td></tr>
+      <tr><td>Q1 主问题 — Domain 理解（Mark43 + warrant）</td><td></td><td></td></tr>
+      <tr><td>Q1 主问题 — Ownership 真实性（intern scope）</td><td></td><td></td></tr>
+      <tr><td>追问 1 — MySQL × ES 分工清晰度（CORE）</td><td></td><td></td></tr>
+      <tr><td>追问 1 — 双向 trade-off（MySQL 不够 + ES 不够）（CORE）</td><td></td><td></td></tr>
+      <tr><td>追问 1 — 同步机制提及（BONUS）</td><td></td><td></td></tr>
+      <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
+      <tr><td>架构思维（owner vs 执行者）</td><td></td><td></td></tr>
+      <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note-area">面试官在此记录候选人技术问答的表现 / Interviewer notes on candidate technical Q&amp;A…</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'DETAILS') el.open = true;
+  const parent = el.closest('details');
+  if (parent) parent.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
 </body>
 </html>
