@@ -1,26 +1,29 @@
 import type { CandidateConfig } from '../data/types';
 
 /**
- * Samarth Sharma — 60-min formal (onsite-style) interview scaffolded
- * on 2026-05-18. This is NOT a phone screen — it's the full technical loop.
- * 5 sections: self-intro / resume Q&A / coding 1 / coding 2 / candidate Q.
+ * Shirley Huang — scaffolded on 2026-05-26. Junior-mid SDE (~2.5 yrs full-time
+ * + ~16 months internships), currently at Zaber Technologies (Vancouver, BC).
+ * Frontend-leaning fullstack: React/TypeScript + Python + AWS background.
+ *
+ * Defaulted to the same 60-min onsite-style layout as Samarth (5 sections,
+ * 2 coding tests). Adjust format / sections / scheduling once the interview
+ * shape is finalized.
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
  * interview material is prepared. The static section pages under
- * `public/candidates/samarth/` are also stubs — overwrite their HTML when
+ * `public/candidates/shirley/` are also stubs — overwrite their HTML when
  * the real guides are ready.
  */
-export const samarth: CandidateConfig = {
-  id: 'samarth',
-  name: 'Samarth Sharma',
-  shortName: 'Samarth',
-  initials: 'SS',
+export const shirley: CandidateConfig = {
+  id: 'shirley',
+  name: 'Shirley Huang',
+  shortName: 'Shirley',
+  initials: 'SH',
   role: 'TBD',
   totalMin: 60,
-  brand: '📝 Onsite Interview Guide',
-  accent: '#ea580c',
-  scheduledAt: '2026-05-20T10:00:00',
-  completed: true,
+  brand: '📋 Onsite Interview Guide',
+  accent: '#0d9488',
+  // scheduledAt: undefined  — interview time not yet scheduled
 
   openingEn: '(TBD — opening script)',
   openingZh: '（待填写 · 开场白）',
@@ -65,7 +68,7 @@ export const samarth: CandidateConfig = {
       titleEn: 'Coding Test',
       navLabel: '③ Coding',
       time: '~15 min',
-      keyPoints: '（待填写 · 根据 Samarth 背景选题）',
+      keyPoints: '（待填写 · 根据 Shirley 背景选题）',
       accent: 's3',
       href: 'codingTest/interview-guide.html',
       introEn: '(TBD)',
