@@ -100,7 +100,7 @@
   .qp-sub.green  { border-left: 2px solid #059669; }
   .qp-sub.blue   { border-left: 2px solid var(--blue); }
   .qp-sub.orange { border-left: 2px solid #ea580c; }
-  .qp-sub.purple { border-left: 2px solid #7c3aed; }
+  .qp-sub.rose { border-left: 2px solid #e11d48; }
   details.qp-followups {
     background: transparent;
     border: none;
@@ -145,7 +145,7 @@
   details.followup-section.fu-green  { border-left: 4px solid var(--green); }
   details.followup-section.fu-blue   { border-left: 4px solid var(--blue); }
   details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
-  details.followup-section.fu-purple { border-left: 4px solid #7c3aed; }
+  details.followup-section.fu-rose { border-left: 4px solid #e11d48; }
   .followup-body { padding: 14px 18px 18px; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
@@ -317,12 +317,12 @@
     </div>
   </details>
 
-  <a class="qp-link" href="#flow-2-dashboard" onclick="jump('flow-2-dashboard');return false;" style="background:#faf5ff;color:#7c3aed;font-weight:700;margin-top:10px;border-left-color:#7c3aed;">📌 FLOW 2 · Zaber Dashboard</a>
+  <a class="qp-link" href="#flow-2-dashboard" onclick="jump('flow-2-dashboard');return false;" style="background:#fff1f2;color:#e11d48;font-weight:700;margin-top:10px;border-left-color:#e11d48;">📌 FLOW 2 · Zaber Dashboard</a>
 
   <details class="qp-followups" open>
     <summary>↳ 追问 / Follow-ups（1 个 · 条件）</summary>
     <div class="qp-followups-body">
-      <a class="qp-sub purple" href="#q-charts" onclick="jump('q-charts');return false;">追问 1 — 图表 lib 选型 + 大数据量动画性能</a>
+      <a class="qp-sub rose" href="#q-charts" onclick="jump('q-charts');return false;">追问 1 — 图表 lib 选型 + 大数据量动画性能</a>
     </div>
   </details>
 
@@ -365,8 +365,8 @@
         <td>1 主问题（项目背景）+ 3 追问（分工 → 同步 → 一致性）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context) + 3 follow-ups (roles → sync → consistency)</span></td>
         <td><strong>~15 min</strong></td>
       </tr>
-      <tr style="background:#faf5ff;">
-        <td><strong style="color:#7c3aed;">FLOW 2</strong></td>
+      <tr style="background:#fff1f2;">
+        <td><strong style="color:#e11d48;">FLOW 2</strong></td>
         <td>
           <strong>Zaber — Internal Dashboard (Sales Support tooling)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Built a dashboard consolidating 3 systems used by Sales Support, saving 5 minutes per order."</span>
@@ -831,14 +831,14 @@
 <!-- ===== 1 main question (dashboard intro + 5min metric)              === -->
 <!-- ===== 1 conditional follow-up (if charts → lib + animation perf)   === -->
 <!-- ====================================================================== -->
-<h2 id="flow-2-dashboard" style="background:#faf5ff;border-left:6px solid #7c3aed;color:#7c3aed;font-size:28px;">
+<h2 id="flow-2-dashboard" style="background:#fff1f2;border-left:6px solid #e11d48;color:#e11d48;font-size:28px;">
   📌 FLOW 2 · Zaber Internal Dashboard（Sales Support tooling）
   <span class="tag tag-time">~10 min total</span>
 </h2>
 
-<div class="card" style="border-left:4px solid #7c3aed;">
+<div class="card" style="border-left:4px solid #e11d48;">
   <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
-  <blockquote style="border-left-color:#7c3aed;background:#fff;">
+  <blockquote style="border-left-color:#e11d48;background:#fff;">
     <span class="en-text">"Built an <strong>internal dashboard</strong> that consolidates information from <strong>3 different systems</strong> used by the Sales Support team, <strong>saving 5 minutes per order</strong>."</span>
   </blockquote>
   <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
@@ -849,12 +849,12 @@
 </div>
 
 <!-- ============================ Q1: DASHBOARD INTRO + 5MIN METRIC ============================ -->
-<h3 id="q-dashboard" style="font-size:24px;color:#a78bfa;margin-top:24px;">🎯 主问题 / Main Question · 🖥️ Dashboard 介绍 + 5min Metric <span class="tag tag-time">~5 min</span></h3>
+<h3 id="q-dashboard" style="font-size:24px;color:#fb7185;margin-top:24px;">🎯 主问题 / Main Question · 🖥️ Dashboard 介绍 + 5min Metric <span class="tag tag-time">~5 min</span></h3>
 
 <details open>
   <summary>🎤 提问 / Ask（分两步问，先问 dashboard，再问 metric）</summary>
   <div class="detail-body">
-    <h4 style="color:#7c3aed;margin-top:0;">▸ 第一步 / Step 1 — Dashboard 长什么样</h4>
+    <h4 style="color:#e11d48;margin-top:0;">▸ 第一步 / Step 1 — Dashboard 长什么样</h4>
     <blockquote class="ask-en">
       "Tell me about that <strong>dashboard you built at Zaber</strong> — what does it look like? Which 3 systems does it consolidate? What information is shown on the page, and <strong>are there any charts or visualizations</strong> on it?"
     </blockquote>
@@ -862,7 +862,7 @@
       "聊一下你在 Zaber build 的那个 dashboard — 它<strong>大概长什么样</strong>？把哪 3 个系统整合到了一起？页面上具体展示哪些信息？<strong>有没有图表 / 可视化</strong>的内容？"
     </blockquote>
 
-    <h4 style="color:#7c3aed;margin-top:14px;">▸ 第二步 / Step 2 — 5min 是怎么算出来的</h4>
+    <h4 style="color:#e11d48;margin-top:14px;">▸ 第二步 / Step 2 — 5min 是怎么算出来的</h4>
     <blockquote class="ask-en">
       "And that '<strong>5 minutes saved per order</strong> for Sales Support' number — what does that actually mean? <strong>How was it measured or calculated</strong>? Did someone time it, was it user-reported, A/B tested, or…?"
     </blockquote>
@@ -879,7 +879,7 @@
 <details>
   <summary>📋 参考要点 / Reference Points</summary>
   <div class="detail-body">
-    <h4 style="color:#7c3aed;">▸ Part 1 — Dashboard 可能的样子（合理猜测 + 验证她有没有具体细节）</h4>
+    <h4 style="color:#e11d48;">▸ Part 1 — Dashboard 可能的样子（合理猜测 + 验证她有没有具体细节）</h4>
     <ul>
       <li><strong>3 个系统</strong>大概率是：CRM（Salesforce / HubSpot 之类）+ ERP / 订单系统 + 客户/产品信息系统（或物流 / 库存）</li>
       <li><strong>页面布局</strong>常见模式：顶部 KPI 卡片（pending orders / shipped today / 异常）+ 中部主表格（order list with cross-system status）+ 侧边筛选 + 详情抽屉</li>
@@ -892,7 +892,7 @@
       <li><strong>核心价值点</strong>：以前 Sales Support 要在 3 个系统之间反复切换查信息 → 现在一个页面看完</li>
     </ul>
 
-    <h4 style="color:#7c3aed;">▸ Part 2 — "5 min per order" 可能的计算口径</h4>
+    <h4 style="color:#e11d48;">▸ Part 2 — "5 min per order" 可能的计算口径</h4>
     <table>
       <thead><tr><th>来源 / Source</th><th>含义</th><th>可信度</th></tr></thead>
       <tbody>
@@ -934,11 +934,11 @@
 </details>
 
 <!-- ============================ 追问 1: CHARTS (CONDITIONAL) ============================ -->
-<details class="followup-section fu-purple" id="q-charts">
-  <summary>🔍 追问 1 · 图表 Lib 选型 + 大数据量动画性能 <span class="tag tag-time">~5-7 min</span> <span style="color:#7c3aed;font-weight:700;">[条件追问 · Conditional]</span></summary>
+<details class="followup-section fu-rose" id="q-charts">
+  <summary>🔍 追问 1 · 图表 Lib 选型 + 大数据量动画性能 <span class="tag tag-time">~5-7 min</span> <span style="color:#e11d48;font-weight:700;">[条件追问 · Conditional]</span></summary>
   <div class="followup-body">
 
-<blockquote class="interviewer-note" style="border-left-color:#7c3aed;background:#faf5ff;color:#7c3aed;">
+<blockquote class="interviewer-note" style="border-left-color:#e11d48;background:#fff1f2;color:#e11d48;">
   ⚠️ <strong>触发条件 / Trigger</strong>：<strong>仅当 Q1 答出 dashboard 含图表时才问这条追问。</strong>如果她说 dashboard 没有图表（纯表格 / KPI 卡片），<u>直接跳过此追问</u>，不要硬绕回来。<br>
   ⚠️ <strong>Only ask if Q1 confirmed there are charts on the dashboard.</strong> If she said no charts, skip this follow-up entirely.
 </blockquote>
@@ -946,7 +946,7 @@
 <details open>
   <summary>🎤 提问 / Ask（两步走）</summary>
   <div class="detail-body">
-    <h4 style="color:#7c3aed;margin-top:0;">▸ 第一步 / Step 1 — 用的哪个 chart lib，为什么</h4>
+    <h4 style="color:#e11d48;margin-top:0;">▸ 第一步 / Step 1 — 用的哪个 chart lib，为什么</h4>
     <blockquote class="ask-en">
       "You mentioned the dashboard has charts — <strong>which charting library did you use</strong>? Highcharts? Recharts? Chart.js? ECharts? D3? And <strong>why that one</strong> over the alternatives?"
     </blockquote>
@@ -954,7 +954,7 @@
       "你提到 dashboard 有图表 — <strong>具体用的哪个图表库</strong>？Highcharts？Recharts？Chart.js？ECharts？D3？<strong>为什么选这个</strong>而不是别的？"
     </blockquote>
 
-    <h4 style="color:#7c3aed;margin-top:14px;">▸ 第二步 / Step 2 — 大数据量下动画卡顿怎么办（核心深度信号）</h4>
+    <h4 style="color:#e11d48;margin-top:14px;">▸ 第二步 / Step 2 — 大数据量下动画卡顿怎么办（核心深度信号）</h4>
     <blockquote class="ask-en">
       "Now imagine the data volume blows up — say <strong>tens of thousands of data points</strong>, or a live-streaming ticker that updates every second. Heavy chart libs like Highcharts often <strong>lag or drop frames during animations</strong> at that scale. <strong>How would you keep it smooth?</strong>"
     </blockquote>
@@ -971,7 +971,7 @@
 <details>
   <summary>📋 参考要点 / Reference Points</summary>
   <div class="detail-body">
-    <h4 style="color:#7c3aed;">▸ Step 1 — 常见图表库 landscape</h4>
+    <h4 style="color:#e11d48;">▸ Step 1 — 常见图表库 landscape</h4>
     <table>
       <thead><tr><th>库 / Lib</th><th>特点</th><th>典型场景</th></tr></thead>
       <tbody>
@@ -986,7 +986,7 @@
     </table>
     <p style="color:var(--text-muted);font-size:16px;">选型常见理由：<strong>license</strong>（Highcharts 商用收费）/ <strong>React 生态贴合度</strong>（Recharts、Visx）/ <strong>数据量</strong>（ECharts、Highcharts boost）/ <strong>简单优先</strong>（Chart.js）。</p>
 
-    <h4 style="color:#7c3aed;margin-top:18px;">▸ Step 2 — 大数据量动画性能优化手段（按层次）</h4>
+    <h4 style="color:#e11d48;margin-top:18px;">▸ Step 2 — 大数据量动画性能优化手段（按层次）</h4>
     <table>
       <thead><tr><th>层次</th><th>手段</th><th>说明</th></tr></thead>
       <tbody>
@@ -1080,7 +1080,7 @@
         <td>知道有延迟但说不清 root cause</td>
         <td>以为 ES 强一致 / "让用户手动刷新"</td>
       </tr>
-      <tr style="background:#faf5ff;"><td colspan="4" style="font-weight:700;color:#7c3aed;">FLOW 2 · Zaber Dashboard</td></tr>
+      <tr style="background:#fff1f2;"><td colspan="4" style="font-weight:700;color:#e11d48;">FLOW 2 · Zaber Dashboard</td></tr>
       <tr>
         <td><strong>Q1 — Dashboard 信息架构</strong></td>
         <td>能清楚说出 3 个系统 + 信息布局 + 是否有图表（明确）</td>
@@ -1124,7 +1124,7 @@
       <tr><td>追问 2 — 同步方案 landscape（双写 / MQ / CDC）</td><td></td><td></td></tr>
       <tr><td>追问 3 Step 1 — 写侧失败处理（retry / DLQ / 监控）</td><td></td><td></td></tr>
       <tr><td>追问 3 Step 2 — 读侧实时性 / refresh interval（CORE 深度信号）</td><td></td><td></td></tr>
-      <tr style="background:#faf5ff;"><td colspan="3" style="font-weight:700;color:#7c3aed;">FLOW 2 · Zaber Dashboard</td></tr>
+      <tr style="background:#fff1f2;"><td colspan="3" style="font-weight:700;color:#e11d48;">FLOW 2 · Zaber Dashboard</td></tr>
       <tr><td>Q1 — Dashboard 信息架构（3 系统 + 布局 + 有无图表）</td><td></td><td></td></tr>
       <tr><td>Q1 — 5min Metric 诚实性 / 来源</td><td></td><td></td></tr>
       <tr><td>追问 1 Step 1 — Chart Lib 选型理由（条件）</td><td></td><td></td></tr>
