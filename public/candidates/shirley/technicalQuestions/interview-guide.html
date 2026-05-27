@@ -1375,6 +1375,67 @@
 </details>
 
 <details>
+  <summary>📌 条件追问 / Conditional Probes</summary>
+  <div class="detail-body">
+    <p style="color:var(--text-muted);font-size:16px;margin-top:0;">根据她列举的不同手段，钻进去问 root cause / 实战细节。<br>
+    <span class="en-text">Drill into root cause / hands-on details based on which technique she mentions. ⭐ = high-signal probe.</span></p>
+    <table>
+      <thead><tr><th>如果她提到 / If she mentions</th><th>追问 / Drill-down</th><th>期待答 / Expected</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>状态下移 / colocation</strong></td>
+          <td>"讲一个<strong>具体例子</strong> — 哪个 state 你下移了？从哪移到哪？怎么决定 state 应该放在哪？"<br>
+          <span class="en-text">"Give me a <strong>concrete example</strong> — which state did you push down, from where to where? How do you decide where a piece of state should live?"</span></td>
+          <td>具体故事 + 决策依据（state 的"使用者半径"）</td>
+        </tr>
+        <tr>
+          <td><strong>组件拆分</strong></td>
+          <td>"拆分粒度的准则是什么？<strong>什么时候不拆</strong>？"<br>
+          <span class="en-text">"What's your rule of thumb for split granularity? When do you decide <strong>not</strong> to split?"</span></td>
+          <td>按 state / rerender 边界拆 + 知道过度拆会有 prop drilling</td>
+        </tr>
+        <tr>
+          <td><strong>Children pattern / composition</strong> ⭐</td>
+          <td>"<strong>为什么</strong> children pattern 能阻止 rerender？React 内部机制是什么？"<br>
+          <span class="en-text">"<strong>Why</strong> does the children pattern actually prevent rerenders? What's the React-internal mechanism behind it?"</span></td>
+          <td>children 是 grandparent 创建的 vDOM 元素，引用稳定 → React 跳过整个子树</td>
+        </tr>
+        <tr>
+          <td><strong>Context split</strong></td>
+          <td>"context value 怎么避免每次新对象？<strong>拆分粒度</strong>怎么决定？"<br>
+          <span class="en-text">"How do you avoid the context value being a fresh object every render? How do you decide <strong>how to split</strong> contexts?"</span></td>
+          <td><code>useMemo</code> 包 value / 按变化频率拆 / 高频值（鼠标 scroll）别放 context</td>
+        </tr>
+        <tr>
+          <td><strong>Redux + reselect / Zustand / Jotai</strong></td>
+          <td>"讲一下 <code>createSelector</code> 是怎么 memo 的？依赖什么？"<br>或 "Zustand selector 和直接订阅整个 store 有什么区别？"<br>
+          <span class="en-text">"Walk me through how <code>createSelector</code> memoizes — what does it depend on?"<br>or "How does a Zustand selector differ from subscribing to the whole store?"</span></td>
+          <td>reselect 浅比较输入；selector 返回值引用相等就不触发 rerender</td>
+        </tr>
+        <tr>
+          <td><strong><code>useTransition</code> / <code>useDeferredValue</code></strong> ⭐</td>
+          <td>"<strong>这俩怎么选</strong>？什么时候用 transition、什么时候用 deferredValue？<code>isPending</code> 干嘛用？"<br>
+          <span class="en-text">"<strong>How do you choose</strong> between <code>useTransition</code> and <code>useDeferredValue</code>? When does each apply? What is <code>isPending</code> for?"</span></td>
+          <td>transition 标记"<strong>我自己</strong>的更新"为非紧急；deferredValue 用于"接收<strong>别人</strong>的值并延迟跟进"</td>
+        </tr>
+        <tr>
+          <td><strong>Virtualization</strong></td>
+          <td>"为什么 memo 不够？virtualization 解决的是<strong>什么 memo 解决不了</strong>的问题？"<br>
+          <span class="en-text">"Why isn't memo enough here? What problem does virtualization solve that memo <strong>can't</strong>?"</span></td>
+          <td>memo 跳过 render 但 vDOM diff 仍要遍历；virt 直接不挂载 DOM</td>
+        </tr>
+        <tr>
+          <td><strong>避免 inline object / array / callback</strong></td>
+          <td>"为什么 inline 对象会触发 rerender？React 内部<strong>怎么比较 props</strong>？"<br>
+          <span class="en-text">"Why does passing an inline object trigger rerenders? How does React internally <strong>compare props</strong>?"</span></td>
+          <td>浅比较 by reference，inline 永远是新对象 → 永远不等</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<details>
   <summary>📊 评估信号 / Evaluation Signals</summary>
   <div class="detail-body">
     <p><strong style="color:#059669;">🟢 Strong：</strong></p>
@@ -1485,6 +1546,67 @@ function Parent() {
   const handle = useCallback(() =&gt; {}, []);
   return &lt;Child onClick={handle} /&gt;;          // 现在引用稳定才真正阻止 rerender
 }</code></pre>
+  </div>
+</details>
+
+<details>
+  <summary>📌 条件追问 / Conditional Probes</summary>
+  <div class="detail-body">
+    <p style="color:var(--text-muted);font-size:16px;margin-top:0;">根据她对三件套的回答深浅，分支下钻 cost / 配套陷阱 / 前沿话题。<br>
+    <span class="en-text">Branch based on how clearly she answers — drill into cost, pairing traps, or frontier topics. ⭐ = high-signal probe.</span></p>
+    <table>
+      <thead><tr><th>触发条件 / Trigger</th><th>追问 / Drill-down</th><th>期待答 / Expected</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>答清三件套 → 测 cost</strong></td>
+          <td>"你说 memo 不是免费的。<strong>cost 具体在哪</strong>？什么场景加 memo <strong>反而更慢</strong>？"<br>
+          <span class="en-text">"You said memo isn't free. <strong>Where exactly is the cost</strong>? In what scenarios does adding memo actually <strong>make things slower</strong>?"</span></td>
+          <td>浅比较 cost / deps 比较 cost / 函数执行 cost > 重渲 cost 时净亏损</td>
+        </tr>
+        <tr>
+          <td><strong>提到依赖数组</strong></td>
+          <td>"讲一个 <strong>deps 写错的实战 bug</strong>。<code>exhaustive-deps</code> lint 警告你<strong>会一直 fix 还是有时候 ignore</strong>？"<br>
+          <span class="en-text">"Tell me about a <strong>real bug</strong> caused by getting the deps array wrong. Do you <strong>always fix</strong> <code>exhaustive-deps</code> warnings, or sometimes ignore them?"</span></td>
+          <td>stale closure 故事 / 知道何时该 ignore lint（如有意捕获初始值）</td>
+        </tr>
+        <tr>
+          <td><strong>提到 React.memo 浅比较</strong> ⭐</td>
+          <td>"如果 props 里有个<strong>深层对象 / 嵌套数据</strong>，浅比较会出问题吗？怎么处理？"<br>
+          <span class="en-text">"What if a prop is a <strong>deeply nested object</strong> — does the shallow compare break? How would you handle it?"</span></td>
+          <td>① <code>React.memo</code> 第二参数自定义 areEqual / ② 源头保持引用稳定 / ③ 把对象拆开传 primitive</td>
+        </tr>
+        <tr>
+          <td><strong>提到 React.memo + useCallback 配套</strong> ⭐</td>
+          <td>"如果你传给 <code>React.memo</code> 组件的是 <strong><code>props.children</code></strong>，能 memo 住吗？"<br>
+          <span class="en-text">"If you pass <strong><code>props.children</code></strong> to a <code>React.memo</code> component, will it still skip rerenders?"</span></td>
+          <td>children 通常每次是新 React 元素 → memo 不住；要么外层稳定要么改用 children pattern</td>
+        </tr>
+        <tr>
+          <td><strong>含糊 / 说错某个 API 作用</strong><br>（反向钉死）</td>
+          <td>"如果父组件 rerender 了，被 <code>React.memo</code> 包裹的子组件<strong>还会执行 render 函数吗</strong>？"<br>
+          <span class="en-text">"If the parent rerenders, will the <code>React.memo</code>-wrapped child still <strong>execute its render function</strong>?"</span></td>
+          <td>不会（前提：props 浅比较未变）</td>
+        </tr>
+        <tr>
+          <td><strong>把 useMemo 和 React.memo 当一回事</strong></td>
+          <td>"举个具体例子 — <strong>什么场景用 <code>useMemo</code></strong>？<strong>什么场景用 <code>React.memo</code></strong>？"<br>
+          <span class="en-text">"Give me a concrete example — when would you reach for <code>useMemo</code>, and when for <code>React.memo</code>?"</span></td>
+          <td><code>useMemo</code> 缓存<strong>值</strong>；<code>React.memo</code> 缓存<strong>组件</strong>。例：useMemo 算 sortedList，React.memo 包 Row 组件</td>
+        </tr>
+        <tr>
+          <td><strong>答得轻松 / bonus 加分</strong></td>
+          <td>"听过 <strong>React Compiler / React 19</strong> 吗？它对你今天讲的手动 memoization 有什么影响？"<br>
+          <span class="en-text">"Have you looked at <strong>React Compiler / React 19</strong>? How does it affect the manual memoization you've been describing?"</span></td>
+          <td>编译器自动 memo / 未来三件套淡出 / 现在还不能完全替代</td>
+        </tr>
+        <tr>
+          <td><strong>答得轻松（可选 · 实战题）</strong></td>
+          <td>直接把上面那段「<strong>错误 useCallback</strong>」code snippet 给她看，问"这段有什么问题？"<br>
+          <span class="en-text">Hand her the <strong>broken <code>useCallback</code></strong> snippet above and ask: "What's wrong with this code?"</span></td>
+          <td>立刻指出 Child 不是 <code>React.memo</code>'d → useCallback 白搭</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </details>
 
