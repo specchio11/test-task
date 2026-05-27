@@ -344,6 +344,14 @@
 
   <a class="qp-link" href="#flow-4-crm-matching" onclick="jump('flow-4-crm-matching');return false;" style="background:#ecfdf5;color:#059669;font-weight:700;margin-top:10px;border-left-color:#059669;">📌 FLOW 4 · CRM Email Matching Algorithm</a>
 
+  <details class="qp-followups">
+    <summary>↳ 追问 / Follow-ups（2 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub emerald" href="#q-concurrency-safe" onclick="jump('q-concurrency-safe');return false;">追问 1 — Concurrency safety（race + 解决方案）</a>
+      <a class="qp-sub emerald" href="#q-dedup-key" onclick="jump('q-dedup-key');return false;">追问 2 — Dedup key + 共享邮箱 / 转发</a>
+    </div>
+  </details>
+
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
   <a class="qp-link" href="#notes"  onclick="jump('notes');return false;">📝 Notes</a>
 </div>
@@ -407,8 +415,8 @@
           <strong>CRM Email Matching Algorithm (Concurrency + Dedup + Matching)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Engineered a concurrency-safe CRM matching algorithm to deduplicate emails and ensure accurate associations."</span>
         </td>
-        <td>1 主问题（项目背景 + 算法设计）+ 追问 TBD<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context + algorithm design) + follow-ups TBD</span></td>
-        <td><strong>~3 min</strong></td>
+        <td>1 主问题（项目背景 + 算法设计）+ 2 追问（concurrency race 深挖 → dedup key + edge cases）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context + algorithm design) + 2 follow-ups (concurrency deep-dive → dedup + edges)</span></td>
+        <td><strong>~10 min</strong></td>
       </tr>
     </tbody>
   </table>
@@ -1660,7 +1668,7 @@ function Parent() {
 <!-- ====================================================================== -->
 <h2 id="flow-4-crm-matching" style="background:#ecfdf5;border-left:6px solid #059669;color:#059669;font-size:28px;">
   📌 FLOW 4 · CRM Email Matching Algorithm（Concurrency + Dedup + Matching）
-  <span class="tag tag-time">~3 min · 追问 TBD</span>
+  <span class="tag tag-time">~10 min total</span>
 </h2>
 
 <div class="card" style="border-left:4px solid #059669;">
@@ -1670,8 +1678,8 @@ function Parent() {
   </blockquote>
   <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
     ✅ <strong>主问题 / Main question</strong>：让她介绍这个项目的背景 —— 是<strong>什么 CRM 系统</strong>、邮件<strong>从哪来</strong>、她<strong>设计的匹配算法是什么样的</strong>（决策流程怎么走、用什么 key 去重、怎么挂到 CRM 实体）。<br>
-    ➜ <strong>追问 / Follow-ups</strong>：待后续添加（方向预留：concurrency race condition 深挖 / dedup key 选型 / matching 决策流 / accuracy 验证）。<br>
-    <span class="en-text">✅ <strong>Main question</strong> — get the project context: <strong>which CRM</strong>, <strong>where the emails come from</strong>, and <strong>what the matching algorithm actually looks like</strong> (decision pipeline, dedup key, how email links to CRM entity). ➜ Follow-ups: TBD (race condition deep-dive / dedup key choice / matching pipeline / accuracy verification).</span>
+    ➜ <strong>追问 / Follow-ups</strong>：追问 1（<strong>Concurrency safety</strong> —— 怎么保证 / 什么 race / 怎么解）→ 追问 2（<strong>Dedup key + edge cases</strong> —— 共享邮箱 / 转发 / 怎么去重）。<br>
+    <span class="en-text">✅ <strong>Main question</strong> — get the project context: <strong>which CRM</strong>, <strong>where the emails come from</strong>, and <strong>what the matching algorithm actually looks like</strong> (decision pipeline, dedup key, how email links to CRM entity). ➜ Follow-ups: #1 (<strong>concurrency safety</strong> — how, what race, what fix) → #2 (<strong>dedup key + edge cases</strong> — shared inbox / forwarded mail).</span>
   </p>
   <p style="background:#fef3c7;border-left:3px solid #d97706;padding:10px 14px;margin-top:12px;color:#92400e;font-size:14px;border-radius:4px;">
     💎 <strong>含金量提示 / High-value bullet：</strong> 这是整张简历技术含量最高的 bullet 之一 —— 一句话同时声明了 <code>concurrency-safe</code> + <code>deduplicate</code> + <code>accurate matching</code> 三个独立 hard problem，每一个都能深挖。<u>主问题阶段先听她讲完背景与算法骨架</u>，<u>判断含金量后再决定追问深度</u>。
@@ -1814,6 +1822,425 @@ function Parent() {
   </div>
 </details>
 
+<!-- ====================================================================== -->
+<!--  追问 1: Concurrency Safety — 怎么保证 / 什么 race / 怎么解决             -->
+<!--          (CORE · FLOW 4 含金量最高的一题)                                -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-emerald" id="q-concurrency-safe" open>
+<summary>🔍 追问 1 · 🛡 Concurrency Safety — 怎么保证 / 什么 race / 怎么解决 <span class="tag tag-time">~3.5 min</span> <span class="tag" style="background:#d1fae5;color:#059669;">CORE</span></summary>
+<div class="followup-body">
+
+<blockquote class="interviewer-note" style="border-left-color:#059669;background:#ecfdf5;color:#059669;">
+  ⚠️ <strong>位置 / Position</strong>：主问题听完 matching 骨架后立刻深挖她的「concurrency-safe」宣称。让她<strong>具体走一个 race scenario</strong> + 说出 <strong>mitigation 机制</strong>。这是 FLOW 4 含金量最高的一题。<br>
+  ⚠️ <strong>Highest-signal probe of FLOW 4</strong> — get a concrete race condition walkthrough + a specific mitigation. If she can't name a race scenario, the "concurrency-safe" claim is buzzword.
+</blockquote>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "You said the algorithm is <strong>concurrency-safe</strong>. Let's go deeper — <strong>how did you actually guarantee that</strong>? Walk me through <strong>a specific race condition</strong>: <strong>what triggers it</strong>, <strong>what would go wrong</strong>, and <strong>how did you fix it</strong>?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你之前提到这个算法是 <strong>concurrency-safe</strong> 的。我们深入聊聊 —— <strong>你具体是怎么保证的</strong>？走一个<strong>具体的 race condition</strong> 给我听：<strong>什么情况下会出现</strong>，<strong>会出什么问题</strong>，<strong>你是怎么解决的</strong>？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note：</strong>这是<strong>核心深度题</strong>，准备听 <strong>3 件事</strong>：<br>
+      &nbsp;&nbsp;<strong>(1) 具体 race scenario</strong> — 谁和谁在抢，时间线（T=0 / T=1）能不能讲出来<br>
+      &nbsp;&nbsp;<strong>(2) 会出什么 bug</strong> — duplicate / lost update / wrong association 任意一种<br>
+      &nbsp;&nbsp;<strong>(3) Mitigation 机制</strong> — unique constraint + upsert / 行锁 / 分布式锁 / queue partition / idempotency key，任选 + 知道 trade-off<br>
+      <u>她答出明确 mitigation 后立即用条件追问表深挖 trade-off</u>。如果支支吾吾讲不出具体 race scenario → 「concurrency-safe」基本上是 buzzword。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+
+    <h4 style="color:#059669;margin-top:0;">▸ 4 个典型 Race Scenarios（高分能讲出 ≥1 个）</h4>
+
+    <p><strong>Race #1：Dedup check-then-act（最经典）</strong></p>
+    <pre style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:13px;overflow-x:auto;"><code>背景：队列扇出 / 重试 → 同一封 msg-id=abc 进了 2 个 worker
+─────────────────────────────────────────────
+T=0  Worker A: SELECT * FROM emails WHERE message_id='abc'  → 空
+T=0  Worker B: SELECT * FROM emails WHERE message_id='abc'  → 空
+T=1  A: INSERT email abc
+T=1  B: INSERT email abc                    ← 💥 重复插入</code></pre>
+
+    <p><strong>Race #2：Contact 创建竞争</strong></p>
+    <pre style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:13px;overflow-x:auto;"><code>背景：alice@foo.com 是新 contact，2 封邮件同时到
+─────────────────────────────────────────────
+T=0  A,B 收到来自 alice@foo.com 的不同邮件
+T=1  A: SELECT contact WHERE email='alice@foo.com'  → 空
+T=1  B: SELECT contact WHERE email='alice@foo.com'  → 空
+T=2  A: INSERT contact alice            → id=101
+T=2  B: INSERT contact alice            → id=102  ← 💥 同一人两份</code></pre>
+
+    <p><strong>Race #3：Lost Update（关联计数 / 状态字段）</strong></p>
+    <pre style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:13px;overflow-x:auto;"><code>contact.email_count = 5
+T=0  A 读 → 5         T=0  B 读 → 5
+T=1  A 写 6           T=1  B 写 6          ← 💥 应该是 7</code></pre>
+
+    <p><strong>Race #4：Phantom Read in 模糊匹配</strong></p>
+    <pre style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:13px;overflow-x:auto;"><code>T=0    A 找最佳匹配 → 当下最佳 contact #5（80 分）
+T=0.5  B 同时创建了 contact #7（本应 95 分匹配）
+T=1    A 提交关联到 #5                       ← 💥 错过最优解</code></pre>
+
+    <h4 style="color:#059669;margin-top:18px;">▸ Mitigation Landscape（6 种方案 + Trade-off）</h4>
+    <table>
+      <thead><tr><th>方案</th><th>实现</th><th>优点</th><th>缺点 / Trade-off</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>① 唯一约束 + Upsert</strong><br>⭐ 首选</td>
+          <td><code>INSERT ... ON CONFLICT (col) DO NOTHING/UPDATE</code></td>
+          <td>DB 是 source of truth，绝对可靠；无锁，高吞吐</td>
+          <td>需要能定义唯一 key（如 message-id）；只解决 insert 类 race</td>
+        </tr>
+        <tr>
+          <td><strong>② Row Lock</strong></td>
+          <td><code>SELECT ... FOR UPDATE</code> / <code>FOR SHARE</code></td>
+          <td>直观，跨多步操作有效；强一致</td>
+          <td>阻塞，可能死锁；要求事务管理；锁粒度难选</td>
+        </tr>
+        <tr>
+          <td><strong>③ Advisory Lock</strong></td>
+          <td>Postgres <code>pg_advisory_lock(hash)</code></td>
+          <td>不锁行，按业务 key 上锁；轻量</td>
+          <td>Postgres 专属；不跨实例自然</td>
+        </tr>
+        <tr>
+          <td><strong>④ Distributed Lock</strong></td>
+          <td>Redis <code>SETNX</code> + TTL / Redlock</td>
+          <td>跨服务、跨语言可用</td>
+          <td>时钟漂移 / 网络分区难做对；<strong>Redlock 有名争议</strong></td>
+        </tr>
+        <tr>
+          <td><strong>⑤ Queue Partition</strong><br>⭐ 最优雅</td>
+          <td>按 entity hash 路由到固定 worker（Kafka partition key）</td>
+          <td><strong>根本不存在并发</strong>，比锁更便宜</td>
+          <td>热分区；扩容需要 rebalance</td>
+        </tr>
+        <tr>
+          <td><strong>⑥ Idempotency Key</strong></td>
+          <td>message-id + 24h Redis dedup window</td>
+          <td>与 ① 互补，多防一层；retry 友好</td>
+          <td>TTL 选择难；不能替代约束</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 style="color:#dc2626;margin-top:18px;">▸ 常见反模式 / Anti-patterns（🚩 红旗答案）</h4>
+    <ul>
+      <li><strong>❌ Python <code>threading.Lock</code></strong> —— 只在单进程内有效，多 worker 进程完全无效</li>
+      <li><strong>❌ "Python 有 GIL 所以线程安全"</strong> —— GIL 不防 DB race，不防跨进程 race（catastrophic 误解）</li>
+      <li><strong>❌ "我加了 retry"</strong> —— retry 不防 race，反而可能放大冲突</li>
+      <li><strong>⚠️ <code>try/except IntegrityError: pass</code></strong> —— 等价于隐式 upsert，<u>OK 但要能解释为什么</u>（依赖 DB 唯一约束）</li>
+    </ul>
+
+    <p style="color:var(--text-muted);font-size:16px;"><strong>分档评估</strong>：能讲 <strong>≥1 个具体 race scenario + ≥1 个 mitigation + trade-off</strong> = senior；只能讲方案名 = 见过；说不出具体 race 或答 anti-pattern = bullet 夸大。</p>
+  </div>
+</details>
+
+<details>
+  <summary>📌 条件追问 / Conditional Probes</summary>
+  <div class="detail-body">
+    <p style="color:var(--text-muted);font-size:16px;margin-top:0;">根据她答出的 mitigation 类型，钻进去问 trade-off / 边界 / 真懂程度。<br>
+    <span class="en-text">Drill into trade-offs / boundaries / true understanding based on her mitigation choice. ⭐ = high-signal probe.</span></p>
+    <table>
+      <thead><tr><th>如果她答 / If she answers</th><th>追问 / Drill-down</th><th>期待答 / Expected</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>唯一约束 + Upsert ⭐</strong></td>
+          <td>"<code>ON CONFLICT</code> 在什么 isolation level 下都安全吗？MVCC 下两个事务都看不到对方插入，会不会都以为没冲突？"<br>
+          <span class="en-text">"Is <code>ON CONFLICT</code> safe at any isolation level? Under MVCC, two transactions don't see each other's inserts — could they both think there's no conflict?"</span></td>
+          <td>Postgres 唯一索引是物理层保护，不受 MVCC 影响；Read Committed 下也安全；冲突方走 <code>DO NOTHING</code> / <code>DO UPDATE</code> 分支</td>
+        </tr>
+        <tr>
+          <td><strong><code>SELECT FOR UPDATE</code></strong></td>
+          <td>"高并发下会死锁吗？怎么避免？听过 <code>SKIP LOCKED</code> 吗？"<br>
+          <span class="en-text">"Will it deadlock under high concurrency? How do you avoid it? Heard of <code>SKIP LOCKED</code>?"</span></td>
+          <td>固定锁顺序 / <code>NOWAIT</code> 快速失败 / 队列消费场景用 <code>SKIP LOCKED</code> 让 worker 跳过被锁的行</td>
+        </tr>
+        <tr>
+          <td><strong>Redis 分布式锁</strong></td>
+          <td>"Redlock 有名争议听说过吗？clock skew / 网络分区时锁还可靠吗？fencing token 是干嘛的？"<br>
+          <span class="en-text">"Heard of the famous Redlock debate? Is the lock reliable under clock skew / network partition? What's a fencing token for?"</span></td>
+          <td>Martin Kleppmann vs antirez 之争；fencing token = 单调递增的 epoch，给下游做"过期 holder 写入"校验</td>
+        </tr>
+        <tr>
+          <td><strong>Queue Partition by hash ⭐</strong></td>
+          <td>"<strong>热分区</strong>怎么办？比如某个超级活跃的 contact 一直在收邮件，那个 worker 会被打死。"<br>
+          <span class="en-text">"What about <strong>hot partitions</strong>? Say one super-active contact is hammered with emails — that worker gets overwhelmed."</span></td>
+          <td>按 thread-id 二次散列 / 按时间窗口分桶 / 热 key 走独立通道 / 限速</td>
+        </tr>
+        <tr>
+          <td><strong>Idempotency Key</strong></td>
+          <td>"key 怎么选？dedup window 多长？过期了之后又来一封同 key 邮件怎么办？"<br>
+          <span class="en-text">"How do you choose the key? How long is the dedup window? What if the same-key email arrives after the window expires?"</span></td>
+          <td>key = message-id；窗口 = retry 上限 ×2 安全系数（如 24h）；过期后落 DB 唯一约束兜底</td>
+        </tr>
+        <tr>
+          <td><strong>Python <code>threading.Lock</code> 🚩</strong></td>
+          <td>"你们部署的是单进程多线程，还是多进程 worker？跨进程时 <code>threading.Lock</code> 还有效吗？"<br>
+          <span class="en-text">"Are you deploying single-process multi-threaded, or multi-process workers? Does <code>threading.Lock</code> still work across processes?"</span></td>
+          <td>反向钉死 — <code>threading.Lock</code> 跨进程无效；多 worker 部署必须用 DB / Redis 协调</td>
+        </tr>
+        <tr>
+          <td><strong>"Python 有 GIL 所以..." 🚩</strong></td>
+          <td>"GIL 防的是 Python 字节码并发，DB 那边并发查询它防得了吗？多个 worker 进程之间呢？"<br>
+          <span class="en-text">"GIL prevents concurrent Python bytecode — but does it prevent concurrent queries hitting the DB? Or coordinate across multiple worker processes?"</span></td>
+          <td>反向钉死 — 严重误解；GIL 与 DB 并发 / 跨进程 race 无关</td>
+        </tr>
+        <tr>
+          <td><strong>答不出 race scenario</strong></td>
+          <td>"假设 2 个 worker 同时收到同一封 <code>message-id=abc</code> 的邮件，没有任何保护，会怎样？"<br>
+          <span class="en-text">"Hypothetically — 2 workers receive the same <code>message-id=abc</code> email simultaneously with no protection. What happens?"</span></td>
+          <td>强行引导她说出 duplicate insert；如果还答不出 → 「concurrency-safe」是 buzzword</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li>能讲出 ≥1 个<strong>具体 race scenario</strong>（带 T=0/T=1 时间线 + 出什么 bug）</li>
+      <li>说出 ≥1 个<strong>真正可靠的 mitigation</strong>（unique constraint + upsert / SELECT FOR UPDATE / queue partition）</li>
+      <li>主动说出 trade-off（如"锁简单但低吞吐，upsert 高吞吐但需要唯一 key"）</li>
+      <li>知道"DB 是 source of truth"，应用层 if-check 不可靠</li>
+      <li>主动提 isolation level / MVCC / SKIP LOCKED / fencing token 任一名词</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>"加了锁就解决了" → 追"什么锁"能补出 SELECT FOR UPDATE 或 Redis lock</li>
+      <li>用了 <code>try/except IntegrityError</code> 但能解释这其实是依赖唯一约束</li>
+      <li>race scenario 讲得出但 mitigation 模糊 / 反过来也行</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>答 "Python 有 GIL 所以线程安全" → 🚩 catastrophic 误解</li>
+      <li>用 <code>threading.Lock</code> 但不知道跨进程无效 → 🚩</li>
+      <li>讲不出任何具体 race scenario → 🚩 "concurrency-safe" 是 buzzword</li>
+      <li>认为 "exactly-once" 是天然的 / 不知道 retry 不防 race</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 1 (q-concurrency-safe) -->
+
+<!-- ====================================================================== -->
+<!--  追问 2: Dedup Key + Edge Cases — 怎么去重 / 共享邮箱 / 转发              -->
+<!--          (DEPTH · 邮件领域知识)                                          -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-emerald" id="q-dedup-key" open>
+<summary>🔍 追问 2 · 🔑 Dedup Key + Edge Cases — 怎么去重 / 共享邮箱 / 转发 <span class="tag tag-time">~3.5 min</span> <span class="tag" style="background:#d1fae5;color:#059669;">DEPTH</span></summary>
+<div class="followup-body">
+
+<blockquote class="interviewer-note" style="border-left-color:#059669;background:#ecfdf5;color:#059669;">
+  ⚠️ <strong>位置 / Position</strong>：追问 1 答完后切换到这里。这一题测的<strong>不是分布式系统，是邮件领域的实际经验</strong>。让她讲 dedup key 选型 + edge case 处理。<br>
+  ⚠️ <strong>Domain-knowledge probe</strong>, not distributed systems — gauges whether she's actually shipped email-processing code (vs read about it).
+</blockquote>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Let's dig into the dedup side. <strong>What's your dedup key</strong>, and <strong>why did you pick that one</strong>? And what about edge cases — what happens when the email comes from a <strong>shared inbox</strong> like <code>sales@</code>, or it's a <strong>forwarded email</strong>?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "我们深入聊聊去重 —— <strong>你的 dedup key 是什么</strong>？<strong>为什么选这个</strong>？另外 edge case 怎么办：<strong>共享邮箱</strong>（比如 <code>sales@</code>）来的邮件怎么处理？<strong>转发邮件</strong>呢？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note：</strong>这一题<strong>不深 distributed，深 email domain</strong>。准备听 <strong>3 件事</strong>：<br>
+      &nbsp;&nbsp;<strong>(1) Dedup key 选什么</strong> — 期待 RFC 5322 <code>Message-ID</code>，并知道它什么时候失效<br>
+      &nbsp;&nbsp;<strong>(2) 共享邮箱</strong> — 期待按域名挂 account，<u>不创建 sales@ 这种"假 contact"</u>，走 thread fallback<br>
+      &nbsp;&nbsp;<strong>(3) 转发邮件</strong> — 知道 from header 是转发者，真实 sender 在 body 里或 <code>X-Forwarded-From</code> header<br>
+      <u>如果完全没考虑过共享邮箱 / 转发 → 那 matching 是简化版，没真处理过生产邮件</u>。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+
+    <h4 style="color:#059669;margin-top:0;">▸ Dedup Key 候选对比</h4>
+    <table>
+      <thead><tr><th>Key 方案</th><th>优点</th><th>缺点</th><th>推荐</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>RFC 5322 <code>Message-ID</code></strong></td>
+          <td>邮件协议标准；客户端自动生成；全局唯一（带 <code>@domain</code>）</td>
+          <td>失效场景：转发 / 重发 / 编辑草稿后客户端可能重生成；老客户端不带；mailing list 改写</td>
+          <td>⭐ 首选</td>
+        </tr>
+        <tr>
+          <td><code>hash(body + headers)</code></td>
+          <td>100% 内容唯一</td>
+          <td>mailing list 加 footer / 中转服务器加 <code>X-Spam</code> header → hash 变了；计算贵</td>
+          <td>备选 / 兜底</td>
+        </tr>
+        <tr>
+          <td><code>(from, to, subject, date)</code> 复合 key</td>
+          <td>直观，不依赖 header</td>
+          <td>"Re: Re: Re:" / 群发 / 时间戳精度问题 → false positive 多</td>
+          <td>不推荐</td>
+        </tr>
+        <tr>
+          <td><strong>Message-ID + 内容 hash 兜底</strong></td>
+          <td>两层防护，message-id 缺失时 fallback</td>
+          <td>复杂度高，需要双索引</td>
+          <td>高可靠场景</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 style="color:#059669;margin-top:18px;">▸ Message-ID 什么时候失效（高分主动提）</h4>
+    <ol>
+      <li><strong>转发邮件</strong> —— 客户端通常重新生成 message-id</li>
+      <li><strong>重发草稿</strong> —— 同一邮件多个 message-id 副本</li>
+      <li><strong>编辑后再发</strong> —— message-id 可能变</li>
+      <li><strong>老旧客户端 / 自动化脚本</strong> —— 不生成 message-id</li>
+      <li><strong>Mailing list / 中转服务器</strong> —— 可能改写 message-id</li>
+    </ol>
+
+    <h4 style="color:#059669;margin-top:18px;">▸ 共享邮箱 (Shared Inbox) 处理</h4>
+    <ul>
+      <li><strong>识别黑名单</strong>：<code>sales@ support@ info@ noreply@ no-reply@ help@ hello@ contact@ admin@</code></li>
+      <li><strong>不创建对应 contact</strong>（不是真实个体，否则销售一查 "Sales" 名下挂着所有客户邮件就乱套）</li>
+      <li><strong>关联 fallback 链</strong>：
+        <ol style="margin-top:6px;">
+          <li>优先用 <code>In-Reply-To</code> 继承上一封邮件的 contact / deal</li>
+          <li>其次用域名匹配 account（至少挂到公司层）</li>
+          <li>再次看 To / CC 里是否有已知真实 contact</li>
+          <li>都不行 → 进 unmatched 池 / review 队列</li>
+        </ol>
+      </li>
+    </ul>
+
+    <h4 style="color:#059669;margin-top:18px;">▸ 转发邮件 (Forwarded) 处理</h4>
+    <ul>
+      <li><strong>识别</strong>：subject 以 <code>Fwd:</code> / <code>FW:</code> / <code>转发:</code> 开头；body 含 <code>---------- Forwarded message ----------</code> 标记</li>
+      <li><strong>真实 sender 在哪里</strong>：
+        <ol style="margin-top:6px;">
+          <li>优先 <code>X-Forwarded-From</code> header（不是所有客户端都有）</li>
+          <li>其次解析 body 里的 <code>From:</code> 行</li>
+          <li>兜底用 <code>Reply-To</code></li>
+        </ol>
+      </li>
+      <li><strong>关联策略</strong>：把"真实 sender"挂到 contact；thread 用 <code>In-Reply-To</code> / <code>References</code> 找到转发前的原邮件</li>
+    </ul>
+
+    <h4 style="color:#059669;margin-top:18px;">▸ Email 规范化 / Normalization（细节坑）</h4>
+    <ul>
+      <li><strong>Gmail 特定别名</strong>：<code>alice.chen+work@gmail.com</code> = <code>alice.chen@gmail.com</code> = <code>alicechen@gmail.com</code>（<u>仅 gmail.com 适用</u>，企业域名不能这么处理，否则会合并不该合并的人）</li>
+      <li><strong>大小写折叠</strong>：local part 理论上 case-sensitive（RFC），实际多数 server 不区分</li>
+      <li><strong>IDN 国际化域名</strong>：punycode 转换（<code>xn--</code> 前缀）</li>
+      <li><strong>Plus addressing</strong>：很多企业 server 也支持 <code>+suffix</code>，要确认是否同人</li>
+    </ul>
+
+    <p style="color:var(--text-muted);font-size:16px;"><strong>分档评估</strong>：能答 Message-ID + 知道失效场景 + 共享邮箱 + 转发任 2 个 = senior；只答 Message-ID 没考虑 edge case = 中等；答 hash 或复合 key 且解释不清 = 没真处理过邮件。</p>
+  </div>
+</details>
+
+<details>
+  <summary>📌 条件追问 / Conditional Probes</summary>
+  <div class="detail-body">
+    <p style="color:var(--text-muted);font-size:16px;margin-top:0;">根据她答出的 key 选择 + 是否考虑 edge case，钻进去问深度。<br>
+    <span class="en-text">Drill based on her key choice and whether she's considered edge cases. ⭐ = high-signal probe.</span></p>
+    <table>
+      <thead><tr><th>如果她答 / If she answers</th><th>追问 / Drill-down</th><th>期待答 / Expected</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Message-ID ⭐</strong></td>
+          <td>"Message-ID 什么时候不可靠？你怎么兜底？"<br>
+          <span class="en-text">"When is Message-ID unreliable? What's your fallback?"</span></td>
+          <td>转发 / 重发 / 编辑草稿 / 老客户端不带 / mailing list 改写；兜底用内容 hash 或 <code>(from+subject+date)</code></td>
+        </tr>
+        <tr>
+          <td><strong><code>hash(body)</code> / 自定义 hash</strong></td>
+          <td>"为什么不用 Message-ID？如果 mailing list 给 body 加了 footer 你 hash 还一样吗？"<br>
+          <span class="en-text">"Why not Message-ID? If a mailing list appends a footer to the body, would your hash still match?"</span></td>
+          <td>意识到 hash 易碎；message-id 是协议标准更稳；理想方案 message-id 主 + hash 备</td>
+        </tr>
+        <tr>
+          <td><strong>(from, subject, date) 复合 key</strong></td>
+          <td>"群发邮件 / 'Re: Re: Re:' 嵌套回复 / 跨时区时间戳差秒 — 会出 false positive 吗？"<br>
+          <span class="en-text">"What about mass emails / nested 'Re: Re: Re:' replies / cross-timezone timestamps off by seconds — would you get false positives?"</span></td>
+          <td>能列出 false positive 场景；最好转向 message-id</td>
+        </tr>
+        <tr>
+          <td><strong>共享邮箱也按 email 建 contact 🚩</strong></td>
+          <td>"那 <code>sales@foo.com</code> 在你 CRM 里就是一个 contact 叫 Sales？销售一查这个名字下挂了所有客户邮件，不就乱了？"<br>
+          <span class="en-text">"So <code>sales@foo.com</code> becomes a contact called 'Sales' in your CRM? When a salesperson searches that name they'd see every customer's email — isn't that a mess?"</span></td>
+          <td>反向钉死，引导她说出黑名单 + 域名 fallback + 不创建假 contact</td>
+        </tr>
+        <tr>
+          <td><strong>"用 from 字段找发件人" 处理转发</strong></td>
+          <td>"<code>Fwd:</code> 邮件的 from 字段是<strong>转发者</strong>，<strong>真实 sender 在 body 里</strong>，你怎么拿到真实 sender？"<br>
+          <span class="en-text">"For <code>Fwd:</code> emails, the from header is the <strong>forwarder</strong>, the <strong>real sender is in the body</strong>. How do you get the real sender?"</span></td>
+          <td><code>X-Forwarded-From</code> header / 解析 body 里的 <code>From:</code> 行 / <code>Reply-To</code> 兜底</td>
+        </tr>
+        <tr>
+          <td><strong>答出 thread 继承 ⭐</strong></td>
+          <td>"<code>In-Reply-To</code> 和 <code>References</code> 这两个 header 你用了哪个？区别是什么？"<br>
+          <span class="en-text">"Of <code>In-Reply-To</code> and <code>References</code> headers, which did you use? What's the difference?"</span></td>
+          <td><code>In-Reply-To</code> 指父邮件；<code>References</code> 是整条 thread 链；找根用 <code>References</code> 第一个，找父用 <code>In-Reply-To</code></td>
+        </tr>
+        <tr>
+          <td><strong>没考虑 Gmail 别名</strong></td>
+          <td>"<code>alice.chen+work@gmail.com</code> 和 <code>alicechen@gmail.com</code> 在你系统里是同一个人吗？"<br>
+          <span class="en-text">"Are <code>alice.chen+work@gmail.com</code> and <code>alicechen@gmail.com</code> the same person in your system?"</span></td>
+          <td>Gmail 域名特定：local part 去 <code>.</code> 和 <code>+suffix</code>；<u>其他域名不能这么处理</u>（误用会合并不该合并的人）</td>
+        </tr>
+        <tr>
+          <td><strong>"新 contact 自动创建"</strong></td>
+          <td>"什么情况下你会<strong>不</strong>自动创建？比如来自 <code>noreply@stripe.com</code> 的邮件，你也建 contact 吗？"<br>
+          <span class="en-text">"When do you <strong>not</strong> auto-create? Say an email from <code>noreply@stripe.com</code> — do you create a contact for that too?"</span></td>
+          <td>黑名单（<code>noreply</code> 等）/ 低置信度走 review 队列 / 自动化邮件不建 / 域名是公开邮箱 server 时人工 approve</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li>主动答 <strong>Message-ID</strong> 并知道它<strong>什么时候失效</strong></li>
+      <li>共享邮箱 → 主动说"不建假 contact，走域名 + thread fallback"</li>
+      <li>转发邮件 → 知道真实 sender 在 body 或 <code>X-Forwarded-From</code></li>
+      <li>主动提 <code>In-Reply-To</code> / <code>References</code> 区别</li>
+      <li>主动提 Gmail 别名规则（且知道<u>只适用 gmail.com</u>）</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>Message-ID 答得出但没考虑失效场景，追问后能补</li>
+      <li>共享邮箱想到了但只说"过滤掉"没说怎么 fallback</li>
+      <li>转发邮件知道有 <code>Fwd:</code> 但没想过真实 sender 在哪</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>Dedup key 答 hash(body) 但不知道 mailing list 会破坏 → 🚩</li>
+      <li>共享邮箱直接建 contact 叫 "Sales" → 🚩 没真处理过生产邮件</li>
+      <li>转发邮件用 from 字段当 sender → 🚩 错误关联</li>
+      <li>完全没听说过 <code>Message-ID</code> / <code>In-Reply-To</code> header → 🚩 邮件协议基础缺失</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 2 (q-dedup-key) -->
+
 <hr class="separator">
 
 <!-- ==================== RUBRIC ==================== -->
@@ -1928,6 +2355,18 @@ function Parent() {
         <td>背景清楚但 matching 只说 2 层 fallback / concurrency 一笔带过</td>
         <td>讲不清自己做了哪部分 / matching 只答 <code>WHERE email = ?</code> / 架构说"就一个脚本"（→ 🚩 concurrency-safe 夸大）</td>
       </tr>
+      <tr>
+        <td><strong>追问 1 — Concurrency safety（CORE · 含金量最高）</strong></td>
+        <td>能讲具体 race scenario（带时间线）+ ≥1 靠谱 mitigation（upsert / 锁 / partition）+ trade-off + 主动提 isolation/MVCC/SKIP LOCKED/fencing 任一术语</td>
+        <td>讲得出 race 或 mitigation 之一，追问后能补；用 <code>try/except IntegrityError</code> 但能解释依赖唯一约束</td>
+        <td>"Python 有 GIL 所以线程安全" / 用 <code>threading.Lock</code> 不知跨进程无效 / 讲不出任何具体 race（→ 🚩 buzzword）</td>
+      </tr>
+      <tr>
+        <td><strong>追问 2 — Dedup key + Edge cases（DEPTH · 邮件领域）</strong></td>
+        <td>答 Message-ID + 知失效场景；共享邮箱不建假 contact 走 fallback；转发知真实 sender 不是 from header；主动提 <code>In-Reply-To</code> / <code>References</code></td>
+        <td>Message-ID 答得出但没考虑失效；共享邮箱只说"过滤掉"没 fallback；转发知道存在但不知真实 sender 怎么拿</td>
+        <td>共享邮箱直接建 "Sales" contact / 转发用 from 当 sender / 没听过 Message-ID 或 In-Reply-To（→ 🚩 没真处理过生产邮件）</td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -1963,6 +2402,10 @@ function Parent() {
       <tr><td>Q1 — 系统架构（队列 + 多 worker 是否清晰）</td><td></td><td></td></tr>
       <tr><td>Q1 — Matching 算法骨架（fallback 层级数）</td><td></td><td></td></tr>
       <tr><td>Q1 — Ownership 真实性（设计 vs 跟 doc vs 修 bug）</td><td></td><td></td></tr>
+      <tr><td>追问 1 — Race scenario 具体度（能否讲出时间线）</td><td></td><td></td></tr>
+      <tr><td>追问 1 — Mitigation 选择 + Trade-off（CORE · 含金量最高）</td><td></td><td></td></tr>
+      <tr><td>追问 2 — Dedup key 选型 + Message-ID 失效场景</td><td></td><td></td></tr>
+      <tr><td>追问 2 — 共享邮箱 / 转发 / In-Reply-To（DEPTH · 邮件领域）</td><td></td><td></td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构思维（owner vs 执行者）</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
