@@ -1,32 +1,784 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>interview</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #ccfbf1; color: #0f766e; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #0d9488;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #0f766e; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>interview · Shirley · Coding 2</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #d63031;
+    --accent2: #6c5ce7;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #00a676;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR (sticky top) ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .navbar .brand {
+    font-weight: 700; font-size: 18px; color: var(--accent);
+    margin-right: 12px; white-space: nowrap;
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== QUICK JUMP PANEL (sidebar) ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: #059669; }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.red { border-left: 2px solid var(--red); }
+  .qp-sub.purple { border-left: 2px solid #6c5ce7; }
+  .qp-sub.tbd { color: #cbd5e1; font-style: italic; cursor: not-allowed; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: #059669; color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 280px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #f0edfa;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  /* TBD placeholder */
+  .tbd {
+    color: var(--text-muted);
+    font-style: italic;
+    background: #fef9ee;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 3px solid var(--yellow);
+    font-size: 16px;
+  }
+
+  /* collapsible */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  /* tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+
+  /* hint chips */
+  .hint-chip {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 18px; font-weight: 700;
+    margin-right: 4px;
+  }
+  .hint-light { background: #d4edda; color: #155724; }
+  .hint-medium { background: #fff3cd; color: #856404; }
+  .hint-heavy { background: #f8d7da; color: #721c24; }
+
+  /* code blocks */
+  pre {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 10px 0;
+  }
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 18px;
+    color: #24292f;
+  }
+  :not(pre) > code {
+    background: #e8f0fe;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #0550ae;
+  }
+
+  /* evaluation badges */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 18px; font-weight: 700; margin-right: 4px; }
+  .badge-fail { background: #fdd; color: #a00; font-weight: 700; }
+  .badge-weak { background: #fff3cd; color: #7a5800; font-weight: 700; }
+  .badge-pass { background: #d4edda; color: #155724; font-weight: 700; }
+  .badge-strong { background: #ccfbf1; color: #0f766e; font-weight: 700; }
+
+  /* flow chart */
+  .flow-chart {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'Cascadia Code', monospace;
+    font-size: 18px;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* scroll to top */
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+
+  .version-tabs { display: flex; gap: 4px; margin: 12px 0 0; }
+  .vtab {
+    padding: 6px 14px; border-radius: 6px 6px 0 0;
+    background: var(--card); color: var(--text-muted);
+    border: 1px solid var(--border); border-bottom: none; cursor: pointer; font-size: 18px;
+  }
+  .vtab.active { background: var(--surface); color: var(--accent); font-weight: 600; border-color: var(--border); }
+  .version-content { display: none; }
+  .version-content.active { display: block; }
+
+  /* Code-language tab switcher (mirrors version-tabs, separate state) */
+  .code-tabs { display: flex; gap: 4px; margin: 12px 0 0; flex-wrap: wrap; }
+  .ctab {
+    padding: 6px 14px; border-radius: 6px 6px 0 0;
+    background: var(--card); color: var(--text-muted);
+    border: 1px solid var(--border); border-bottom: none; cursor: pointer; font-size: 18px;
+  }
+  .ctab.active { background: var(--surface); color: var(--accent); font-weight: 600; border-color: var(--border); }
+  .code-content { display: none; }
+  .code-content.active { display: block; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; white-space: nowrap; flex-shrink: 0; }
+  .tag-time { background: #e8f0fe; color: #0550ae; }
+  .tag-lang { background: #dde7ff; color: #1a3a8f; }
+  .tag-cpp  { background: #e0e7ff; color: #3730a3; }
+  .tag-cs   { background: #ede9fe; color: #5b21b6; }
+  .tag-py   { background: #fef9c3; color: #854d0e; }
+  .tag-ts   { background: #d1ecf1; color: #0c5460; }
+  .tag-diff-1 { background: #d4edda; color: #155724; }
+  .tag-diff-2 { background: #fff3cd; color: #7a5800; }
+  .tag-diff-3 { background: #fdd; color: #a00; }
+  .tag-diff-4 { background: #ccfbf1; color: #0f766e; }
+
+  .en-text { color: var(--text-muted); }
+</style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Shirley Huang · Coding Test 2</div>
-    <h1>④ 编程测试 2</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a href="../technicalQuestions/interview-guide.html" class="nav-btn" style="background:#0d9488;color:#fff;border-color:#0d9488;text-decoration:none;opacity:0.7;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;font-weight:700;">④ Coding 2</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;opacity:0.7;">⑤ 候选人提问</a>
+</nav>
+
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#problem" onclick="jump('problem');return false;">📋 题面</a>
+  <a class="qp-link" href="#solution" onclick="jump('solution');return false;">💡 思路 + 答案</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title">🚨 卡壳提示</div>
+    <a class="qp-sub tbd">（待填写 / TBD）</a>
   </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title">💬 拓展追问</div>
+    <a class="qp-sub tbd">（待填写 / TBD）</a>
+  </div>
+
+  <a class="qp-link" href="#checkpoints" onclick="jump('checkpoints');return false;">🔍 考察节点 <span style="color:#cbd5e1;">(TBD)</span></a>
+  <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准 <span style="color:#cbd5e1;">(TBD)</span></a>
+  <a class="qp-link" href="#flowchart" onclick="jump('flowchart');return false;">🗺️ 流程图 <span style="color:#cbd5e1;">(TBD)</span></a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>🎯 Onsite 编程测试 (2)：爆发检测器 / Activity Burst Detector</h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise</h4>
+  <blockquote style="background: #ecfdf5;">
+    "Great work on the first one. Let's do one more short coding exercise — different topic this time. This one is closer to something you'd actually write on a front-end team. I'll describe the problem, and we can work through it together."
+  </blockquote>
+  <blockquote style="border-left-color: #d97706; color: #78350f; background: #fef9ee;">
+    "刚才那道做得不错。我们再做一道短的编程题——这次换个方向，更接近你在前端团队里会真的写的代码。我会描述一下题目，我们一起讨论。"
+  </blockquote>
+</div>
+
+<!-- ==================== PROBLEM ==================== -->
+<h2 id="problem">📋 题面 / Problem Statement</h2>
+
+<div class="version-tabs">
+  <button class="vtab active" onclick="showVersion('formal')">📄 正式版</button>
+  <button class="vtab" onclick="showVersion('conversational')">🗣️ 口语版（推荐）</button>
+  <button class="vtab" onclick="showVersion('plain')">🧸 最简化版</button>
+</div>
+
+<div id="version-formal" class="version-content active card">
+  <h4>English:</h4>
+  <blockquote>
+    We're building front-end telemetry. When a user clicks the same button many times in a short window (a "rage-click"), it usually signals a perceived stall, slow loading, or interaction bug. Implement a small class that detects such bursts.<br><br>
+    Implement <code>ActivityBurstDetector</code>:
+    <ul style="margin-top: 8px;">
+      <li>Constructor <code>(windowMs: number, threshold: number)</code>: window length in milliseconds, and the alarm threshold (a count).</li>
+      <li>Method <code>hit(t: number): boolean</code>: record one event at time <code>t</code> (in ms), then return whether — <strong>including this event</strong> — the number of events whose timestamps fall in the inclusive range <code>[t - windowMs, t]</code> is <code>&gt;= threshold</code>.</li>
+    </ul>
+    <strong>Assumptions / 输入约束：</strong>
+    <ul style="margin-top: 4px;">
+      <li><code>t</code> is a non-negative integer (ms).</li>
+      <li>Successive calls to <code>hit</code> have <strong>strictly increasing</strong> <code>t</code>.</li>
+      <li><code>windowMs &gt;= 0</code>; <code>threshold &gt;= 1</code>.</li>
+      <li>There is no <code>unhit</code> / clear. Events disappear only by aging out of the window.</li>
+    </ul>
+    <strong>Example:</strong>
+    <pre style="margin-top: 8px;"><code>const d = new ActivityBurstDetector(1000, 3);
+d.hit(100)   // false  — events in [-900, 100]:   [100]                count=1
+d.hit(300)   // false  — events in [-700, 300]:   [100, 300]           count=2
+d.hit(600)   // true   — events in [-400, 600]:   [100, 300, 600]      count=3 ✅
+d.hit(2000)  // false  — events in [1000, 2000]:  [2000]               count=1  (100, 300, 600 evicted)
+d.hit(2500)  // false  — events in [1500, 2500]:  [2000, 2500]         count=2
+d.hit(2800)  // true   — events in [1800, 2800]:  [2000, 2500, 2800]   count=3 ✅</code></pre>
+  </blockquote>
+
+  <h4>中文:</h4>
+  <blockquote>
+    我们在做前端 telemetry。当用户在短时间内反复点同一个按钮（俗称 rage-click），通常意味着遇到了卡顿、loading、或交互 bug。请实现一个小工具类检测这种"爆发"。<br><br>
+    实现 <code>ActivityBurstDetector</code>：
+    <ul style="margin-top: 8px;">
+      <li>构造函数 <code>(windowMs: number, threshold: number)</code>：窗口长度（毫秒）+ 触发阈值（次数）。</li>
+      <li>方法 <code>hit(t: number): boolean</code>：在时刻 <code>t</code>（毫秒）记录一次事件，返回——<strong>包含本次在内</strong>——时间戳落在闭区间 <code>[t - windowMs, t]</code> 里的事件总数是否 <code>&gt;= threshold</code>。</li>
+    </ul>
+    <strong>输入约束：</strong>
+    <ul style="margin-top: 4px;">
+      <li><code>t</code> 是非负整数（毫秒）。</li>
+      <li><code>hit</code> 的连续调用，<code>t</code> <strong>严格递增</strong>。</li>
+      <li><code>windowMs &gt;= 0</code>；<code>threshold &gt;= 1</code>。</li>
+      <li>没有 <code>unhit</code> / 清空操作。事件一旦记录，只能随时间走出窗口被自然淘汰。</li>
+    </ul>
+    <strong>示例：</strong>
+    <pre style="margin-top: 8px;"><code>const d = new ActivityBurstDetector(1000, 3);
+d.hit(100)   // false  — 窗口 [-900, 100]：  [100]                count=1
+d.hit(300)   // false  — 窗口 [-700, 300]：  [100, 300]           count=2
+d.hit(600)   // true   — 窗口 [-400, 600]：  [100, 300, 600]      count=3 ✅
+d.hit(2000)  // false  — 窗口 [1000, 2000]： [2000]               count=1  （100/300/600 全被淘汰）
+d.hit(2500)  // false  — 窗口 [1500, 2500]： [2000, 2500]         count=2
+d.hit(2800)  // true   — 窗口 [1800, 2800]： [2000, 2500, 2800]   count=3 ✅</code></pre>
+  </blockquote>
+</div>
+
+<div id="version-conversational" class="version-content card">
+  <p style="color:var(--green);font-weight:600;margin-bottom:8px;">🗣️ 推荐面试时直接用这个版本念给候选人</p>
+  <h4>English:</h4>
+  <blockquote>
+    "Alright, here's a small library you're going to build for our front-end telemetry. Picture this: there's a button the user keeps clicking — when they hit it too many times in a short window, we want to know about it, because that usually means they ran into a bug or a slow load.<br><br>
+    So you write a class called <code>ActivityBurstDetector</code>. The constructor takes two things: a <strong>window length in milliseconds</strong> and a <strong>threshold count</strong>. Then it has one method, <code>hit(t)</code>, which you call every time the user does the thing — you pass in the current timestamp in ms, and the method returns a boolean: <strong>counting this one</strong>, are there now at least <code>threshold</code> events in the last <code>windowMs</code> milliseconds?<br><br>
+    A few things to make life easy: timestamps come in <strong>strictly increasing</strong> order, so no out-of-order events. There's no <code>unhit</code> — once an event is too old, it just naturally falls out of the window. <code>windowMs</code> and <code>threshold</code> stay fixed for the lifetime of one detector. Make sense?"
+  </blockquote>
+  <h4>中文:</h4>
+  <blockquote>
+    "好，给你一个小工具类要实现，是给我们前端 telemetry 用的。场景是这样：有一个按钮用户在一直点——如果短时间内点了很多次，我们就想知道，因为这通常意味着他遇到了 bug 或者加载卡住了。<br><br>
+    你写一个类叫 <code>ActivityBurstDetector</code>，构造函数接两个参数：<strong>窗口长度（毫秒）</strong>+ <strong>触发阈值（次数）</strong>。然后有一个方法叫 <code>hit(t)</code>，用户每做一次行为你就调一次，传入当前时间戳（毫秒），方法返回一个 boolean：<strong>把本次也算上</strong>，最近 <code>windowMs</code> 毫秒里是不是累计达到 <code>threshold</code> 次。<br><br>
+    几个简化条件：时间戳<strong>严格递增</strong>，不会乱序。没有 <code>unhit</code> / 撤销——事件一旦太老就自然滑出窗口。<code>windowMs</code> 和 <code>threshold</code> 在 detector 整个生命周期里都是固定的。听懂了吗？"
+  </blockquote>
+</div>
+
+<div id="version-plain" class="version-content card">
+  <p style="color:var(--yellow);font-weight:600;margin-bottom:8px;">🧸 当候选人对"窗口 / 阈值"这种描述觉得抽象时使用</p>
+  <h4>English:</h4>
+  <blockquote>
+    "Let me strip the jargon. Picture a front desk. Every time someone walks up, you jot down the arrival time on a notepad.<br><br>
+    The rule is: <strong>if 3 or more people walk up within any 60-second window, ring the alarm.</strong> So whenever someone arrives, you (1) write down the time, (2) glance at the notepad — within the last 60 seconds (including the one you just wrote), are there at least 3 timestamps? If yes, ring the alarm and return <code>true</code>; otherwise return <code>false</code>.<br><br>
+    People only arrive in chronological order — you'll never get an out-of-order arrival. And timestamps older than 60 seconds you can just erase — they're never going to matter again.<br><br>
+    That's the whole job: a class with constructor <code>(window, threshold)</code> — in the example above 60 and 3 — and one method <code>hit(t)</code> that returns whether the alarm fires."
+  </blockquote>
+  <h4>中文:</h4>
+  <blockquote>
+    "我换个最简单的说法。想象你坐在前台。每来一个客人，你就在便签上记下到达时间。<br><br>
+    规定是：<strong>最近 60 秒内只要来了 3 个或更多人，就敲警报。</strong>所以每来一个客人，你 (1) 记下时间；(2) 看一眼便签——最近 60 秒内（包括刚记的这次）是不是至少有 3 个时间？是就敲警报、返回 <code>true</code>；否则返回 <code>false</code>。<br><br>
+    客人按时间先后来，不会乱序。超出 60 秒的旧时间擦掉就行——以后永远用不到了。<br><br>
+    就这么简单：写一个类，构造函数 <code>(window, threshold)</code>——上面例子里就是 60 和 3——一个方法 <code>hit(t)</code> 返回警报是否触发。"
+  </blockquote>
+</div>
+
+<div id="after-problem" class="card" style="border-left: 4px solid #059669; margin-top: 16px;">
+  <h4 style="color: #059669;">💬 读完题后的衔接语 / After reading the problem</h4>
+  <p class="tbd">📌 待填写 / TBD —— ① 询问候选人选哪个语言；② 贴入对应 starter template；③ 提醒只需要实现 <code>ActivityBurstDetector</code> 类（构造函数 + <code>hit</code> 方法），不用关心 IO / parser / test runner。等 starter templates 准备好之后补。</p>
+</div>
+
+<hr class="separator">
+<h2 id="sticking-points">🚨 候选人卡壳情况及提示策略 / Sticking Points &amp; Hints</h2>
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 计划覆盖的卡壳点：<br>
+    • 卡壳 0：不理解 "window / threshold" 措辞 → 用便签例子重讲<br>
+    • 卡壳 1：完全没思路 / 一上来想 binary search → 引导到"维护一个时间戳列表"<br>
+    • 卡壳 2：每次 hit 全量扫一遍 O(n) → 提示"老的可以删，永远用不到"<br>
+    • 卡壳 3（仅 JS/TS）：用 <code>Array.prototype.shift()</code> → 提示 V8 里 shift 是 O(n)，引出 head pointer / deque 替代
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FOLLOW-UPS ==================== -->
+<h2 id="followups">💬 拓展追问 / Follow-up Questions</h2>
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 6 级追问链（已在 chat 设计好，待整理）：<br>
+    • Q1 复杂度分析（worst-case vs amortized）<br>
+    • Q2 JS 引擎细节：<code>Array.prototype.shift</code> 的 O(n) 陷阱<br>
+    • Q3 业务桥：用类似思路实现 <code>throttle(fn, intervalMs)</code><br>
+    • Q4 throttle vs debounce 区别与使用场景<br>
+    • Q5 把 throttle 用在 React 组件里：闭包 / 重渲染 / <code>useRef</code> pattern<br>
+    • Q6 高频事件优化：<code>requestAnimationFrame</code>、passive listener、IntersectionObserver
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== CHECKPOINTS ==================== -->
+<h2 id="checkpoints">🔍 考察节点 / Evaluation Checkpoints</h2>
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 计划的核心 checkpoint：<br>
+    • 节点 1：识别 "滑动窗口 / 队列淘汰" 模式<br>
+    • 节点 2：写出正确的 enqueue + while-evict 不变式<br>
+    • 节点 3（语言相关）：选择恰当的数据结构 —— C++ <code>deque</code> / Python <code>deque</code> / TS head-pointer / C# <code>Queue</code><br>
+    • 节点 4：摊还复杂度分析（每个事件一生总成本 O(1) → 平均 O(1)/op）<br>
+    • 节点 5：能桥接到 throttle / React useRef 真实场景
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== MODEL SOLUTION ==================== -->
+<h2 id="solution">💡 标准答案 / Model Solution</h2>
+
+<div class="card">
+  <h4>核心思路 / Core Idea</h4>
+  <p><strong>中文：</strong>这是一道<strong>滑动窗口 + 队列淘汰</strong>的经典模型。题目给了三个关键的<strong>结构性礼物</strong>：(1) <code>t</code> 严格递增；(2) 窗口长度固定；(3) 没有 <code>unhit</code>。这三点合起来 ⇒ 任何事件一旦走出窗口就永远不会再相关 ⇒ 用 <strong>FIFO 队列</strong>维护"当前窗口内的事件"，新事件入队、旧事件出队，每次询问只需读队列 size 与 threshold 比较。摊还复杂度 <strong>O(1)</strong> per <code>hit</code>。</p>
+  <p><strong>English:</strong> Classic <strong>sliding-window with queue eviction</strong>. The problem gives three structural gifts: (1) <code>t</code> is strictly increasing; (2) window length is fixed; (3) no <code>unhit</code>. Together they imply: once an event ages out of the window it can never become relevant again. So maintain a <strong>FIFO queue</strong> of "events currently in the window" — enqueue on new events, dequeue old ones from the head. Each query is just <code>size &gt;= threshold</code>. Amortized <strong>O(1)</strong> per <code>hit</code>.</p>
+</div>
+
+<div class="card">
+  <h4>关键观察 / Key Observations</h4>
+  <ol>
+    <li><strong>窗口右端单调右移：</strong>由于 <code>t</code> 严格递增，每次 <code>hit</code> 时窗口右端就是当前 <code>t</code>，永远不回退。<br>
+      <span class="en-text">Window's right edge advances monotonically because <code>t</code> is strictly increasing.</span></li>
+    <li><strong>窗口左端也单调右移：</strong>左端 = <code>t - windowMs</code>，<code>windowMs</code> 是常数，所以 <code>t</code> 涨 ⇒ 左端涨。⇒ <strong>队首元素一旦小于左端，就再也不会回到窗口里</strong>，可以放心丢弃。<br>
+      <span class="en-text">Left edge <code>t - windowMs</code> also advances monotonically. So any front element below the left edge can be safely dropped — it will never re-enter.</span></li>
+    <li><strong>为什么不需要二分：</strong>直觉上"找最早一个 ≥ cutoff 的位置"可以 binary search，O(log n)。但因为左端单调推进，<strong>用指针顺序淘汰</strong>是<strong>摊还 O(1)</strong>——每个事件一生总成本 = 1 次入队 + 1 次淘汰 = O(1)。<br>
+      <span class="en-text">Could use binary search (O(log n)), but linear front-eviction is amortized O(1) — each event is enqueued once and evicted once across its lifetime.</span></li>
+    <li><strong>不变式：</strong><code>hit(t)</code> 结束时，队列里所有时间戳都在 <code>[t - windowMs, t]</code> 内、且按时间升序。所以 <code>size &gt;= threshold</code> 就是答案。<br>
+      <span class="en-text">Invariant: after <code>hit(t)</code> returns, all timestamps in the queue lie in <code>[t - windowMs, t]</code> in ascending order — so <code>size &gt;= threshold</code> directly answers the query.</span></li>
+  </ol>
+</div>
+
+<div class="card">
+  <h4>算法流程 / Algorithm Step-by-Step</h4>
+  <ol>
+    <li><strong>第一步：</strong>维护一个 FIFO 队列 <code>events</code>（C++/Python 用 <code>deque</code>；C# 用 <code>Queue</code>；JS/TS 用普通数组 + head pointer，理由见下）。</li>
+    <li><strong>第二步：</strong>调用 <code>hit(t)</code>：
+      <ul>
+        <li>把 <code>t</code> 入队到队尾。</li>
+        <li>计算 <code>cutoff = t - windowMs</code>。</li>
+        <li>当队首 <code>&lt; cutoff</code> 时反复出队，直到队首 <code>&gt;= cutoff</code> 或队空。</li>
+        <li>返回 <code>队列 size &gt;= threshold</code>。</li>
+      </ul>
+    </li>
+  </ol>
+  <blockquote class="interviewer-note">
+    <strong>🚨 JS / TS 候选人特别注意：</strong><br>
+    <code>Array.prototype.shift()</code> 在 V8 里是 <strong>O(n)</strong>（数组要 reindex），会让摊还分析失效。正确做法是用一个 <code>head</code> 索引在数组上做"逻辑出队"，配合周期性 <code>slice</code> 压缩。详见下方 TypeScript 参考答案。<br>
+    <span class="en-text">In V8, <code>Array.prototype.shift()</code> is <strong>O(n)</strong> (reindex), breaking the amortized analysis. Use a head pointer + periodic compaction instead — see the TypeScript reference.</span>
+  </blockquote>
+</div>
+
+<div class="card">
+  <h4>示例演练 / Walkthrough</h4>
+  <p>用题面示例 <code>new ActivityBurstDetector(1000, 3)</code>：</p>
+  <table>
+    <tr><th>调用</th><th>cutoff</th><th>入队后</th><th>出队</th><th>队列状态</th><th>size</th><th>返回</th></tr>
+    <tr><td><code>hit(100)</code></td><td>-900</td><td>[100]</td><td>—</td><td>[100]</td><td>1</td><td>false</td></tr>
+    <tr><td><code>hit(300)</code></td><td>-700</td><td>[100, 300]</td><td>—</td><td>[100, 300]</td><td>2</td><td>false</td></tr>
+    <tr><td><code>hit(600)</code></td><td>-400</td><td>[100, 300, 600]</td><td>—</td><td>[100, 300, 600]</td><td>3</td><td><strong>true ✅</strong></td></tr>
+    <tr><td><code>hit(2000)</code></td><td>1000</td><td>[100, 300, 600, 2000]</td><td>淘汰 100, 300, 600 (都 &lt; 1000)</td><td>[2000]</td><td>1</td><td>false</td></tr>
+    <tr><td><code>hit(2500)</code></td><td>1500</td><td>[2000, 2500]</td><td>—</td><td>[2000, 2500]</td><td>2</td><td>false</td></tr>
+    <tr><td><code>hit(2800)</code></td><td>1800</td><td>[2000, 2500, 2800]</td><td>—</td><td>[2000, 2500, 2800]</td><td>3</td><td><strong>true ✅</strong></td></tr>
+  </table>
+  <p style="margin-top: 12px;"><strong>注意第 4 步：</strong>淘汰了 3 个事件 ⇒ 这一次 <code>hit</code> 的瞬时成本是 O(3)，但这 3 个事件分别只在它们各自一生中被淘汰一次 ⇒ 摊还 O(1)。</p>
+</div>
+
+<div class="card">
+  <h4>代码 / Reference Code <span style="font-size:14px;color:var(--text-muted);font-weight:500;">(4 个语言 · tab 切换 · 默认 C++)</span></h4>
+  <p style="margin:8px 0 0;color:var(--text-muted);">四个版本都是<strong>同一份算法</strong>（FIFO 队列 + while-evict），差别仅在<strong>队列结构</strong>怎么实现：<br>
+  <span class="en-text">All four use the <strong>same algorithm</strong> (FIFO queue + while-evict); only the queue implementation differs:</span></p>
+  <ul style="margin-top:8px;color:var(--text-muted);">
+    <li><strong>C++：</strong><code>std::deque&lt;int&gt;</code>，<code>push_back</code> / <code>pop_front</code> 都是 O(1)。</li>
+    <li><strong>C#：</strong><code>Queue&lt;int&gt;</code>，<code>Enqueue</code> / <code>Dequeue</code> 都是摊还 O(1)。</li>
+    <li><strong>Python：</strong><code>collections.deque</code>，<code>append</code> / <code>popleft</code> 都是 O(1)。</li>
+    <li><strong>TypeScript：</strong>普通数组 + <code>head</code> 索引（因为 <code>.shift()</code> 是 O(n)）；周期性 <code>slice</code> 压缩防止数组无限增长。</li>
+  </ul>
+</div>
+
+<div class="code-tabs">
+  <button class="ctab active" onclick="showCode('cpp')">📖 C++</button>
+  <button class="ctab" onclick="showCode('cs')">🔷 C#</button>
+  <button class="ctab" onclick="showCode('py')">🐍 Python</button>
+  <button class="ctab" onclick="showCode('ts')">📘 TypeScript</button>
+</div>
+
+<div id="code-cpp" class="code-content active card">
+  <h4>C++ 参考答案 <span class="tag tag-cpp">C++17</span></h4>
+<pre><code>#include &lt;deque&gt;
+
+class ActivityBurstDetector {
+public:
+    ActivityBurstDetector(int windowMs, int threshold)
+        : windowMs_(windowMs), threshold_(threshold) {}
+
+    bool hit(int t) {
+        events_.push_back(t);
+        const int cutoff = t - windowMs_;
+        while (!events_.empty() &amp;&amp; events_.front() &lt; cutoff) {
+            events_.pop_front();
+        }
+        return static_cast&lt;int&gt;(events_.size()) &gt;= threshold_;
+    }
+
+private:
+    int windowMs_;
+    int threshold_;
+    std::deque&lt;int&gt; events_;   // timestamps currently inside the window
+};</code></pre>
+  <p style="color:var(--text-muted);margin:8px 0 0;font-size:14px;"><code>std::deque</code> 的 <code>push_back</code> 和 <code>pop_front</code> 都是 O(1)。摊还每次 <code>hit</code> 是 O(1)。</p>
+</div>
+
+<div id="code-cs" class="code-content card">
+  <h4>C# 参考答案 <span class="tag tag-cs">C# / .NET 6+</span></h4>
+<pre><code>using System.Collections.Generic;
+
+public class ActivityBurstDetector {
+    private readonly int windowMs;
+    private readonly int threshold;
+    private readonly Queue&lt;int&gt; events = new Queue&lt;int&gt;();
+
+    public ActivityBurstDetector(int windowMs, int threshold) {
+        this.windowMs = windowMs;
+        this.threshold = threshold;
+    }
+
+    public bool Hit(int t) {
+        events.Enqueue(t);
+        int cutoff = t - windowMs;
+        while (events.Count &gt; 0 &amp;&amp; events.Peek() &lt; cutoff) {
+            events.Dequeue();
+        }
+        return events.Count &gt;= threshold;
+    }
+}</code></pre>
+  <p style="color:var(--text-muted);margin:8px 0 0;font-size:14px;"><code>Queue&lt;T&gt;</code> 内部是循环数组，<code>Enqueue</code> / <code>Dequeue</code> 摊还 O(1)。</p>
+</div>
+
+<div id="code-py" class="code-content card">
+  <h4>Python 参考答案 <span class="tag tag-py">Python 3</span></h4>
+<pre><code>from collections import deque
+
+class ActivityBurstDetector:
+    def __init__(self, window_ms: int, threshold: int):
+        self.window_ms = window_ms
+        self.threshold = threshold
+        self.events: deque[int] = deque()    # timestamps inside the window
+
+    def hit(self, t: int) -&gt; bool:
+        self.events.append(t)
+        cutoff = t - self.window_ms
+        while self.events and self.events[0] &lt; cutoff:
+            self.events.popleft()
+        return len(self.events) &gt;= self.threshold</code></pre>
+  <p style="color:var(--text-muted);margin:8px 0 0;font-size:14px;"><code>collections.deque</code> 是 doubly-linked block list，<code>append</code> / <code>popleft</code> 都是真正的 O(1)（不像 <code>list.pop(0)</code> 是 O(n)）。</p>
+</div>
+
+<div id="code-ts" class="code-content card">
+  <h4>TypeScript 参考答案 <span class="tag tag-ts">TypeScript</span></h4>
+<pre><code>class ActivityBurstDetector {
+    private readonly windowMs: number;
+    private readonly threshold: number;
+    private events: number[] = [];
+    private head = 0;   // logical front of the queue
+
+    constructor(windowMs: number, threshold: number) {
+        this.windowMs = windowMs;
+        this.threshold = threshold;
+    }
+
+    hit(t: number): boolean {
+        this.events.push(t);
+        const cutoff = t - this.windowMs;
+        while (
+            this.head &lt; this.events.length &amp;&amp;
+            this.events[this.head] &lt; cutoff
+        ) {
+            this.head++;
+        }
+        // Periodically compact so the underlying array doesn't grow forever.
+        if (this.head &gt; 1024 &amp;&amp; this.head * 2 &gt; this.events.length) {
+            this.events = this.events.slice(this.head);
+            this.head = 0;
+        }
+        return this.events.length - this.head &gt;= this.threshold;
+    }
+}</code></pre>
+  <p style="color:var(--text-muted);margin:8px 0 0;font-size:14px;"><strong>为什么不直接 <code>Array.prototype.shift()</code>？</strong>V8 把 <code>shift</code> 实现成 O(n)（所有元素的索引要前移），会让一次 <code>hit</code> 退化成 O(n)、摊还分析也失效。用 <code>head</code> 索引做"逻辑出队"，再加一个周期性 <code>slice</code> 压缩防止底层数组无限增长，就能拿回真正的摊还 O(1)。</p>
+</div>
+
+<div class="card">
+  <h4>复杂度 / Complexity</h4>
+  <ul>
+    <li><strong>时间：</strong>每次 <code>hit</code> <strong>摊还 O(1)</strong>。最坏单次可能 O(k)（k = 一次性淘汰多少老事件），但每个事件一生只会被入队/淘汰各一次，n 次 <code>hit</code> 总成本 O(n)，所以平均 O(1)/op。</li>
+    <li><strong>空间：</strong>O(w)，其中 w = 窗口内同时存在的事件数上界（与 <code>hit</code> 调用频率 × <code>windowMs</code> 相关，而非总调用次数）。</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== RUBRIC ==================== -->
+<h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 四档评分草稿：<br>
+    • <span class="badge badge-fail">❌ Not Hire</span> —— 提示后仍无法识别"窗口淘汰"；只能写 O(n) 全量扫描且无优化思路<br>
+    • <span class="badge badge-weak">⚠️ Lean No</span> —— 知道用队列但写法有 bug（cutoff 边界错 / 忘记 evict）；不能分析复杂度<br>
+    • <span class="badge badge-pass">✅ Hire as SDE2</span> —— 独立写出 deque 解法，能讲摊还 O(1)，能桥接到 throttle 概念<br>
+    • <span class="badge badge-strong">🌟 Strong Hire / Senior</span> —— 主动提 <code>Array.shift</code> O(n) 陷阱；throttle / debounce / <code>useRef</code> 一条龙；触及 RAF / passive listener
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FLOW CHART ==================== -->
+<h2 id="flowchart">🗺️ 面试官速查流程图 / Quick Decision Flow</h2>
+<div class="card">
+  <p class="tbd">📌 待填写 / TBD —— 一图速查"候选人独立 / 需提示 / 写不出"对应的判定路径。</p>
+</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+// Jump function
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const details = el.querySelector('details') || el.closest('details');
+  if (details) details.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Version tabs
+function showVersion(name) {
+  document.querySelectorAll('.version-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.vtab').forEach(el => el.classList.remove('active'));
+  document.getElementById('version-' + name).classList.add('active');
+  const tabs = document.querySelectorAll('.vtab');
+  const map = { formal: 0, conversational: 1, plain: 2 };
+  tabs[map[name]].classList.add('active');
+}
+
+// Code-language tabs
+function showCode(name) {
+  document.querySelectorAll('.code-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.ctab').forEach(el => el.classList.remove('active'));
+  document.getElementById('code-' + name).classList.add('active');
+  const tabs = document.querySelectorAll('.ctab');
+  const map = { cpp: 0, cs: 1, py: 2, ts: 3 };
+  tabs[map[name]].classList.add('active');
+}
+
+// Scroll-to-top button visibility
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const map = {
+    'q': 'problem', 'a': 'solution',
+  };
+  if (map[e.key]) { e.preventDefault(); jump(map[e.key]); }
+});
+</script>
+
 </body>
 </html>

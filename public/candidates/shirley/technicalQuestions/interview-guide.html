@@ -102,6 +102,7 @@
   .qp-sub.orange { border-left: 2px solid #ea580c; }
   .qp-sub.cobalt { border-left: 2px solid #1d4ed8; }
   .qp-sub.amber  { border-left: 2px solid #d97706; }
+  .qp-sub.emerald { border-left: 2px solid #059669; }
   details.qp-followups {
     background: transparent;
     border: none;
@@ -148,6 +149,7 @@
   details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
   details.followup-section.fu-cobalt { border-left: 4px solid #1d4ed8; }
   details.followup-section.fu-amber  { border-left: 4px solid #d97706; }
+  details.followup-section.fu-emerald { border-left: 4px solid #059669; }
   .followup-body { padding: 14px 18px 18px; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
@@ -340,6 +342,8 @@
     </div>
   </details>
 
+  <a class="qp-link" href="#flow-4-crm-matching" onclick="jump('flow-4-crm-matching');return false;" style="background:#ecfdf5;color:#059669;font-weight:700;margin-top:10px;border-left-color:#059669;">📌 FLOW 4 · CRM Email Matching Algorithm</a>
+
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
   <a class="qp-link" href="#notes"  onclick="jump('notes');return false;">📝 Notes</a>
 </div>
@@ -396,6 +400,15 @@
         </td>
         <td>1 主问题（项目背景 + rerender 位置）+ 2 追问（减少 rerender 方案 → memoization 深度）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project background + rerender location) + 2 follow-ups (toolkit breadth → memoization depth)</span></td>
         <td><strong>~7 min</strong></td>
+      </tr>
+      <tr style="background:#ecfdf5;">
+        <td><strong style="color:#059669;">FLOW 4</strong></td>
+        <td>
+          <strong>CRM Email Matching Algorithm (Concurrency + Dedup + Matching)</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Engineered a concurrency-safe CRM matching algorithm to deduplicate emails and ensure accurate associations."</span>
+        </td>
+        <td>1 主问题（项目背景 + 算法设计）+ 追问 TBD<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context + algorithm design) + follow-ups TBD</span></td>
+        <td><strong>~3 min</strong></td>
       </tr>
     </tbody>
   </table>
@@ -1640,6 +1653,169 @@ function Parent() {
 
 <hr class="separator">
 
+<!-- ====================================================================== -->
+<!-- ============================== FLOW 4 ================================ -->
+<!-- ===== 1 main question (project context + algorithm design) =========== -->
+<!-- ===== follow-ups TBD: concurrency race + dedup key + matching ======== -->
+<!-- ====================================================================== -->
+<h2 id="flow-4-crm-matching" style="background:#ecfdf5;border-left:6px solid #059669;color:#059669;font-size:28px;">
+  📌 FLOW 4 · CRM Email Matching Algorithm（Concurrency + Dedup + Matching）
+  <span class="tag tag-time">~3 min · 追问 TBD</span>
+</h2>
+
+<div class="card" style="border-left:4px solid #059669;">
+  <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
+  <blockquote style="border-left-color:#059669;background:#fff;">
+    <span class="en-text">"Engineered a <strong>concurrency-safe CRM matching algorithm</strong> to <strong>deduplicate</strong> emails and ensure <strong>accurate associations</strong>."</span>
+  </blockquote>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
+    ✅ <strong>主问题 / Main question</strong>：让她介绍这个项目的背景 —— 是<strong>什么 CRM 系统</strong>、邮件<strong>从哪来</strong>、她<strong>设计的匹配算法是什么样的</strong>（决策流程怎么走、用什么 key 去重、怎么挂到 CRM 实体）。<br>
+    ➜ <strong>追问 / Follow-ups</strong>：待后续添加（方向预留：concurrency race condition 深挖 / dedup key 选型 / matching 决策流 / accuracy 验证）。<br>
+    <span class="en-text">✅ <strong>Main question</strong> — get the project context: <strong>which CRM</strong>, <strong>where the emails come from</strong>, and <strong>what the matching algorithm actually looks like</strong> (decision pipeline, dedup key, how email links to CRM entity). ➜ Follow-ups: TBD (race condition deep-dive / dedup key choice / matching pipeline / accuracy verification).</span>
+  </p>
+  <p style="background:#fef3c7;border-left:3px solid #d97706;padding:10px 14px;margin-top:12px;color:#92400e;font-size:14px;border-radius:4px;">
+    💎 <strong>含金量提示 / High-value bullet：</strong> 这是整张简历技术含量最高的 bullet 之一 —— 一句话同时声明了 <code>concurrency-safe</code> + <code>deduplicate</code> + <code>accurate matching</code> 三个独立 hard problem，每一个都能深挖。<u>主问题阶段先听她讲完背景与算法骨架</u>，<u>判断含金量后再决定追问深度</u>。
+  </p>
+</div>
+
+<!-- ============================ Q1: PROJECT BACKGROUND + ALGORITHM DESIGN ============================ -->
+<h3 id="q-crm-matching" style="font-size:24px;color:#10b981;margin-top:24px;">🎯 主问题 / Main Question · 🧩 项目背景 + 算法设计 <span class="tag tag-time">~3 min</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Your resume mentions a <strong>concurrency-safe CRM matching algorithm</strong> for deduplicating emails. Can you give me a <strong>brief background</strong> on this project — <strong>what was the system doing</strong> end-to-end, and <strong>what kind of matching algorithm did you design</strong>?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你简历里提到做了一个 <strong>concurrency-safe 的 CRM 邮件匹配算法</strong>。可以<strong>介绍一下这个项目的背景</strong>吗 —— 整个系统在做什么，你<strong>设计的匹配算法是什么样的</strong>？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note：</strong>这是一道<strong>开放式 opener</strong>，让她自己讲架构。心里准备听到 <strong>4 件事</strong>：<br>
+      &nbsp;&nbsp;<strong>(1) 业务上下文</strong> —— 什么 CRM（自研 / 接 Salesforce HubSpot / SaaS 产品本身）、邮件从哪来（Gmail API / IMAP）、谁在消费匹配结果（销售 / 客户成功）<br>
+      &nbsp;&nbsp;<strong>(2) 系统架构</strong> —— 几个服务、worker 几个、用什么队列（这一层决定后面 concurrency 追问的深度）<br>
+      &nbsp;&nbsp;<strong>(3) matching 算法本身</strong> —— 决策流程怎么走（精确 → thread → 域名 → 模糊 → fallback）、用什么 key 去重<br>
+      &nbsp;&nbsp;<strong>(4) 她的角色边界</strong> —— 是<u>独立设计</u>还是<u>跟着 design doc 实现</u>？concurrency 部分是她做的吗？<br>
+      <u>不要让她在这里讲超过 3 分钟</u>，concurrency / dedup / matching 的细节都留给追问。<strong>背景听完先判断含金量，再选定追问方向。</strong>
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+
+    <h4 style="color:#059669;">▸ 听 4 个维度 / Four dimensions to listen for</h4>
+    <table>
+      <thead><tr><th>维度 / Dimension</th><th>合理 / 期待的答法</th><th>🚩 警示信号</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>业务上下文</strong><br><span style="font-size:14px;color:var(--text-muted);">business context</span></td>
+          <td>说得出是什么 CRM（自研 / Salesforce 集成 / SaaS 销售工具）、邮件源（Gmail API / IMAP）、谁消费（销售 / 客户成功 / 自动 workflow）、量级（呼应 300/day）</td>
+          <td>"就是个内部工具" / 说不清是哪种 CRM / 说不清谁在用</td>
+        </tr>
+        <tr>
+          <td><strong>系统架构</strong><br><span style="font-size:14px;color:var(--text-muted);">architecture</span></td>
+          <td>能描出 <code>Gmail → Queue → N workers → DB</code> 的链路 —— 关键是<strong>主动说出"多 worker 并发"</strong>，这是 concurrency 问题的源头</td>
+          <td>说"就一个脚本跑" → 那 "concurrency-safe" 是夸大；或者讲不清几个服务怎么连</td>
+        </tr>
+        <tr>
+          <td><strong>matching 算法骨架</strong><br><span style="font-size:14px;color:var(--text-muted);">algorithm skeleton</span></td>
+          <td>能讲出<strong>分层 fallback</strong>：精确 email → thread (In-Reply-To) → 域名 → 模糊 → 评分 / 阈值；并主动提至少 1 个 edge case（共享邮箱 / 转发 / 新 contact）</td>
+          <td>只答 <code>WHERE email = ?</code> 一行 SQL / 讲不出 fallback 层级 / 没考虑过 edge case</td>
+        </tr>
+        <tr>
+          <td><strong>她的角色边界</strong><br><span style="font-size:14px;color:var(--text-muted);">ownership scope</span></td>
+          <td>清晰区分自己设计 vs 跟 design doc vs 修 bug；明确说 concurrency 部分是不是她做的（直接决定追问深度）</td>
+          <td>"我们一起做的" / 边界模糊 / 说是自己设计但讲不出 design 细节</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 style="color:#059669;margin-top:18px;">▸ 典型架构形态 / Typical architecture</h4>
+    <pre style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;font-size:13px;line-height:1.5;overflow-x:auto;"><code>┌────────────────┐
+│  Gmail API     │  push (Pub/Sub) or pull (history.list)
+└────────┬───────┘
+         ↓
+┌────────────────┐
+│  Queue         │  ← 并发问题在这里产生
+│  (Pub/Sub /    │     N workers 同时消费
+│   RabbitMQ /   │
+│   Redis Stream)│
+└────────┬───────┘
+         ↓ × N workers (concurrent!)
+┌────────────────────────────┐
+│  Matching Worker           │
+│    1. dedup check          │  ← race #1: check-then-act
+│    2. normalize email      │
+│    3. lookup / fuzzy match │
+│    4. contact upsert       │  ← race #2: 并发创建同一 contact
+│    5. associate to CRM     │
+└────────┬───────────────────┘
+         ↓
+┌────────────────┐
+│  CRM DB        │
+│  contacts /    │
+│  accounts /    │
+│  deals /       │
+│  activities    │
+└────────────────┘</code></pre>
+
+    <h4 style="color:#059669;margin-top:18px;">▸ Matching 算法决策流（高分答案的脉络） / Algorithm decision pipeline</h4>
+    <ol>
+      <li><strong>Email 规范化 / Normalize</strong> — 小写、去 <code>+alias</code> / <code>.</code>（Gmail 别名）、IDN 国际化域名</li>
+      <li><strong>精确匹配 / Exact</strong> — <code>WHERE contact.email = ?</code>，命中即返回</li>
+      <li><strong>Thread 匹配 / Thread inheritance</strong> — 用 <code>In-Reply-To</code> / <code>References</code> 邮件头找历史邮件 → 继承上一封的 contact/deal 关联</li>
+      <li><strong>域名匹配 / Domain</strong> — <code>email.split('@')[1]</code> 查 <code>account.domain</code> → 至少能挂到公司层</li>
+      <li><strong>模糊匹配 / Fuzzy</strong> — display name / 历史 alias / Levenshtein / Jaro-Winkler</li>
+      <li><strong>评分 + 阈值 / Score &amp; threshold</strong> — &gt; 高阈值 自动关联 / 中等 → 人工 review 队列 / 低 → unmatched 池</li>
+      <li><strong>共享邮箱处理 / Shared inbox</strong> — <code>sales@ support@ noreply@</code> 走特殊路径，不创建 contact</li>
+      <li><strong>新 contact 策略 / New contact policy</strong> — 自动新建 vs 进 review 队列的判定规则</li>
+    </ol>
+
+    <h4 style="color:#059669;margin-top:18px;">▸ 主问题阶段先<strong>不要</strong>深挖（留给追问） / Defer to follow-ups</h4>
+    <ul>
+      <li>❌ 不要现在追 race condition 具体长什么样（留给后续追问）</li>
+      <li>❌ 不要现在追 dedup key 是 Message-ID 还是 hash（留给后续追问）</li>
+      <li>❌ 不要现在追怎么验证 accuracy（留给后续追问）</li>
+      <li>✅ 这里只要<strong>定下场景 + 算法骨架 + 她的角色边界</strong>就够了</li>
+    </ul>
+
+    <p style="color:var(--text-muted);font-size:16px;"><strong>核心评估</strong>：能不能从一个"concurrency-safe + dedup + accurate"的密集 bullet，<strong>拆解出清晰的三层结构</strong>（架构 / 算法骨架 / 角色）。能清晰拆解 = 真设计过；只能笼统答"我们做了一个邮件去重" = 可能只参与了一小块。</p>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li>主动把 "matching 算法" 和 "concurrency 保护" 拆成两层独立讲（说明心智模型清晰）</li>
+      <li>能画出从 Queue 到 DB 的数据流，主动说出 "多 worker 并发"</li>
+      <li>matching 决策能讲到至少 3 个 fallback 层（精确 / thread / 域名 / 模糊 任选 3）</li>
+      <li>主动提至少 1 个 edge case（共享邮箱 / 转发邮件 / Gmail 别名 / 新 contact 策略）</li>
+      <li>明确说出自己的角色边界（独立设计 / 跟 doc / 修 bug 哪一档）</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>业务背景讲清了，但 matching 只说了"精确 + 域名"两步</li>
+      <li>没主动提 thread / 共享邮箱这类 edge case</li>
+      <li>concurrency 一笔带过 "我加了锁就解决了" → <u>进追问深挖具体 race</u></li>
+      <li>角色边界模糊但能讲出大致 scope</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>讲不清是什么 CRM / 邮件从哪来 / 自己做了哪部分 → 🚩 bullet 可能是别人的工作</li>
+      <li>matching 答成 "就 <code>WHERE email = ?</code>" → 🚩 简历词堆砌</li>
+      <li>说自己 "实现了 design doc" 但讲不出 design 细节 → 🚩 dependent 而非 owner</li>
+      <li>架构只能说 "就一个 Python 脚本" → 🚩 那 "concurrency-safe" 是夸大</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
 <!-- ==================== RUBRIC ==================== -->
 <h2 id="rubric">📊 评判标准 / Evaluation Rubric</h2>
 
@@ -1745,6 +1921,13 @@ function Parent() {
         <td>三件套名字说得出但讲不清各自作用 / 不知道 useCallback 配对要求</td>
         <td>把 useMemo 和 React.memo 当一回事 / "memo 总是好的" / 含糊带过</td>
       </tr>
+      <tr style="background:#ecfdf5;"><td colspan="4" style="font-weight:700;color:#059669;">FLOW 4 · CRM Email Matching Algorithm</td></tr>
+      <tr>
+        <td><strong>Q1 — 项目背景 + 算法骨架</strong></td>
+        <td>架构 + 算法骨架 + 角色边界 三层清晰；主动提多 worker 并发是 race 来源 + ≥1 edge case（共享邮箱 / 转发 / 新 contact）</td>
+        <td>背景清楚但 matching 只说 2 层 fallback / concurrency 一笔带过</td>
+        <td>讲不清自己做了哪部分 / matching 只答 <code>WHERE email = ?</code> / 架构说"就一个脚本"（→ 🚩 concurrency-safe 夸大）</td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -1775,6 +1958,11 @@ function Parent() {
       <tr><td>Q1 — 项目背景 / Rerender 位置 + 触发链</td><td></td><td></td></tr>
       <tr><td>追问 1 — 减少 rerender 的工具箱 landscape（BREADTH）</td><td></td><td></td></tr>
       <tr><td>追问 2 — Memoization 三件套 + 配套关系（DEPTH · CORE）</td><td></td><td></td></tr>
+      <tr style="background:#ecfdf5;"><td colspan="3" style="font-weight:700;color:#059669;">FLOW 4 · CRM Email Matching Algorithm</td></tr>
+      <tr><td>Q1 — 业务上下文（CRM 类型 / 邮件源 / 消费方）</td><td></td><td></td></tr>
+      <tr><td>Q1 — 系统架构（队列 + 多 worker 是否清晰）</td><td></td><td></td></tr>
+      <tr><td>Q1 — Matching 算法骨架（fallback 层级数）</td><td></td><td></td></tr>
+      <tr><td>Q1 — Ownership 真实性（设计 vs 跟 doc vs 修 bug）</td><td></td><td></td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构思维（owner vs 执行者）</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
