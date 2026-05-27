@@ -100,7 +100,7 @@
   .qp-sub.green  { border-left: 2px solid #059669; }
   .qp-sub.blue   { border-left: 2px solid var(--blue); }
   .qp-sub.orange { border-left: 2px solid #ea580c; }
-  .qp-sub.rose { border-left: 2px solid #e11d48; }
+  .qp-sub.cobalt { border-left: 2px solid #1d4ed8; }
   details.qp-followups {
     background: transparent;
     border: none;
@@ -145,7 +145,7 @@
   details.followup-section.fu-green  { border-left: 4px solid var(--green); }
   details.followup-section.fu-blue   { border-left: 4px solid var(--blue); }
   details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
-  details.followup-section.fu-rose { border-left: 4px solid #e11d48; }
+  details.followup-section.fu-cobalt { border-left: 4px solid #1d4ed8; }
   .followup-body { padding: 14px 18px 18px; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
@@ -317,12 +317,14 @@
     </div>
   </details>
 
-  <a class="qp-link" href="#flow-2-dashboard" onclick="jump('flow-2-dashboard');return false;" style="background:#fff1f2;color:#e11d48;font-weight:700;margin-top:10px;border-left-color:#e11d48;">📌 FLOW 2 · Zaber Dashboard</a>
+  <a class="qp-link" href="#flow-2-dashboard" onclick="jump('flow-2-dashboard');return false;" style="background:#eff6ff;color:#1d4ed8;font-weight:700;margin-top:10px;border-left-color:#1d4ed8;">📌 FLOW 2 · Zaber Dashboard</a>
 
   <details class="qp-followups" open>
-    <summary>↳ 追问 / Follow-ups（1 个 · 条件）</summary>
+    <summary>↳ 追问 / Follow-ups（3 个 · 1 条件 + 2 React 通用）</summary>
     <div class="qp-followups-body">
-      <a class="qp-sub rose" href="#q-charts" onclick="jump('q-charts');return false;">追问 1 — 图表 lib 选型 + 大数据量动画性能</a>
+      <a class="qp-sub cobalt" href="#q-charts"        onclick="jump('q-charts');return false;">追问 1 — 图表 lib 选型 + 大数据量动画性能（条件）</a>
+      <a class="qp-sub cobalt" href="#q-chart-react"   onclick="jump('q-chart-react');return false;">追问 2 — React 集成陷阱（options/data 引用稳定性）</a>
+      <a class="qp-sub cobalt" href="#q-chart-cleanup" onclick="jump('q-chart-cleanup');return false;">追问 3 — Unmount cleanup / 内存泄漏</a>
     </div>
   </details>
 
@@ -365,8 +367,8 @@
         <td>1 主问题（项目背景）+ 3 追问（分工 → 同步 → 一致性）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project context) + 3 follow-ups (roles → sync → consistency)</span></td>
         <td><strong>~15 min</strong></td>
       </tr>
-      <tr style="background:#fff1f2;">
-        <td><strong style="color:#e11d48;">FLOW 2</strong></td>
+      <tr style="background:#eff6ff;">
+        <td><strong style="color:#1d4ed8;">FLOW 2</strong></td>
         <td>
           <strong>Zaber — Internal Dashboard (Sales Support tooling)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Built a dashboard consolidating 3 systems used by Sales Support, saving 5 minutes per order."</span>
@@ -831,30 +833,30 @@
 <!-- ===== 1 main question (dashboard intro + 5min metric)              === -->
 <!-- ===== 1 conditional follow-up (if charts → lib + animation perf)   === -->
 <!-- ====================================================================== -->
-<h2 id="flow-2-dashboard" style="background:#fff1f2;border-left:6px solid #e11d48;color:#e11d48;font-size:28px;">
+<h2 id="flow-2-dashboard" style="background:#eff6ff;border-left:6px solid #1d4ed8;color:#1d4ed8;font-size:28px;">
   📌 FLOW 2 · Zaber Internal Dashboard（Sales Support tooling）
   <span class="tag tag-time">~10 min total</span>
 </h2>
 
-<div class="card" style="border-left:4px solid #e11d48;">
+<div class="card" style="border-left:4px solid #1d4ed8;">
   <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
-  <blockquote style="border-left-color:#e11d48;background:#fff;">
+  <blockquote style="border-left-color:#1d4ed8;background:#fff;">
     <span class="en-text">"Built an <strong>internal dashboard</strong> that consolidates information from <strong>3 different systems</strong> used by the Sales Support team, <strong>saving 5 minutes per order</strong>."</span>
   </blockquote>
   <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
     ✅ <strong>主问题 / Main question</strong>：让她介绍这个 dashboard 长什么样、整合了哪些信息、是否有图表，并解释 "save 5min per order" 的具体含义 / 计算方式（验证 metric 的真实性 + 信息架构能力）。<br>
-    ➜ <strong>条件追问 / Conditional follow-up</strong>：<u>仅当主问题答出 dashboard 含图表时才问</u> → 追问 1（图表 lib 选型 → 大数据量动画性能优化，<u>前端深度信号</u>）。<br>
-    <span class="en-text">✅ <strong>Main question</strong> — get her to describe the dashboard (layout, info, charts?) and explain what "5 min saved per order" actually means / how it was measured (validates metric honesty + IA skill). ➜ <strong>Conditional follow-up</strong>: <u>only ask if she said the dashboard has charts</u> → #1 (charting lib choice → animation perf under heavy data, <u>frontend depth signal</u>).</span>
+    ➜ <strong>追问 / Follow-ups</strong>：追问 1（图表 lib 选型 → 大数据量动画性能优化，<u>条件追问 · 仅 dashboard 含图表时问</u>，<u>前端深度信号</u>）→ 追问 2（React 集成陷阱 · options/data 引用稳定性，<u>分隔"用过 demo"和"上过线"</u>）→ 追问 3（unmount cleanup / 内存泄漏，<u>高频生产 bug</u>）。<br>
+    <span class="en-text">✅ <strong>Main question</strong> — get her to describe the dashboard (layout, info, charts?) and explain what "5 min saved per order" actually means / how it was measured (validates metric honesty + IA skill). ➜ Follow-ups: #1 (charting lib choice → animation perf under heavy data, <u>conditional · only if charts</u>, <u>frontend depth signal</u>) → #2 (React integration trap — options/data reference stability, <u>separates "ran a demo" from "shipped to prod"</u>) → #3 (unmount cleanup / memory leak, <u>common prod bug</u>).</span>
   </p>
 </div>
 
 <!-- ============================ Q1: DASHBOARD INTRO + 5MIN METRIC ============================ -->
-<h3 id="q-dashboard" style="font-size:24px;color:#fb7185;margin-top:24px;">🎯 主问题 / Main Question · 🖥️ Dashboard 介绍 + 5min Metric <span class="tag tag-time">~5 min</span></h3>
+<h3 id="q-dashboard" style="font-size:24px;color:#60a5fa;margin-top:24px;">🎯 主问题 / Main Question · 🖥️ Dashboard 介绍 + 5min Metric <span class="tag tag-time">~5 min</span></h3>
 
 <details open>
   <summary>🎤 提问 / Ask（分两步问，先问 dashboard，再问 metric）</summary>
   <div class="detail-body">
-    <h4 style="color:#e11d48;margin-top:0;">▸ 第一步 / Step 1 — Dashboard 长什么样</h4>
+    <h4 style="color:#1d4ed8;margin-top:0;">▸ 第一步 / Step 1 — Dashboard 长什么样</h4>
     <blockquote class="ask-en">
       "Tell me about that <strong>dashboard you built at Zaber</strong> — what does it look like? Which 3 systems does it consolidate? What information is shown on the page, and <strong>are there any charts or visualizations</strong> on it?"
     </blockquote>
@@ -862,7 +864,7 @@
       "聊一下你在 Zaber build 的那个 dashboard — 它<strong>大概长什么样</strong>？把哪 3 个系统整合到了一起？页面上具体展示哪些信息？<strong>有没有图表 / 可视化</strong>的内容？"
     </blockquote>
 
-    <h4 style="color:#e11d48;margin-top:14px;">▸ 第二步 / Step 2 — 5min 是怎么算出来的</h4>
+    <h4 style="color:#1d4ed8;margin-top:14px;">▸ 第二步 / Step 2 — 5min 是怎么算出来的</h4>
     <blockquote class="ask-en">
       "And that '<strong>5 minutes saved per order</strong> for Sales Support' number — what does that actually mean? <strong>How was it measured or calculated</strong>? Did someone time it, was it user-reported, A/B tested, or…?"
     </blockquote>
@@ -879,7 +881,7 @@
 <details>
   <summary>📋 参考要点 / Reference Points</summary>
   <div class="detail-body">
-    <h4 style="color:#e11d48;">▸ Part 1 — Dashboard 可能的样子（合理猜测 + 验证她有没有具体细节）</h4>
+    <h4 style="color:#1d4ed8;">▸ Part 1 — Dashboard 可能的样子（合理猜测 + 验证她有没有具体细节）</h4>
     <ul>
       <li><strong>3 个系统</strong>大概率是：CRM（Salesforce / HubSpot 之类）+ ERP / 订单系统 + 客户/产品信息系统（或物流 / 库存）</li>
       <li><strong>页面布局</strong>常见模式：顶部 KPI 卡片（pending orders / shipped today / 异常）+ 中部主表格（order list with cross-system status）+ 侧边筛选 + 详情抽屉</li>
@@ -892,7 +894,7 @@
       <li><strong>核心价值点</strong>：以前 Sales Support 要在 3 个系统之间反复切换查信息 → 现在一个页面看完</li>
     </ul>
 
-    <h4 style="color:#e11d48;">▸ Part 2 — "5 min per order" 可能的计算口径</h4>
+    <h4 style="color:#1d4ed8;">▸ Part 2 — "5 min per order" 可能的计算口径</h4>
     <table>
       <thead><tr><th>来源 / Source</th><th>含义</th><th>可信度</th></tr></thead>
       <tbody>
@@ -934,11 +936,11 @@
 </details>
 
 <!-- ============================ 追问 1: CHARTS (CONDITIONAL) ============================ -->
-<details class="followup-section fu-rose" id="q-charts">
-  <summary>🔍 追问 1 · 图表 Lib 选型 + 大数据量动画性能 <span class="tag tag-time">~5-7 min</span> <span style="color:#e11d48;font-weight:700;">[条件追问 · Conditional]</span></summary>
+<details class="followup-section fu-cobalt" id="q-charts">
+  <summary>🔍 追问 1 · 图表 Lib 选型 + 大数据量动画性能 <span class="tag tag-time">~5-7 min</span> <span style="color:#1d4ed8;font-weight:700;">[条件追问 · Conditional]</span></summary>
   <div class="followup-body">
 
-<blockquote class="interviewer-note" style="border-left-color:#e11d48;background:#fff1f2;color:#e11d48;">
+<blockquote class="interviewer-note" style="border-left-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;">
   ⚠️ <strong>触发条件 / Trigger</strong>：<strong>仅当 Q1 答出 dashboard 含图表时才问这条追问。</strong>如果她说 dashboard 没有图表（纯表格 / KPI 卡片），<u>直接跳过此追问</u>，不要硬绕回来。<br>
   ⚠️ <strong>Only ask if Q1 confirmed there are charts on the dashboard.</strong> If she said no charts, skip this follow-up entirely.
 </blockquote>
@@ -946,7 +948,7 @@
 <details open>
   <summary>🎤 提问 / Ask（两步走）</summary>
   <div class="detail-body">
-    <h4 style="color:#e11d48;margin-top:0;">▸ 第一步 / Step 1 — 用的哪个 chart lib，为什么</h4>
+    <h4 style="color:#1d4ed8;margin-top:0;">▸ 第一步 / Step 1 — 用的哪个 chart lib，为什么</h4>
     <blockquote class="ask-en">
       "You mentioned the dashboard has charts — <strong>which charting library did you use</strong>? Highcharts? Recharts? Chart.js? ECharts? D3? And <strong>why that one</strong> over the alternatives?"
     </blockquote>
@@ -954,7 +956,7 @@
       "你提到 dashboard 有图表 — <strong>具体用的哪个图表库</strong>？Highcharts？Recharts？Chart.js？ECharts？D3？<strong>为什么选这个</strong>而不是别的？"
     </blockquote>
 
-    <h4 style="color:#e11d48;margin-top:14px;">▸ 第二步 / Step 2 — 大数据量下动画卡顿怎么办（核心深度信号）</h4>
+    <h4 style="color:#1d4ed8;margin-top:14px;">▸ 第二步 / Step 2 — 大数据量下动画卡顿怎么办（核心深度信号）</h4>
     <blockquote class="ask-en">
       "Now imagine the data volume blows up — say <strong>tens of thousands of data points</strong>, or a live-streaming ticker that updates every second. Heavy chart libs like Highcharts often <strong>lag or drop frames during animations</strong> at that scale. <strong>How would you keep it smooth?</strong>"
     </blockquote>
@@ -971,7 +973,7 @@
 <details>
   <summary>📋 参考要点 / Reference Points</summary>
   <div class="detail-body">
-    <h4 style="color:#e11d48;">▸ Step 1 — 常见图表库 landscape</h4>
+    <h4 style="color:#1d4ed8;">▸ Step 1 — 常见图表库 landscape</h4>
     <table>
       <thead><tr><th>库 / Lib</th><th>特点</th><th>典型场景</th></tr></thead>
       <tbody>
@@ -986,7 +988,7 @@
     </table>
     <p style="color:var(--text-muted);font-size:16px;">选型常见理由：<strong>license</strong>（Highcharts 商用收费）/ <strong>React 生态贴合度</strong>（Recharts、Visx）/ <strong>数据量</strong>（ECharts、Highcharts boost）/ <strong>简单优先</strong>（Chart.js）。</p>
 
-    <h4 style="color:#e11d48;margin-top:18px;">▸ Step 2 — 大数据量动画性能优化手段（按层次）</h4>
+    <h4 style="color:#1d4ed8;margin-top:18px;">▸ Step 2 — 大数据量动画性能优化手段（按层次）</h4>
     <table>
       <thead><tr><th>层次</th><th>手段</th><th>说明</th></tr></thead>
       <tbody>
@@ -1028,6 +1030,172 @@
 
 </div>
 </details><!-- end 追问 1 (q-charts) -->
+
+<!-- ====================================================================== -->
+<!--  追问 2: React 集成陷阱 / Options & Data Reference Stability             -->
+<!--          (PROD SIGNAL · 单步 · 测真实生产经验)                          -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-cobalt" id="q-chart-react" open>
+<summary>🔍 追问 2 · ⚛️ React 集成陷阱 — options/data 引用稳定性 <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#dbeafe;color:#1d4ed8;">PROD SIGNAL</span></summary>
+<div class="followup-body">
+
+<blockquote class="interviewer-note" style="border-left-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;">
+  ⚠️ <strong>触发条件 / Trigger</strong>：<strong>只要 Q1 / 追问 1 确认了 dashboard 有图表（或她说在 React 项目里用过任何 chart lib）就可以问。</strong>不需要她答出"动画性能"那一题，这是<u>独立维度</u>。<br>
+  ⚠️ <strong>Ask whenever she's used a chart lib in React</strong> — this probes a different dimension (integration craft) from animation perf.
+</blockquote>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "When using a chart library inside React, have you ever run into the issue where <strong>every time the parent re-renders, the chart re-initializes from scratch / flashes</strong>? What's the <strong>root cause</strong>, and how do you fix it?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "在 React 里用 chart lib 时，你有没有遇到过 <strong>每次父组件 re-render，图表就整个重新初始化 / 闪一下</strong>？<strong>root cause 是什么</strong>？怎么解？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note</strong>：这是 React + chart lib 经典大坑。能<strong>清晰讲出 root cause（引用变了）</strong>且能说出 ≥2 个修法 = 真上过线；只说"加个 memo 就行"但讲不清为什么 = 听过但没踩过；完全没意识到这个问题 = 只跑过 demo。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+    <h4 style="color:#1d4ed8;margin-top:0;">▸ Root cause（必答）</h4>
+    <ul>
+      <li>每次父组件 render，传给 chart 的 <code>options</code> / <code>data</code> / <code>style</code> <strong>都是新对象引用</strong>（即使内容一样）<br><span class="en-text">Each render creates new object references for <code>options</code> / <code>data</code> / <code>style</code>, even if values are identical.</span></li>
+      <li>很多 chart wrapper（Recharts、react-chartjs-2、Highcharts React wrapper）在 props 变化时会<strong>整图重建</strong>或调 <code>chart.update()</code> 全量刷新 → 表现为闪动 / 动画重放 / 状态丢失（已选 legend、zoom 范围）<br><span class="en-text">Chart wrappers re-init or call <code>chart.update()</code> on prop change → flicker, animation replay, lost state (selected legend, zoom).</span></li>
+    </ul>
+
+    <h4 style="color:#1d4ed8;margin-top:14px;">▸ 修法 landscape（按层次）</h4>
+    <table>
+      <thead><tr><th>层次</th><th>手段</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3"><strong>引用稳定化</strong></td><td><strong><code>useMemo</code> 包裹 options / data</strong></td><td>最常见修法，依赖只放真正变化的字段</td></tr>
+        <tr><td><strong>把静态配置提到组件外</strong></td><td>从不变的 series config / theme 直接 const 在模块顶层</td></tr>
+        <tr><td><strong><code>useCallback</code> 包裹 event handler</strong></td><td>tooltip formatter / onClick 这些回调如果每次新建也会触发</td></tr>
+        <tr><td rowspan="2"><strong>组件层</strong></td><td><strong><code>React.memo</code> 包裹 ChartWrapper</strong></td><td>父组件无关 state 变化时不重渲染图表组件</td></tr>
+        <tr><td><strong>自定义 props 比较函数</strong></td><td><code>React.memo(C, (prev, next) =&gt; ...)</code>，只在真正影响图的数据变化时才更新</td></tr>
+        <tr><td rowspan="2"><strong>命令式逃生口</strong></td><td><strong>用 ref + <code>useEffect</code> 手动驱动</strong></td><td>不让 React 管 chart 生命周期，自己在 effect 里调 <code>chart.setOption()</code> / <code>chart.update()</code> 增量更新</td></tr>
+        <tr><td><strong>chart 实例只 init 一次</strong></td><td><code>useEffect(() =&gt; { init }, [])</code> + 后续只增量喂数据，不重建</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-muted);font-size:16px;"><strong>进阶信号</strong>：能说出 <code>React.memo</code> 第二参数 / 直接用 ref 走命令式接 chart 实例 = 真踩过坑；能提到 <strong>状态丢失</strong>（zoom / legend / tooltip 位置）作为副作用 = 上过线的经验。</p>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li>立刻命中 root cause：<strong>"每次 render 传的对象引用是新的"</strong>，且能解释为什么 wrapper 会因此重建</li>
+      <li>说出 ≥2 个修法（<code>useMemo</code> + <code>React.memo</code>，或加 ref 命令式接管）+ 知道取舍（命令式失去 React 同步保证）</li>
+      <li>能主动提到副作用：<strong>状态丢失</strong>（legend 选中、zoom 范围、tooltip）</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>知道"加个 useMemo"能解决，但讲不清 root cause</li>
+      <li>说"用 React.memo 包一下"但不知道为什么有效</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>"没遇到过 / 我们没这个问题" + 没有任何思路 → 🚩 没在 React 里真正集成过 chart lib</li>
+      <li>把问题归咎于"图表库 bug" / "React 性能差" → 🚩 完全没有引用稳定性的概念</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 2 (q-chart-react) -->
+
+<!-- ====================================================================== -->
+<!--  追问 3: Unmount Cleanup / Memory Leak                                  -->
+<!--          (PROD SIGNAL · 单步 · 高频生产 bug)                            -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-cobalt" id="q-chart-cleanup" open>
+<summary>🔍 追问 3 · 🧹 Unmount Cleanup / 内存泄漏 <span class="tag tag-time">~3 min</span> <span class="tag" style="background:#dbeafe;color:#1d4ed8;">PROD SIGNAL</span></summary>
+<div class="followup-body">
+
+<blockquote class="interviewer-note" style="border-left-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;">
+  ⚠️ <strong>触发条件 / Trigger</strong>：<strong>同追问 2 — 只要她在 React 项目里用过 chart lib 就可以问。</strong>这是一句话就能筛掉"只跑过 demo"的人的诊断题。<br>
+  ⚠️ <strong>One-shot diagnostic</strong> that filters "ran a demo" vs "shipped to prod" candidates.
+</blockquote>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Say a user is bouncing between several tabs on your dashboard, so the chart component <strong>mounts and unmounts repeatedly</strong>. What kind of problems can show up? And what do you have to do in your <strong>cleanup</strong>?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "如果一个用户在 dashboard 几个 tab 之间来回切，图表组件<strong>反复 mount / unmount</strong> —— 会有什么问题？你在 <strong>cleanup</strong> 里要做什么？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note</strong>：好答案 = <strong>主动说出"会内存泄漏 / DOM 节点残留 / FPS 越来越低"+ 给出至少 3 个 cleanup 项</strong>。如果她答得轻飘飘"React 自己会清理"= 没踩过坑。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+    <h4 style="color:#1d4ed8;margin-top:0;">▸ 不 cleanup 会出什么问题</h4>
+    <ul>
+      <li><strong>内存泄漏</strong>：chart instance 持有 canvas / SVG DOM 引用 + 自己内部的事件订阅 + 数据缓存；多次 mount 后 GC 收不掉<br><span class="en-text">Chart instances hold DOM refs, event subscriptions, and cached data — repeated mounts pile up uncollected memory.</span></li>
+      <li><strong>残留 DOM / 重复渲染</strong>：旧 canvas / SVG 没被 destroy，新实例又画一份，DOM 上同时存在多个图<br><span class="en-text">Old canvas/SVG nodes linger while new ones are created — multiple ghost charts in DOM.</span></li>
+      <li><strong>事件继续触发</strong>：window / document / ResizeObserver / WebSocket 上挂的 listener 还在跑，对着已 unmount 组件 setState → React warning "can't update unmounted component"<br><span class="en-text">Detached listeners keep firing, often setting state on unmounted components → React warnings.</span></li>
+      <li><strong>性能持续退化</strong>：每个残留实例都吃 CPU（rAF、tick、动画循环），切换 tab 几次后 FPS 明显下降<br><span class="en-text">Each leaked instance keeps consuming CPU via rAF / animation loops — FPS degrades over time.</span></li>
+    </ul>
+
+    <h4 style="color:#1d4ed8;margin-top:14px;">▸ cleanup checklist（<code>useEffect</code> return / componentWillUnmount）</h4>
+    <table>
+      <thead><tr><th>必做 / Must</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><strong><code>chart.destroy()</code> / <code>chart.dispose()</code></strong></td><td>Highcharts <code>.destroy()</code>、ECharts <code>.dispose()</code>、Chart.js <code>.destroy()</code> — 释放内部 DOM + 事件 + 缓存</td></tr>
+        <tr><td><strong>断开 ResizeObserver</strong></td><td><code>observer.disconnect()</code>；图表常用 RO 监听容器尺寸自适应</td></tr>
+        <tr><td><strong>移除自加的事件监听</strong></td><td><code>window.removeEventListener('resize', ...)</code>、<code>document.removeEventListener('visibilitychange', ...)</code></td></tr>
+        <tr><td><strong>关闭数据流 / 定时器</strong></td><td>WebSocket <code>.close()</code>、<code>clearInterval</code> / <code>clearTimeout</code>、cancel rAF / abort fetch</td></tr>
+        <tr><td><strong>ref / 实例置 null</strong></td><td><code>chartRef.current = null</code>，避免闭包还持着已销毁实例</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="color:#1d4ed8;margin-top:14px;">▸ 怎么验证（加分项）</h4>
+    <ul>
+      <li>Chrome DevTools <strong>Memory tab → heap snapshot</strong> 对比挂载 / 卸载前后的 detached DOM 数量</li>
+      <li>Performance tab 录一段反复 mount/unmount，看 JS heap 曲线是否回落</li>
+      <li>React DevTools Profiler / <code>why-did-you-render</code> 辅助定位</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li>主动说出"<strong>内存泄漏</strong>"或"<strong>detached DOM</strong>"作为后果，并能解释机制（chart 持引用 → GC 收不掉）</li>
+      <li>cleanup checklist 覆盖 ≥3 项：<strong>.destroy() + observer.disconnect() + 事件监听 off + 定时器/订阅清掉</strong></li>
+      <li>能提到怎么<strong>验证</strong>（heap snapshot、detached node 计数、FPS 退化）= 真排查过</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>知道要在 <code>useEffect</code> return 里清理，但只说得出 1-2 项（如只说 <code>.destroy()</code>）</li>
+      <li>意识到有问题但说不清是内存还是 DOM</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>"React 自己会清掉" / "我们没遇到过" → 🚩 没真正排查过生产问题</li>
+      <li>完全想不到 cleanup 这个动作 → 🚩 hooks 生命周期 / 副作用管理基础薄弱</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 3 (q-chart-cleanup) -->
 
 <hr class="separator">
 
@@ -1080,7 +1248,7 @@
         <td>知道有延迟但说不清 root cause</td>
         <td>以为 ES 强一致 / "让用户手动刷新"</td>
       </tr>
-      <tr style="background:#fff1f2;"><td colspan="4" style="font-weight:700;color:#e11d48;">FLOW 2 · Zaber Dashboard</td></tr>
+      <tr style="background:#eff6ff;"><td colspan="4" style="font-weight:700;color:#1d4ed8;">FLOW 2 · Zaber Dashboard</td></tr>
       <tr>
         <td><strong>Q1 — Dashboard 信息架构</strong></td>
         <td>能清楚说出 3 个系统 + 信息布局 + 是否有图表（明确）</td>
@@ -1105,6 +1273,18 @@
         <td>知道关动画 + 换 lib，听过 boost 但说不清</td>
         <td>"换个更轻的库" 是唯一答案 / 没遇到过没想过</td>
       </tr>
+      <tr>
+        <td><strong>追问 2 — React 集成 / 引用稳定性（PROD 信号）</strong></td>
+        <td>命中 root cause（新引用）+ ≥2 修法（useMemo / React.memo / 命令式 ref）+ 提副作用（状态丢失）</td>
+        <td>知道加 memo 能解决但讲不清原理</td>
+        <td>"没遇到过" / 归咎 React 性能差（→ 🚩 没真集成过）</td>
+      </tr>
+      <tr>
+        <td><strong>追问 3 — Unmount cleanup / 内存泄漏（PROD 信号）</strong></td>
+        <td>主动提"内存泄漏 / detached DOM" + cleanup ≥3 项（destroy + observer + listener + 定时器）+ 知道怎么验证</td>
+        <td>知道在 useEffect return 清理，只说得出 1-2 项</td>
+        <td>"React 自己会清" / 完全没想过 cleanup（→ 🚩 没排查过生产）</td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -1124,11 +1304,13 @@
       <tr><td>追问 2 — 同步方案 landscape（双写 / MQ / CDC）</td><td></td><td></td></tr>
       <tr><td>追问 3 Step 1 — 写侧失败处理（retry / DLQ / 监控）</td><td></td><td></td></tr>
       <tr><td>追问 3 Step 2 — 读侧实时性 / refresh interval（CORE 深度信号）</td><td></td><td></td></tr>
-      <tr style="background:#fff1f2;"><td colspan="3" style="font-weight:700;color:#e11d48;">FLOW 2 · Zaber Dashboard</td></tr>
+      <tr style="background:#eff6ff;"><td colspan="3" style="font-weight:700;color:#1d4ed8;">FLOW 2 · Zaber Dashboard</td></tr>
       <tr><td>Q1 — Dashboard 信息架构（3 系统 + 布局 + 有无图表）</td><td></td><td></td></tr>
       <tr><td>Q1 — 5min Metric 诚实性 / 来源</td><td></td><td></td></tr>
       <tr><td>追问 1 Step 1 — Chart Lib 选型理由（条件）</td><td></td><td></td></tr>
       <tr><td>追问 1 Step 2 — 大数据量动画性能（CORE 前端深度，条件）</td><td></td><td></td></tr>
+      <tr><td>追问 2 — React 集成 · options/data 引用稳定性（PROD 信号）</td><td></td><td></td></tr>
+      <tr><td>追问 3 — Unmount cleanup / 内存泄漏（PROD 信号）</td><td></td><td></td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构思维（owner vs 执行者）</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
