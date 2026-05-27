@@ -333,9 +333,10 @@
   <a class="qp-link" href="#flow-3-perf-ui" onclick="jump('flow-3-perf-ui');return false;" style="background:#fffbeb;color:#d97706;font-weight:700;margin-top:10px;border-left-color:#d97706;">📌 FLOW 3 · Performant UIs (Rerender + Memo)</a>
 
   <details class="qp-followups">
-    <summary>↳ 追问 / Follow-ups（待补充 / TBD）</summary>
+    <summary>↳ 追问 / Follow-ups（2 个）</summary>
     <div class="qp-followups-body">
-      <a class="qp-sub amber" href="#q-perf-ui" onclick="jump('q-perf-ui');return false;">主问题 — 项目背景 + Rerender 位置</a>
+      <a class="qp-sub amber" href="#q-rerender-toolkit" onclick="jump('q-rerender-toolkit');return false;">追问 1 — 你怎么减少 rerender（工具箱广度）</a>
+      <a class="qp-sub amber" href="#q-memoization-deep" onclick="jump('q-memoization-deep');return false;">追问 2 — Memoization 具体指什么（三件套深度）</a>
     </div>
   </details>
 
@@ -393,7 +394,7 @@
           <strong>Zaber — Performant UIs (Rerender + Memoization)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Built performant UIs by minimizing rerenders and using memoization, cutting latency by 50ms."</span>
         </td>
-        <td>1 主问题（项目背景 + rerender 位置）+ 追问（待补充）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project background + rerender location) + follow-ups TBD</span></td>
+        <td>1 主问题（项目背景 + rerender 位置）+ 2 追问（减少 rerender 方案 → memoization 深度）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project background + rerender location) + 2 follow-ups (toolkit breadth → memoization depth)</span></td>
         <td><strong>~7 min</strong></td>
       </tr>
     </tbody>
@@ -1236,8 +1237,8 @@
   </blockquote>
   <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
     ✅ <strong>主问题 / Main question</strong>：让她介绍这个项目的背景 — 是<strong>什么 UI 页面</strong>、rerender <strong>具体出现在哪里</strong>、<strong>什么触发的</strong>（先把场景定下来，再下钻技术深度）。<br>
-    ➜ <strong>追问 / Follow-ups</strong>：<u>待补充 / TBD</u> — 计划方向：① profiling 方法论（怎么定位的）② memoization 心智模型（何时反而 hurt）③ 其他减少 rerender 的手段（架构 / 调度 / 状态订阅 / 虚拟化）。<br>
-    <span class="en-text">✅ <strong>Main question</strong> — get a brief background: <strong>what UI</strong>, <strong>where</strong> the unnecessary rerenders happened, and <strong>what triggered them</strong> (scene-set first, then drill into the craft). ➜ Follow-ups TBD: ① profiling methodology, ② memoization mental model (when it hurts), ③ other rerender-minimization techniques (architecture / scheduling / store / virtualization).</span>
+    ➜ <strong>追问 / Follow-ups</strong>：追问 1（<strong>你怎么减少 rerender</strong> — 让她铺开讲，测<u>工具箱广度</u>）→ 追问 2（<strong>你提到的 memoization 具体指什么</strong> — 三件套区分 + 配套关系，测<u>memo 深度</u>）。<br>
+    <span class="en-text">✅ <strong>Main question</strong> — get a brief background: <strong>what UI</strong>, <strong>where</strong> the unnecessary rerenders happened, and <strong>what triggered them</strong> (scene-set first, then drill into the craft). ➜ Follow-ups: #1 (<strong>how did you minimize rerenders</strong> — toolkit breadth) → #2 (<strong>what does memoization actually mean</strong> — trio depth + pairing trap).</span>
   </p>
 </div>
 
@@ -1310,6 +1311,210 @@
     </ul>
   </div>
 </details>
+
+<!-- ====================================================================== -->
+<!--  追问 1: 你怎么减少 rerender — 工具箱 BREADTH                            -->
+<!--          (BREADTH · 测工具箱覆盖广度)                                   -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-amber" id="q-rerender-toolkit" open>
+<summary>🔍 追问 1 · 🛠 你怎么减少 rerender — 用了哪些方案 <span class="tag tag-time">~2.5 min</span> <span class="tag" style="background:#fef3c7;color:#d97706;">BREADTH</span></summary>
+<div class="followup-body">
+
+<blockquote class="interviewer-note" style="border-left-color:#d97706;background:#fffbeb;color:#d97706;">
+  ⚠️ <strong>位置 / Position</strong>：主问题答完场景后自然过渡到这里。让她<strong>把所有用过的手段铺开讲</strong>，<u>不要打断深挖单个</u>，听她能不能覆盖<strong>多个层次</strong>（架构 / memo / 状态订阅 / 调度 / 引用稳定 / 列表）。一旦她提到 memoization → 准备进追问 2 深挖。<br>
+  ⚠️ <strong>Let her enumerate freely</strong> — this is a BREADTH probe to gauge the size of her toolkit. Don't drill into any single technique yet — that's #2's job. As soon as she mentions memoization, queue up follow-up #2.
+</blockquote>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "OK — so <strong>how did you actually minimize those rerenders</strong>? What <strong>techniques or approaches</strong> did you use? Walk me through everything you tried — no need to dive deep into each one yet, I just want the <strong>landscape</strong>."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "OK — 那你<strong>具体是怎么减少 rerender 的</strong>？用了哪些<strong>方案 / 手段</strong>？把你尝试过的都<strong>铺开讲一遍</strong>，先不用每个深挖，我先看你的<strong>工具箱</strong>覆盖面。"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note：</strong>这是<strong>广度探针</strong>，故意让她 enumerate。<strong>三件事要听</strong>：① 她能不能覆盖<strong>多个层次</strong>（不只是 memo 系列）；② 她对每种手段是"<strong>知道名字</strong>"还是"<strong>真用过</strong>"；③ 她有没有提到 <strong>memoization</strong>（提到了 → 进追问 2）。<u>不要在这里打断让她深入</u>，深挖留给追问 2。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+    <h4 style="color:#d97706;margin-top:0;">▸ 减少 rerender 的 6 大类手段 landscape</h4>
+    <table>
+      <thead><tr><th>层次</th><th>手段</th><th>说明 / 关键词</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="4"><strong>① 架构</strong><br><span style="font-size:13px;color:var(--text-muted);">最有效，最被忽视</span></td>
+            <td><strong>State colocation / 状态下移</strong></td><td>state 放到尽可能靠近使用它的组件，重渲染范围 = state 持有者的子树</td></tr>
+        <tr><td><strong>组件拆分粒度</strong></td><td>按 state 边界拆，rerender 不会向上 cascade</td></tr>
+        <tr><td><strong>Children pattern（composition）</strong></td><td><code>&lt;Parent&gt;{children}&lt;/Parent&gt;</code> — children 的 vDOM 由 grandparent 创建并传入，parent 内部 state 变不会重渲 children</td></tr>
+        <tr><td><strong>Context split / 避免 monolithic context</strong></td><td>按变化频率拆 context；鼠标 / scroll 这种高频值<u>别放 context</u></td></tr>
+        <tr><td rowspan="3"><strong>② Memoization 三件套</strong><br><span style="font-size:13px;color:var(--text-muted);">最常被提到</span></td>
+            <td><code>React.memo(Component)</code></td><td>缓存<strong>组件</strong>，props 浅比较未变则跳过 render</td></tr>
+        <tr><td><code>useMemo(fn, deps)</code></td><td>缓存<strong>计算值</strong>，依赖未变不重算 + 引用稳定</td></tr>
+        <tr><td><code>useCallback(fn, deps)</code></td><td>缓存<strong>函数引用</strong>，<u>必须配 <code>React.memo</code> 才有意义</u></td></tr>
+        <tr><td rowspan="2"><strong>③ 状态库细粒度订阅</strong></td>
+            <td><strong>Redux + reselect</strong></td><td><code>createSelector</code> memo 派生 + <code>useSelector</code> 浅比较</td></tr>
+        <tr><td><strong>Zustand / Jotai / Recoil</strong></td><td>selector 函数或原子化 state，只在订阅 slice 变化时 rerender</td></tr>
+        <tr><td rowspan="2"><strong>④ React 18 调度</strong></td>
+            <td><code>useTransition</code> / <code>startTransition</code></td><td>把更新标记为非紧急</td></tr>
+        <tr><td><code>useDeferredValue</code></td><td>让一个值的更新延迟，给紧急渲染让路</td></tr>
+        <tr><td rowspan="2"><strong>⑤ Props 引用稳定</strong></td>
+            <td><strong>避免 inline object / array / callback</strong></td><td><code>&lt;X options={{a:1}} /&gt;</code> 每次 render 都是新对象</td></tr>
+        <tr><td><strong>稳定 key</strong></td><td>列表 key 用 id，不用 index</td></tr>
+        <tr><td><strong>⑥ 列表 / 大数据</strong></td>
+            <td><strong>Virtualization</strong>（react-window / TanStack Virtual）</td><td>只渲染可视区域，1 万行 → 实际 ~30 行</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-muted);font-size:16px;"><strong>分档评估</strong>：能讲 <strong>≥3 个不同层次</strong>（不只 memo 系列）= senior；只会 memo 三件套 = 见过基本面；只能说 "加了 useMemo / useCallback" = 初阶。<br><strong>关键提示</strong>：如果她提到 memoization / useMemo / React.memo，主动说"我们具体聊一下 memoization"切到追问 2。</p>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li>能覆盖 <strong>≥3 个不同层次</strong>（如：架构层拆组件 / 状态下移 + memo 系列 + 状态库 selector + React 18 调度）</li>
+      <li>主动说出 "<strong>memo 不是第一选择</strong>，先调架构 / 状态分布"</li>
+      <li>每个手段都能给具体使用场景，不是空念名词</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>覆盖 2 个层次（如 memo 系列 + 列表 virtualization）</li>
+      <li>能说出三件套但讲不清各自具体作用</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>只会重复 "加了 useMemo / useCallback"，工具箱里只有 memo 系列 → 🚩 工具箱小</li>
+      <li>架构层手段（状态下移 / 组件拆分 / children pattern / context split）<strong>一个都答不出</strong> → 🚩 没有架构思维</li>
+      <li>把 "代码分割 / 懒加载 / lazy loading" 当成减少 rerender 的手段 → 🚩 混淆了"减少 render 频率" vs "减少首屏加载"</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 1 (q-rerender-toolkit) -->
+
+<!-- ====================================================================== -->
+<!--  追问 2: Memoization 具体指什么 — 三件套 + 配套关系 DEPTH                 -->
+<!--          (DEPTH · 测对自己 bullet 用词的精准认知)                        -->
+<!-- ====================================================================== -->
+<details class="followup-section fu-amber" id="q-memoization-deep" open>
+<summary>🔍 追问 2 · 🧠 Memoization 具体指什么 — 三件套区分 + 配套关系 <span class="tag tag-time">~2.5 min</span> <span class="tag" style="background:#fef3c7;color:#d97706;">DEPTH</span></summary>
+<div class="followup-body">
+
+<blockquote class="interviewer-note" style="border-left-color:#d97706;background:#fffbeb;color:#d97706;">
+  ⚠️ <strong>触发条件 / Trigger</strong>：追问 1 中她提到 memoization / <code>useMemo</code> / <code>React.memo</code> / <code>useCallback</code> 任意一个 → 切到这里。<br>
+  ⚠️ <strong>双保险</strong>：就算追问 1 她没提，<strong>简历 bullet 原话就有 "memoization"</strong>，可以直接 callback 到 bullet：<em>"You wrote 'memoization' in the bullet — let's drill in..."</em>
+</blockquote>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "You mentioned <strong>memoization</strong> — and it's also in the bullet on your resume. Let's drill in. In React, <strong>what exactly does memoization mean</strong> to you — <strong>which APIs</strong>, and what does <strong>each one</strong> actually do?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你刚提到了 <strong>memoization</strong> — 你简历那条 bullet 上也写了。我们具体聊一下。在 React 里，memoization <strong>具体指什么</strong>？<strong>有哪几个 API</strong>？<strong>每一个</strong>分别是做什么的？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note：</strong>这一问的<strong>核心</strong>是看她能不能<strong>清晰区分三件套</strong>：<code>React.memo</code> / <code>useMemo</code> / <code>useCallback</code>，以及各自缓存的是<strong>什么</strong>（组件 / 值 / 函数引用）。<strong>进阶信号</strong>：主动说出 "<code>useCallback</code> 不配 <code>React.memo</code> 没意义" / "memo 浅比较自己有 cost" / "memo everywhere 是反模式" / 知道依赖数组陷阱。如果她只说 "useMemo 就是缓存一下" 含糊带过，追一句 "<u>具体缓存什么？</u>" 看能不能讲清楚。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+    <h4 style="color:#d97706;margin-top:0;">▸ 三件套对比（必答 · 区分得清才算 onboard）</h4>
+    <table>
+      <thead><tr><th>API</th><th>缓存什么</th><th>怎么用</th><th>主要作用</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>React.memo(Component)</code></td>
+          <td><strong>组件</strong></td>
+          <td>HOC 包裹组件</td>
+          <td>父组件 rerender 时，<strong>props 浅比较未变</strong>则<strong>跳过这次 render</strong></td>
+        </tr>
+        <tr>
+          <td><code>useMemo(() =&gt; v, deps)</code></td>
+          <td><strong>计算值 / 派生数据</strong></td>
+          <td>Hook，返回缓存的值</td>
+          <td>① 避免重做昂贵计算；② 保持<strong>引用稳定</strong>，传给下游 <code>React.memo</code> 组件才能生效</td>
+        </tr>
+        <tr>
+          <td><code>useCallback(fn, deps)</code></td>
+          <td><strong>函数引用</strong></td>
+          <td>Hook，本质等同 <code>useMemo(() =&gt; fn, deps)</code></td>
+          <td>父组件 rerender 时函数引用不变，<u><strong>必须</strong>配 <code>React.memo</code> 的子组件才有意义</u></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 style="color:#d97706;margin-top:14px;">▸ 进阶信号（说出任何一条 = senior）</h4>
+    <ul>
+      <li><strong><code>useCallback</code> 单独用毫无意义</strong>：如果下游子组件不是 <code>React.memo</code>'d，引用稳不稳定都会重渲，<code>useCallback</code> 等于白搭。</li>
+      <li><strong>Memo 不是免费的</strong>：<code>React.memo</code> 每次 render 都要做<strong>浅比较</strong>；<code>useMemo</code> / <code>useCallback</code> 自身的依赖数组也要比较 + 函数本身要执行（即使没重算结果）。如果原本 render 很便宜，加 memo 反而<strong>更慢</strong>。</li>
+      <li><strong>默认应先调架构</strong>：能用<strong>组件拆分 / 状态下移 / children pattern</strong> 解决的 rerender，不要用 memo 兜底。Memo 是<strong>最后手段</strong>。</li>
+      <li><strong>依赖数组陷阱</strong>：<br>
+        - deps 写少了 → <strong>stale closure</strong>（函数闭包拿到旧 state / props）<br>
+        - deps 里放了不稳定引用（如每次 render 都是新对象）→ memo <strong>立刻失效</strong>，等于没写<br>
+        - <code>exhaustive-deps</code> ESLint 规则是底线
+      </li>
+      <li><strong>"useMemo everywhere" 是反模式</strong>：到处套 memo 不仅性能没提升，还增加心智负担和 bug 面（依赖漏写）。</li>
+      <li><strong>React Compiler / React 19</strong>（前沿 bonus）：编译器自动 memo，未来这三件套可能逐步淡出。</li>
+    </ul>
+
+    <h4 style="color:#d97706;margin-top:14px;">▸ 经典陷阱代码（对答时心里有数）</h4>
+    <pre style="background:#f8fafc;padding:12px;border-radius:6px;font-size:14px;overflow-x:auto;border:1px solid var(--border);"><code>// ❌ useCallback 完全白搭
+function Parent() {
+  const [count, setCount] = useState(0);
+  const handle = useCallback(() =&gt; {}, []);   // 引用稳定，但...
+  return &lt;Child onClick={handle} /&gt;;          // Child 不是 memo'd，照样 rerender
+}
+
+// ✅ 正确搭配
+const Child = React.memo(function Child({ onClick }) { ... });
+function Parent() {
+  const handle = useCallback(() =&gt; {}, []);
+  return &lt;Child onClick={handle} /&gt;;          // 现在引用稳定才真正阻止 rerender
+}</code></pre>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li><strong>清晰区分三件套</strong> + 主动说出 <code>useCallback</code> 必须配 <code>React.memo</code></li>
+      <li>主动说 "<strong>memo 不是免费的</strong>" + 浅比较 cost / "memo everywhere 反模式"</li>
+      <li>能讲依赖数组陷阱（stale closure / 依赖里塞了不稳定引用让 memo 失效）</li>
+      <li>认为<strong>先调架构再考虑 memo</strong> —— memo 是兜底</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>能说出三件套但讲不清 <code>useMemo</code> 和 <code>React.memo</code> 的区别</li>
+      <li>知道 <code>useCallback</code> 是缓存函数，但<strong>不知道</strong>必须配 <code>React.memo</code></li>
+      <li>从来没思考过 memo 的 cost</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>把 <code>useMemo</code> 和 <code>React.memo</code> 当一回事 → 🚩 没真正理解</li>
+      <li>"性能不够就到处加 memo" → 🚩 反模式 / 没有 cost 意识</li>
+      <li>含糊其辞，只会说 "加了 memo 就好了" → 🚩 简历词堆砌</li>
+    </ul>
+  </div>
+</details>
+
+</div>
+</details><!-- end 追问 2 (q-memoization-deep) -->
 
 <hr class="separator">
 
@@ -1399,6 +1604,25 @@
         <td>知道在 useEffect return 清理，只说得出 1-2 项</td>
         <td>"React 自己会清" / 完全没想过 cleanup（→ 🚩 没排查过生产）</td>
       </tr>
+      <tr style="background:#fffbeb;"><td colspan="4" style="font-weight:700;color:#d97706;">FLOW 3 · Performant UIs (Rerender + Memo)</td></tr>
+      <tr>
+        <td><strong>Q1 — 项目背景 / Rerender 定位</strong></td>
+        <td>具体页面 + 具体组件 + 具体触发链（state / props / context / store 一类讲清楚）</td>
+        <td>页面说得出但组件模糊 / 触发链含糊</td>
+        <td>"页面慢，加 memo 就好" / 把 re-render 和 re-mount 混为一谈</td>
+      </tr>
+      <tr>
+        <td><strong>追问 1 — 减少 rerender 的工具箱（BREADTH）</strong></td>
+        <td>覆盖 ≥3 个不同层次（架构 + memo + 状态订阅 / 调度），主动说"先调架构再 memo"</td>
+        <td>覆盖 2 个层次（如 memo 系列 + virtualization）</td>
+        <td>只会重复 useMemo / useCallback，架构层手段一个答不出</td>
+      </tr>
+      <tr>
+        <td><strong>追问 2 — Memoization 三件套（DEPTH · CORE）</strong></td>
+        <td>清晰区分三件套 + 主动说 useCallback 必须配 React.memo + memo cost 意识</td>
+        <td>三件套名字说得出但讲不清各自作用 / 不知道 useCallback 配对要求</td>
+        <td>把 useMemo 和 React.memo 当一回事 / "memo 总是好的" / 含糊带过</td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -1425,6 +1649,10 @@
       <tr><td>追问 1 Step 2 — 大数据量动画性能（CORE 前端深度，条件）</td><td></td><td></td></tr>
       <tr><td>追问 2 — React 集成 · options/data 引用稳定性（PROD 信号）</td><td></td><td></td></tr>
       <tr><td>追问 3 — Unmount cleanup / 内存泄漏（PROD 信号）</td><td></td><td></td></tr>
+      <tr style="background:#fffbeb;"><td colspan="3" style="font-weight:700;color:#d97706;">FLOW 3 · Performant UIs (Rerender + Memo)</td></tr>
+      <tr><td>Q1 — 项目背景 / Rerender 位置 + 触发链</td><td></td><td></td></tr>
+      <tr><td>追问 1 — 减少 rerender 的工具箱 landscape（BREADTH）</td><td></td><td></td></tr>
+      <tr><td>追问 2 — Memoization 三件套 + 配套关系（DEPTH · CORE）</td><td></td><td></td></tr>
       <tr style="background:#f8fafc;"><td colspan="3" style="font-weight:700;color:var(--text);">综合 / Overall</td></tr>
       <tr><td>架构思维（owner vs 执行者）</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
