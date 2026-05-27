@@ -101,6 +101,7 @@
   .qp-sub.blue   { border-left: 2px solid var(--blue); }
   .qp-sub.orange { border-left: 2px solid #ea580c; }
   .qp-sub.cobalt { border-left: 2px solid #1d4ed8; }
+  .qp-sub.amber  { border-left: 2px solid #d97706; }
   details.qp-followups {
     background: transparent;
     border: none;
@@ -146,6 +147,7 @@
   details.followup-section.fu-blue   { border-left: 4px solid var(--blue); }
   details.followup-section.fu-orange { border-left: 4px solid #ea580c; }
   details.followup-section.fu-cobalt { border-left: 4px solid #1d4ed8; }
+  details.followup-section.fu-amber  { border-left: 4px solid #d97706; }
   .followup-body { padding: 14px 18px 18px; }
   .panel-toggle {
     position: fixed; right: 16px; top: 64px; z-index: 91;
@@ -328,6 +330,15 @@
     </div>
   </details>
 
+  <a class="qp-link" href="#flow-3-perf-ui" onclick="jump('flow-3-perf-ui');return false;" style="background:#fffbeb;color:#d97706;font-weight:700;margin-top:10px;border-left-color:#d97706;">📌 FLOW 3 · Performant UIs (Rerender + Memo)</a>
+
+  <details class="qp-followups" open>
+    <summary>↳ 追问 / Follow-ups（待补充 / TBD）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub amber" href="#q-perf-ui" onclick="jump('q-perf-ui');return false;">主问题 — 项目背景 + Rerender 位置</a>
+    </div>
+  </details>
+
   <a class="qp-link" href="#rubric" onclick="jump('rubric');return false;">📊 评判标准</a>
   <a class="qp-link" href="#notes"  onclick="jump('notes');return false;">📝 Notes</a>
 </div>
@@ -373,8 +384,17 @@
           <strong>Zaber — Internal Dashboard (Sales Support tooling)</strong><br>
           <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Built a dashboard consolidating 3 systems used by Sales Support, saving 5 minutes per order."</span>
         </td>
-        <td>1 主问题（dashboard 介绍 + 5min 怎么算）+ 1 条件追问（若有图表 → lib 选型 + 大数据量动画性能）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (dashboard intro + how the 5min metric is calculated) + 1 conditional follow-up (if charts exist → lib choice + perf under heavy data)</span></td>
+        <td>1 主问题（dashboard 介绍 + 5min 怎么算）+ 3 追问（1 条件图表 + 2 React 通用）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (dashboard intro + how the 5min metric is calculated) + 3 follow-ups (1 conditional charts + 2 universal React)</span></td>
         <td><strong>~10 min</strong></td>
+      </tr>
+      <tr style="background:#fffbeb;">
+        <td><strong style="color:#d97706;">FLOW 3</strong></td>
+        <td>
+          <strong>Zaber — Performant UIs (Rerender + Memoization)</strong><br>
+          <span class="en-text" style="font-size:14px;color:var(--text-muted);">"Built performant UIs by minimizing rerenders and using memoization, cutting latency by 50ms."</span>
+        </td>
+        <td>1 主问题（项目背景 + rerender 位置）+ 追问（待补充）<br><span class="en-text" style="font-size:14px;color:var(--text-muted);">main (project background + rerender location) + follow-ups TBD</span></td>
+        <td><strong>~7 min</strong></td>
       </tr>
     </tbody>
   </table>
@@ -410,10 +430,10 @@
   <summary>🎤 提问 / Ask</summary>
   <div class="detail-body">
     <blockquote class="ask-en">
-      "Before we go into the tech — can you give me a <strong>brief</strong> background on this Mark43 warrants project? What is Mark43 as a product, what does the 'warrants creation workflow' actually do for the end user, and what was <strong>your specific piece</strong> in it?"
+      "Can you give me a <strong>brief background</strong> on this project? What is Mark43 as a product, what does the 'warrants creation workflow' actually do for the end user, and what was <strong>your specific piece</strong> in it?"
     </blockquote>
     <blockquote class="ask-cn">
-      "在聊技术之前——你能<strong>简短</strong>介绍一下 Mark43 的这个 warrants 项目吗？Mark43 这个产品是做什么的？'warrants creation workflow' 对终端用户来说具体在做什么事？你<strong>个人</strong>负责的是哪一块？"
+      "可以<strong>介绍一下这个项目的背景</strong>吗？Mark43 这个产品是做什么的？'warrants creation workflow' 对终端用户来说具体在做什么事？你<strong>个人</strong>负责的是哪一块？"
     </blockquote>
 
     <blockquote class="interviewer-note">
@@ -858,10 +878,10 @@
   <div class="detail-body">
     <h4 style="color:#1d4ed8;margin-top:0;">▸ 第一步 / Step 1 — Dashboard 长什么样</h4>
     <blockquote class="ask-en">
-      "Tell me about that <strong>dashboard you built at Zaber</strong> — what does it look like? Which 3 systems does it consolidate? What information is shown on the page, and <strong>are there any charts or visualizations</strong> on it?"
+      "Can you give me a <strong>brief background</strong> on this project? What does the dashboard look like? Which 3 systems does it consolidate? What information is shown on the page, and <strong>are there any charts or visualizations</strong> on it?"
     </blockquote>
     <blockquote class="ask-cn">
-      "聊一下你在 Zaber build 的那个 dashboard — 它<strong>大概长什么样</strong>？把哪 3 个系统整合到了一起？页面上具体展示哪些信息？<strong>有没有图表 / 可视化</strong>的内容？"
+      "可以<strong>介绍一下这个项目的背景</strong>吗？这个 dashboard <strong>大概长什么样</strong>？把哪 3 个系统整合到了一起？页面上具体展示哪些信息？<strong>有没有图表 / 可视化</strong>的内容？"
     </blockquote>
 
     <h4 style="color:#1d4ed8;margin-top:14px;">▸ 第二步 / Step 2 — 5min 是怎么算出来的</h4>
@@ -1196,6 +1216,100 @@
 
 </div>
 </details><!-- end 追问 3 (q-chart-cleanup) -->
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!-- ============================== FLOW 3 ================================ -->
+<!-- ===== 1 main question (project background + rerender location) ======= -->
+<!-- ===== follow-ups TBD: profiling + memo mental model + breadth ======== -->
+<!-- ====================================================================== -->
+<h2 id="flow-3-perf-ui" style="background:#fffbeb;border-left:6px solid #d97706;color:#d97706;font-size:28px;">
+  📌 FLOW 3 · Performant UIs（Rerender + Memoization）
+  <span class="tag tag-time">~7 min total</span>
+</h2>
+
+<div class="card" style="border-left:4px solid #d97706;">
+  <p style="color:var(--text-muted);margin-bottom:8px;">📌 简历原文 / Resume excerpt:</p>
+  <blockquote style="border-left-color:#d97706;background:#fff;">
+    <span class="en-text">"<strong>Built performant UIs</strong> by <strong>minimizing rerenders</strong> and using <strong>memoization</strong>, cutting latency by 50ms."</span>
+  </blockquote>
+  <p style="color:var(--text-muted);font-size:16px;margin-top:8px;">
+    ✅ <strong>主问题 / Main question</strong>：让她介绍这个项目的背景 — 是<strong>什么 UI 页面</strong>、rerender <strong>具体出现在哪里</strong>、<strong>什么触发的</strong>（先把场景定下来，再下钻技术深度）。<br>
+    ➜ <strong>追问 / Follow-ups</strong>：<u>待补充 / TBD</u> — 计划方向：① profiling 方法论（怎么定位的）② memoization 心智模型（何时反而 hurt）③ 其他减少 rerender 的手段（架构 / 调度 / 状态订阅 / 虚拟化）。<br>
+    <span class="en-text">✅ <strong>Main question</strong> — get a brief background: <strong>what UI</strong>, <strong>where</strong> the unnecessary rerenders happened, and <strong>what triggered them</strong> (scene-set first, then drill into the craft). ➜ Follow-ups TBD: ① profiling methodology, ② memoization mental model (when it hurts), ③ other rerender-minimization techniques (architecture / scheduling / store / virtualization).</span>
+  </p>
+</div>
+
+<!-- ============================ Q1: PROJECT BACKGROUND + RERENDER LOCATION ============================ -->
+<h3 id="q-perf-ui" style="font-size:24px;color:#f59e0b;margin-top:24px;">🎯 主问题 / Main Question · 🖥️ 项目背景 + Rerender 位置 <span class="tag tag-time">~2 min</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Can you give me a <strong>brief background</strong> on this project? <strong>What page / what UI</strong> was it, <strong>where exactly were the unnecessary rerenders</strong> happening, and <strong>what was triggering them</strong>?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "可以<strong>介绍一下这个项目的背景</strong>吗？具体是<strong>哪个页面 / 什么 UI</strong>？rerender 出现在<strong>哪个组件</strong>？是<strong>什么触发的</strong>（父组件 state 变 / context 变 / props 引用变 / store selector 返回新对象 …）？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>面试官提示 / Note：</strong>这一问的目标是<strong>把场景定下来</strong> — 听她能不能给出具体页面 + 具体组件 + 具体触发链。如果只能说"页面有点慢、加了 useMemo 就好了" = bullet 是堆词，下面追问深度可调低。<u>不要让她在这里讲超过 2 分钟</u>，memo 心智模型 / profiling 方法 / 其他手段都留给后面的追问。
+    </blockquote>
+  </div>
+</details>
+
+<details>
+  <summary>📋 参考要点 / Reference Points</summary>
+  <div class="detail-body">
+    <h4 style="color:#d97706;">▸ 听三件事 / Three things to listen for</h4>
+    <table>
+      <thead><tr><th>维度 / Dimension</th><th>合理 / 期待的答法</th><th>🚩 警示信号</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>哪个 UI</strong><br><span style="font-size:14px;color:var(--text-muted);">what UI</span></td>
+          <td>具体页面（dashboard / 列表 / 详情 / 配置面板 / 表单 …）+ 具体形态（实时刷新 / 大表格 / 复杂表单 / 拖拽 / 多 tab 切换 …）</td>
+          <td>"就是个普通页面" / 说不清</td>
+        </tr>
+        <tr>
+          <td><strong>rerender 出现在哪</strong><br><span style="font-size:14px;color:var(--text-muted);">where</span></td>
+          <td>具体组件 / 具体子树 —— "某个 chart 组件" / "整个列表 row" / "一个 modal" / "整页 cascade"</td>
+          <td>"整个页面都慢" / 没具体定位 / 只能描述"感觉"</td>
+        </tr>
+        <tr>
+          <td><strong>什么触发的</strong><br><span style="font-size:14px;color:var(--text-muted);">what triggered</span></td>
+          <td>父组件 state 变 / context value 每次新对象 / props 每次新引用（inline object / array / callback）/ Redux selector 返回新对象 / 列表数据每次重构造 / 高频事件（resize / scroll / 定时器）</td>
+          <td>"不知道为什么会 rerender" / 把 re-render 和 re-mount 混为一谈</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-muted);font-size:16px;"><strong>核心评估</strong>：能不能从一个抽象的"性能优化"bullet，落到<strong>具体的组件 + 具体的触发链</strong>。能落地 = 真做过 + 复盘过；落不下来 = bullet 是背的 / 别人的工作 / 没真正分析根因。</p>
+  </div>
+</details>
+
+<details>
+  <summary>📊 评估信号 / Evaluation Signals</summary>
+  <div class="detail-body">
+    <p><strong style="color:#059669;">🟢 Strong：</strong></p>
+    <ul>
+      <li>说得出<strong>具体页面 + 具体组件 + 具体触发链</strong>（如 "X 页面的 Y 组件，因为父组件 Z state 一变就 cascade 重渲染"）</li>
+      <li>能描述当时用户感受到的体验问题（输入卡顿 / 滚动掉帧 / 切换迟钝 / 交互延迟）</li>
+      <li>主动 frame rerender 的来源（state / props / context / store 哪一类讲清楚）</li>
+    </ul>
+    <p><strong style="color:#ea580c;">🟡 Okay：</strong></p>
+    <ul>
+      <li>能说出大概是哪块页面但具体组件模糊（"列表那块比较慢"）</li>
+      <li>知道做了 memo，但讲不清原始 rerender 的根因</li>
+    </ul>
+    <p><strong style="color:#dc2626;">🔴 Weak：</strong></p>
+    <ul>
+      <li>"页面有点慢，加了 useMemo 就好了" → 🚩 没真正分析 root cause</li>
+      <li>说不清是哪个 UI / 哪个组件 → 🚩 bullet 可能是堆词或别人的工作</li>
+      <li>把 <code>re-render</code> 和 <code>re-mount</code> 混为一谈 → 🚩 React 基础不扎实</li>
+    </ul>
+  </div>
+</details>
 
 <hr class="separator">
 
