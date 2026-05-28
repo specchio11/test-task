@@ -1,15 +1,17 @@
 import type { CandidateConfig } from '../data/types';
 
 /**
- * Yeshu Wu — 45-min onsite-style interview scaffolded on 2026-05-28.
- * 4-section layout (selfIntro / resume Q&A / single coding test /
- * candidate Q). The candidateQuestions section reuses the same canonical
- * set shared across recent candidates (Samarth, Shirley).
+ * Yeshu Wu — 60-min onsite-style interview scaffolded on 2026-05-28.
+ * 5-section layout (selfIntro / resume Q&A / coding 1 / coding 2 /
+ * candidate Q). Coding 1 = inverse-function / black-box monotonic f
+ * (shared with jorge/samarth/shirley/prosper). Coding 2 = matrix
+ * multiplication (shared with xinfeng/prosper). The candidateQuestions
+ * section reuses the same canonical set as recent candidates.
  *
- * Content fields are placeholders (`TBD` / 待填写). Replace them as the
- * interview material is prepared. The static section pages under
- * `public/candidates/yeshu/` are also stubs — overwrite their HTML when
- * the real guides are ready.
+ * Content fields below are placeholders (`TBD` / 待填写). Replace them
+ * as the interview material is prepared. The static section pages under
+ * `public/candidates/yeshu/` for selfIntro / technicalQuestions are
+ * still stubs — overwrite their HTML when the real guides are ready.
  */
 export const yeshu: CandidateConfig = {
   id: 'yeshu',
@@ -17,7 +19,7 @@ export const yeshu: CandidateConfig = {
   shortName: 'Yeshu',
   initials: 'YW',
   role: 'TBD',
-  totalMin: 45,
+  totalMin: 60,
   brand: '📋 Onsite Interview Guide',
   accent: '#be123c',
   scheduledAt: '2026-05-29T09:30:00',
@@ -65,7 +67,7 @@ export const yeshu: CandidateConfig = {
       titleEn: 'Coding Test',
       navLabel: '③ Coding',
       time: '~15 min',
-      keyPoints: '（待填写 · 根据 Yeshu 背景选题）',
+      keyPoints: '反函数 / 黑盒单调 f 的反向求解 —— 二分搜索（无上界 → 指数倍增找右边界 → 经典二分定位）',
       accent: 's3',
       href: 'codingTest/interview-guide.html',
       introEn: '(TBD)',
@@ -75,10 +77,25 @@ export const yeshu: CandidateConfig = {
     {
       id: 's4',
       num: '④',
+      emoji: '💻',
+      titleZh: '编程测试 2',
+      titleEn: 'Coding Test 2',
+      navLabel: '④ Coding 2',
+      time: '~15 min',
+      keyPoints: '矩阵乘法 —— 三重循环 + 输入校验（空矩阵 / 非方阵 / 维度匹配）+ follow-up（cache 顺序 / 稀疏 / 并行 / 数值稳定性）',
+      accent: 's4',
+      href: 'codingTest2/interview-guide.html',
+      introEn: '(TBD)',
+      introZh: '（待填写）',
+      introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',
+    },
+    {
+      id: 's5',
+      num: '⑤',
       emoji: '❓',
       titleZh: '候选人提问',
       titleEn: 'Candidate Q&A',
-      navLabel: '④ 候选人提问',
+      navLabel: '⑤ 候选人提问',
       time: '~5 min',
       keyPoints: '沿用与 Shirley / Samarth 相同的一套候选人提问材料',
       accent: 's5',
