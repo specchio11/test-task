@@ -301,6 +301,13 @@
     <a class="qp-nested" href="#flow2-followup2" onclick="jump('flow2-followup2');return false;">↪ 追问 2：怎么优化 + 为什么</a>
   </div>
 
+  <div class="qp-group">
+    <div class="qp-group-title">Flow 3 — 分布式系统知识 / Distributed Systems Depth</div>
+    <a class="qp-sub-title purple" href="#flow3-main" onclick="jump('flow3-main');return false;">🎤 主问题：Consistency Model</a>
+    <a class="qp-nested" href="#flow3-followup1" onclick="jump('flow3-followup1');return false;">↪ 追问 1：Failure Detection &amp; Failover</a>
+    <a class="qp-nested" href="#flow3-followup2" onclick="jump('flow3-followup2');return false;">↪ 追问 2：Hot Partition (AWS 验证)</a>
+  </div>
+
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
 </div>
 <button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
@@ -340,9 +347,9 @@
       </tr>
       <tr>
         <td>Flow 3</td>
-        <td style="color:#94a3b8;"><em>TBD</em></td>
-        <td style="color:#94a3b8;"><em>TBD</em></td>
-        <td style="color:#94a3b8;"><em>TBD</em></td>
+        <td>跳出简历项目 — 利用他反复提到的 "distributed" / Beyond resume bullets — leveraging his repeated "distributed" claim</td>
+        <td>分布式系统知识深度 / Distributed systems knowledge depth</td>
+        <td>~7 min</td>
       </tr>
     </tbody>
   </table>
@@ -571,6 +578,186 @@
 
 <hr class="separator">
 
+<!-- ====================================================================== -->
+<!--      FLOW 3: DISTRIBUTED SYSTEMS KNOWLEDGE DEPTH (beyond resume)       -->
+<!-- ====================================================================== -->
+<h2 id="flow3">Flow 3 · 🌐 分布式系统知识深度 / Distributed Systems Depth <span class="tag tag-time">~7 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 触发点 / Trigger — <strong>他反复提到的 "distributed" 关键词：</strong></p>
+  <blockquote class="interviewer-note">
+    <span class="en-text">"...distributed applications using C++ and Java..."</span><br>
+    <span class="en-text">"Optimized performance of complex distributed systems..."</span><br>
+    <span class="en-text">"...distributed environments, microservices architectures..."</span> <em style="color:#94a3b8;">(throughout skills section)</em>
+  </blockquote>
+  <p style="color:var(--text-muted); margin-top:8px;">🎯 <strong>考察意图 / Probing intent：</strong>Flow 1/2 让他讲项目（behavioral-tech），Flow 3 <strong>跳出他的项目，纯粹考分布式系统领域知识</strong>——戳穿"会说 distributed"和"真的懂 distributed"的差距。<strong>真正的 Senior bar 在 Q2（Failure &amp; Failover）</strong>——因为任何分布式系统都要处理 failure，无可推脱；Q1（Consistency）是探测题，看他系统的形态；Q3（Hot Partition）是 AWS 专属验证。<br>
+  <span class="en-text">Flow 1/2 probe his project (behavioral-tech). Flow 3 jumps OUT to probe pure distributed systems knowledge. <strong>The real Senior bar is Q2 (Failure &amp; Failover)</strong> — any distributed system must handle failure. Q1 (Consistency) is a probe to identify his system's shape; Q3 (Hot Partition) is AWS-specific verification.</span></p>
+  <p style="color:var(--text-muted); margin-top:8px;">🎤 <strong>衔接话术 / Transition：</strong></p>
+  <blockquote class="ask-en" style="margin-top:4px;">
+    "OK I think I've got a good picture of those two bullets. Now I'd like to step out of your specific project and ask a few more general distributed systems questions. Sound good?"
+  </blockquote>
+  <blockquote class="ask-cn" style="margin-top:4px;">
+    "好，这两个 bullet 我聊得差不多了。接下来我想跳出你具体的项目，问几个更一般的分布式系统的问题。你 OK 吗？"
+  </blockquote>
+</div>
+
+<!-- ===== FLOW 3 MAIN QUESTION ===== -->
+<h3 id="flow3-main">🎤 主问题 / Main Question — Consistency Model (探测题)</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "You've mentioned 'distributed' many times throughout the conversation. So let me ask — for the system you just described, what's its consistency model? Is it strongly consistent or eventually consistent? Why did you choose that, and what's the trade-off?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你在整个对话里提了好几次 distributed。那我问你——你刚才描述的那个系统，consistency model 是什么？是 strongly consistent 还是 eventually consistent？为什么选这个？trade-off 是什么？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>明确选一个</strong>（strong / eventual / 某种中间形态如 read-your-writes、bounded staleness、monotonic reads）/ A clear pick</li>
+      <li>能讲清楚<strong>为什么</strong> — 由业务约束驱动（如：账单不能 eventual / 用户头像可以 eventual）/ Business-driven reasoning</li>
+      <li>知道选 strong 的<strong>代价</strong>：latency 高、availability 在 partition 时受影响、写吞吐受 quorum 限制 / Cost of strong consistency</li>
+      <li>知道选 eventual 的<strong>代价</strong>：要处理冲突、客户端要能容忍读到旧数据、需要冲突解决策略（LWW / CRDT / vector clock）/ Cost of eventual consistency</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"都有用到"——糊弄，没真正 owner 过 → 追问 "那你的<strong>主路径</strong>是哪种？" / "We use both" — pin down the primary path</li>
+      <li>"Strongly consistent" 但解释不出怎么保证的（必须涉及 quorum / 2PC / consensus 中的某一个）/ Can't explain HOW strong is achieved</li>
+      <li>"Eventually consistent" 但说不出 eventual 大概多久（毫秒？秒？分钟？业务能接受多久？）/ Can't quantify "eventual"</li>
+      <li>一上来就背 <strong>CAP 定理</strong>但说不出他系统的具体选择 → 背书没干活 / Recites CAP without applying it</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>主动提 <strong>PACELC</strong>："CAP 太粗了，partition 不发生时也要在 latency 和 consistency 之间选" = 真懂 / Brings up PACELC unprompted</li>
+      <li>能讲 <strong>read-your-writes / monotonic reads / causal consistency</strong> 等更细的模型 = 真做过 / Mentions finer-grained consistency models</li>
+      <li>能讲 DynamoDB 的 "eventually consistent reads" 和 "strongly consistent reads" 的成本差（后者贵一倍 RCU）= AWS 实操 / Knows DynamoDB's read-cost trade-off</li>
+    </ul>
+
+    <h4 style="background:#fef3c7;padding:6px 10px;border-radius:4px;border-left:3px solid #d97706;margin-top:14px;">🔀 分支应对 / Branch — 如果他说"我们是 stateless 服务" / If he says "we're stateless":</h4>
+    <p style="color:var(--text-muted);"><em>⚠ 注意：这是一个<strong>合法回答</strong>——别假设他在糊弄（API gateway / proxy / BFF / 批处理这类服务确实可以不涉及 consistency）。但 Senior 不能就此结束，必须能讲 downstream 存储和内部 side state。继续追问：/ Note: this is a <strong>legitimate answer</strong> — don't assume he's dodging (API gateways / proxies / BFFs / batch processors genuinely don't deal with consistency). But a Senior must still articulate downstream + side-state. Follow up:</em></p>
+    <blockquote class="ask-en">
+      "Got it — so your service itself is stateless. Then let me ask three things:<br>
+      &nbsp;&nbsp;1. What storage layer do you depend on? What consistency model does <strong>that</strong> have, and did you have a say in choosing it?<br>
+      &nbsp;&nbsp;2. Even stateless services usually have some state — feature flags, rate-limit counters, config, in-memory caches. How do you handle those?<br>
+      &nbsp;&nbsp;3. If within a single request you call your downstream storage twice, can you read your own writes?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "明白——你的服务本身是 stateless。那我问你三件事：<br>
+      &nbsp;&nbsp;1. 你依赖的存储层是什么？那个存储的 consistency model 是什么？选这个 model 你参与决策了吗？<br>
+      &nbsp;&nbsp;2. 即使 stateless 服务一般也有一些状态——feature flag、rate limit counter、配置、in-memory cache。这些你们怎么处理？<br>
+      &nbsp;&nbsp;3. 同一个请求里如果你调用 downstream 存储两次，第二次能读到第一次刚写的数据吗？"
+    </blockquote>
+
+    <h4>🎯 Stateless 分支期望听到 / What you want to hear (stateless branch):</h4>
+    <ul>
+      <li>能<strong>具体说出 downstream 的名字</strong>（DynamoDB / S3 / Aurora / Redis / 某个内部服务）+ 它的 consistency 选择 / Names specific downstream + its consistency model</li>
+      <li>知道 <strong>read-your-writes</strong> 在他系统里成不成立——尤其 DynamoDB 默认是 eventually consistent read，必须 opt-in 才有 strong read / Knows whether read-your-writes holds — DynamoDB defaults to eventual; strong reads must be opted in</li>
+      <li>承认 feature flag / rate limit counter / cache 是 state，能讲怎么处理（中心化 store / 接受 eventual / TTL / 分布式锁）/ Acknowledges side-state and articulates handling</li>
+      <li>诚实回答<strong>对 downstream 选择是否有发言权</strong>——如果完全没参与决策，说明他不是真 own 这个系统 / Honest about whether he participated in the downstream decision</li>
+    </ul>
+
+    <h4>🚩 Stateless 分支红旗 / Red flags (stateless branch):</h4>
+    <ul>
+      <li>说不出 downstream 用什么 → 不可能，Senior 必须知道 / Can't name downstream — impossible for a Senior</li>
+      <li>"反正存储层自己保证 consistency" → 完全没思考过 / "The storage handles consistency" — never actually thought about it</li>
+      <li>有 cache 但说"我们不关心 stale" → 没想过 cache invalidation / Has cache but dismisses staleness — never considered invalidation</li>
+      <li>不知道 <strong>read-your-writes</strong> 的概念 → Senior 基础缺失 / Doesn't know read-your-writes — missing foundation</li>
+      <li>把 "stateless" 当万能挡箭牌挡掉所有 consistency 追问 → 实际上是不懂 / Uses "stateless" as a blanket shield = doesn't actually understand</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 3 FOLLOW-UP 1 ===== -->
+<h3 id="flow3-followup1">↪ 追问 1 / Follow-up 1 — Failure Detection &amp; Failover (Senior bar)</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Imagine one of your nodes suddenly dies in the middle of serving a request — what does the client see? How does your system detect the failure? After detection, how long until failover completes? And what happens to the in-flight requests during that window?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "假设你的一个 node 在处理请求的时候突然挂了——客户端会看到什么？你的系统怎么 detect failure？detection 完成之后多久能 failover？这个窗口期内 in-flight 的请求会怎么办？"
+    </blockquote>
+
+    <h4>🎯 期望听到的 4 个点（全答到 = Senior 级）/ The 4 points (all 4 = Senior level):</h4>
+    <ol>
+      <li><strong>Detection 机制</strong> — heartbeat / gossip / health check probe（能说出 interval 数字最好：1s / 3s / 10s）/ Detection mechanism with concrete interval</li>
+      <li><strong>Failover 时间</strong> — 从 detect 到流量切走多久（典型值：秒级 ~ 几十秒）/ Failover duration (typically seconds to tens of seconds)</li>
+      <li><strong>In-flight 请求处理</strong> — client 会看到 timeout / 5xx，retry 策略是什么，会不会重复执行 / In-flight request handling + retry + idempotency</li>
+      <li><strong>脑裂 (split brain) 防护</strong> — 怎么避免老 node 没真死、新 node 已经接管，两边都在写 / Split-brain protection</li>
+    </ol>
+
+    <h4>🚩 红旗信号（任何一条触发就要扣分）/ Red flags (any one = deduct points):</h4>
+    <ul>
+      <li>"我们有 monitoring 会 alert" → 没回答问题（monitoring ≠ failover） / "We have monitoring" ≠ answering the question</li>
+      <li>"Load balancer 自动剔除" → 只是表层，没思考过 LB 自己怎么判断 / Surface-level "LB will handle it"</li>
+      <li>答不出 detection 间隔的<strong>数量级</strong>（秒？分钟？）→ 没 owner 过 / Can't give magnitude of detection interval</li>
+      <li>完全没提 in-flight 请求 → 只想过 happy path / Never mentions in-flight requests</li>
+      <li>完全没提脑裂 → Senior 缺失基础 / Never mentions split-brain</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>主动提 <strong>fencing token / lease / generation number</strong> = 真在生产里被这坑过 / Mentions fencing tokens = production-scarred</li>
+      <li>提 <strong>graceful degradation / circuit breaker / hedged requests</strong> = 系统思维成熟 / Mentions degradation patterns</li>
+      <li>能讲 SWIM / phi accrual failure detector 这种具体算法 = 读过分布式经典论文 / Names specific algorithms</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 3 FOLLOW-UP 2 ===== -->
+<h3 id="flow3-followup2">↪ 追问 2 / Follow-up 2 — Hot Partition (AWS 专属验证)</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "How does your system partition data? Hash-based, range-based, or something else? And — what happens if one partition suddenly becomes hot? How would AWS DynamoDB handle this, since you've worked there?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你的系统数据怎么 partition 的？hash 分区，range 分区，还是别的？以及——如果某个 partition 突然变 hot 了怎么办？你在 AWS 干过，那 DynamoDB 内部是怎么处理这个的？"
+    </blockquote>
+
+    <p style="color:var(--text-muted);">⚡ <strong>为什么这题特别锋利 / Why this is sharp：</strong>Hot partition 是 AWS DynamoDB 团队<strong>最基本的常识</strong>。在 AWS 干过 backend 的人，哪怕不是 DynamoDB team，也一定听过同事抱怨 hot partition + 知道 adaptive capacity。<strong>答不出 = AWS 经历严重存疑。</strong><br>
+    <span class="en-text">Hot partition is foundational knowledge at AWS. Any backend engineer who actually worked there has heard colleagues complain about it. Failure to answer = AWS experience seriously in doubt.</span></p>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>Partition 策略</strong> — hash（均匀但不能 range query）vs range（能 range query 但容易 hot）的 trade-off / Hash vs range partitioning trade-off</li>
+      <li><strong>Hot partition 成因</strong> — power user / "Justin Bieber problem" / 时间维度的 burst（如 Prime Day / 双 11）/ Causes of hot partitions</li>
+      <li><strong>DynamoDB 处理方案</strong>（任何一个就给分）/ DynamoDB's mitigations (any one scores):
+        <ul>
+          <li><strong>Adaptive capacity</strong>——自动把别的 partition 没用完的容量"借"给 hot partition / Adaptive capacity (borrow unused capacity)</li>
+          <li><strong>Automatic re-sharding / split</strong>——把 hot partition 物理拆开 / Automatic partition split</li>
+          <li><strong>Write sharding pattern</strong>——partition key 后加 suffix 把单点写散 / Write sharding via key suffix</li>
+        </ul>
+      </li>
+      <li>自己系统<strong>怎么避免</strong>（设计 partition key 时怎么打散热点）/ How HE avoided it in his system (partition key design)</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"加 cache" → 没回答问题，cache 不解决<strong>写的</strong> hot partition / "Add a cache" — doesn't solve write hot partition</li>
+      <li>"我们的 partition 不会 hot" → AWS Senior 不可能说这种话 / "Our partitions don't go hot" — no real AWS engineer says this</li>
+      <li>完全说不出 DynamoDB 的任何机制 → AWS 经历存疑 / Can't name any DynamoDB mechanism → AWS experience in doubt</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>能说 "DynamoDB <strong>早期</strong>没有 adaptive capacity，那时候我们要手动 write-shard" → 真的有年头 / "Back before adaptive capacity, we manually write-sharded" = seasoned</li>
+      <li>提 <strong>consistent hashing + virtual nodes</strong>（Dynamo 论文里的）= 读过原始论文 / Mentions Dynamo paper concepts</li>
+      <li>提 <strong>partition tombstone</strong> / item collection size limit (10GB) 这种 DynamoDB 实操细节 = 真用过 / Names DynamoDB operational quirks</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
 <!-- ==================== NOTES ==================== -->
 <h2 id="notes">📝 Notes</h2>
 
@@ -584,6 +771,9 @@
       <tr><td>Flow 2: 系统 + 项目详情 — 能否说出具体系统名 / 触发事件</td><td></td><td></td></tr>
       <tr><td>Flow 2: 数字 — before / after / 时间线 / 测量方式 <strong>(致命关)</strong></td><td></td><td></td></tr>
       <tr><td>Flow 2: 做法 + 为什么 — 具体改动 / 备选方案 / trade-off / 工具链</td><td></td><td></td></tr>
+      <tr><td>Flow 3: Consistency Model — 能否明确选择 / 讲清 trade-off (探测题 + stateless 分支)</td><td></td><td></td></tr>
+      <tr><td>Flow 3: Failure &amp; Failover — Detection / Failover / In-flight / Split-brain 四点 <strong>(Senior bar)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 3: Hot Partition — DynamoDB 机制是否答得出 <strong>(AWS 验证)</strong></td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
     </tbody>
   </table>
