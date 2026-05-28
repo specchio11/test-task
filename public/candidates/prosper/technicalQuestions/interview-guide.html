@@ -294,6 +294,13 @@
     <a class="qp-nested" href="#flow1-followup1" onclick="jump('flow1-followup1');return false;">↪ 追问 1：架构具体是什么</a>
   </div>
 
+  <div class="qp-group">
+    <div class="qp-group-title">Flow 2 — 性能优化 / Perf Optimization</div>
+    <a class="qp-sub-title purple" href="#flow2-main" onclick="jump('flow2-main');return false;">🎤 主问题：哪个系统 + 项目详情</a>
+    <a class="qp-nested" href="#flow2-followup1" onclick="jump('flow2-followup1');return false;">↪ 追问 1：要数字 (before / after)</a>
+    <a class="qp-nested" href="#flow2-followup2" onclick="jump('flow2-followup2');return false;">↪ 追问 2：怎么优化 + 为什么</a>
+  </div>
+
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
 </div>
 <button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
@@ -327,9 +334,9 @@
       </tr>
       <tr>
         <td>Flow 2</td>
-        <td style="color:#94a3b8;"><em>TBD</em></td>
-        <td style="color:#94a3b8;"><em>TBD</em></td>
-        <td style="color:#94a3b8;"><em>TBD</em></td>
+        <td>Vancouver Senior SWE · 性能优化 / "Optimized performance of complex distributed systems, significantly enhancing throughput and reducing latency..."</td>
+        <td>性能优化深挖 / Perf optimization deep-dive</td>
+        <td>~8 min</td>
       </tr>
       <tr>
         <td>Flow 3</td>
@@ -429,8 +436,138 @@
 </details>
 
 <div class="card" style="border-left:4px solid var(--accent2);">
-  <p style="color:var(--text-muted);">📝 <em>更多追问（design decision debate / scalability 数字 / Senior bar 陷阱题等）会在后续添加。/ Additional follow-ups (design-decision debates, scalability numbers, Senior-bar trap questions) to be added next.</em></p>
+  <p style="color:var(--text-muted);">📝 <em>Flow 1 还可加：design decision debate / Senior-bar 陷阱题等。/ Flow 1 can be extended with design-decision debates and Senior-bar traps next.</em></p>
 </div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--          FLOW 2: PERFORMANCE OPTIMIZATION (Vancouver Senior · Bullet 2) -->
+<!-- ====================================================================== -->
+<h2 id="flow2">Flow 2 · ⚡ 性能优化 / Performance Optimization <span class="tag tag-time">~8 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>AWS Vancouver · Senior Software Engineer (Jan 2024 – Feb 2025):</strong></p>
+  <blockquote class="interviewer-note">
+    <span class="en-text">"Optimized performance of complex distributed systems, significantly enhancing throughput and reducing latency in Agile development environments."</span><br><br>
+    <span style="color:#78350f;">"在敏捷开发环境中优化了复杂分布式系统的性能，显著提升了吞吐量并降低了延迟。"</span>
+  </blockquote>
+  <p style="color:var(--text-muted); margin-top:8px;">🎯 <strong>考察意图 / Probing intent：</strong>整段简历里 buzzword 密度最高的一条——"Optimized / complex / significantly / throughput / latency / Agile" 每个词都是填充，<strong>没有一个具体名词、一个数字</strong>。真做过 perf 优化的 SWE 简历上一定会留数字。目标是用「先要数字 → 再问做法 → 最后问 trade-off」三步把虚的部分戳穿。<br>
+  <span class="en-text">The most buzzword-dense bullet in the resume — "Optimized / complex / significantly / throughput / latency / Agile" are all filler, with no concrete names or numbers. Real perf engineers always leave numbers on their resume. Drill via: get numbers → get the actual change → get the trade-off.</span></p>
+  <p style="color:var(--text-muted); margin-top:8px;">🔗 <strong>与 Flow 1 的衔接 / Bridge from Flow 1：</strong>这条 bullet 很可能就是 Flow 1 同一个项目的延续——可以自然地承接 "Now still on this same system you described, the next bullet says you optimized its performance..."。/ This bullet likely refers to the same project from Flow 1 — bridge naturally.</p>
+</div>
+
+<!-- ===== FLOW 2 MAIN QUESTION ===== -->
+<h3 id="flow2-main">🎤 主问题 / Main Question — 哪个系统 + 项目详情 / Which System + Project Details</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "The next bullet says you optimized performance of complex distributed systems. Which system specifically? Could you walk me through the detailed context of the project this system corresponds to — what it does, who uses it, and what was happening with its performance that made optimization necessary?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "下一条 bullet 说你优化了复杂分布式系统的性能。具体是哪个系统？可以介绍一下这个 system 对应的项目详细情况吗？它是干什么的？谁在用？当时性能上发生了什么，让你必须去优化？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>30 秒内说出<strong>具体系统名 / 模块名</strong>（不是 "a service" / "the platform"）/ Specific system / module name within 30s</li>
+      <li>明确的<strong>触发事件</strong>——为什么这时候要优化？（SLA 即将违反？客户投诉？容量规划撞墙？新业务上量？）/ Clear trigger — why optimize <em>now</em>?</li>
+      <li>用户 / 调用方画像（internal AWS team? customer-facing? 多少 QPS?）/ Caller profile (internal team, customer-facing, QPS)</li>
+      <li>自己在这个优化里的<strong>角色</strong>（一个人扛？带 N 人？还是某个 IC 的一部分工作？）/ His personal role in the optimization effort</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>说不出具体系统名，或者跟 Flow 1 是"完全不同的另一个系统"但也讲不清楚 / Can't name the system, or claims a different system but can't describe it</li>
+      <li>讲不清楚为什么需要这次优化 — 全是 "to improve performance" 的循环论证 / Circular reasoning ("to improve perf")</li>
+      <li>"我们整体的吞吐"——根本没具体场景 / "Our overall throughput" with no concrete scenario</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 2 FOLLOW-UP 1 ===== -->
+<h3 id="flow2-followup1">↪ 追问 1 / Follow-up 1 — 要数字 / Show Me the Numbers</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Can you give me the numbers? What was throughput / latency before, what did it become after, and over what timeframe?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "能给我具体数字吗？优化前的 throughput / latency 是多少？优化后变成多少？整个周期持续了多长时间？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>至少一对 <strong>before / after 数字</strong>（单位明确：ms / QPS / RPS / P50 / P99）/ At least one concrete before / after pair (with units)</li>
+      <li>清晰的 <strong>时间线</strong>（"我从 X 月开始 owner 这块，到 Y 月达到目标"）/ Clear timeline</li>
+      <li>能解释数字的<strong>测量方式</strong>——synthetic benchmark? production traffic shadowing? canary? / How was the number measured?</li>
+      <li>记得自己的<strong>目标</strong>是什么（SLA 数字？容量目标？）/ Remembers the actual goal</li>
+    </ul>
+
+    <h4>🚩 红旗信号（这是 Flow 2 最致命的一关）/ Red flags (the most lethal gate in Flow 2):</h4>
+    <ul>
+      <li>❗ <strong>"I don't remember exact numbers"</strong> — Senior 级别记不住自己最近一年最核心成就的数字 = 没做过 / Senior who can't recall key achievement numbers from the last year = didn't do it</li>
+      <li>❗ 只复述简历原话 "throughput improved a lot / latency went down significantly" / Just re-reads the resume</li>
+      <li>给出过于"圆满"的行业 generic 数字（"P99 减半"、"throughput 2x"——所有人都说这个）/ Suspiciously round industry-generic numbers</li>
+      <li>说不出测量方式 / 把 dev box benchmark 当 production 数字 / Confuses dev-box bench with production numbers</li>
+    </ul>
+
+    <h4>💡 如果他卡壳 / If stuck — 降低门槛 / Lower the bar:</h4>
+    <blockquote class="ask-en">
+      "Even a rough estimate is fine — were we talking about a 10% improvement or 10x? Was the baseline 10ms or 1s?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "粗略的估计也行——是 10% 的提升还是 10 倍？基线是 10ms 还是 1s 那个量级？"
+    </blockquote>
+    <p style="color:var(--text-muted);"><em>注：如果连量级都给不出，那基本可以判定这条 bullet 是包装/凑数。/ Note: if he can't even give an order of magnitude, the bullet is almost certainly padded.</em></p>
+  </div>
+</details>
+
+<!-- ===== FLOW 2 FOLLOW-UP 2 ===== -->
+<h3 id="flow2-followup2">↪ 追问 2 / Follow-up 2 — 怎么做的 + 为什么这种方案 / How &amp; Why This Approach</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Walk me through what you actually did to optimize it. And — why did you choose this approach over alternatives? What other options did you consider, and what were the trade-offs?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "给我讲讲你具体做了什么优化？以及——为什么选择了这种方案，而不是别的？当时还考虑过哪些其他方案？做了哪些权衡？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>具体的改动</strong>（不是 "we added caching"，而是 "we added a write-through Redis cache with 5min TTL on the X path, partitioned by Y"）/ Concrete change with details, not generic "we added caching"</li>
+      <li><strong>诊断 → 决策的因果链</strong>：先看到 X 数据 → 怀疑是 Y → 验证后定位到 Z → 才决定做 W / Causal chain from diagnosis to decision</li>
+      <li>至少考虑过 <strong>2 个备选方案</strong>，能解释为什么没选 / At least 2 alternatives considered, with rationale for rejection</li>
+      <li>能讲出明确的 <strong>trade-off</strong>：内存换 CPU / 一致性换 latency / 复杂度换性能 / Explicit trade-offs (mem ↔ CPU, consistency ↔ latency, complexity ↔ perf)</li>
+      <li>知道用了什么<strong>工具诊断</strong>（profiler 名字、flame graph、distributed tracing、metrics 系统名）/ Names the tools used for diagnosis</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>跳过诊断过程，直接说 "we added caching / batching / async" — 没诊断 = 跟着别人做的 / Skips diagnosis, jumps to solution = followed someone else</li>
+      <li>"didn't consider alternatives, this was obviously the right approach" — 资深工程师必有备选 / No alternatives considered = not a senior-level decision</li>
+      <li>说不出任何 trade-off ("没有什么 downside") — 任何优化都有代价 / Claims no downside</li>
+      <li>工具链全是开源词（Grafana、Prometheus）— AWS 内部基本不用这些 / All open-source tools (Grafana/Prometheus) — AWS internal mostly doesn't use these</li>
+      <li>"everything went smoothly, no rollback" — 太完美就是没做过 / Too smooth = didn't do it</li>
+    </ul>
+
+    <h4>💡 可选追加 / Optional add-on — 交叉验证陷阱 / Cross-check trap:</h4>
+    <blockquote class="ask-en">
+      "Earlier on your resume, there's a bullet about 'Read Singleton Time' from your Seattle role — that also sounds like latency work. How do these two compare? Was the optimization approach similar or different?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你简历早期的 Seattle 那段有一条提到 'Read Singleton Time'——那也像是 latency 相关的工作。这两个对比一下，优化思路是相似还是不同？"
+    </blockquote>
+    <p style="color:var(--text-muted);"><em>用途：Seattle 那条是整份简历里唯一带具体技术名词的 perf 内容，可用于交叉验证他对 perf 工作的真实理解深度。/ Use: the Seattle bullet is the only perf content with concrete technical names — useful to cross-verify his actual depth.</em></p>
+  </div>
+</details>
 
 <hr class="separator">
 
@@ -444,6 +581,9 @@
       <tr><td>Flow 1: 项目背景 — 服务名、业务问题、规模清晰度</td><td></td><td></td></tr>
       <tr><td>Flow 1: 架构 — 组件 / 通信 / C++ Java 分工合理性</td><td></td><td></td></tr>
       <tr><td>Flow 1: Distributed 深度 — 一致性 / failure handling / 模式名词</td><td></td><td></td></tr>
+      <tr><td>Flow 2: 系统 + 项目详情 — 能否说出具体系统名 / 触发事件</td><td></td><td></td></tr>
+      <tr><td>Flow 2: 数字 — before / after / 时间线 / 测量方式 <strong>(致命关)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 2: 做法 + 为什么 — 具体改动 / 备选方案 / trade-off / 工具链</td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
     </tbody>
   </table>
