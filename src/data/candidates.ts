@@ -3,6 +3,8 @@ import { jorge } from '../candidates/jorge';
 import { xinfeng } from '../candidates/xinfeng';
 import { samarth } from '../candidates/samarth';
 import { shirley } from '../candidates/shirley';
+import { prosper } from '../candidates/prosper';
+import { yeshu } from '../candidates/yeshu';
 
 /**
  * Registry of all candidates. Add new candidates here.
@@ -16,6 +18,8 @@ export const candidates: CandidateConfig[] = [
   xinfeng,
   samarth,
   shirley,
+  prosper,
+  yeshu,
 ];
 
 const byId = new Map(candidates.map((c) => [c.id, c]));

@@ -1,34 +1,26 @@
 import type { CandidateConfig } from '../data/types';
 
 /**
- * Xinfeng Chen — 60-min formal (onsite-style) interview scaffolded
- * on 2026-05-18. This is NOT a phone screen — it's the full technical loop.
- *
- * Candidate background (per resume): senior Microsoft Azure AI engineer
- * (2018–2025, Suzhou / Beijing / Vancouver). Owned Azure TTS service
- * end-to-end (engine, pipelines, deploy, SLA, COGS). Scaled the TTS voice
- * library from tens to 500+ voices on K8s + KEDA + ZeroScaler stack.
- * Recently expanded to Azure OpenAI RealtimeAPI / SORA / Whisper as DRI.
- * Heavy systems / cloud-native / C# + C++ + GPU CUDA background. Light on
- * frontend and pure-algo work — agenda biases toward systems / design /
- * resume deep-dive accordingly.
+ * Prosper Amie — 60-min onsite-style interview scaffolded on 2026-05-28.
+ * Reuses the standard 5-section layout (selfIntro / resume Q&A / coding 1 /
+ * coding 2 / candidate Q). The candidateQuestions section reuses the same
+ * canonical set shared across recent candidates (Samarth, Shirley).
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
- * material is prepared. The static section pages under
- * `public/candidates/xinfeng/` are also stubs — overwrite their HTML
- * when the real guides are ready.
+ * interview material is prepared. The static section pages under
+ * `public/candidates/prosper/` are also stubs — overwrite their HTML when
+ * the real guides are ready.
  */
-export const xinfeng: CandidateConfig = {
-  id: 'xinfeng',
-  name: 'Xinfeng Chen',
-  shortName: 'Xinfeng',
-  initials: 'XC',
-  role: 'Senior SDE · Azure AI / TTS',
-  totalMin: 45,
+export const prosper: CandidateConfig = {
+  id: 'prosper',
+  name: 'Prosper Amie',
+  shortName: 'Prosper',
+  initials: 'PA',
+  role: 'TBD',
+  totalMin: 60,
   brand: '📋 Onsite Interview Guide',
-  accent: '#4338ca',
-  scheduledAt: '2026-05-19T08:30:00',
-  completed: true,
+  accent: '#7c3aed',
+  scheduledAt: '2026-05-29T08:30:00',
 
   openingEn: '(TBD — opening script)',
   openingZh: '（待填写 · 开场白）',
@@ -66,29 +58,44 @@ export const xinfeng: CandidateConfig = {
       introZh: '（待填写）',
     },
     {
-      id: 's4',
+      id: 's3',
       num: '③',
       emoji: '💻',
       titleZh: '编程测试',
       titleEn: 'Coding Test',
       navLabel: '③ Coding',
       time: '~15 min',
-      keyPoints: '（待填写 · 建议工程类题：LRU / 限流器 / scheduler）',
-      accent: 's4',
+      keyPoints: '（待填写 · 根据 Prosper 背景选题）',
+      accent: 's3',
       href: 'codingTest/interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入编程测试 / Introduce Coding Exercise',
     },
     {
-      id: 's5',
+      id: 's4',
       num: '④',
+      emoji: '💻',
+      titleZh: '编程测试 2',
+      titleEn: 'Coding Test 2',
+      navLabel: '④ Coding 2',
+      time: '~15 min',
+      keyPoints: '（待填写 · 第二轮编程题）',
+      accent: 's4',
+      href: 'codingTest2/interview-guide.html',
+      introEn: '(TBD)',
+      introZh: '（待填写）',
+      introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',
+    },
+    {
+      id: 's5',
+      num: '⑤',
       emoji: '❓',
       titleZh: '候选人提问',
       titleEn: 'Candidate Q&A',
-      navLabel: '④ 候选人提问',
+      navLabel: '⑤ 候选人提问',
       time: '~5 min',
-      keyPoints: '（待填写）',
+      keyPoints: '沿用与 Shirley / Samarth 相同的一套候选人提问材料',
       accent: 's5',
       href: 'candidateQuestions/interview-guide.html',
       introEn: '(TBD)',

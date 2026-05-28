@@ -24,6 +24,7 @@ export const shirley: CandidateConfig = {
   brand: '📋 Onsite Interview Guide',
   accent: '#0d9488',
   scheduledAt: '2026-05-28T10:00:00',
+  completed: true,
 
   openingEn: '(TBD — opening script)',
   openingZh: '（待填写 · 开场白）',
