@@ -137,7 +137,12 @@ for (let i = 0; i < _rawLines.length; i++) {
     const raw = _rawLines[i];
     let windowMs: number, threshold: number, hits: number[];
     try {
-        const parsed = JSON.parse(raw) as [number, number, number[]];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed) || parsed.length < 3
+            || typeof parsed[0] !== "number" || typeof parsed[1] !== "number"
+            || !Array.isArray(parsed[2])) {
+            throw new Error(`expected [windowMs, threshold, [hits...]], got ${raw}`);
+        }
         windowMs = parsed[0]; threshold = parsed[1]; hits = parsed[2];
     } catch (e) {
         console.log(`failed to parse '${raw}': ${(e as Error).message}`);

@@ -125,7 +125,12 @@ def _main():
     correct = 0
     for i, raw in enumerate(raw_lines):
         try:
-            window_ms, threshold, hits = json.loads(raw)
+            parsed = json.loads(raw)
+            if (not isinstance(parsed, list) or len(parsed) < 3
+                    or not isinstance(parsed[0], int) or not isinstance(parsed[1], int)
+                    or not isinstance(parsed[2], list)):
+                raise ValueError(f"expected [windowMs, threshold, [hits...]], got {raw!r}")
+            window_ms, threshold, hits = parsed[0], parsed[1], parsed[2]
         except Exception as e:
             print(f"failed to parse {raw!r}: {e}")
             continue

@@ -157,6 +157,12 @@ class _Solution {
             try {
                 using var doc = JsonDocument.Parse(raw);
                 var root = doc.RootElement;
+                if (root.ValueKind != JsonValueKind.Array || root.GetArrayLength() < 3
+                        || root[0].ValueKind != JsonValueKind.Number
+                        || root[1].ValueKind != JsonValueKind.Number
+                        || root[2].ValueKind != JsonValueKind.Array) {
+                    throw new Exception($"expected [windowMs, threshold, [hits...]], got {raw}");
+                }
                 windowMs = root[0].GetInt32();
                 threshold = root[1].GetInt32();
                 var list = new List<int>();
