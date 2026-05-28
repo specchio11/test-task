@@ -1,10 +1,10 @@
 import type { CandidateConfig } from '../data/types';
 
 /**
- * Yeshu Wu — 60-min onsite-style interview scaffolded on 2026-05-28.
- * Reuses the standard 5-section layout (selfIntro / resume Q&A / coding 1 /
- * coding 2 / candidate Q). The candidateQuestions section reuses the same
- * canonical set shared across recent candidates (Samarth, Shirley).
+ * Yeshu Wu — 45-min onsite-style interview scaffolded on 2026-05-28.
+ * 4-section layout (selfIntro / resume Q&A / single coding test /
+ * candidate Q). The candidateQuestions section reuses the same canonical
+ * set shared across recent candidates (Samarth, Shirley).
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
  * interview material is prepared. The static section pages under
@@ -17,7 +17,7 @@ export const yeshu: CandidateConfig = {
   shortName: 'Yeshu',
   initials: 'YW',
   role: 'TBD',
-  totalMin: 60,
+  totalMin: 45,
   brand: '📋 Onsite Interview Guide',
   accent: '#be123c',
   scheduledAt: '2026-05-29T09:30:00',
@@ -75,25 +75,10 @@ export const yeshu: CandidateConfig = {
     {
       id: 's4',
       num: '④',
-      emoji: '💻',
-      titleZh: '编程测试 2',
-      titleEn: 'Coding Test 2',
-      navLabel: '④ Coding 2',
-      time: '~15 min',
-      keyPoints: '（待填写 · 第二轮编程题）',
-      accent: 's4',
-      href: 'codingTest2/interview-guide.html',
-      introEn: '(TBD)',
-      introZh: '（待填写）',
-      introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',
-    },
-    {
-      id: 's5',
-      num: '⑤',
       emoji: '❓',
       titleZh: '候选人提问',
       titleEn: 'Candidate Q&A',
-      navLabel: '⑤ 候选人提问',
+      navLabel: '④ 候选人提问',
       time: '~5 min',
       keyPoints: '沿用与 Shirley / Samarth 相同的一套候选人提问材料',
       accent: 's5',
