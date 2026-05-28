@@ -1,28 +1,13 @@
 // ============================================================
-//  Matrix Multiplication — Candidate Starter Template (C#)
-// ============================================================
-//  How to use:
-//    1. Paste this whole file into the HackerRank editor (C#).
-//    2. Hit "Run Code" with the sample input below — you should
-//       see "[[58, 64], [139, 154]]" printed. That confirms the
-//       I/O scaffold works and shows the expected output format.
-//    3. Replace the placeholder body of `Multiply()` with your
-//       real implementation. Do NOT change anything below the
-//       marker.
-//
-//  Sample input (paste into the Input box):
-//
-//      [[1, 2, 3], [4, 5, 6]]
-//      [[7, 8], [9, 10], [11, 12]]
-//
-//  Expected output once `Multiply` is correctly implemented:
-//
-//      [[58, 64], [139, 154]]
+//  Matrix Multiplication · C#
+//  Problem statement is on the left.
+//  Only edit the `Multiply` function below.
 // ============================================================
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 
 class Solution
@@ -31,17 +16,16 @@ class Solution
     // 👇 ONLY EDIT THIS FUNCTION
     // ============================================================
     //
-    //  Given A (m × k) and B (k × n), return C = A × B (m × n)
-    //  C[i][j] = sum over p of A[i][p] * B[p][j]
+    //  Given A (m × k) and B (k × n), return C = A × B (m × n).
+    //  C[i][j] = sum over p of A[i][p] * B[p][j].
     //
-    //  Edge case: if any matrix is empty, return an empty jagged array.
+    //  Edge case: if any input matrix is empty, return new double[0][].
     //
     static double[][] Multiply(double[][] A, double[][] B)
     {
         // TODO: replace this placeholder with your implementation.
-        // The hard-coded return value is just so the I/O scaffold
-        // below runs end-to-end and you can see the expected output
-        // format: [[58, 64], [139, 154]]
+        // The hard-coded return value just lets the I/O scaffold run
+        // end-to-end so you can see test-case #1 pass on first run.
         return new double[][]
         {
             new double[] { 58, 64 },
@@ -49,7 +33,7 @@ class Solution
         };
     }
     // ============================================================
-    // 👆 ONLY EDIT ABOVE  ·  Do NOT modify the I/O scaffold below
+    // 👆 ONLY EDIT ABOVE  ·  Do NOT modify anything below
     // ============================================================
 
 
@@ -70,11 +54,24 @@ class Solution
 
 
 
+    // Expected outputs for the 7 sample inputs (hardcoded so the
+    // harness can self-check). DO NOT consult these inside
+    // `Multiply` — that would defeat the purpose.
+    //
+    // Input format: each non-empty line is two matrices separated
+    // by whitespace, e.g.  [[1,2],[3,4]] [[5,6],[7,8]]
+    static readonly double[][][] _Expected = new double[][][]
+    {
+        new double[][] { new double[] {58, 64}, new double[] {139, 154} },
+        new double[][] { new double[] {5, 6}, new double[] {7, 8} },
+        new double[][] { new double[] {12} },
+        new double[][] { new double[] {32} },
+        new double[][] { new double[] {4, 5, 6}, new double[] {8, 10, 12}, new double[] {12, 15, 18} },
+        new double[][] { new double[] {-19, 22}, new double[] {43, -50} },
+        new double[][] { new double[] {5.5, 7.5}, new double[] {2.0, 3.0} },
+    };
 
-
-
-
-
+    const double _Eps = 1e-6;
 
     // ---------- parse [[1,2],[3,4]] style literal ----------
     static double[][] ParseMatrix(string s)
@@ -83,12 +80,15 @@ class Solution
         var row = new List<double>();
         var num = new StringBuilder();
         int depth = 0;
+        bool rowOpen = false;
 
         void Flush()
         {
             if (num.Length > 0)
             {
-                row.Add(double.Parse(num.ToString(), CultureInfo.InvariantCulture));
+                if (double.TryParse(num.ToString(), NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out double v))
+                    row.Add(v);
                 num.Clear();
             }
         }
@@ -98,17 +98,18 @@ class Solution
             if (c == '[')
             {
                 depth++;
-                if (depth == 2) row.Clear();
+                if (depth == 2) { row.Clear(); rowOpen = true; }
             }
             else if (c == ']')
             {
                 Flush();
-                if (depth == 2)
+                if (depth == 2 && rowOpen)
                 {
                     rows.Add(row.ToArray());
                     row = new List<double>();
+                    rowOpen = false;
                 }
-                depth--;
+                if (depth > 0) depth--;
             }
             else if (c == ',' || char.IsWhiteSpace(c))
             {
@@ -122,50 +123,122 @@ class Solution
         return rows.ToArray();
     }
 
-    static string TakeNextMatrix(string s, ref int pos)
+    // Pull top-level [...] blocks from text, in order.
+    static List<string> ExtractTopLevel(string s)
     {
-        int start = s.IndexOf('[', pos);
-        if (start < 0) throw new Exception("No matrix found");
+        var result = new List<string>();
         int depth = 0;
-        for (int i = start; i < s.Length; i++)
+        int start = 0;
+        for (int i = 0; i < s.Length; i++)
         {
-            if (s[i] == '[') depth++;
+            if (s[i] == '[')
+            {
+                if (depth == 0) start = i;
+                depth++;
+            }
             else if (s[i] == ']')
             {
+                if (depth == 0) continue;
                 depth--;
-                if (depth == 0)
-                {
-                    pos = i + 1;
-                    return s.Substring(start, i - start + 1);
-                }
+                if (depth == 0) result.Add(s.Substring(start, i - start + 1));
             }
         }
-        throw new Exception("Unterminated matrix literal");
+        return result;
     }
 
-    static void Main()
+    static bool Close(double[][] a, double[][] b)
     {
-        string input = Console.In.ReadToEnd();
-        int pos = 0;
-        double[][] A = ParseMatrix(TakeNextMatrix(input, ref pos));
-        double[][] B = ParseMatrix(TakeNextMatrix(input, ref pos));
+        if (a == null || b == null) return false;
+        if (a.Length != b.Length) return false;
+        for (int i = 0; i < a.Length; i++)
+        {
+            if (a[i] == null || b[i] == null) return false;
+            if (a[i].Length != b[i].Length) return false;
+            for (int j = 0; j < a[i].Length; j++)
+                if (Math.Abs(a[i][j] - b[i][j]) > _Eps) return false;
+        }
+        return true;
+    }
 
-        double[][] C = Multiply(A, B);
+    static string FmtNum(double x)
+    {
+        if (Math.Abs(x - Math.Truncate(x)) < 1e-12 && !double.IsInfinity(x))
+            return ((long)x).ToString(CultureInfo.InvariantCulture);
+        return x.ToString("G", CultureInfo.InvariantCulture);
+    }
 
+    static string Fmt(double[][] M)
+    {
+        if (M == null) return "null";
         var sb = new StringBuilder();
         sb.Append('[');
-        for (int i = 0; i < C.Length; i++)
+        for (int i = 0; i < M.Length; i++)
         {
             if (i > 0) sb.Append(", ");
             sb.Append('[');
-            for (int j = 0; j < C[i].Length; j++)
+            if (M[i] != null)
             {
-                if (j > 0) sb.Append(", ");
-                sb.Append(C[i][j].ToString("G", CultureInfo.InvariantCulture));
+                for (int j = 0; j < M[i].Length; j++)
+                {
+                    if (j > 0) sb.Append(", ");
+                    sb.Append(FmtNum(M[i][j]));
+                }
             }
             sb.Append(']');
         }
         sb.Append(']');
-        Console.WriteLine(sb.ToString());
+        return sb.ToString();
+    }
+
+    static void Main()
+    {
+        Console.OutputEncoding = Encoding.UTF8;
+        string input = Console.In.ReadToEnd();
+        int correct = 0;
+        int total = 0;
+
+        using var reader = new StringReader(input);
+        string line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (string.IsNullOrWhiteSpace(line)) continue;
+            var mats = ExtractTopLevel(line);
+            if (mats.Count < 2)
+            {
+                Console.WriteLine($"failed to parse '{line}': expected two matrices A B");
+                continue;
+            }
+            double[][] A, B;
+            try { A = ParseMatrix(mats[0]); B = ParseMatrix(mats[1]); }
+            catch (Exception e)
+            {
+                Console.WriteLine($"failed to parse '{line}': {e.Message}");
+                continue;
+            }
+
+            string label = $"Multiply({Fmt(A)}, {Fmt(B)})";
+            double[][] C;
+            try { C = Multiply(A, B); }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{label} raised {e.GetType().Name}: {e.Message}");
+                total++;
+                continue;
+            }
+
+            if (total >= _Expected.Length)
+                Console.WriteLine($"{label} = {Fmt(C)}  (no expected; bonus case)");
+            else if (Close(C, _Expected[total]))
+            {
+                Console.WriteLine($"{label} = {Fmt(C)}  \u2713"); // ✓
+                correct++;
+            }
+            else
+                Console.WriteLine($"{label} = {Fmt(C)}  \u2717  expected {Fmt(_Expected[total])}"); // ✗
+            total++;
+        }
+
+        Console.WriteLine(new string('-', 32));
+        Console.WriteLine($"Result: {correct} / {total} correct");
     }
 }

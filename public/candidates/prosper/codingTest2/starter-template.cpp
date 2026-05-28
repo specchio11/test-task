@@ -1,32 +1,18 @@
 // ============================================================
-//  Matrix Multiplication — Candidate Starter Template (C++11)
-// ============================================================
-//  How to use:
-//    1. Paste this whole file into the HackerRank editor (C++11).
-//    2. Hit "Run Code" with the sample input below — you should
-//       see "[[58, 64], [139, 154]]" printed. That confirms the
-//       I/O scaffold works and shows the expected output format.
-//    3. Replace the placeholder body of `multiply()` with your
-//       real implementation. Do NOT change anything below the
-//       marker.
-//
-//  Sample input (paste into the Input box):
-//
-//      [[1, 2, 3], [4, 5, 6]]
-//      [[7, 8], [9, 10], [11, 12]]
-//
-//  Expected output once `multiply` is correctly implemented:
-//
-//      [[58, 64], [139, 154]]
+//  Matrix Multiplication · C++11
+//  Problem statement is on the left.
+//  Only edit the `multiply` function below.
 // ============================================================
 
 #include <iostream>
 #include <vector>
 #include <string>
-#include <stdexcept>
+#include <sstream>
 #include <iomanip>
 #include <iterator>
+#include <cmath>
 #include <cctype>
+#include <cstdlib>
 
 using namespace std;
 using Matrix = vector<vector<double>>;
@@ -35,20 +21,19 @@ using Matrix = vector<vector<double>>;
 // 👇 ONLY EDIT THIS FUNCTION
 // ============================================================
 //
-//  Given A (m × k) and B (k × n), return C = A × B (m × n)
-//  C[i][j] = sum over p of A[i][p] * B[p][j]
+//  Given A (m × k) and B (k × n), return C = A × B (m × n).
+//  C[i][j] = sum over p of A[i][p] * B[p][j].
 //
-//  Edge case: if any matrix is empty, return an empty matrix.
+//  Edge case: if any input matrix is empty, return {}.
 //
 Matrix multiply(const Matrix& A, const Matrix& B) {
     // TODO: replace this placeholder with your implementation.
-    // The hard-coded return value is just so the I/O scaffold
-    // below runs end-to-end and you can see the expected output
-    // format: [[58, 64], [139, 154]]
+    // The hard-coded return value just lets the I/O scaffold run
+    // end-to-end so you can see test-case #1 pass on first run.
     return {{58, 64}, {139, 154}};
 }
 // ============================================================
-// 👆 ONLY EDIT ABOVE  ·  Do NOT modify the I/O scaffold below
+// 👆 ONLY EDIT ABOVE  ·  Do NOT modify anything below
 // ============================================================
 
 
@@ -69,37 +54,53 @@ Matrix multiply(const Matrix& A, const Matrix& B) {
 
 
 
+// Expected outputs for the 7 sample inputs (hardcoded so the
+// harness can self-check). DO NOT consult these inside
+// `multiply` — that would defeat the purpose.
+//
+// Input format: each non-empty line is two matrices separated
+// by whitespace, e.g.  [[1,2],[3,4]] [[5,6],[7,8]]
+static vector<Matrix> _expected() {
+    return {
+        {{58, 64}, {139, 154}},
+        {{5, 6}, {7, 8}},
+        {{12}},
+        {{32}},
+        {{4, 5, 6}, {8, 10, 12}, {12, 15, 18}},
+        {{-19, 22}, {43, -50}},
+        {{5.5, 7.5}, {2.0, 3.0}},
+    };
+}
 
-
-
-
-
-
-
-
-
-
-
+static const double _EPS = 1e-6;
 
 // ---------- parse [[1,2],[3,4]] style literal ----------
-Matrix parse_matrix(const string& s) {
+static Matrix _parse_matrix(const string& s) {
     Matrix M;
     vector<double> row;
     string num;
     int depth = 0;
-    auto flush = [&]() {
-        if (!num.empty()) { row.push_back(stod(num)); num.clear(); }
+    bool row_open = false;
+    auto flush_num = [&]() {
+        if (!num.empty()) {
+            try { row.push_back(stod(num)); } catch (...) { /* skip */ }
+            num.clear();
+        }
     };
     for (char c : s) {
         if (c == '[') {
             depth++;
-            if (depth == 2) row.clear();
+            if (depth == 2) { row.clear(); row_open = true; }
         } else if (c == ']') {
-            flush();
-            if (depth == 2) { M.push_back(row); row.clear(); }
-            depth--;
+            flush_num();
+            if (depth == 2 && row_open) {
+                M.push_back(row);
+                row.clear();
+                row_open = false;
+            }
+            if (depth > 0) depth--;
         } else if (c == ',' || isspace((unsigned char)c)) {
-            flush();
+            flush_num();
         } else {
             num.push_back(c);
         }
@@ -107,38 +108,109 @@ Matrix parse_matrix(const string& s) {
     return M;
 }
 
-string take_next_matrix(const string& s, size_t& pos) {
-    size_t start = s.find('[', pos);
-    if (start == string::npos) throw runtime_error("No matrix found");
+// Pull top-level [...] blocks from text, in order.
+static vector<string> _extract_top_level(const string& s) {
+    vector<string> out;
     int depth = 0;
-    for (size_t i = start; i < s.size(); ++i) {
-        if (s[i] == '[') depth++;
-        else if (s[i] == ']' && --depth == 0) {
-            pos = i + 1;
-            return s.substr(start, i - start + 1);
+    size_t start = 0;
+    for (size_t i = 0; i < s.size(); ++i) {
+        if (s[i] == '[') {
+            if (depth == 0) start = i;
+            depth++;
+        } else if (s[i] == ']') {
+            if (depth == 0) continue;
+            depth--;
+            if (depth == 0) out.push_back(s.substr(start, i - start + 1));
         }
     }
-    throw runtime_error("Unterminated matrix literal");
+    return out;
+}
+
+static bool _close(const Matrix& a, const Matrix& b) {
+    if (a.size() != b.size()) return false;
+    for (size_t i = 0; i < a.size(); ++i) {
+        if (a[i].size() != b[i].size()) return false;
+        for (size_t j = 0; j < a[i].size(); ++j) {
+            if (fabs(a[i][j] - b[i][j]) > _EPS) return false;
+        }
+    }
+    return true;
+}
+
+static string _fmt_num(double x) {
+    if (fabs(x - (long long)x) < 1e-12) {
+        ostringstream o;
+        o << (long long)x;
+        return o.str();
+    }
+    ostringstream o;
+    o << setprecision(10) << x;
+    return o.str();
+}
+
+static string _fmt(const Matrix& M) {
+    ostringstream o;
+    o << "[";
+    for (size_t i = 0; i < M.size(); ++i) {
+        if (i > 0) o << ", ";
+        o << "[";
+        for (size_t j = 0; j < M[i].size(); ++j) {
+            if (j > 0) o << ", ";
+            o << _fmt_num(M[i][j]);
+        }
+        o << "]";
+    }
+    o << "]";
+    return o.str();
+}
+
+static bool _is_blank(const string& s) {
+    for (char c : s) if (!isspace((unsigned char)c)) return false;
+    return true;
 }
 
 int main() {
     string input((istreambuf_iterator<char>(cin)), istreambuf_iterator<char>());
-    size_t pos = 0;
-    Matrix A = parse_matrix(take_next_matrix(input, pos));
-    Matrix B = parse_matrix(take_next_matrix(input, pos));
+    vector<Matrix> expected = _expected();
+    int correct = 0;
+    int total = 0;
 
-    Matrix C = multiply(A, B);
-
-    cout << setprecision(10) << "[";
-    for (size_t i = 0; i < C.size(); ++i) {
-        if (i > 0) cout << ", ";
-        cout << "[";
-        for (size_t j = 0; j < C[i].size(); ++j) {
-            if (j > 0) cout << ", ";
-            cout << C[i][j];
+    istringstream iss(input);
+    string line;
+    while (getline(iss, line)) {
+        if (_is_blank(line)) continue;
+        vector<string> mats = _extract_top_level(line);
+        if (mats.size() < 2) {
+            cout << "failed to parse '" << line << "': expected two matrices A B\n";
+            continue;
         }
-        cout << "]";
+        Matrix A = _parse_matrix(mats[0]);
+        Matrix B = _parse_matrix(mats[1]);
+
+        Matrix C;
+        try {
+            C = multiply(A, B);
+        } catch (const std::exception& e) {
+            cout << "multiply(" << _fmt(A) << ", " << _fmt(B)
+                 << ") raised " << e.what() << "\n";
+            total++;
+            continue;
+        }
+
+        string label = "multiply(" + _fmt(A) + ", " + _fmt(B) + ")";
+        if (total >= (int)expected.size()) {
+            cout << label << " = " << _fmt(C) << "  (no expected; bonus case)\n";
+        } else if (_close(C, expected[total])) {
+            cout << label << " = " << _fmt(C) << "  \xE2\x9C\x93\n"; // ✓
+            correct++;
+        } else {
+            cout << label << " = " << _fmt(C)
+                 << "  \xE2\x9C\x97  expected " << _fmt(expected[total]) << "\n"; // ✗
+        }
+        total++;
     }
-    cout << "]\n";
+
+    cout << string(32, '-') << "\n";
+    cout << "Result: " << correct << " / " << total << " correct\n";
     return 0;
 }
