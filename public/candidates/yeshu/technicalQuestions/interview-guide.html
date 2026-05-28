@@ -1,32 +1,620 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>interview</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #ffe4e6; color: #9f1239; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #be123c;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #9f1239; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yeshu · Resume-based Technical Q&amp;A</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #ea580c;
+    --accent2: #fb923c;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== QUICK JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: var(--accent); }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub-title {
+    display: block;
+    padding: 4px 10px 4px 22px;
+    margin: 3px 0 1px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 600;
+    color: #334155;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub-title:hover { background: #f1f5f9; color: #0f172a; }
+  .qp-sub-title.orange { border-left: 3px solid var(--accent); }
+  .qp-nested {
+    display: block;
+    padding: 2px 10px 2px 38px;
+    margin: 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 16px; font-weight: 400;
+    color: #94a3b8;
+    transition: background .12s, color .12s;
+  }
+  .qp-nested:hover { background: #f1f5f9; color: #64748b; }
+  .qp-nested.muted { color: #cbd5e1; font-style: italic; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
+
+  /* ===== MAIN ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 280px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #fff7ed;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+  blockquote.ask-en {
+    border-left-color: #d97706;
+    background: #fef9ee;
+    color: var(--text);
+  }
+  blockquote.ask-cn {
+    border-left: none;
+    background: none;
+    padding: 8px 0 8px 16px;
+    color: #78350f;
+    font-size: 18px;
+  }
+  .en-text { font-style: normal; color: #475569; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: #fff7ed; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #ffedd5; color: #9a3412; }
+  .tag-senior { background: #fecaca; color: #991b1b; font-weight: 700; }
+  .tag-aws { background: #fde68a; color: #92400e; font-weight: 700; }
+
+  :not(pre) > code {
+    background: #fff7ed;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #9a3412;
+    font-size: 17px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .placeholder-card {
+    background: repeating-linear-gradient(45deg, #fff7ed, #fff7ed 10px, #fef3e6 10px, #fef3e6 20px);
+    border: 2px dashed var(--accent);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0;
+    color: #9a3412;
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+</style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Yeshu Wu · Resume-based Technical Q&A</div>
-    <h1>② 简历技术问答</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a class="nav-btn" style="background:#0d9488;color:#fff;border-color:#0d9488;text-decoration:none;font-weight:700;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a href="../codingTest2/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ Coding 2</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;opacity:0.7;">⑤ 候选人提问</a>
+</nav>
+
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow 概览</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Flow 1 — BAM 跨 region 扩展</div>
+    <a class="qp-sub-title orange" href="#flow1-main" onclick="jump('flow1-main');return false;">🎤 主问题：什么是 BAM</a>
+    <a class="qp-nested" href="#flow1-followup1" onclick="jump('flow1-followup1');return false;">↪ 追问 1：为什么 expand + 怎么实现</a>
+    <a class="qp-nested" href="#flow1-followup2" onclick="jump('flow1-followup2');return false;">↪ 追问 2：Partial failure 契约 🌟</a>
+    <a class="qp-nested" href="#flow1-followup3" onclick="jump('flow1-followup3');return false;">↪ 追问 3：Rollout 纪律 🌟🌟</a>
   </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title" style="color:#cbd5e1;">Flow 2 — 待添加</div>
+    <a class="qp-nested muted" href="#flow2" onclick="jump('flow2');return false;">🚧 Public API 设计纪律</a>
+  </div>
+
+  <div class="qp-group">
+    <div class="qp-group-title" style="color:#cbd5e1;">Flow 3 — 待添加</div>
+    <a class="qp-nested muted" href="#flow3" onclick="jump('flow3');return false;">🚧 危险运维 + 分布式知识</a>
+  </div>
+
+  <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~20 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入技术问答 / Introduce Technical Q&amp;A</h4>
+  <blockquote class="ask-en">
+    "Great, thanks for the intro. I'd like to spend some time digging into your recent work at AWS — I'll pick a couple of bullets from your resume and ask you to walk me through them in detail."
+  </blockquote>
+  <blockquote class="ask-cn">
+    "好的，谢谢你的介绍。接下来我想花一些时间深入了解你在 AWS 最近的工作经历——我会从你简历里挑几个 bullet，请你详细给我讲讲。"
+  </blockquote>
+</div>
+
+<!-- ==================== FLOW OVERVIEW ==================== -->
+<h2 id="flow">⏱️ Flow</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>#</th><th>简历来源 / Resume Bullet</th><th>主题 / Topic</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Flow 1</td>
+        <td>AWS Vancouver SDE II · Bullet ① — "Expanded Backup Audit Manager (BAM) cross-region, cross-account support to 10 opt-in global regions"</td>
+        <td>BAM 跨 region 扩展 / BAM cross-region expansion</td>
+        <td>~10 min</td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td>Flow 2</td>
+        <td>AWS Vancouver SDE II · Bullet ③ + ④ — "instant access to restored backup" + "Aligned public API attributes..."</td>
+        <td>🚧 Public API 设计纪律 / Public API discipline <em>(待添加)</em></td>
+        <td>~7 min</td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td>Flow 3</td>
+        <td>AWS Vancouver SDE II · Bullet ② + ⑤ — "resurrect expired backup" + "anti-entropy workflows ... Delegated Admin"</td>
+        <td>🚧 危险运维 + 分布式知识深度 / Dangerous ops + distsys depth <em>(待添加)</em></td>
+        <td>~8 min</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--   FLOW 1: BAM CROSS-REGION EXPANSION (AWS Vancouver · Bullet 1)         -->
+<!-- ====================================================================== -->
+<h2 id="flow1">Flow 1 · 🌐 BAM 跨 region / 跨账号扩展 / BAM Cross-Region Expansion <span class="tag tag-time">~10 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>Amazon Web Services · Vancouver, BC · Software Development Engineer II (May 2025 – Present), Bullet ①:</strong></p>
+  <blockquote class="interviewer-note">
+    <span class="en-text">"Expanded Backup Audit Manager (BAM) cross-region, cross-account support to 10 opt-in global regions."</span><br><br>
+    <span style="color:#78350f;">"将 Backup Audit Manager (BAM) 的跨 region、跨账号支持扩展到了 10 个 opt-in 全球 region。"</span>
+  </blockquote>
+  <p style="color:var(--text-muted); margin-top:8px;">🎯 <strong>考察意图 / Probing intent：</strong>这是 5 条 bullet 里<strong>信号最高</strong>的一条——含 3 个具体可验证的名词（<strong>BAM</strong> / <strong>cross-region + cross-account</strong> / <strong>opt-in regions</strong>）。从"业务为啥需要"一路逼到"region 6 → 7 之间的 safety check 是什么"，验证她在 AWS SDE II 一年内是真的端到端 own 过这个扩展，还是只参与了一部分。<br>
+  <span class="en-text">This is the highest-signal bullet of the 5 — it contains 3 verifiable concrete terms (BAM / cross-region+cross-account / opt-in regions). Drill from "why customers need it" down to "what's your safety check between region 6 and region 7", verifying whether she actually owned this end-to-end in her first year at AWS or just contributed to a piece.</span></p>
+</div>
+
+<!-- ===== FLOW 1 MAIN QUESTION ===== -->
+<h3 id="flow1-main">🎤 主问题 / Main Question — 什么是 BAM / What is BAM</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Before we dive into the expansion work — for someone who hasn't used Backup Audit Manager, can you give me a quick intro? What is BAM, what problem does it solve, and who are the typical customers using it?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "在聊扩展工作之前——先介绍一下，对于没用过 Backup Audit Manager 的人，BAM 是什么？它解决的是什么问题？典型客户是谁？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>BAM 在 <strong>AWS Backup</strong> 服务家族下，专门做<strong>合规 / 审计</strong>层 — 让客户能定义 backup frameworks（一组规则），自动持续审计哪些 resource 是否满足备份策略 / BAM sits under AWS Backup as the compliance / audit layer — customers define backup frameworks (rule sets) and BAM continuously audits resources against them</li>
+      <li>明确的<strong>客户画像</strong>：受监管行业（金融、医疗、政府）的 compliance team，或者大企业的 governance / FinOps 团队 / Clear customer profile: regulated industries (financial, healthcare, government) compliance teams; enterprise governance / FinOps teams</li>
+      <li>能讲出 <strong>cross-region + cross-account 为什么对这个服务特别关键</strong>：审计本身就是跨整个 organization 看的，单 region / 单 account 的审计在 enterprise 没意义 / Can articulate why cross-region + cross-account is core to this service: audit by nature spans the whole org; single-region / single-account audit is meaningless at enterprise scale</li>
+      <li>知道至少一个具体的<strong>合规框架名字</strong>（HIPAA / FedRAMP / SOC2 / PCI），或 AWS Backup framework 里的 control 例子 / Names at least one specific compliance framework (HIPAA / FedRAMP / SOC2 / PCI) or an example AWS Backup framework control</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"BAM 就是 backup 的 audit" — 同义反复，没解释清 audit 在这里具体是什么 / "BAM is the audit for backup" — tautology with no explanation</li>
+      <li>说不出客户长什么样，只能讲 "enterprise customers" / Can't describe customer profile beyond "enterprise customers"</li>
+      <li>把 BAM 跟 <strong>AWS Backup</strong>、<strong>AWS Config</strong>、<strong>CloudTrail</strong> 搞混 — 这些在 audit 链路里各司其职，分不清就是没真做过 / Confuses BAM with AWS Backup / AWS Config / CloudTrail — each plays a different role in the audit chain, mixing them up = hasn't done the work</li>
+    </ul>
+
+    <h4>💡 如果她讲得太抽象 / If she stays abstract:</h4>
+    <blockquote class="ask-en">
+      "Give me one concrete example — a customer turns BAM on for their AWS organization. What does BAM start doing on day one?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "举一个具体例子——客户在自己的 AWS organization 开了 BAM，第一天 BAM 开始干什么？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 1 FOLLOW-UP 1 ===== -->
+<h3 id="flow1-followup1">↪ 追问 1 / Follow-up 1 — 为什么 expand + 怎么实现 / Why Expand &amp; How It Was Built</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "OK, so why did BAM need to expand cross-region, cross-account support to these 10 opt-in regions? What was the driver — customer demand, a compliance deadline, a regional GA? And then walk me through how the expansion was actually implemented — what changed in the code / infra / config to make a new region 'work'?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "好——那为什么 BAM 要把 cross-region、cross-account support 扩展到这 10 个 opt-in region？驱动是什么——客户需求？合规 deadline？还是这些 region 刚 GA？然后，给我讲讲这个扩展<strong>具体怎么实现</strong>的——代码 / infra / config 里改了什么，才让一个新 region "能用"？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>明确的驱动：</strong>客户实际需求（哪类客户、什么 use case）/ 监管要求 / 这批 opt-in region 自身是逐步 GA 的 / Clear driver: specific customer ask, regulatory deadline, or these opt-in regions themselves recently went GA</li>
+      <li><strong>知道 opt-in region 跟普通 region 的本质差别：</strong>默认关闭（用户必须主动 enable）/ STS session token 默认不通用 / SDK endpoint 不会自动解析 / 每个 region 有独立的 service principal / Knows the actual differences: disabled by default; STS session tokens not portable; SDK endpoints don't auto-resolve; each region has its own service principal</li>
+      <li><strong>实现侧讲清"region onboarding"涉及哪几层：</strong>(a) service 在 region 起一组新 stack / cell；(b) IAM role / trust policy 新增该 region；(c) 跨 region 调用时的 endpoint resolution / credential 跨域；(d) <strong>data residency</strong>—审计数据是 region-local 还是 home-region 聚合？/ Implementation covers: (a) deploying a new stack/cell in the region; (b) updating IAM roles / trust policies; (c) endpoint resolution + credentials across regions; (d) data residency — is audit data region-local or aggregated to a home region?</li>
+      <li>能给出至少一个<strong>"扩到这个 region 时我们特别撞到的坑"</strong>——比如某个 opt-in region 不支持某个 dependency service、或者 STS endpoint 的 fallback 行为 / Names at least one specific gotcha encountered ("when we extended to region X we hit Y")</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"客户要的" / "PM 让做的" 不带任何 use case 细节 / Vague "customer asked" / "PM scoped it" with no use-case detail</li>
+      <li>不知道 opt-in region 跟普通 region 有啥区别 — 简历字面就有 "opt-in"，答不出意味着 bullet 是包装 / Doesn't know what opt-in region means — when the bullet literally says "opt-in", this means the bullet is padded</li>
+      <li>实现讲成 "我们把 region list 加了 10 个 entry" — 把它当 config flag，不知道 region onboarding 是个系统工程 / Reduces implementation to "we added 10 entries to a region list" — treats it as a config flag, doesn't realize region onboarding is a systems undertaking</li>
+      <li>说不出 cross-region 调用时 credential / endpoint 怎么处理 — cross-region 工作核心问题之一 / Can't articulate cross-region credential / endpoint handling — one of the core problems</li>
+    </ul>
+
+    <h4>💡 如果她卡壳 / If stuck — 给一个起点 / Anchor:</h4>
+    <blockquote class="ask-en">
+      "Let's pick one specific region — say <code>ap-east-1</code> (Hong Kong) or <code>me-south-1</code> (Bahrain). What was on your checklist before you could ship 'BAM works here'?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "我们挑一个具体 region——比如 <code>ap-east-1</code>（香港）或者 <code>me-south-1</code>（巴林）。在你能说"BAM 在这里能用了" 之前，你的 checklist 上有什么？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 1 FOLLOW-UP 2 ===== -->
+<h3 id="flow1-followup2">↪ 追问 2 / Follow-up 2 — Partial failure 契约 / Partial Failure Contract <span class="tag tag-senior">🌟 Senior 指示器</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "BAM is a cross-region aggregation service — its read APIs need to pull audit data from multiple regions and return a unified view. Design-wise, when the aggregation runs and some regions are reachable but others aren't, what's the API's contract? Full failure, partial data with a marker, or keep retrying until complete? And — why that choice?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "BAM 是一个跨 region 聚合的服务——它的 read API 需要从多个 region 拉 audit 数据并返回统一视图。在设计上，当聚合执行时，部分 region 可达、部分不可达，<strong>API 的契约是什么</strong>——完全失败 / 部分数据 + 标记 / 一直 retry 到完整？以及——为什么这么选？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>明确选边并讲理由：</strong>真做过这种服务的人，几乎一定会选 <strong>partial data + 显式 marker</strong>（response 里把 unreachable 的 region 列出来），而不是 all-or-nothing。理由：审计用户不能因为 1 个 region 短暂不可达就完全失明 / Picks <strong>partial data + explicit marker</strong> and explains why: audit users can't go fully blind because one region briefly fails</li>
+      <li>能讲出 <strong>"数据为零" vs "数据缺失"</strong>的区分必须做出来 — 否则客户会把 unreachable 当成"该 region 没违规" / Articulates that "zero data" vs "data missing" must be distinguishable — otherwise customers will read unreachable as "no violations in that region"</li>
+      <li>知道这个契约对客户侧 SDK / dashboard 的<strong>下游影响</strong>：dashboard 上要专门展示 unreachable 状态、alerts 要把 partial response 区别对待 / Knows the downstream impact on customer SDK / dashboard</li>
+      <li>能讲 freshness / staleness 处理：partial response 里能不能附带每个 region 的<strong>数据时间戳</strong>，让客户知道"这部分数据是 5 分钟前的" / Mentions per-region freshness / timestamp in the partial response</li>
+      <li><strong>🌟 加分：</strong>主动提"全部 retry 到完整"这个选项<strong>为什么不能选</strong>—— audit query 是同步触发的（客户 dashboard 在等），不能为了完整性把延迟做到几分钟 / <strong>Bonus:</strong> spontaneously explains why "retry until complete" is wrong — audit queries are sync-driven (customer dashboard waiting), can't blow latency to minutes for completeness</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"我们 retry" 一句带过 — 没有 retry 上限、没有最终 fallback 行为 / "We retry" with no upper bound and no final fallback</li>
+      <li>"AWS 自己处理" / "SDK 会自动重试" — 没意识到这是 service team 的 API 契约问题，不是 SDK 问题 / "AWS handles it" / "SDK auto-retries" — doesn't see this is the service team's API contract, not an SDK problem</li>
+      <li>选 "完全失败"（response 全部 fail） — 在 audit 场景里这是反客户的，1 个 region 抖动让全 org 看不到 audit 状态 / Picks "full failure" — in audit context this is anti-customer; one region's blip blinds the whole org</li>
+      <li>说不出客户怎么区分 "unreachable" 和 "no data" / Can't explain how customer distinguishes "unreachable" from "no data"</li>
+    </ul>
+
+    <h4>💡 如果她答得太短 / If answer is too short — 压一下细节:</h4>
+    <blockquote class="ask-en">
+      "OK, you return partial data with a marker. Concretely — what does that marker look like in the response payload? And what does the client SDK do with it?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "好，你返 partial data + marker。具体来说——这个 marker 在 response payload 里长什么样？client SDK 拿到之后会做什么？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 1 FOLLOW-UP 3 ===== -->
+<h3 id="flow1-followup3">↪ 追问 3 / Follow-up 3 — Rollout 纪律 / Rollout Discipline <span class="tag tag-aws">🌟🌟 真做过 AWS 的人才答得出</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "On the deployment side — you went from N regions to 10. Did you ship all 10 at once or staged it? When region 6 was done and you were about to enable region 7, what was your <strong>concrete safety check</strong> — what signal said 'green light to proceed'? And if region 7 deploy went sideways, what's the rollback path?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "部署这边——你从 N 个 region 涨到 10 个，是一次性上 10 个还是分批 stage 的？region 6 上完准备 enable region 7 时，你的<strong>具体 safety check 是什么</strong>——看到什么 signal 才算"绿灯放行"？如果 region 7 部署翻车，rollback 的路径是什么？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>分批 + wave-based</strong>：上一个 region 后有<strong>明确的 bake time</strong>（24h / 一周）才进下一个 / Staged + wave-based, with explicit bake time per region before progressing</li>
+      <li><strong>每个 region 内部还要再分阶段</strong>：先 internal account / canary fleet → 然后小批客户 → 然后全 region。不是 region 内一把 all-on / Within each region, further staged: internal/canary → small customer cohort → full region. Not all-on at region level</li>
+      <li><strong>具体 safety signals：</strong>error rate 阈值（如 API 4xx/5xx 在 baseline + Xσ 内）/ p99 latency 没退化 / 关键业务 metric（成功 audit 完成率）没掉 / 没有新 high-sev ticket / Concrete safety signals: error rate within baseline + Xσ; p99 latency unchanged; key business metric (audit completion rate) flat; no new high-sev tickets</li>
+      <li><strong>Rollback 路径具体：</strong>用 feature flag（per-region toggle）秒级关掉新行为；deploy rollback 用 pipeline 的 previous artifact；数据层如果是 schema 改了，要么 backward-compatible，要么有 expand-contract 双写期 / Concrete rollback: per-region feature flag for sub-second disable; pipeline previous-artifact rollback; schema either backward-compatible or expand-contract dual-write phase</li>
+      <li><strong>🌟 真 AWS 内部信号：</strong>能讲出 <strong>cell-based deployment</strong>（一个 region 内多 cell，blast radius 隔离）/ AWS 内部 deployment 工具的概念（不一定要说出名字，但能描述"自动化 pipeline 带阶段门禁 + 自动 alarm 触发 rollback"）/ blast radius 这个词主动提 / <strong>Real AWS-internal signals:</strong> mentions cell-based deployment within a region for blast-radius isolation; describes internal pipeline behavior (auto stage gates + alarm-triggered auto rollback); uses "blast radius" spontaneously</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"一次性上 10 个" — 在 AWS 这等于失业级错误，正经 AWS service 没人这么做 / "All 10 at once" — in AWS this is a fireable mistake; no real AWS service does this</li>
+      <li>"我们 CI/CD 自动部署" — 没回答问题，CI/CD 不是 safety check / "We have CI/CD" — doesn't answer the question; CI/CD is not a safety check</li>
+      <li>safety check 全是定性词（"看起来正常"、"没人投诉"）— 没具体 metric + 阈值 / All-qualitative safety checks ("looks fine", "no one complained") — no specific metric + threshold</li>
+      <li>"出问题 redeploy 旧版本" 但说不出怎么 redeploy、需要多久、新写入的数据怎么办 / "Redeploy old version" but can't explain how, how long, or what happens to data written in the new version</li>
+      <li>完全没提 feature flag / blast radius / cell / canary 中的任何一个 — AWS deployment 词汇表里这些是基础词 / Mentions none of: feature flag / blast radius / cell / canary — these are baseline AWS deployment vocabulary</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus signals:</h4>
+    <ul>
+      <li>能讲一次<strong>真实 rollback 案例</strong>（"我们在 region X 部署到 50% 时 alarm 触发，自动 rollback 了，事后定位是 Y"）— 真扛过 oncall 的人才有这种故事 / Tells a real rollback story ("we rolled back at 50% in region X when alarm fired, post-mortem found Y") — only oncall veterans have such stories</li>
+      <li>主动区分 <strong>region cell deployment</strong>（同 region 多 cell 隔离）vs <strong>cross-region wave</strong>（不同 region 之间的顺序）/ Distinguishes intra-region cell deployment vs cross-region wave</li>
+      <li>提到 <strong>data plane vs control plane 是分开 rollout 的</strong>（data plane 慢得多）/ Mentions data plane and control plane roll out separately (data plane is far slower)</li>
+    </ul>
+
+    <h4>💡 如果她答得太抽象 / If too abstract — 压具体的:</h4>
+    <blockquote class="ask-en">
+      "Let's get concrete. Pick the moment between region 6 (already live for, say, a week) and starting region 7. What dashboards are you looking at? What's the threshold on each one that flips your decision from 'go' to 'wait'?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "我们具体一点。挑 region 6 上线一周、准备开 region 7 那一刻——你在看哪些 dashboard？每个 dashboard 上具体什么阈值会让你从"go"翻成"wait"？"
+    </blockquote>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--   FLOW 2 PLACEHOLDER (Bullet ③ + ④)                                    -->
+<!-- ====================================================================== -->
+<h2 id="flow2">Flow 2 · 🔌 Public API 设计纪律 / Public API Discipline <span class="tag tag-time">~7 min · 待添加</span></h2>
+
+<div class="placeholder-card">
+  <p>🚧 <strong>待添加 / TBD</strong></p>
+  <p style="margin-top:10px; color:#7c2d12; font-size:16px;">
+    <strong>主带 bullet：</strong> ③ "Implemented APIs to grant customers instant access to restored backup resources"<br>
+    <strong>副带 bullet：</strong> ④ "Aligned public API attributes with internal backup, copy, and restore jobs, collaborating with PM and PE"<br><br>
+    <strong>规划追问：</strong> 主问题 (request lifecycle) → 追问 1 (idempotency) → 追问 2 (public API breaking change ship 流程 — 🌟 Senior bar) → 追问 3 备用 (pagination / observability)
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--   FLOW 3 PLACEHOLDER (Bullet ② + ⑤)                                    -->
+<!-- ====================================================================== -->
+<h2 id="flow3">Flow 3 · 🛠️ 危险运维 + 分布式知识深度 / Dangerous Ops + Distsys Depth <span class="tag tag-time">~8 min · 待添加</span></h2>
+
+<div class="placeholder-card">
+  <p>🚧 <strong>待添加 / TBD</strong></p>
+  <p style="margin-top:10px; color:#7c2d12; font-size:16px;">
+    <strong>主带 bullet：</strong> ② "Developed an operations tool to resurrect expired backup from log line"<br>
+    <strong>副带 bullet：</strong> ⑤ "Integrated and validated anti-entropy workflows by contributing integration tests for AWS Org's Delegated Admin feature"<br><br>
+    <strong>规划追问：</strong> 主问题 (resurrection 工具安全模型) → 追问 1 (anti-entropy 真意 — 🌟🌟 AWS 验证) → 追问 2 (DynamoDB hot partition — 🌟 AWS 验证) → 追问 3 备用 (cell architecture)
+  </p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== NOTES ==================== -->
+<h2 id="notes">📝 Notes</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Flow 1: 什么是 BAM — 客户画像 + cross-region/cross-account 为何关键</td><td></td><td></td></tr>
+      <tr><td>Flow 1: 为什么 expand + 怎么实现 — opt-in region 本质差异 + region onboarding 层次</td><td></td><td></td></tr>
+      <tr><td>Flow 1: Partial failure 契约 — 明确选边 + downstream 影响 <strong>(🌟 Senior 指示器)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 1: Rollout 纪律 — wave-based + 具体 safety signal + rollback 路径 <strong>(🌟🌟 AWS 验证)</strong></td><td></td><td></td></tr>
+      <tr style="opacity:0.5;"><td>Flow 2: 待添加 / TBD</td><td></td><td></td></tr>
+      <tr style="opacity:0.5;"><td>Flow 3: 待添加 / TBD</td><td></td><td></td></tr>
+      <tr><td>Communication / 技术表达 / 主动提 metric &amp; trade-off 的密度</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note-area">面试官在此记录候选人技术问答的表现 / Interviewer notes on candidate technical Q&amp;A…</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'DETAILS') el.open = true;
+  const parent = el.closest('details');
+  if (parent) parent.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
 </body>
 </html>

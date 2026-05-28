@@ -87,6 +87,38 @@
     border-left: 3px solid transparent;
   }
   .qp-link:hover { background: #f1f5f9; border-left-color: var(--accent); }
+  details.qp-followups {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 8px 0 4px;
+  }
+  details.qp-followups > summary {
+    padding: 6px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #475569;
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    list-style: none;
+  }
+  details.qp-followups > summary::-webkit-details-marker { display: none; }
+  details.qp-followups > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s; color: #94a3b8;
+  }
+  details.qp-followups[open] > summary::before { transform: rotate(90deg); }
+  details.qp-followups[open] > summary {
+    background: #f5f3ff; color: #5b21b6; border-left-color: var(--accent);
+    margin-bottom: 4px;
+  }
+  details.qp-followups .qp-followups-body { padding: 2px 0 4px 6px; }
+  .qp-sub.purple  { border-left: 2px solid var(--accent); }
+  .qp-sub.green   { border-left: 2px solid #059669; }
+  .qp-sub.blue    { border-left: 2px solid #1d4ed8; }
+  .qp-sub.amber   { border-left: 2px solid #d97706; }
   .qp-group { margin: 6px 0 2px; }
   .qp-group-title {
     font-size: 18px; font-weight: 700; color: #94a3b8;
@@ -288,32 +320,43 @@
   <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
   <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow 概览</a>
 
-  <div class="qp-group">
-    <div class="qp-group-title">Flow 1 — 系统架构 / Architecture</div>
-    <a class="qp-sub-title purple" href="#flow1-main" onclick="jump('flow1-main');return false;">🎤 主问题：项目背景</a>
-    <a class="qp-nested" href="#flow1-followup1" onclick="jump('flow1-followup1');return false;">↪ 追问 1：架构具体是什么</a>
-  </div>
+  <a class="qp-link" href="#flow1" onclick="jump('flow1');return false;" style="background:#f5f3ff;color:var(--accent);font-weight:700;margin-top:10px;border-left-color:var(--accent);">📌 FLOW 1 · 系统架构 / Architecture</a>
+  <details class="qp-followups">
+    <summary>↳ 追问 / Follow-ups（1 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub purple" href="#flow1-followup1" onclick="jump('flow1-followup1');return false;">追问 1 — 架构具体是什么</a>
+    </div>
+  </details>
 
-  <div class="qp-group">
-    <div class="qp-group-title">Flow 2 — 性能优化 / Perf Optimization</div>
-    <a class="qp-sub-title purple" href="#flow2-main" onclick="jump('flow2-main');return false;">🎤 主问题：哪个系统 + 项目详情</a>
-    <a class="qp-nested" href="#flow2-followup1" onclick="jump('flow2-followup1');return false;">↪ 追问 1：要数字 (before / after)</a>
-    <a class="qp-nested" href="#flow2-followup2" onclick="jump('flow2-followup2');return false;">↪ 追问 2：怎么优化 + 为什么</a>
-  </div>
+  <a class="qp-link" href="#flow2" onclick="jump('flow2');return false;" style="background:#ecfdf5;color:#059669;font-weight:700;margin-top:10px;border-left-color:#059669;">📌 FLOW 2 · 性能优化 / Perf Optimization</a>
+  <details class="qp-followups">
+    <summary>↳ 追问 / Follow-ups（2 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub green" href="#flow2-followup1" onclick="jump('flow2-followup1');return false;">追问 1 — 要数字 (before / after)</a>
+      <a class="qp-sub green" href="#flow2-followup2" onclick="jump('flow2-followup2');return false;">追问 2 — 怎么优化 + 为什么</a>
+    </div>
+  </details>
 
-  <div class="qp-group">
-    <div class="qp-group-title">Flow 3 — 分布式系统知识 / Distributed Systems Depth</div>
-    <a class="qp-sub-title purple" href="#flow3-main" onclick="jump('flow3-main');return false;">🎤 主问题：Consistency Model</a>
-    <a class="qp-nested" href="#flow3-followup1" onclick="jump('flow3-followup1');return false;">↪ 追问 1：Failure Detection &amp; Failover</a>
-    <a class="qp-nested" href="#flow3-followup2" onclick="jump('flow3-followup2');return false;">↪ 追问 2：Partitioning + Hot Partition</a>
-  </div>
+  <a class="qp-link" href="#flow3" onclick="jump('flow3');return false;" style="background:#eff6ff;color:#1d4ed8;font-weight:700;margin-top:10px;border-left-color:#1d4ed8;">📌 FLOW 3 · 分布式系统知识 / Distributed Depth</a>
+  <details class="qp-followups">
+    <summary>↳ 追问 / Follow-ups（2 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub blue" href="#flow3-followup1" onclick="jump('flow3-followup1');return false;">追问 1 — Failure Detection &amp; Failover</a>
+      <a class="qp-sub blue" href="#flow3-followup2" onclick="jump('flow3-followup2');return false;">追问 2 — Partitioning + Hot Partition</a>
+    </div>
+  </details>
 
-  <div class="qp-group">
-    <div class="qp-group-title">Flow 4 — Host Class 深挖 / Host Class Deep-dive 🔥</div>
-    <a class="qp-sub-title purple" href="#flow4-main" onclick="jump('flow4-main');return false;">🎤 主问题：项目细节 + host class 是什么</a>
-    <a class="qp-nested" href="#flow4-followup1" onclick="jump('flow4-followup1');return false;">↪ 追问 1：提升在哪 / 多少 / 怎么测</a>
-    <a class="qp-nested" href="#flow4-followup2" onclick="jump('flow4-followup2');return false;">↪ 追问 2：为什么 global + latency 影响</a>
-  </div>
+  <a class="qp-link" href="#flow4" onclick="jump('flow4');return false;" style="background:#fef3c7;color:#d97706;font-weight:700;margin-top:10px;border-left-color:#d97706;">📌 FLOW 4 · Host Class 深挖 🔥</a>
+  <details class="qp-followups">
+    <summary>↳ 追问 / Follow-ups（5 个）</summary>
+    <div class="qp-followups-body">
+      <a class="qp-sub amber" href="#flow4-followup1" onclick="jump('flow4-followup1');return false;">追问 1 — 老方案是什么 / 为什么必须改</a>
+      <a class="qp-sub amber" href="#flow4-followup2" onclick="jump('flow4-followup2');return false;">追问 2 — RST + CPU 提升数字</a>
+      <a class="qp-sub amber" href="#flow4-followup3" onclick="jump('flow4-followup3');return false;">追问 3 — 为什么 global / latency 反直觉</a>
+      <a class="qp-sub amber" href="#flow4-followup4" onclick="jump('flow4-followup4');return false;">追问 4 — C++ / Python 分工</a>
+      <a class="qp-sub amber" href="#flow4-followup5" onclick="jump('flow4-followup5');return false;">追问 5 — Rollout + Blast Radius</a>
+    </div>
+  </details>
 
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
 </div>
@@ -362,7 +405,7 @@
         <td><strong>Flow 4</strong></td>
         <td>Vancouver Senior SWE · "Implemented global host class strategies... leading to improvements in Read Singleton Time and CPU utilization..."</td>
         <td><strong>Host class 深挖（真伪金标准）/ Host class deep-dive (authenticity gold standard)</strong></td>
-        <td>~6 min</td>
+        <td>~12 min</td>
       </tr>
     </tbody>
   </table>
@@ -800,7 +843,7 @@
 <!-- ====================================================================== -->
 <!--  FLOW 4: HOST CLASS DEEP-DIVE (Vancouver Senior · Bullet 6 · 金标准)  -->
 <!-- ====================================================================== -->
-<h2 id="flow4">Flow 4 · 🔥 Host Class 深挖 / Host Class Deep-dive <span class="tag tag-time">~6 min</span></h2>
+<h2 id="flow4">Flow 4 · 🔥 Host Class 深挖 / Host Class Deep-dive <span class="tag tag-time">~12 min</span></h2>
 
 <div class="card" style="border-left:4px solid #d97706;">
   <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>AWS Vancouver · Senior Software Engineer (Jan 2024 – Feb 2025) · bullet 6:</strong></p>
@@ -851,7 +894,47 @@
 </details>
 
 <!-- ===== FLOW 4 FOLLOW-UP 1 ===== -->
-<h3 id="flow4-followup1">↪ 追问 1 / Follow-up 1 — Read Singleton Time + CPU 提升在哪 / 多少 / 怎么测</h3>
+<h3 id="flow4-followup1">↪ 追问 1 / Follow-up 1 — 老方案是什么 / 为什么必须改 / Prior Art &amp; Motivation</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Before you implemented the global host class strategy, what was the prior approach? Was it regional? Per-cell? Hand-tuned? And — why wasn't it already global? Was it historical baggage, a technical limitation, or just no prior need?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "在你实施 global host class 策略之前，老方案是什么？是 regional 的吗？per-cell 的？手工调的？以及——为什么之前不是 global 的？是历史包袱、技术限制、还是当时没需求？"
+    </blockquote>
+
+    <p style="color:var(--text-muted);">⚡ <strong>为什么这题特别锋利 / Why this is sharp：</strong>真主导设计的人一定理解 prior art——AWS 这种成熟系统从来不会突然蹦出全新设计。<strong>答不出老方案 = 只是接到任务做实现、不是 designer。</strong>/ Real designers always understand prior art at AWS — nothing emerges out of thin air. Can't articulate the prior approach = was just an executor, not a designer.</p>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>具体讲出老方案</strong>（regional / per-cell / per-AZ / 静态分配 / 手工配 等）/ Names the prior approach concretely</li>
+      <li><strong>老方案的局限</strong>是什么 — 触发改造的具体痛点 / Specific pain points triggering the change</li>
+      <li>为什么<strong>当时</strong>没做 global — 是技术能力不够（缺 propagation 机制）？业务没需要？还是 trade-off 当时不划算？/ Why it wasn't global earlier</li>
+      <li>讲出<strong>转折点</strong>——什么时候业务/技术变化让 global 变得必要 / The turning point that made global necessary</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>说不出老方案 → 没真理解 prior art = 只是 executor / Can't name prior approach → executor not designer</li>
+      <li>"老方案有 bug 所以要改" — 过于含糊 / Vague "the old approach had bugs"</li>
+      <li>讲不出"为什么之前不是 global" — 没思考过设计的历史脉络 / No design history context</li>
+      <li>声称老方案"完全没人做过 / 完全没考虑过" — 不可能 / Claims "no prior thinking" — impossible at AWS scale</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>能讲<strong>跟前任 owner 或 design doc</strong>的关系（"是我接手之后做的"）= 真有 design 脉络 / Reference to prior owner / design doc</li>
+      <li>能讲<strong>多个备选方案</strong>对比（global host class vs regional + smart routing vs cell-based）= 真做过设计 / Compares multiple alternatives</li>
+      <li>知道老方案<strong>什么时候、为什么</strong>被引入的 — 这种深度只有真 owner 才有 / Knows when and why the prior approach was originally adopted</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 2 ===== -->
+<h3 id="flow4-followup2">↪ 追问 2 / Follow-up 2 — Read Singleton Time + CPU 提升在哪 / 多少 / 怎么测</h3>
 
 <details open>
   <summary>🎤 提问 / Ask</summary>
@@ -890,7 +973,7 @@
 </details>
 
 <!-- ===== FLOW 4 FOLLOW-UP 2 ===== -->
-<h3 id="flow4-followup2">↪ 追问 2 / Follow-up 2 — 为什么 global host class？对 latency 有什么影响（反直觉陷阱）</h3>
+<h3 id="flow4-followup3">↪ 追问 3 / Follow-up 3 — 为什么 global host class？对 latency 有什么影响（反直觉陷阱）</h3>
 
 <details open>
   <summary>🎤 提问 / Ask</summary>
@@ -929,6 +1012,88 @@
   </div>
 </details>
 
+<!-- ===== FLOW 4 FOLLOW-UP 4 ===== -->
+<h3 id="flow4-followup4">↪ 追问 4 / Follow-up 4 — C++ 和 Python 各自负责什么 / Language Split</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Your bullet ends with 'showcasing proficiency in C++ and Python'. Concretely — what did C++ do in this project, and what did Python do? Which parts are C++, and why C++ specifically? Which parts are Python, and why not also use C++?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你 bullet 末尾说 'showcasing proficiency in C++ and Python'。具体来说，C++ 和 Python 各自在这个项目里干什么？哪部分是 C++ 写的、为什么用 C++？哪部分是 Python、为什么不也用 C++？"
+    </blockquote>
+
+    <p style="color:var(--text-muted);">⚡ <strong>为什么这题特别锋利 / Why this is sharp：</strong>"showcasing proficiency" 是 LLM 最爱的填充语。真做过的人 C++ / Python 一定有<strong>清晰分工</strong>（典型：C++ 跑 hot path 数据面 / Python 写 deployment automation 或 config 处理工具）。"两个都用了一下" 不算分工。/ "Showcasing proficiency" is LLM filler. Real practitioners have a clear language split. "Used both a bit" doesn't count.</p>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>清晰的职责分工</strong>——C++ 跟 Python 各自有明确的 component / use case / Clear division of responsibility</li>
+      <li>能给出<strong>C++ 选用理由</strong>（latency / 内存 / 跟现有代码库一致 / 调内部 native lib）/ Rationale for C++ (latency / memory / existing codebase / native lib)</li>
+      <li>能给出<strong>Python 用的场景</strong>（deployment automation / config 处理 / data analysis / 测试工具 / 一次性脚本）/ Rationale for Python</li>
+      <li>知道<strong>为什么这件事不能用 C++</strong>（迭代速度 / 没必要 / 写起来太慢）/ Knows why this particular thing isn't C++</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"两个都用了一些" / "主要 C++，Python 写脚本" — 没具体职责 = 没真分工 = LLM 凑字 / "Used both a bit" — no real split = LLM filler</li>
+      <li>讲不出 C++ 解决了什么 Python 解决不了的事 = 没思考过 language choice / Can't articulate what C++ solves that Python can't</li>
+      <li>把 Python 说成 hot path "主语言"——AWS fleet/host class 工作不太可能 / Claims Python as hot-path primary — implausible</li>
+      <li>"我以前主要写 Java，C++/Python 是这个项目学的" — 既然 showcasing proficiency，应该已经熟练 / "Learned them on this project" contradicts "showcasing proficiency"</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>能讲 C++ 跟 Python 之间的<strong>边界 / 集成方式</strong>（pybind11 / subprocess / shared file / Thrift / gRPC）/ Articulates C++/Python integration</li>
+      <li>能讲<strong>具体的 trade-off</strong>："这块我用 Python 因为迭代快，但下个版本要重写成 C++ 因为太慢" / Concrete language-choice trade-offs</li>
+      <li>知道两个语言对应的<strong>build / deploy 体系</strong>差别（Brazil package for C++ vs Python wheel / venv）= 真在 AWS 内部开发过 / Knows the toolchain differences in AWS internal build system</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 5 ===== -->
+<h3 id="flow4-followup5">↪ 追问 5 / Follow-up 5 — Rollout 策略 + Blast Radius / Rollout &amp; Blast Radius</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Multi-region rollout — how did you actually do it? Specifically: if a buggy global host class config went out, how quickly would you detect it? How do you roll back? And what's the worst-case customer impact — how many customers, how many regions affected at once?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "Multi-region rollout——你具体怎么发的？具体来说：如果一个有 bug 的 global host class 配置发出去了，你多久能发现？怎么回滚？最坏情况影响多少客户、几个 region 同时受影响？"
+    </blockquote>
+
+    <p style="color:var(--text-muted);">⚡ <strong>为什么这题特别锋利 / Why this is sharp：</strong>任何 Senior 推过 multi-region change 的人，blast radius 是 design review 时<strong>必被问</strong>的问题（AWS 内部 OE / OpsReadiness review 的标准项）。答不出 = 没真上过 prod global change。/ Any Senior who's pushed multi-region change has answered blast radius in design review — standard AWS Operational Excellence review question.</p>
+
+    <h4>🎯 期望听到的内容（4 个点）/ What you want to hear (4 points):</h4>
+    <ol>
+      <li><strong>Rollout 阶段化</strong>——dev → integ → 1 个 canary region → 一个一个 region wave → 全推 / Phased rollout (dev → integ → canary region → wave → full)</li>
+      <li><strong>Detection</strong>——发现 bad config 的方法（自动 metric alarm / 人工 dashboard / synthetic probe）+ 时间（分钟级？小时级？）/ Detection mechanism + timing</li>
+      <li><strong>Rollback 机制</strong>——能否秒级回滚？需要重新 deploy 还是 toggle 配置？有 staged rollback 吗？/ Rollback mechanism — seconds or redeploy? staged?</li>
+      <li><strong>Blast radius 量化</strong>——最坏情况影响多少客户、几个 region / Quantified blast radius (# customers, # regions)</li>
+    </ol>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>🔴 没有 canary region / 一次性全推 → AWS Senior 不可能允许 / No canary → impossible for AWS Senior</li>
+      <li>"反正出问题会有 alert" — 没量化 detection 时间 / "We'd get alerted" — no quantified detection time</li>
+      <li>Rollback 要"重新走一遍 deploy pipeline" → 意味着 rollback 可能要小时 → 红旗 / Rollback requires full pipeline = hours = red flag</li>
+      <li>"我们没考虑过 blast radius" — Senior 不可能没在 design review 被 challenge 过 / "Didn't consider blast radius" — impossible at Senior level</li>
+      <li>给不出量级（几百客户？几万？百万？）→ 没真 owner / Can't give an order of magnitude</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>主动讲<strong>一次真实的 rollback 故事</strong>（即使是小问题）= 真上过 prod / Tells a real rollback story</li>
+      <li>能讲<strong>safety mechanism</strong>：deployment 内 ratio limit（每次只能推 N% host）/ auto-rollback on regression / shadow deploy / Names safety mechanisms</li>
+      <li>提 <strong>OE review / OpsReadiness</strong> 等 AWS 内部流程 = 真走过 AWS Senior 评审 / References AWS internal OE / OpsReadiness process</li>
+      <li>对 detection 给出<strong>具体 alarm condition</strong>（"我们 alarm Read Singleton Time P99 涨 20% 持续 5min"）= 真生产经验 / Specific alarm conditions</li>
+    </ul>
+  </div>
+</details>
+
 <hr class="separator">
 
 <!-- ==================== NOTES ==================== -->
@@ -947,9 +1112,12 @@
       <tr><td>Flow 3: Consistency Model — 能否明确选择 / 讲清 trade-off (探测题 + stateless 分支)</td><td></td><td></td></tr>
       <tr><td>Flow 3: Failure &amp; Failover — Detection / Failover / In-flight 三点 <strong>(Senior bar)</strong></td><td></td><td></td></tr>
       <tr><td>Flow 3: Hot Partition — 自己系统的存储 + 怎么处理 hot partition <strong>(AWS 验证)</strong></td><td></td><td></td></tr>
+      <tr style="background:#fef3c7;"><td><strong>Flow 4: 老方案 prior art — 能讲出老方案 + 转折点 + 备选对比</strong></td><td></td><td></td></tr>
       <tr style="background:#fef3c7;"><td><strong>Flow 4: Host class 定义 — 能否清晰解释 host class 是什么 (基本盘)</strong></td><td></td><td></td></tr>
       <tr style="background:#fef3c7;"><td><strong>Flow 4: Read Singleton Time — 能否定义 + 给数字 + 讲因果链 <strong>(🔴 真伪金标准)</strong></strong></td><td></td><td></td></tr>
       <tr style="background:#fef3c7;"><td><strong>Flow 4: 设计决策 — 为什么 global / latency 反直觉 / trimmed group files 作用</strong></td><td></td><td></td></tr>
+      <tr style="background:#fef3c7;"><td><strong>Flow 4: C++/Python 分工 — 清晰职责 + 选择理由 + 集成方式</strong></td><td></td><td></td></tr>
+      <tr style="background:#fef3c7;"><td><strong>Flow 4: Rollout + Blast radius — 阶段化 / Detection / Rollback / 量化 四点</strong></td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
     </tbody>
   </table>
