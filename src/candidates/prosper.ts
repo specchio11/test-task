@@ -1,15 +1,15 @@
 import type { CandidateConfig } from '../data/types';
 
 /**
- * Prosper Amie — 45-min onsite-style interview scaffolded on 2026-05-28.
- * 4-section layout (selfIntro / resume Q&A / single coding test /
- * candidate Q). The candidateQuestions section reuses the same canonical
- * set shared across recent candidates (Samarth, Shirley).
+ * Prosper Amie — 60-min onsite-style interview scaffolded on 2026-05-28.
+ * 5-section layout (selfIntro / resume Q&A / coding test 1 [Inverse Function]
+ * / coding test 2 [Matrix Multiplication] / candidate Q). The
+ * candidateQuestions section reuses the same canonical set shared across
+ * recent candidates (Samarth, Shirley).
  *
- * Content fields are placeholders (`TBD` / 待填写). Replace them as the
- * interview material is prepared. The static section pages under
- * `public/candidates/prosper/` are also stubs — overwrite their HTML when
- * the real guides are ready.
+ * Coding tests are ported from Shirley CT1 (Inverse Function) and Xinfeng CT
+ * (Matrix Multiplication) — both align well with Prosper's large-scale C++ /
+ * AWS cloud-systems background.
  */
 export const prosper: CandidateConfig = {
   id: 'prosper',
@@ -17,7 +17,7 @@ export const prosper: CandidateConfig = {
   shortName: 'Prosper',
   initials: 'PA',
   role: 'TBD',
-  totalMin: 45,
+  totalMin: 60,
   brand: '📋 Onsite Interview Guide',
   accent: '#7c3aed',
   scheduledAt: '2026-05-29T08:30:00',
@@ -61,24 +61,39 @@ export const prosper: CandidateConfig = {
       id: 's3',
       num: '③',
       emoji: '💻',
-      titleZh: '编程测试',
-      titleEn: 'Coding Test',
+      titleZh: '编程测试 1',
+      titleEn: 'Coding Test 1',
       navLabel: '③ Coding',
       time: '~15 min',
-      keyPoints: '（待填写 · 根据 Prosper 背景选题）',
+      keyPoints: '反函数 / Inverse Function — 二分查找 + 边界条件 + 数值精度（C++ / Python / TS / C# 任一）',
       accent: 's3',
       href: 'codingTest/interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
-      introHeading: '🎤 引导进入编程测试 / Introduce Coding Exercise',
+      introHeading: '🎤 引导进入第一轮编程测试 / Introduce First Coding Exercise',
     },
     {
       id: 's4',
       num: '④',
+      emoji: '💻',
+      titleZh: '编程测试 2',
+      titleEn: 'Coding Test 2',
+      navLabel: '④ Coding 2',
+      time: '~20 min',
+      keyPoints: '矩阵乘法 / Matrix Multiplication — 性能优化（layout / cache / tiling / SIMD / CUDA）',
+      accent: 's4',
+      href: 'codingTest2/interview-guide.html',
+      introEn: '(TBD)',
+      introZh: '（待填写）',
+      introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',
+    },
+    {
+      id: 's5',
+      num: '⑤',
       emoji: '❓',
       titleZh: '候选人提问',
       titleEn: 'Candidate Q&A',
-      navLabel: '④ 候选人提问',
+      navLabel: '⑤ 候选人提问',
       time: '~5 min',
       keyPoints: '沿用与 Shirley / Samarth 相同的一套候选人提问材料',
       accent: 's5',
