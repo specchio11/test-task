@@ -305,7 +305,7 @@
     <div class="qp-group-title">Flow 3 — 分布式系统知识 / Distributed Systems Depth</div>
     <a class="qp-sub-title purple" href="#flow3-main" onclick="jump('flow3-main');return false;">🎤 主问题：Consistency Model</a>
     <a class="qp-nested" href="#flow3-followup1" onclick="jump('flow3-followup1');return false;">↪ 追问 1：Failure Detection &amp; Failover</a>
-    <a class="qp-nested" href="#flow3-followup2" onclick="jump('flow3-followup2');return false;">↪ 追问 2：Hot Partition (AWS 验证)</a>
+    <a class="qp-nested" href="#flow3-followup2" onclick="jump('flow3-followup2');return false;">↪ 追问 2：Partitioning + Hot Partition</a>
   </div>
 
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
@@ -684,12 +684,11 @@
       "假设你的一个 node 在处理请求的时候突然挂了——客户端会看到什么？你的系统怎么 detect failure？detection 完成之后多久能 failover？这个窗口期内 in-flight 的请求会怎么办？"
     </blockquote>
 
-    <h4>🎯 期望听到的 4 个点（全答到 = Senior 级）/ The 4 points (all 4 = Senior level):</h4>
+    <h4>🎯 期望听到的 3 个点（全答到 = Senior 级）/ The 3 points (all 3 = Senior level):</h4>
     <ol>
       <li><strong>Detection 机制</strong> — heartbeat / gossip / health check probe（能说出 interval 数字最好：1s / 3s / 10s）/ Detection mechanism with concrete interval</li>
       <li><strong>Failover 时间</strong> — 从 detect 到流量切走多久（典型值：秒级 ~ 几十秒）/ Failover duration (typically seconds to tens of seconds)</li>
       <li><strong>In-flight 请求处理</strong> — client 会看到 timeout / 5xx，retry 策略是什么，会不会重复执行 / In-flight request handling + retry + idempotency</li>
-      <li><strong>脑裂 (split brain) 防护</strong> — 怎么避免老 node 没真死、新 node 已经接管，两边都在写 / Split-brain protection</li>
     </ol>
 
     <h4>🚩 红旗信号（任何一条触发就要扣分）/ Red flags (any one = deduct points):</h4>
@@ -698,7 +697,6 @@
       <li>"Load balancer 自动剔除" → 只是表层，没思考过 LB 自己怎么判断 / Surface-level "LB will handle it"</li>
       <li>答不出 detection 间隔的<strong>数量级</strong>（秒？分钟？）→ 没 owner 过 / Can't give magnitude of detection interval</li>
       <li>完全没提 in-flight 请求 → 只想过 happy path / Never mentions in-flight requests</li>
-      <li>完全没提脑裂 → Senior 缺失基础 / Never mentions split-brain</li>
     </ul>
 
     <h4>💎 加分项 / Bonus points:</h4>
@@ -707,44 +705,72 @@
       <li>提 <strong>graceful degradation / circuit breaker / hedged requests</strong> = 系统思维成熟 / Mentions degradation patterns</li>
       <li>能讲 SWIM / phi accrual failure detector 这种具体算法 = 读过分布式经典论文 / Names specific algorithms</li>
     </ul>
+
+    <h4 style="background:#fef3c7;padding:6px 10px;border-radius:4px;border-left:3px solid #d97706;margin-top:14px;">🎁 加码追问 / Add-on — Split-brain 防护（<strong>仅当系统涉及 leader election / 共识 / 分布式锁时才问</strong>）/ Only if his system uses leader election, consensus, or distributed locks</h4>
+    <p style="color:var(--text-muted);"><em>⚠ 触发条件：他在前面提到 leader / primary / consensus / Raft / Paxos / ZK / etcd / 分布式锁 中任意一个，才追这一题。否则<strong>跳过</strong>——他简历里没有 leader election / 共识工作的痕迹，普通应用服务跑在 AWS managed DB 上 split-brain 是 DB 团队的事，应用开发者不必须懂。/ Trigger only if he mentions leader / primary / consensus / Raft / Paxos / ZK / etcd / distributed lock. Otherwise <strong>skip</strong> — his resume shows no leader-election work, and split-brain is the DB team's problem for typical application services on managed AWS DBs.</em></p>
+    <blockquote class="ask-en">
+      "You mentioned [leader / primary / Raft / etc.] — so let me push one more level: how do you prevent split-brain? Specifically, if the old leader hasn't truly died but the cluster has already elected a new one, and the old one comes back and tries to write — what happens?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你刚提到 [leader / primary / Raft 等]——那我再深一层问：怎么防止脑裂？具体来说，老 leader 还没真死，集群已经选出了新 leader，老的回来又开始写——会发生什么？"
+    </blockquote>
+    <p style="color:var(--text-muted);"><strong>期望听到 / Expected：</strong>fencing token / generation number / lease + quorum（如 Raft 的 term），让老 leader 的写被新 leader 拒绝。/ Fencing tokens, generation numbers, leases + quorum (e.g., Raft term) — old leader's writes get rejected by the new leader.</p>
   </div>
 </details>
 
 <!-- ===== FLOW 3 FOLLOW-UP 2 ===== -->
-<h3 id="flow3-followup2">↪ 追问 2 / Follow-up 2 — Hot Partition (AWS 专属验证)</h3>
+<h3 id="flow3-followup2">↪ 追问 2 / Follow-up 2 — Partitioning + Hot Partition (AWS 专属验证)</h3>
 
 <details open>
   <summary>🎤 提问 / Ask</summary>
   <div class="detail-body">
     <blockquote class="ask-en">
-      "How does your system partition data? Hash-based, range-based, or something else? And — what happens if one partition suddenly becomes hot? How would AWS DynamoDB handle this, since you've worked there?"
+      "How does your system partition or distribute data across nodes? Hash-based, range-based, or something else? And — what happens if one partition suddenly becomes hot?"
     </blockquote>
     <blockquote class="ask-cn">
-      "你的系统数据怎么 partition 的？hash 分区，range 分区，还是别的？以及——如果某个 partition 突然变 hot 了怎么办？你在 AWS 干过，那 DynamoDB 内部是怎么处理这个的？"
+      "你的系统数据怎么 partition 或者分布在多个 node 上？hash 分区，range 分区，还是别的？以及——如果某个 partition 突然变 hot 了怎么办？"
     </blockquote>
 
-    <p style="color:var(--text-muted);">⚡ <strong>为什么这题特别锋利 / Why this is sharp：</strong>Hot partition 是 AWS DynamoDB 团队<strong>最基本的常识</strong>。在 AWS 干过 backend 的人，哪怕不是 DynamoDB team，也一定听过同事抱怨 hot partition + 知道 adaptive capacity。<strong>答不出 = AWS 经历严重存疑。</strong><br>
-    <span class="en-text">Hot partition is foundational knowledge at AWS. Any backend engineer who actually worked there has heard colleagues complain about it. Failure to answer = AWS experience seriously in doubt.</span></p>
+    <p style="color:var(--text-muted);">💡 <strong>提问策略 / Strategy：</strong>先<strong>不要</strong>预设是 DynamoDB——让他先讲他自己系统的存储。听完再决定是顺着问 DynamoDB（如果他说在用），还是把 DynamoDB 当 AWS 通用知识题单独问（如果他用别的存储）。/ Don't pre-assume DynamoDB. Let him describe his own storage first, then either follow up on DynamoDB if he uses it, or ask DynamoDB as a separate general-knowledge question.</p>
 
-    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <h4>🎯 期望听到的内容（无论用什么存储）/ What you want to hear (regardless of storage):</h4>
     <ul>
       <li><strong>Partition 策略</strong> — hash（均匀但不能 range query）vs range（能 range query 但容易 hot）的 trade-off / Hash vs range partitioning trade-off</li>
-      <li><strong>Hot partition 成因</strong> — power user / "Justin Bieber problem" / 时间维度的 burst（如 Prime Day / 双 11）/ Causes of hot partitions</li>
-      <li><strong>DynamoDB 处理方案</strong>（任何一个就给分）/ DynamoDB's mitigations (any one scores):
-        <ul>
-          <li><strong>Adaptive capacity</strong>——自动把别的 partition 没用完的容量"借"给 hot partition / Adaptive capacity (borrow unused capacity)</li>
-          <li><strong>Automatic re-sharding / split</strong>——把 hot partition 物理拆开 / Automatic partition split</li>
-          <li><strong>Write sharding pattern</strong>——partition key 后加 suffix 把单点写散 / Write sharding via key suffix</li>
-        </ul>
-      </li>
-      <li>自己系统<strong>怎么避免</strong>（设计 partition key 时怎么打散热点）/ How HE avoided it in his system (partition key design)</li>
+      <li>能说出他系统<strong>具体用什么存储</strong>（DynamoDB / Aurora / S3 / 内部 KV / Cassandra-like）/ Names his actual storage</li>
+      <li><strong>Hot partition 成因</strong> — power user / "Justin Bieber problem" / 时间维度的 burst（Prime Day / 双 11）/ Causes of hot partitions</li>
+      <li>自己系统<strong>怎么避免</strong>（设计 partition key 时怎么打散热点 / write sharding / 加 random suffix）/ How HE avoided it in his system</li>
     </ul>
+
+    <h4 style="background:#dcfce7;padding:6px 10px;border-radius:4px;border-left:3px solid #16a34a;margin-top:14px;">🅰️ 分支 A — 如果他说"我们用 DynamoDB" / If he says "we use DynamoDB":</h4>
+    <blockquote class="ask-en">
+      "Good — then walk me through how DynamoDB handles this internally. What does it do automatically, and what's your responsibility as a service team?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "好——那给我讲讲 DynamoDB 内部是怎么处理的？它自动做了什么？你作为 service team 又要负责什么？"
+    </blockquote>
+    <p style="color:var(--text-muted);"><strong>期望听到（任意一个就给分）/ Expected (any one scores):</strong></p>
+    <ul>
+      <li><strong>Adaptive capacity</strong>——自动把别的 partition 没用完的容量"借"给 hot partition / Adaptive capacity (borrow unused capacity)</li>
+      <li><strong>Automatic re-sharding / split</strong>——把 hot partition 物理拆开 / Automatic partition split</li>
+      <li><strong>Write sharding pattern</strong>——partition key 后加 suffix 把单点写散（service team 责任）/ Write sharding via key suffix (service team's job)</li>
+    </ul>
+
+    <h4 style="background:#dbeafe;padding:6px 10px;border-radius:4px;border-left:3px solid #2563eb;margin-top:14px;">🅱️ 分支 B — 如果他说"我们不用 DynamoDB，用 [Aurora / S3 / 别的]" / If he says "we don't use DynamoDB, we use [Aurora / S3 / other]":</h4>
+    <p style="color:var(--text-muted);"><em>别死磕 DynamoDB——这是合法回答。先问他那个存储怎么解决 hot partition，再把 DynamoDB 当 AWS 通用知识题问。/ Don't insist on DynamoDB — this is a legitimate answer. First ask about his actual storage, then ask DynamoDB as general AWS knowledge.</em></p>
+    <blockquote class="ask-en">
+      "Got it. Then — for [Aurora / S3 / etc.], how do they handle hot partitions? And separately, since you've been at AWS, do you know how DynamoDB handles this on the side?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "明白。那对于 [Aurora / S3 / 别的] 来说，它们怎么处理 hot partition？另外——既然你在 AWS 干过，那作为 AWS 的同事，你了解 DynamoDB 怎么处理这个吗？"
+    </blockquote>
+    <p style="color:var(--text-muted);"><strong>评分指导 / Grading：</strong>第一问答出来 = 合格；DynamoDB 部分作为<strong>加分项</strong>（毕竟不是他主业）。如果两个都答不出，AWS 知识深度存疑。/ First question answered = pass; DynamoDB as <strong>bonus</strong> (not his main work). If neither, AWS depth is in doubt.</p>
 
     <h4>🚩 红旗信号 / Red flags:</h4>
     <ul>
       <li>"加 cache" → 没回答问题，cache 不解决<strong>写的</strong> hot partition / "Add a cache" — doesn't solve write hot partition</li>
       <li>"我们的 partition 不会 hot" → AWS Senior 不可能说这种话 / "Our partitions don't go hot" — no real AWS engineer says this</li>
-      <li>完全说不出 DynamoDB 的任何机制 → AWS 经历存疑 / Can't name any DynamoDB mechanism → AWS experience in doubt</li>
+      <li>说不出自己用的<strong>具体存储名字</strong> → 不可能 / Can't name his actual storage — impossible</li>
+      <li>声称用 DynamoDB 但说不出任何机制 → AWS 经历存疑 / Claims DynamoDB but names zero mechanism → AWS experience in doubt</li>
     </ul>
 
     <h4>💎 加分项 / Bonus points:</h4>
@@ -772,8 +798,8 @@
       <tr><td>Flow 2: 数字 — before / after / 时间线 / 测量方式 <strong>(致命关)</strong></td><td></td><td></td></tr>
       <tr><td>Flow 2: 做法 + 为什么 — 具体改动 / 备选方案 / trade-off / 工具链</td><td></td><td></td></tr>
       <tr><td>Flow 3: Consistency Model — 能否明确选择 / 讲清 trade-off (探测题 + stateless 分支)</td><td></td><td></td></tr>
-      <tr><td>Flow 3: Failure &amp; Failover — Detection / Failover / In-flight / Split-brain 四点 <strong>(Senior bar)</strong></td><td></td><td></td></tr>
-      <tr><td>Flow 3: Hot Partition — DynamoDB 机制是否答得出 <strong>(AWS 验证)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 3: Failure &amp; Failover — Detection / Failover / In-flight 三点 <strong>(Senior bar)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 3: Hot Partition — 自己系统的存储 + 怎么处理 hot partition <strong>(AWS 验证)</strong></td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
     </tbody>
   </table>
