@@ -308,6 +308,13 @@
     <a class="qp-nested" href="#flow3-followup2" onclick="jump('flow3-followup2');return false;">↪ 追问 2：Partitioning + Hot Partition</a>
   </div>
 
+  <div class="qp-group">
+    <div class="qp-group-title">Flow 4 — Host Class 深挖 / Host Class Deep-dive 🔥</div>
+    <a class="qp-sub-title purple" href="#flow4-main" onclick="jump('flow4-main');return false;">🎤 主问题：项目细节 + host class 是什么</a>
+    <a class="qp-nested" href="#flow4-followup1" onclick="jump('flow4-followup1');return false;">↪ 追问 1：提升在哪 / 多少 / 怎么测</a>
+    <a class="qp-nested" href="#flow4-followup2" onclick="jump('flow4-followup2');return false;">↪ 追问 2：为什么 global + latency 影响</a>
+  </div>
+
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
 </div>
 <button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
@@ -350,6 +357,12 @@
         <td>跳出简历项目 — 利用他反复提到的 "distributed" / Beyond resume bullets — leveraging his repeated "distributed" claim</td>
         <td>分布式系统知识深度 / Distributed systems knowledge depth</td>
         <td>~7 min</td>
+      </tr>
+      <tr style="background:#fef3c7;">
+        <td><strong>Flow 4</strong></td>
+        <td>Vancouver Senior SWE · "Implemented global host class strategies... leading to improvements in Read Singleton Time and CPU utilization..."</td>
+        <td><strong>Host class 深挖（真伪金标准）/ Host class deep-dive (authenticity gold standard)</strong></td>
+        <td>~6 min</td>
       </tr>
     </tbody>
   </table>
@@ -784,6 +797,140 @@
 
 <hr class="separator">
 
+<!-- ====================================================================== -->
+<!--  FLOW 4: HOST CLASS DEEP-DIVE (Vancouver Senior · Bullet 6 · 金标准)  -->
+<!-- ====================================================================== -->
+<h2 id="flow4">Flow 4 · 🔥 Host Class 深挖 / Host Class Deep-dive <span class="tag tag-time">~6 min</span></h2>
+
+<div class="card" style="border-left:4px solid #d97706;">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>AWS Vancouver · Senior Software Engineer (Jan 2024 – Feb 2025) · bullet 6:</strong></p>
+  <blockquote class="interviewer-note">
+    <span class="en-text">"Implemented global host class strategies across multiple regions to leverage trimmed group files, leading to improvements in Read Singleton Time and CPU utilization while showcasing proficiency in C++ and Python."</span><br><br>
+    <span style="color:#78350f;">"在多个 region 实施了 global host class 策略以利用 trimmed group files，带来了 Read Singleton Time 和 CPU 利用率的改善，同时展示了 C++ 和 Python 的熟练度。"</span>
+  </blockquote>
+  <p style="color:var(--text-muted); margin-top:8px;">🎯 <strong>考察意图（真伪金标准）/ Probing intent (authenticity gold standard)：</strong>这是整份简历<strong>技术细节最具体、最 internal-AWS-flavored、最可验证</strong>的一条。4 个名词全是 AWS 内部 jargon：<strong>host class</strong>（fleet 管理）/ <strong>trimmed group files</strong>（内部 config 元数据）/ <strong>Read Singleton Time</strong>（DynamoDB-flavored 内部 metric）/ multi-region。<br>
+  <span class="en-text">This is the most technically specific, most AWS-internal, most verifiable bullet in the resume. All 4 terms are AWS internal jargon.</span></p>
+  <p style="color:var(--text-muted); margin-top:8px;">⚖️ <strong>这条决定 prosper 的真伪 / This bullet decides his authenticity：</strong></p>
+  <ul style="color:var(--text-muted);">
+    <li>能讲清楚 + 给具体数字 = ✅ 真 AWS DynamoDB-adjacent 工程师，信他 Senior</li>
+    <li>大概能讲但数字含糊 = ⚠ 可能参与过但非 owner</li>
+    <li>讲不出 Read Singleton Time 是什么 = 🔴 <strong>基本判定简历是 LLM 包装</strong>（自己写在简历上的核心 metric 都不知道）</li>
+  </ul>
+</div>
+
+<!-- ===== FLOW 4 MAIN QUESTION ===== -->
+<h3 id="flow4-main">🎤 主问题 / Main Question — 项目背景 + 细节 + host class 是什么</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Your last bullet here is the most technically specific one — implementing global host class strategies across regions with trimmed group files. Can you walk me through the background and details of this project? What was the system? What problem were you trying to solve? And specifically — what is a 'host class' in this context? What does it represent?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你最后这条 bullet 是整段经历技术细节最具体的——在多 region 实施 global host class 策略，利用 trimmed group files。能介绍一下这个项目的背景和细节吗？是什么系统？要解决什么问题？以及具体来说——这里说的 'host class' 是什么概念？它代表什么？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>项目 owner 的服务名</strong>（必须能说出来）/ Can name the owning service</li>
+      <li><strong>"Host class" 的清晰解释</strong>——AWS 内部 host class 一般指"一组按硬件/资源/角色分类的主机集合"，用于 fleet 管理 / Clear explanation of what a host class is (typically a group of machines categorized by hardware/role for fleet management)</li>
+      <li>讲清楚<strong>"global" vs 此前的什么</strong>（一般是 regional → global 的演进）/ Articulates global vs the prior model (typically regional → global)</li>
+      <li>触发这个项目的<strong>具体问题</strong>（CPU 高？singleton 读慢？fleet 利用率不均？)</li>
+      <li>自己的<strong>角色</strong>——主导设计？实现 owner？还是某个 component 的 IC？/ His specific role</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>说不出 "host class" 是什么、含糊带过 → 🔴 <strong>致命</strong>，这是他简历上自己写的词 / Can't define "host class" he wrote on his resume — lethal</li>
+      <li>讲一段宽泛的"我们用了一些 strategy" / "提升了性能" → 没具体内容 / Vague "we used some strategies"</li>
+      <li>把 "host class" 跟 "instance type"（如 m5.large）混淆 → 不在 AWS 内部 fleet team 干过 / Confuses host class with instance type → never worked on AWS internal fleet</li>
+      <li>说不出服务名 → Senior 不可能 / Can't name the service</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 1 ===== -->
+<h3 id="flow4-followup1">↪ 追问 1 / Follow-up 1 — Read Singleton Time + CPU 提升在哪 / 多少 / 怎么测</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "You said this led to improvements in Read Singleton Time and CPU utilization. I want to dig into the numbers. Specifically — where exactly did the improvement happen (which path, which workload)? How much improvement? And how was it measured — what's Read Singleton Time as a metric, how is it defined, and how do you measure CPU utilization meaningfully in a multi-region fleet?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你说这带来了 Read Singleton Time 和 CPU utilization 的改善。我想挖一下具体的数字。具体来说——提升发生在哪里（哪条 path？哪种 workload？）？提升了多少？以及怎么测量的——Read Singleton Time 这个 metric 是什么、怎么定义的？在 multi-region fleet 里 CPU 利用率怎么测才有意义？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容（4 个必答点）/ What you want to hear (4 must-answer points):</h4>
+    <ol>
+      <li><strong>"Read Singleton Time" 的定义</strong>——这是 DynamoDB-flavored 内部 metric，跟 single-item read 的端到端 latency 有关。真做过这块的人能秒答 / Definition of Read Singleton Time — internal DynamoDB-flavored metric for single-item read latency</li>
+      <li><strong>具体数字</strong>：before / after（ms 数？百分比？P50/P99？）/ Concrete numbers: before / after (ms? percentile?)</li>
+      <li><strong>提升发生在哪条 path</strong>——是 read amplification 降了？cache hit rate 升了？还是热数据更集中了？/ Where exactly the improvement came from</li>
+      <li><strong>测量方法</strong>——用什么 metric pipeline / dashboard？是 synthetic probe 还是 production traffic 测的？/ Measurement methodology</li>
+    </ol>
+
+    <h4>🚩 红旗信号（任意一条触发就要重点扣分）/ Red flags (any one = major deduction):</h4>
+    <ul>
+      <li>🔴 <strong>说不出 Read Singleton Time 是什么</strong> → 简历是 LLM 包装的实锤 / Can't define Read Singleton Time = LLM-padded resume confirmed</li>
+      <li>🔴 "提升了很多 / significantly" 但说不出数字 → Senior 必须记得自己的核心成就数字 / "Significant improvement" with no numbers = Senior bar miss</li>
+      <li>数字过于"圆满"（"50% 提升"、"减半"）= 行业 generic answer / Suspiciously round numbers = generic</li>
+      <li>不知道 host class 的改动具体<strong>怎么</strong>影响 Read Singleton Time（因果链断了）→ 没真正 owner / Can't explain the causal chain</li>
+      <li>测量方法说不出 metric 系统名 → 没真上过 prod / Can't name the metrics system</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>主动讲<strong>因果链</strong>："global host class 让热数据更可能命中本地副本 → 减少 cross-AZ 调用 → Read Singleton Time 降低" 这种讲清楚机制的 / Articulates the causal mechanism</li>
+      <li>能讲<strong>哪些 workload 提升明显、哪些不明显</strong>（不是均匀提升）= 真看过数据 / Distinguishes workloads that improved a lot vs little</li>
+      <li>提到内部 metric pipeline 名（AWS 内部应该有特定的 metrics 系统名）/ Names the internal metrics system</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 2 ===== -->
+<h3 id="flow4-followup2">↪ 追问 2 / Follow-up 2 — 为什么 global host class？对 latency 有什么影响（反直觉陷阱）</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Help me understand the design choice — why did you go with a 'global' host class strategy? And here's the part that confuses me: naively, a global strategy across regions should INCREASE latency, because some requests now potentially cross regions. But you said Read Singleton Time improved. How does global help latency rather than hurt it?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "帮我理解一下这个设计决策——为什么选 'global' host class 这个方案？另外这里有一点让我有点困惑：直觉上 global 跨 region 的策略<strong>应该让 latency 更高才对</strong>（有些请求可能要跨 region 了）。但你说 Read Singleton Time 反而改善了。global 是怎么帮到 latency 而不是反过来损害的？"
+    </blockquote>
+
+    <p style="color:var(--text-muted);">⚡ <strong>为什么这题特别锋利 / Why this is sharp：</strong>这是<strong>反直觉陷阱题</strong>——任何只是简历挂名、没真做过的人，都会被"global 应该更慢"的直觉卡住。真做过的人能马上解释（很可能跟 trimmed group files / 数据局部性 / 配置传播延迟 这些更深的机制有关）。/ This is the counter-intuitive trap — anyone who didn't actually do the work will be stuck on "global should be slower". Real practitioners can immediately explain it.</p>
+
+    <h4>🎯 期望听到的内容（合格答案的方向）/ Expected answer direction:</h4>
+    <ul>
+      <li>"<strong>Global host class</strong>" 在 AWS 内部并不等于"跨 region 调用"——更可能指<strong>统一的全局 host 分类策略</strong>（同样的角色定义、同样的资源 profile 在所有 region 一致）/ "Global" doesn't mean "cross-region calls" — more likely "unified global host categorization applied to every region"</li>
+      <li>带来好处可能是：<strong>更精确的 capacity placement / 更好的数据局部性 / 配置传播更高效</strong> / Benefits likely from more precise capacity placement / better data locality / efficient config propagation</li>
+      <li>"Trimmed group files" 的作用——可能是减少了每个 host 加载的元数据量 → 启动快 / 内存低 / 配置匹配快 / Trimmed group files reduce metadata loaded per host → faster boot / less memory / quicker matching</li>
+      <li>对 latency 的影响——大概率不是 user-facing request latency，而是<strong>内部 service call latency 或者 cold-path latency</strong> / Latency impact likely on internal service-call or cold-path latency, not user-facing</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>🔴 被反直觉卡住，给出"我们做了优化所以就快了"的循环答案 / Stuck on the counter-intuitive part, gives circular "we optimized so it's faster"</li>
+      <li>把 global 解释成"跨 region 调用"——很可能没理解 AWS 内部 "global" 的含义 / Interprets "global" as "cross-region calls" — likely doesn't understand AWS internal meaning</li>
+      <li>讲不清 trimmed group files 起的作用 → 这词他自己写的却说不清 / Can't explain trimmed group files he wrote himself</li>
+      <li>讲不出<strong>设计决策的备选方案</strong>（"为什么不留 regional + smart routing？"）→ 没真参与设计 / Can't articulate alternatives considered → didn't participate in design</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>主动讲 trade-off：global 一致性更好但 <strong>blast radius 更大</strong>（一个错误 config 会全 region 出问题）/ Trade-off: global has wider blast radius</li>
+      <li>讲 rollout 策略（先 dev → 一个 region canary → 逐 region 推）/ Articulates phased rollout</li>
+      <li>能讲"为什么不选其他方案"——比如为什么不是 regional + 中心化 routing / Articulates why other approaches were rejected</li>
+    </ul>
+  </div>
+</details>
+
+<hr class="separator">
+
 <!-- ==================== NOTES ==================== -->
 <h2 id="notes">📝 Notes</h2>
 
@@ -800,6 +947,9 @@
       <tr><td>Flow 3: Consistency Model — 能否明确选择 / 讲清 trade-off (探测题 + stateless 分支)</td><td></td><td></td></tr>
       <tr><td>Flow 3: Failure &amp; Failover — Detection / Failover / In-flight 三点 <strong>(Senior bar)</strong></td><td></td><td></td></tr>
       <tr><td>Flow 3: Hot Partition — 自己系统的存储 + 怎么处理 hot partition <strong>(AWS 验证)</strong></td><td></td><td></td></tr>
+      <tr style="background:#fef3c7;"><td><strong>Flow 4: Host class 定义 — 能否清晰解释 host class 是什么 (基本盘)</strong></td><td></td><td></td></tr>
+      <tr style="background:#fef3c7;"><td><strong>Flow 4: Read Singleton Time — 能否定义 + 给数字 + 讲因果链 <strong>(🔴 真伪金标准)</strong></strong></td><td></td><td></td></tr>
+      <tr style="background:#fef3c7;"><td><strong>Flow 4: 设计决策 — 为什么 global / latency 反直觉 / trimmed group files 作用</strong></td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
     </tbody>
   </table>
