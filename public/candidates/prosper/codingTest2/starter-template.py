@@ -44,21 +44,16 @@ def multiply(A, B):
 
 
 
-# Expected outputs for the 7 sample inputs below (hardcoded so
-# the harness can self-check). DO NOT consult these inside
-# `multiply` — that would defeat the purpose.
+# Expected output for the sample input below (hardcoded so the
+# harness can self-check). DO NOT consult this inside `multiply`
+# — that would defeat the purpose.
 #
-# Input format: each non-empty line is two matrices separated
-# by whitespace, e.g.  [[1,2],[3,4]] [[5,6],[7,8]]
-_EXPECTED = [
-    [[58, 64], [139, 154]],
-    [[5, 6], [7, 8]],
-    [[12]],
-    [[32]],
-    [[4, 5, 6], [8, 10, 12], [12, 15, 18]],
-    [[-19, 22], [43, -50]],
-    [[5.5, 7.5], [2.0, 3.0]],
-]
+# Sample input (paste into the HackerRank Input box):
+#
+#     [[1, 2, 3], [4, 5, 6]]
+#     [[7, 8], [9, 10], [11, 12]]
+#
+_EXPECTED = [[58, 64], [139, 154]]
 
 _EPS = 1e-6
 
@@ -133,43 +128,45 @@ def _fmt(M):
 
 
 def _main():
-    raw_lines = [ln.strip() for ln in sys.stdin if ln.strip()]
-    correct = 0
-    total = 0
-    for raw in raw_lines:
-        mats = _extract_matrices(raw)
-        if len(mats) < 2:
-            print(f"failed to parse {raw!r}: expected two matrices A B")
-            continue
-        try:
-            A = ast.literal_eval(mats[0])
-            B = ast.literal_eval(mats[1])
-        except Exception as e:
-            print(f"failed to parse {raw!r}: {e}")
-            continue
-        if not _is_matrix(A) or not _is_matrix(B):
-            print(f"failed to parse {raw!r}: A or B is not a numeric matrix")
-            continue
+    text = sys.stdin.read()
+    mats = _extract_matrices(text)
+    if len(mats) < 2:
+        print(f"failed to parse input: expected two matrices A and B, got {len(mats)}")
+        print("-" * 32)
+        print("Result: 0 / 1 correct")
+        return
+    try:
+        A = ast.literal_eval(mats[0])
+        B = ast.literal_eval(mats[1])
+    except Exception as e:
+        print(f"failed to parse input: {e}")
+        print("-" * 32)
+        print("Result: 0 / 1 correct")
+        return
+    if not _is_matrix(A) or not _is_matrix(B):
+        print("failed to parse input: A or B is not a numeric matrix")
+        print("-" * 32)
+        print("Result: 0 / 1 correct")
+        return
 
-        label = f"multiply({_fmt(A)}, {_fmt(B)})"
-        try:
-            C = multiply(A, B)
-        except Exception as e:
-            print(f"{label} raised {type(e).__name__}: {e}")
-            total += 1
-            continue
+    label = f"multiply({_fmt(A)}, {_fmt(B)})"
+    try:
+        C = multiply(A, B)
+    except Exception as e:
+        print(f"{label} raised {type(e).__name__}: {e}")
+        print("-" * 32)
+        print("Result: 0 / 1 correct")
+        return
 
-        if total >= len(_EXPECTED):
-            print(f"{label} = {_fmt(C)}  (no expected; bonus case)")
-        elif _close(C, _EXPECTED[total]):
-            print(f"{label} = {_fmt(C)}  ✓")
-            correct += 1
-        else:
-            print(f"{label} = {_fmt(C)}  ✗  expected {_fmt(_EXPECTED[total])}")
-        total += 1
+    if _close(C, _EXPECTED):
+        print(f"{label} = {_fmt(C)}  ✓")
+        correct = 1
+    else:
+        print(f"{label} = {_fmt(C)}  ✗  expected {_fmt(_EXPECTED)}")
+        correct = 0
 
     print("-" * 32)
-    print(f"Result: {correct} / {total} correct")
+    print(f"Result: {correct} / 1 correct")
 
 
 _main()

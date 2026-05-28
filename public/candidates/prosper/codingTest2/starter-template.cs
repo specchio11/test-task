@@ -54,21 +54,19 @@ class Solution
 
 
 
-    // Expected outputs for the 7 sample inputs (hardcoded so the
-    // harness can self-check). DO NOT consult these inside
-    // `Multiply` — that would defeat the purpose.
+    // Expected output for the sample input (hardcoded so the harness
+    // can self-check). DO NOT consult this inside `Multiply` — that
+    // would defeat the purpose.
     //
-    // Input format: each non-empty line is two matrices separated
-    // by whitespace, e.g.  [[1,2],[3,4]] [[5,6],[7,8]]
-    static readonly double[][][] _Expected = new double[][][]
+    // Sample input (paste into the HackerRank Input box):
+    //
+    //     [[1, 2, 3], [4, 5, 6]]
+    //     [[7, 8], [9, 10], [11, 12]]
+    //
+    static readonly double[][] _Expected = new double[][]
     {
-        new double[][] { new double[] {58, 64}, new double[] {139, 154} },
-        new double[][] { new double[] {5, 6}, new double[] {7, 8} },
-        new double[][] { new double[] {12} },
-        new double[][] { new double[] {32} },
-        new double[][] { new double[] {4, 5, 6}, new double[] {8, 10, 12}, new double[] {12, 15, 18} },
-        new double[][] { new double[] {-19, 22}, new double[] {43, -50} },
-        new double[][] { new double[] {5.5, 7.5}, new double[] {2.0, 3.0} },
+        new double[] {58, 64},
+        new double[] {139, 154},
     };
 
     const double _Eps = 1e-6;
@@ -194,51 +192,46 @@ class Solution
     {
         Console.OutputEncoding = Encoding.UTF8;
         string input = Console.In.ReadToEnd();
-        int correct = 0;
-        int total = 0;
 
-        using var reader = new StringReader(input);
-        string line;
-        while ((line = reader.ReadLine()) != null)
+        var mats = ExtractTopLevel(input);
+        if (mats.Count < 2)
         {
-            if (string.IsNullOrWhiteSpace(line)) continue;
-            var mats = ExtractTopLevel(line);
-            if (mats.Count < 2)
-            {
-                Console.WriteLine($"failed to parse '{line}': expected two matrices A B");
-                continue;
-            }
-            double[][] A, B;
-            try { A = ParseMatrix(mats[0]); B = ParseMatrix(mats[1]); }
-            catch (Exception e)
-            {
-                Console.WriteLine($"failed to parse '{line}': {e.Message}");
-                continue;
-            }
-
-            string label = $"Multiply({Fmt(A)}, {Fmt(B)})";
-            double[][] C;
-            try { C = Multiply(A, B); }
-            catch (Exception e)
-            {
-                Console.WriteLine($"{label} raised {e.GetType().Name}: {e.Message}");
-                total++;
-                continue;
-            }
-
-            if (total >= _Expected.Length)
-                Console.WriteLine($"{label} = {Fmt(C)}  (no expected; bonus case)");
-            else if (Close(C, _Expected[total]))
-            {
-                Console.WriteLine($"{label} = {Fmt(C)}  \u2713"); // ✓
-                correct++;
-            }
-            else
-                Console.WriteLine($"{label} = {Fmt(C)}  \u2717  expected {Fmt(_Expected[total])}"); // ✗
-            total++;
+            Console.WriteLine($"failed to parse input: expected two matrices A and B, got {mats.Count}");
+            Console.WriteLine(new string('-', 32));
+            Console.WriteLine("Result: 0 / 1 correct");
+            return;
+        }
+        double[][] A, B;
+        try { A = ParseMatrix(mats[0]); B = ParseMatrix(mats[1]); }
+        catch (Exception e)
+        {
+            Console.WriteLine($"failed to parse input: {e.Message}");
+            Console.WriteLine(new string('-', 32));
+            Console.WriteLine("Result: 0 / 1 correct");
+            return;
         }
 
+        string label = $"Multiply({Fmt(A)}, {Fmt(B)})";
+        double[][] C;
+        try { C = Multiply(A, B); }
+        catch (Exception e)
+        {
+            Console.WriteLine($"{label} raised {e.GetType().Name}: {e.Message}");
+            Console.WriteLine(new string('-', 32));
+            Console.WriteLine("Result: 0 / 1 correct");
+            return;
+        }
+
+        int correct = 0;
+        if (Close(C, _Expected))
+        {
+            Console.WriteLine($"{label} = {Fmt(C)}  \u2713"); // ✓
+            correct = 1;
+        }
+        else
+            Console.WriteLine($"{label} = {Fmt(C)}  \u2717  expected {Fmt(_Expected)}"); // ✗
+
         Console.WriteLine(new string('-', 32));
-        Console.WriteLine($"Result: {correct} / {total} correct");
+        Console.WriteLine($"Result: {correct} / 1 correct");
     }
 }

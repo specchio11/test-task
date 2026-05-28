@@ -54,22 +54,17 @@ Matrix multiply(const Matrix& A, const Matrix& B) {
 
 
 
-// Expected outputs for the 7 sample inputs (hardcoded so the
-// harness can self-check). DO NOT consult these inside
-// `multiply` — that would defeat the purpose.
+// Expected output for the sample input (hardcoded so the harness
+// can self-check). DO NOT consult this inside `multiply` — that
+// would defeat the purpose.
 //
-// Input format: each non-empty line is two matrices separated
-// by whitespace, e.g.  [[1,2],[3,4]] [[5,6],[7,8]]
-static vector<Matrix> _expected() {
-    return {
-        {{58, 64}, {139, 154}},
-        {{5, 6}, {7, 8}},
-        {{12}},
-        {{32}},
-        {{4, 5, 6}, {8, 10, 12}, {12, 15, 18}},
-        {{-19, 22}, {43, -50}},
-        {{5.5, 7.5}, {2.0, 3.0}},
-    };
+// Sample input (paste into the HackerRank Input box):
+//
+//     [[1, 2, 3], [4, 5, 6]]
+//     [[7, 8], [9, 10], [11, 12]]
+//
+static Matrix _expected() {
+    return {{58, 64}, {139, 154}};
 }
 
 static const double _EPS = 1e-6;
@@ -164,53 +159,43 @@ static string _fmt(const Matrix& M) {
     return o.str();
 }
 
-static bool _is_blank(const string& s) {
-    for (char c : s) if (!isspace((unsigned char)c)) return false;
-    return true;
-}
-
 int main() {
     string input((istreambuf_iterator<char>(cin)), istreambuf_iterator<char>());
-    vector<Matrix> expected = _expected();
+    Matrix expected = _expected();
+
+    vector<string> mats = _extract_top_level(input);
+    if (mats.size() < 2) {
+        cout << "failed to parse input: expected two matrices A and B, got "
+             << mats.size() << "\n";
+        cout << string(32, '-') << "\n";
+        cout << "Result: 0 / 1 correct\n";
+        return 0;
+    }
+    Matrix A = _parse_matrix(mats[0]);
+    Matrix B = _parse_matrix(mats[1]);
+
+    Matrix C;
+    try {
+        C = multiply(A, B);
+    } catch (const std::exception& e) {
+        cout << "multiply(" << _fmt(A) << ", " << _fmt(B)
+             << ") raised " << e.what() << "\n";
+        cout << string(32, '-') << "\n";
+        cout << "Result: 0 / 1 correct\n";
+        return 0;
+    }
+
+    string label = "multiply(" + _fmt(A) + ", " + _fmt(B) + ")";
     int correct = 0;
-    int total = 0;
-
-    istringstream iss(input);
-    string line;
-    while (getline(iss, line)) {
-        if (_is_blank(line)) continue;
-        vector<string> mats = _extract_top_level(line);
-        if (mats.size() < 2) {
-            cout << "failed to parse '" << line << "': expected two matrices A B\n";
-            continue;
-        }
-        Matrix A = _parse_matrix(mats[0]);
-        Matrix B = _parse_matrix(mats[1]);
-
-        Matrix C;
-        try {
-            C = multiply(A, B);
-        } catch (const std::exception& e) {
-            cout << "multiply(" << _fmt(A) << ", " << _fmt(B)
-                 << ") raised " << e.what() << "\n";
-            total++;
-            continue;
-        }
-
-        string label = "multiply(" + _fmt(A) + ", " + _fmt(B) + ")";
-        if (total >= (int)expected.size()) {
-            cout << label << " = " << _fmt(C) << "  (no expected; bonus case)\n";
-        } else if (_close(C, expected[total])) {
-            cout << label << " = " << _fmt(C) << "  \xE2\x9C\x93\n"; // ✓
-            correct++;
-        } else {
-            cout << label << " = " << _fmt(C)
-                 << "  \xE2\x9C\x97  expected " << _fmt(expected[total]) << "\n"; // ✗
-        }
-        total++;
+    if (_close(C, expected)) {
+        cout << label << " = " << _fmt(C) << "  \xE2\x9C\x93\n"; // ✓
+        correct = 1;
+    } else {
+        cout << label << " = " << _fmt(C)
+             << "  \xE2\x9C\x97  expected " << _fmt(expected) << "\n"; // ✗
     }
 
     cout << string(32, '-') << "\n";
-    cout << "Result: " << correct << " / " << total << " correct\n";
+    cout << "Result: " << correct << " / 1 correct\n";
     return 0;
 }
