@@ -305,13 +305,28 @@
   </div>
 
   <div class="qp-group">
-    <div class="qp-group-title" style="color:#cbd5e1;">Flow 2 — 待添加</div>
-    <a class="qp-nested muted" href="#flow2" onclick="jump('flow2');return false;">🚧 Public API 设计纪律</a>
+    <div class="qp-group-title">Flow 2 — 🛠️ Resurrect 危险 ops</div>
+    <a class="qp-sub-title orange" href="#flow2-main" onclick="jump('flow2-main');return false;">🎤 主问题：什么是 expired backup + resurrect 场景</a>
+    <a class="qp-nested" href="#flow2-followup1" onclick="jump('flow2-followup1');return false;">↪ 追问 1：Guardrails 谁能调 🌟</a>
+    <a class="qp-nested" href="#flow2-followup2" onclick="jump('flow2-followup2');return false;">↪ 追问 2：Retention/合规约束 🌟🌟</a>
+    <a class="qp-nested" href="#flow2-followup3" onclick="jump('flow2-followup3');return false;">↪ 追问 3：&quot;from log line&quot; 实现</a>
   </div>
 
   <div class="qp-group">
-    <div class="qp-group-title" style="color:#cbd5e1;">Flow 3 — 待添加</div>
-    <a class="qp-nested muted" href="#flow3" onclick="jump('flow3');return false;">🚧 危险运维 + 分布式知识</a>
+    <div class="qp-group-title">Flow 3 — 🧬 Anti-entropy + Delegated Admin</div>
+    <a class="qp-sub-title orange" href="#flow3-main" onclick="jump('flow3-main');return false;">🎤 主问题：什么是 anti-entropy 🌟🌟</a>
+    <a class="qp-nested" href="#flow3-followup1" onclick="jump('flow3-followup1');return false;">↪ 追问 1：Delegated Admin 是什么 🌟🌟</a>
+    <a class="qp-nested" href="#flow3-followup2" onclick="jump('flow3-followup2');return false;">↪ 追问 2：两者为何一起测</a>
+  </div>
+
+  <div class="qp-group" style="background:#fffbeb; border-left:3px solid #d97706; padding-left:8px; border-radius:4px;">
+    <div class="qp-group-title">Flow 4 — 🔥 Ciena: JSON → Binary Streaming</div>
+    <a class="qp-sub-title orange" href="#flow4-main" onclick="jump('flow4-main');return false;">🎤 主问题：项目背景 + JSON 为什么是瓶颈</a>
+    <a class="qp-nested" href="#flow4-followup1" onclick="jump('flow4-followup1');return false;">↪ 追问 1：格式选择 + schema evolution</a>
+    <a class="qp-nested" href="#flow4-followup2" onclick="jump('flow4-followup2');return false;">↪ 追问 2：&quot;Streaming&quot; 戳穿术语 + memory bounded 🌟</a>
+    <a class="qp-nested" href="#flow4-followup3" onclick="jump('flow4-followup3');return false;">↪ 追问 3：数字 (before / after / 怎么测)</a>
+    <a class="qp-nested" href="#flow4-followup4" onclick="jump('flow4-followup4');return false;">↪ 追问 4：兼容性 / client cutover</a>
+    <a class="qp-nested" href="#flow4-followup5" onclick="jump('flow4-followup5');return false;">↪ 追问 5：disconnect 场景 🌟🌟</a>
   </div>
 
   <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
@@ -321,15 +336,15 @@
 <!-- ===== MAIN ===== -->
 <div class="container">
 
-<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~20 min</span></h1>
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~37 min</span></h1>
 
 <div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
   <h4>🎤 引导进入技术问答 / Introduce Technical Q&amp;A</h4>
   <blockquote class="ask-en">
-    "Great, thanks for the intro. I'd like to spend some time digging into your recent work at AWS — I'll pick a couple of bullets from your resume and ask you to walk me through them in detail."
+    "Great, thanks for the intro. I'd like to spend some time digging into your recent work — mostly your AWS bullets, and possibly one from your Ciena SaaS experience. I'll pick a couple of bullets from your resume and ask you to walk me through them in detail."
   </blockquote>
   <blockquote class="ask-cn">
-    "好的，谢谢你的介绍。接下来我想花一些时间深入了解你在 AWS 最近的工作经历——我会从你简历里挑几个 bullet，请你详细给我讲讲。"
+    "好的，谢谢你的介绍。接下来我想花一些时间深入了解你最近的工作经历——主要会问 AWS 的 bullet，也可能会聊一个 Ciena SaaS 的项目。我会从你简历里挑几个 bullet，请你详细给我讲讲。"
   </blockquote>
 </div>
 
@@ -345,17 +360,23 @@
         <td>BAM 跨 region 扩展 / BAM cross-region expansion</td>
         <td>~10 min</td>
       </tr>
-      <tr style="opacity:0.5;">
+      <tr>
         <td>Flow 2</td>
-        <td>AWS Vancouver SDE II · Bullet ③ + ④ — "instant access to restored backup" + "Aligned public API attributes..."</td>
-        <td>🚧 Public API 设计纪律 / Public API discipline <em>(待添加)</em></td>
-        <td>~7 min</td>
-      </tr>
-      <tr style="opacity:0.5;">
-        <td>Flow 3</td>
-        <td>AWS Vancouver SDE II · Bullet ② + ⑤ — "resurrect expired backup" + "anti-entropy workflows ... Delegated Admin"</td>
-        <td>🚧 危险运维 + 分布式知识深度 / Dangerous ops + distsys depth <em>(待添加)</em></td>
+        <td>AWS Vancouver SDE II · Bullet ② — "Developed an operations tool to <strong>resurrect expired backup</strong> from log line, improving incident recovery workflows"</td>
+        <td>🛠️ Resurrect tool — 危险 ops + 合规 / Dangerous ops + compliance</td>
         <td>~8 min</td>
+      </tr>
+      <tr>
+        <td>Flow 3</td>
+        <td>AWS Vancouver SDE II · Bullet ⑤ — "Integrated and validated <strong>anti-entropy workflows</strong> by contributing integration tests for AWS Org's <strong>Delegated Admin</strong> feature"</td>
+        <td>🧬 Distsys 真假 + AWS Org 体系 / Distsys depth + AWS Org knowledge</td>
+        <td>~6 min</td>
+      </tr>
+      <tr style="background:#fffbeb;">
+        <td><strong>Flow 4 🔥</strong></td>
+        <td>Ciena · SaaS · Bullet ① — "Enhanced RESTful API endpoints performance by replacing JSON serialization with <strong>binary streaming</strong>"</td>
+        <td><strong>🔥 JSON → 二进制流 / Binary streaming (perf engineering + 真伪 prod streaming 测试)</strong></td>
+        <td>~13 min</td>
       </tr>
     </tbody>
   </table>
@@ -546,34 +567,632 @@
 <hr class="separator">
 
 <!-- ====================================================================== -->
-<!--   FLOW 2 PLACEHOLDER (Bullet ③ + ④)                                    -->
+<!--   FLOW 2: RESURRECT EXPIRED BACKUP (AWS Vancouver · Bullet ②)           -->
 <!-- ====================================================================== -->
-<h2 id="flow2">Flow 2 · 🔌 Public API 设计纪律 / Public API Discipline <span class="tag tag-time">~7 min · 待添加</span></h2>
+<h2 id="flow2">Flow 2 · 🛠️ Resurrect 危险运维工具 / Resurrect Dangerous Ops Tool <span class="tag tag-time">~8 min</span></h2>
 
-<div class="placeholder-card">
-  <p>🚧 <strong>待添加 / TBD</strong></p>
-  <p style="margin-top:10px; color:#7c2d12; font-size:16px;">
-    <strong>主带 bullet：</strong> ③ "Implemented APIs to grant customers instant access to restored backup resources"<br>
-    <strong>副带 bullet：</strong> ④ "Aligned public API attributes with internal backup, copy, and restore jobs, collaborating with PM and PE"<br><br>
-    <strong>规划追问：</strong> 主问题 (request lifecycle) → 追问 1 (idempotency) → 追问 2 (public API breaking change ship 流程 — 🌟 Senior bar) → 追问 3 备用 (pagination / observability)
-  </p>
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>Amazon Web Services · Vancouver, BC · Software Development Engineer II (May 2025 – Present), Bullet ②:</strong></p>
+  <blockquote class="interviewer-note">
+    <span class="en-text">"Developed an operations tool to <strong>resurrect expired backup</strong> from log line, improving incident recovery workflows."</span><br><br>
+    <span style="color:#78350f;">"开发了一个运维工具，可以从 log line 里 resurrect 已过期的 backup，改善了事故恢复流程。"</span>
+  </blockquote>
+  <p style="color:var(--text-muted); margin-top:8px;">🎯 <strong>考察意图 / Probing intent：</strong>这条 bullet 表面是个 ops 工具，但本质是 5 条里最敏感的——"复活已过期 backup"踩在 <strong>合规承诺</strong> / <strong>GDPR right-to-be-forgotten</strong> / <strong>insider threat</strong> 三条红线上。问题主线不是 "功能怎么实现"，而是 <strong>"这把刀谁能拿、什么时候能挥、挥错了怎么办"</strong>。真做过危险 ops 工具的人第一反应是讲 guardrails，不是讲算法。<br>
+  <span class="en-text">On the surface this is an ops tool — but it's the most sensitive bullet of the five. "Resurrect expired backup" sits on three red lines: compliance commitments, GDPR right-to-be-forgotten, and insider threat. The line of questioning isn't "how is it implemented", it's "who can wield this blade, when, and what if they swing wrong". People who've actually built dangerous ops tools talk guardrails first, algorithms second.</span></p>
 </div>
+
+<!-- ===== FLOW 2 MAIN QUESTION ===== -->
+<h3 id="flow2-main">🎤 主问题 / Main Question — 什么是 expired backup + 谁在什么场景需要 resurrect / What is expired backup, and who needs to resurrect one</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Before we dive in — let's set context. What does 'expired backup' actually mean in AWS Backup? And who needs to resurrect one — what's the typical incident or use case that triggers using this tool? And what are the inputs and outputs of the tool you built?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "在深入之前——先讲讲背景。在 AWS Backup 里，'expired backup' 到底意味着什么？谁需要 resurrect 它——典型的事故或 use case 是什么，会触发使用这个工具？你做的这个工具，<strong>输入是什么、输出是什么</strong>？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>清晰定义 expired：</strong>客户配的 retention policy 触发了 backup 的删除——AWS Backup 把它从主索引里移除 / 不再可见；不一定等于物理删除（可能 metadata 还在、data 也可能在 soft-deleted 窗口） / Clear definition: customer's retention policy triggered backup deletion — removed from main index / no longer visible; not necessarily physical deletion (metadata may persist; data may be in soft-deleted window)</li>
+      <li><strong>明确受众：</strong>oncall SDE / TAM / customer escalation team 用的工具，<strong>不是 customer 自己调的 API</strong>。她必须强调这一点 / Clear audience: this is for oncall SDEs / TAMs / customer escalation teams — <strong>not</strong> a customer-facing API. She must call this out</li>
+      <li><strong>具体场景至少给一个：</strong>(a) 客户误删 retention policy → 想找回；(b) compliance investigation → 需要看某时间点的 backup；(c) CSE/TAM upgrade 紧急 case / At least one concrete scenario</li>
+      <li><strong>输入/输出讲清：</strong>输入 = log line（从 service log 或 CloudTrail 里捞出来的 audit entry）+ backup id + ticket id；输出 = metadata reference 让 backup 在系统里"再次可见"，可能不是 raw data 本身 / Input = log line + backup id + ticket id; output = metadata reference making the backup visible again (possibly not the raw data itself)</li>
+      <li><strong>🌟 主动声明这是 dangerous capability</strong>——不需要被问就说出 "这个工具能 bring back 本来应该消失的数据" / <strong>Bonus:</strong> spontaneously flags this as a dangerous capability without being prompted</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>只复述 bullet "复活一个过期的 backup 让客户能用" — 没讲场景、没讲受众、没讲输入输出 = <strong>packaging</strong> / Just paraphrases the bullet — no scenario, no audience, no I/O = packaging</li>
+      <li>把 "expired" 等同于 "deleted"，不区分 hard delete / soft delete / GC-pending / Treats "expired" as identical to "deleted" with no nuance</li>
+      <li>说 customer 自己能调这个工具 / API — 完全不懂这是危险 ops 工具 / Says customers can call this themselves — doesn't understand this is a dangerous ops tool</li>
+      <li>主问题答到一半没主动说出 "这能 bring back 不该存在的数据" — 危险意识缺失 / Doesn't spontaneously flag the danger</li>
+    </ul>
+
+    <h4>💡 如果她讲得太抽象 / If she stays abstract:</h4>
+    <blockquote class="ask-en">
+      "Walk me through a concrete incident. A customer pages your team at 3am — what happened, what do they want, and what does using this tool actually look like end-to-end?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "给我讲一个具体事故。客户凌晨 3 点 page 你的 team——发生了什么？他们想要什么？端到端用这个工具是什么样？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 2 FOLLOW-UP 1 ===== -->
+<h3 id="flow2-followup1">↪ 追问 1 / Follow-up 1 — Guardrails: 谁能调、怎么防误用 / Guardrails: Who can call, how to prevent misuse <span class="tag tag-senior">🌟 Senior 指示器</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "OK, so this tool can bring back data that was supposed to be gone — that's a dangerous capability. Imagine you're the owner of this tool. A SDE2 on oncall pages you at 3am and says 'I need to resurrect a customer's backup right now, can I just run this?' Walk me through the <strong>access control, approval flow, and audit chain</strong> you designed."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "OK——那这个工具能让本来该消失的数据重新出现，这是一个<strong>危险能力</strong>。设想你是这个工具的 owner。一个 SDE2 凌晨 3 点 oncall page 你，说"我现在要 resurrect 一个客户的 backup，直接跑就行吗？"。给我讲讲你设计的 <strong>access control、approval 流程、audit chain</strong>。"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>IAM 不够，必须有 break-glass / two-person rule</strong>——资深 oncall + manager 双批准才能跑；不能是单人一票通过 / IAM alone insufficient — needs break-glass / two-person rule (senior oncall + manager dual-approval)</li>
+      <li><strong>必须绑 ticket：</strong>tool 调用时强制 require 一个 ticket ID（SIM/Jira）作为参数，没 ticket / 不合法的 ticket 直接 reject / Mandatory ticket binding: tool invocation requires a ticket ID (SIM/Jira) as parameter; no ticket or invalid ticket = rejected</li>
+      <li><strong>Time-bounded credential：</strong>approval 只授权一次性 / 短时（如 30 min）token，过期自动失效，不能 hoard / Time-bounded one-shot credential, expires automatically (e.g. 30 min)</li>
+      <li><strong>独立的 audit trail：</strong>每次调用 + parameters + caller identity + ticket + approver 全部写入 <strong>独立 ops audit log</strong>（不跟普通 service log 混在一起），并 trigger 实时 notification 到 security team / Independent ops audit log (separate from service logs), with real-time notification to security team</li>
+      <li><strong>事后 review 是制度：</strong>每次使用必须有 weekly review；同一客户重复用 / 高频用 trigger 自动审计 / Mandatory weekly review of all invocations; repeat use on same customer triggers automatic audit</li>
+      <li><strong>Scope blast radius：</strong>tool 一次只能对一个 backup id 操作，<strong>不能批量</strong>。批量是危险信号 / One backup id per invocation — no batch operations (batch = danger signal)</li>
+      <li><strong>Idempotency：</strong>同一个 backup id 调两次 = <strong>no-op or reject</strong>，不能发出第二个 metadata reference。原因：oncall 状态下重试是常态，不能让重试变成「资源被 resurrect 两次」/ Idempotency: same backup id called twice = <strong>no-op or reject</strong>; never emit a second metadata reference. Retries are normal in oncall — retry must not duplicate the resource</li>
+      <li><strong>💎 加分：</strong>主动提 <strong>default dry-run</strong>——必须显式 <code>--execute</code> 才真跑，默认只 print 影响 / <strong>Bonus:</strong> default dry-run; explicit <code>--execute</code> required to actually run</li>
+      <li><strong>💎 加分：</strong>主动提 confused deputy / insider threat 风险，提到 attacker 拿到 oncall 账号怎么办 / <strong>Bonus:</strong> spontaneously raises confused deputy / insider threat, addresses compromised oncall account scenario</li>
+      <li><strong>💎 加分 — Reversibility：</strong>主动提「resurrect 本身可能是 mistake」——怎么 undo？光删 metadata 不够，因为 customer 可能已经访问过；undo 还要<strong>审计从 resurrect 到 undo 之间的访问日志</strong>，识别是否有数据被拉走 / <strong>Bonus — Reversibility:</strong> spontaneously raises "what if resurrect itself was a mistake" — deleting metadata isn't enough, customer may have already accessed; undo must also <strong>audit the access log between resurrect and undo</strong> to detect data exfiltration</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"加个 IAM permission 限制" — junior 答案，没想到 IAM credential 本身就是攻击面 / "Add IAM permission restriction" — junior answer, doesn't realize IAM credentials are themselves an attack surface</li>
+      <li>"我们 oncall 都是受信任的人" — 完全不懂 insider threat 模型 / "Our oncall are trusted" — doesn't understand insider threat model</li>
+      <li>"只有 SDE3 以上能用" — 角色管控不等于 approval / audit / 可撤销 / Role-based access ≠ approval / audit / revocability</li>
+      <li>完全没提 ticket 绑定 / approval 流程 / 时间限制 中任何一个 / Mentions none of: ticket binding, approval flow, time limit</li>
+      <li>说 audit log 跟普通 log 一起存 — 没意识到 dangerous-ops log 必须独立 / Says audit log goes in regular log store — doesn't realize dangerous-ops log must be isolated</li>
+    </ul>
+
+    <h4>💡 如果她答得偏概念 / If she stays conceptual — 压成具体:</h4>
+    <blockquote class="ask-en">
+      "Let's get concrete. If you had to design the CLI invocation, what flags / args would be mandatory? And what does a single audit trail entry look like — what fields does it have?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "具体一点。如果你设计这个工具的 CLI 调用，<strong>哪些 flag / arg 是必填的</strong>？以及，一条 audit trail entry 长什么样——有哪些字段？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 2 FOLLOW-UP 2 ===== -->
+<h3 id="flow2-followup2">↪ 追问 2 / Follow-up 2 — Retention / 合规约束 / Retention &amp; Compliance Constraints <span class="tag tag-aws">🌟🌟 真做过 AWS 的人才答得出</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Here's a tougher one. A customer's retention policy is 90 days. A backup expired 100 days ago and was GC'd. Now an auditor needs that exact backup for a compliance investigation — the customer is paging you, urgent. Can your tool resurrect it? Yes / no / depends — <strong>walk me through the decision tree</strong>."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "更难的一题。一个客户的 retention policy 是 90 天，某个 backup <strong>100 天前过期了、已经被 GC 掉了</strong>。现在审计方要查看那个具体 backup 用于合规调查——客户在 page 你，紧急。你的工具<strong>能 resurrect 它吗？能 / 不能 / 看情况——给我讲讲决策树</strong>。"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>立刻区分 metadata vs data：</strong>metadata 可能还在（audit log / hot index），但 data（actual snapshot blocks）一旦 GC 后真没了——能区分意味着她真见过系统 / Immediately distinguishes metadata vs data: metadata may persist (audit log / hot index), but data (actual snapshot blocks) is truly gone post-GC — distinguishing = real system experience</li>
+      <li><strong>customer-side retention vs AWS-side retention 是两件事：</strong>客户配的 retention 是合同承诺；AWS 内部 GC 决定 physical 删除时间。中间可能有 "soft-deleted, recoverable" 窗口 / Customer-side retention (contractual commitment) ≠ AWS-side retention (physical GC timing). There's often a soft-deleted recoverable window between</li>
+      <li><strong>Legal hold / litigation hold 是 override：</strong>如果有 active legal hold，AWS 不应该 GC，那种情况可能能恢复；<strong>没 legal hold = 客户没主动配 = 不能恢复（合同上不该恢复）</strong> / Legal hold is the override: with active hold, AWS shouldn't have GC'd → recovery possible; <strong>no hold = customer didn't opt in = cannot recover (contract says no)</strong></li>
+      <li><strong>GDPR right-to-be-forgotten 是反向约束：</strong>EU region 里 customer 显式要求删除的数据，<strong>即使技术上能恢复也不该恢复</strong>——合规要求是真的删 / GDPR right-to-be-forgotten = reverse constraint: in EU regions, customer-requested deletions must be honored even if technically recoverable</li>
+      <li><strong>承认 "no" 是正确答案：</strong>成熟工程师会承认"超出 retention 就是不能恢复"，<strong>而不是发明一个 override flag</strong> / Mature answer: accepts "no" as correct — doesn't invent an override flag</li>
+      <li><strong>区域合规差异：</strong>不同 region 的 retention 默认规则不一样（healthcare 数据 7 年强制 / FedRAMP 特殊要求）/ Regional compliance differences (healthcare 7-year mandates, FedRAMP-specific rules, etc.)</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"客户要就给" / "加个 --force flag" — <strong>完全不懂合规</strong> / "Give it to them if they ask" / "Add a --force flag" — <strong>zero compliance awareness</strong></li>
+      <li>觉得 retention 就是个 timestamp，过了就过了，可以无差别恢复 / Treats retention as just a timestamp — once past, freely recoverable</li>
+      <li>把 customer-side retention 和 AWS-side GC 混为一谈 / Conflates customer-side retention with AWS-side GC</li>
+      <li>没提到 GDPR / right-to-be-forgotten / legal hold 任何一个词 / Mentions none of: GDPR / right-to-be-forgotten / legal hold</li>
+      <li>立刻说"能恢复" — 没意识到"能不能技术实现"和"该不该做"是两个问题 / Immediately says "recoverable" — doesn't separate "technically can" from "should"</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus signals:</h4>
+    <ul>
+      <li>主动反问："customer 明明配了 retention=90，结果你帮他恢复了 100 天前的数据，下次他打 lawsuit 你怎么 defend？" / Spontaneously poses: "customer set retention=90 but we recovered 100-day-old data — how do we defend in a lawsuit?"</li>
+      <li>区分 <strong>GDPR delete</strong>（显式删除诉求，绝不能恢复） vs <strong>retention expire</strong>（policy 触发，case-by-case） / Distinguishes GDPR delete vs retention expire</li>
+      <li>提到 audit / legal hold 是 backup 服务里独立的 attribute，不是 retention policy 的扩展 / Notes legal hold is an independent attribute, not a retention policy extension</li>
+    </ul>
+
+    <h4>💡 如果她答得太笼统 / If too generic — 拆成两个 sub-scenarios:</h4>
+    <blockquote class="ask-en">
+      "Let's split it. Same scenario, but in two flavors: (a) customer has a legal hold on file when the backup expired; (b) customer has no legal hold. Same answer for both?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "拆开来。同样的场景，分两种情况：(a) backup 过期时客户有 legal hold 在 file 上；(b) 客户没有 legal hold。两种情况你的答案一样吗？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 2 FOLLOW-UP 3 ===== -->
+<h3 id="flow2-followup3">↪ 追问 3 / Follow-up 3 — &quot;from log line&quot; 实现细节 / &quot;From Log Line&quot; Implementation Detail</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Last bit — let's talk implementation. The bullet says 'from log line'. That implies the metadata is gone from the metadata store but reconstructible from a log. Walk me through: <strong>which log are you reading? How do you parse it? And what happens when the log schema changed three months ago and the entry you need is in the old format?</strong>"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "最后一段——讲讲实现。bullet 说 'from log line'。这暗示 metadata 在 metadata store 里已经没了，但能从 log 里重建。给我讲讲：<strong>你读的是哪个 log？怎么 parse？以及——如果 log schema 三个月前改过，你要找的 entry 是旧格式，怎么办？</strong>"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>具体说出 log 来源：</strong>service-internal audit log / DynamoDB stream 的 archived 部分 / CloudTrail / S3 access log——能说出具体名字 / Names the specific log source: service-internal audit log / archived DynamoDB stream / CloudTrail / S3 access log</li>
+      <li><strong>解释为什么 metadata store 已经没了：</strong>TTL / GC 设计本来就是 metadata 跟数据一起删，所以才需要从 log 重建 / Explains why metadata store is empty: TTL/GC by design removes metadata with data, hence log reconstruction</li>
+      <li><strong>Parse 方法用 schema-versioned codec：</strong>不是 hardcode regex；每个 log entry 带 schema version field / Uses schema-versioned codec, not hardcoded regex; entries carry schema version</li>
+      <li><strong>Backward-compat 策略：</strong>旧版 schema 的 parser 不能删 — 要么保留所有历史版本的 parser，要么一次性 migrate 旧日志到新 schema / Backward-compat: keep all historical parsers, OR one-time migrate old logs to new schema</li>
+      <li><strong>字段缺失处理：</strong>旧 schema 可能没新字段 → tool 用 best-effort 还原 + warning to operator / Field absence: tool reconstructs best-effort + warns operator</li>
+      <li><strong>🌟 关键 — 标记 "resurrected"：</strong>reconstructed metadata 必须打 <code>origin=resurrected</code> tag，<strong>不能跟正常 metadata 完全等同</strong>。否则下游 audit / customer query 无法区分真实 backup 和重建 backup / <strong>Critical:</strong> reconstructed metadata must be tagged <code>origin=resurrected</code> — must NOT be indistinguishable from native metadata</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"用 regex parse" — 没考虑 schema 演进；维护噩梦 / "Use regex parse" — ignores schema evolution; maintenance nightmare</li>
+      <li>不知道日志在哪个 store / log 名字说不上来 — <strong>bullet 是假的</strong> / Doesn't know which log store / can't name the log — <strong>bullet is padded</strong></li>
+      <li>觉得 schema 改了就 break 是 acceptable — 没 migration plan / Treats schema change as breaking — no migration plan</li>
+      <li>没提 "标记 resurrected" — reconstruction 的产物跟原物不应该完全等同 / Doesn't mention tagging resurrected — reconstruction output should not equal native</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus signals:</h4>
+    <ul>
+      <li>主动提：resurrected metadata 应该有 <strong>lower trust level</strong>——不能直接给客户当 query source，需要人工 verify 后才晋升 / Spontaneously: resurrected metadata at lower trust level — needs human verify before promotion</li>
+      <li>提到 schema registry（如 Glue Schema Registry）或 protobuf wire compat / Mentions schema registry (Glue Schema Registry) or protobuf wire compat</li>
+      <li>区分 forward compat 和 backward compat / Distinguishes forward vs backward compatibility</li>
+      <li><strong>Validation before action：</strong>主动提「parse 完后、真 resurrect 之前要 cross-check」——log line 里的 customer account id 是否跟 ticket 里的 customer 一致？backup 是否<strong>真的处于 expired 状态</strong>（不是 active backup、也不是 legal-hold 中的）？ticket 状态是否 still open？三项任一失败就 reject。这是防 oncall 手抖的最后一道闸 / <strong>Validation before action:</strong> spontaneously raises "after parse, before actual resurrect, cross-check" — does log-line customer id match ticket customer? Is backup <strong>actually in expired state</strong> (not active, not under legal hold)? Is ticket still open? Reject if any fails. Last gate against oncall fat-finger</li>
+    </ul>
+
+    <h4>💡 如果她想再展开 / If you want one more — corruption scenario:</h4>
+    <blockquote class="ask-en">
+      "If the log entry you need is partially corrupted — some fields readable, some not — does your tool succeed, fail, or partial-succeed? What's the contract?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "如果你要的那条 log entry 部分 corrupt——一些字段能读、一些读不出来——你的工具是 succeed、fail，还是 partial-succeed？契约是什么？"
+    </blockquote>
+  </div>
+</details>
 
 <hr class="separator">
 
 <!-- ====================================================================== -->
-<!--   FLOW 3 PLACEHOLDER (Bullet ② + ⑤)                                    -->
+<!--   FLOW 3: ANTI-ENTROPY + DELEGATED ADMIN (AWS Vancouver · Bullet ⑤)     -->
 <!-- ====================================================================== -->
-<h2 id="flow3">Flow 3 · 🛠️ 危险运维 + 分布式知识深度 / Dangerous Ops + Distsys Depth <span class="tag tag-time">~8 min · 待添加</span></h2>
+<h2 id="flow3">Flow 3 · 🧬 Anti-entropy + Delegated Admin <span class="tag tag-time">~6 min</span></h2>
 
-<div class="placeholder-card">
-  <p>🚧 <strong>待添加 / TBD</strong></p>
-  <p style="margin-top:10px; color:#7c2d12; font-size:16px;">
-    <strong>主带 bullet：</strong> ② "Developed an operations tool to resurrect expired backup from log line"<br>
-    <strong>副带 bullet：</strong> ⑤ "Integrated and validated anti-entropy workflows by contributing integration tests for AWS Org's Delegated Admin feature"<br><br>
-    <strong>规划追问：</strong> 主问题 (resurrection 工具安全模型) → 追问 1 (anti-entropy 真意 — 🌟🌟 AWS 验证) → 追问 2 (DynamoDB hot partition — 🌟 AWS 验证) → 追问 3 备用 (cell architecture)
-  </p>
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>Amazon Web Services · Vancouver, BC · Software Development Engineer II (May 2025 – Present), Bullet ⑤:</strong></p>
+  <blockquote class="interviewer-note">
+    <span class="en-text">"Integrated and validated <strong>anti-entropy workflows</strong> by contributing integration tests for AWS Org's <strong>Delegated Admin</strong> feature."</span><br><br>
+    <span style="color:#78350f;">"通过为 AWS Org 的 Delegated Admin feature 贡献 integration test，集成并验证了 anti-entropy workflow。"</span>
+  </blockquote>
+  <p style="color:var(--text-muted); margin-top:8px;">🎯 <strong>考察意图 / Probing intent：</strong>这条 bullet 是<strong>全简历最值钱的一条</strong>——含两个极窄的术语：<strong>anti-entropy</strong>（Dynamo/Cassandra 血统的具体词）和 <strong>Delegated Admin</strong>（AWS Org 体系内非常窄的 feature）。两个词都不在 distsys / AWS 圈子里待过的人不会条件反射用。<strong>注意她措辞极其诚实——她说的是 "contributing integration tests"，不是 "implemented anti-entropy"。</strong>所以主问题不能问 "你怎么实现的"，那样不公平也戳不出真假。正确问法是<strong>"你要测它，必须先理解它——讲讲它在干嘛"</strong>。<br>
+  <span class="en-text">This is the highest-value bullet of the resume — contains two extremely narrow terms: <strong>anti-entropy</strong> (Dynamo/Cassandra-lineage word) and <strong>Delegated Admin</strong> (AWS Org-internal feature). Both terms are reflex-only for people who've actually worked in distsys / AWS Org circles. Note her phrasing is honest — "contributing integration tests", not "implemented anti-entropy". So the right framing is "to test it, you must understand it — explain what it's doing".</span></p>
 </div>
+
+<!-- ===== FLOW 3 MAIN QUESTION ===== -->
+<h3 id="flow3-main">🎤 主问题 / Main Question — 什么是 anti-entropy / What is anti-entropy <span class="tag tag-aws">🌟🌟 真做过 AWS 的人才答得出</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Let's start with terminology. 'Anti-entropy' — where does that term come from, and in the service you tested, what is it <strong>actually doing</strong>? What's the input divergence state, and what's the output converged state?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "先从术语开始。'Anti-entropy'——这个词来自哪里？在你测的这个 service 里，它<strong>到底在干什么</strong>？输入的不一致状态是什么样？输出的一致状态又是什么样？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>词源：</strong>Dynamo paper (Amazon, 2007) / Cassandra；不是泛指 "reconciliation" / Etymology: Dynamo paper (Amazon, 2007) / Cassandra — not generic "reconciliation"</li>
+      <li><strong>至少能讲出一个具体机制：</strong>Merkle tree comparison / read repair / hinted handoff / gossip-based reconciliation 中的任意一个，并能解释 trigger 和效果 / At least one specific mechanism: Merkle tree comparison / read repair / hinted handoff / gossip reconciliation — with trigger and effect</li>
+      <li><strong>讲清场景：</strong>分布式系统里 replica 之间因 network partition / node failure / clock skew 等导致状态分叉；anti-entropy 是 <strong>background 主动收敛</strong>机制——区别于 read-time 的 read repair / Articulates scenario: replicas diverge due to partition / node failure / clock skew; anti-entropy is <strong>background active convergence</strong>, distinct from read-time read repair</li>
+      <li><strong>在 BAM / AWS Backup 场景具体讲：</strong>可能是跨 region 的 audit data 副本 / 跨 account 的 backup metadata 副本之间的最终一致性收敛 / Concrete BAM/AWS Backup context: eventual convergence across cross-region audit data replicas or cross-account metadata replicas</li>
+      <li><strong>🌟 诚实承认边界：</strong>"我贡献的是 integration test，不是 anti-entropy 算法本身"——主动澄清，这是 senior 的诚实信号 / Honestly acknowledges scope: "I contributed tests, didn't implement the algorithm" — senior honesty signal</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"就是保持一致性" — 同义反复，没具体词汇 / "It's about consistency" — tautology with no vocabulary</li>
+      <li>不知道术语来源 / 把它当通用术语 / Doesn't know etymology / treats as a generic term</li>
+      <li>把 anti-entropy 跟 transaction / consensus (Paxos/Raft) 搞混 — <strong>完全不同 quadrant</strong>，consensus 是强一致前置，anti-entropy 是 eventual 后置 / Confuses anti-entropy with transactions / consensus (Paxos/Raft) — <strong>different quadrant entirely</strong></li>
+      <li>完全没提 Dynamo / Cassandra / Merkle tree / read repair / hinted handoff 任何一个 / Mentions none of the canonical terms</li>
+      <li>夸大自己的角色 — 把 "贡献 test" 说成 "设计了系统" / Inflates her role — describes contributing tests as designing the system</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus signals:</h4>
+    <ul>
+      <li>主动提 <strong>CAP 取舍</strong>：anti-entropy 是 AP 系统的标准 pattern，CP 系统用不到 / Spontaneously CAP framing: anti-entropy is the standard pattern for AP systems, irrelevant in CP</li>
+      <li>提到 <strong>vector clock / version vector</strong> 之类辅助机制 / Mentions vector clock / version vector</li>
+      <li>讨论 eventual consistency 的<strong>实际收敛窗口</strong>（不是"最终"两个字了事）/ Discusses actual convergence window of eventual consistency (not just hand-waving "eventual")</li>
+    </ul>
+
+    <h4>💡 如果她答得太泛 / If too general:</h4>
+    <blockquote class="ask-en">
+      "Pick one specific mechanism — Merkle tree comparison, read repair, or hinted handoff — and explain what triggers it and what state it changes."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "挑一个具体机制——Merkle tree comparison、read repair、或者 hinted handoff——讲讲它是什么触发的、改了什么状态。"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 3 FOLLOW-UP 1 ===== -->
+<h3 id="flow3-followup1">↪ 追问 1 / Follow-up 1 — Delegated Admin 是什么 / What is Delegated Admin <span class="tag tag-aws">🌟🌟 真做过 AWS 的人才答得出</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Now switch contexts — <strong>Delegated Admin in AWS Organizations</strong>. Explain the model: what's the relationship between the management account and the delegated admin account in your service? Where's the <strong>boundary</strong> of what each can do? And how is this different from a plain cross-account IAM role?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "切换一下——AWS Organizations 的 <strong>Delegated Admin</strong>。给我讲讲这个模型：在你这个 service 里，<strong>management account 和 delegated admin account 是什么关系</strong>？各自的权限<strong>边界</strong>在哪？以及——它跟普通的 cross-account IAM role 区别在哪？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>Delegated Admin 是 AWS Org-level 的 service-specific feature：</strong>management account 把某个具体 service 的 org-wide 操作权限委派给一个 member account（如 GuardDuty / Config / Backup / Security Hub 都支持）/ Delegated Admin is an org-level, service-specific feature — management account delegates a specific service's org-wide operations to a member account (GuardDuty / Config / Backup / Security Hub all support it)</li>
+      <li><strong>跟 cross-account IAM role 的本质区别：</strong>cross-account role 是 1:1 通用 sts:AssumeRole 机制，每个 service 都用；<strong>Delegated Admin 是 AWS 服务自身显式支持的 enrollment 模式</strong>——管理 account 不再需要自己跑这些 service 的 org-wide operation；权限是 service 内部 grant 的，不是靠 trust policy / Fundamental difference from cross-account IAM role: cross-account role is the generic 1:1 sts:AssumeRole; <strong>Delegated Admin is service-native enrollment</strong> — management account no longer runs org-wide ops; permissions granted internally by the service, not via trust policy</li>
+      <li><strong>权限边界讲清：</strong>delegated admin 能看 / 管理整个 org 范围内<strong>该 service</strong> 的 resource；不能跨 service；management account 仍可 revoke / Boundary: delegated admin sees/manages org-wide resources for <strong>that service only</strong>; not cross-service; management account retains revoke</li>
+      <li><strong>典型 BAM 场景：</strong>客户希望把 audit 工作交给专门的 security/compliance team account，<strong>而不是 master/management account</strong>——遵循最小权限原则 / Typical BAM use case: customer wants audit work in a dedicated security/compliance account, not the management account — least-privilege</li>
+      <li><strong>知道具体 API：</strong><code>register-delegated-administrator</code> / <code>deregister-delegated-administrator</code>，或者讲得出 "调用 Org service 来 enroll" / Knows the API surface (<code>register-delegated-administrator</code> etc.) or can describe "calling Org service to enroll"</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"就是个跨账号 IAM role" — <strong>不区分两者</strong>，没在 AWS Org 圈做过 / "It's just a cross-account IAM role" — <strong>doesn't distinguish</strong>; hasn't worked in AWS Org circles</li>
+      <li>不知道为什么客户要用 Delegated Admin 而不直接 assume role / Doesn't know why customers prefer Delegated Admin over plain assume-role</li>
+      <li>不知道 management account 和 delegated admin account 在 service-level 上权限的区别 / Doesn't know the service-level permission difference</li>
+      <li>说不出 enroll / disenroll API 的存在 / 形式 / Can't name the enroll/disenroll API surface</li>
+      <li>把它说成 "就是个 admin 角色" / 跟 root user 混淆 / Calls it "just an admin role" / confuses with root user</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus signals:</h4>
+    <ul>
+      <li>主动提 <strong>SCPs / OU</strong> 跟 Delegated Admin 怎么交互（SCP 仍能限制 delegated admin 的 action）/ Mentions how SCPs / OUs interact with Delegated Admin (SCPs still bind delegated admin)</li>
+      <li>提到 <strong>一个 service 在一个 org 里通常只能有 1 个 (或受限的 N 个) delegated admin</strong> / Notes the cardinality constraint: one service in one org typically has 1 (or limited N) delegated admin</li>
+      <li>提到 <strong>security best practice：management account 不应该跑业务</strong>，应该把 service-level operation 都 delegate 出去 / Mentions security best practice: management account shouldn't run workloads — delegate all service ops out</li>
+      <li>提到 <strong>trusted access</strong>——Delegated Admin 需要先 enable trusted access for the service / Mentions trusted access — Delegated Admin requires enabling trusted access for the service first</li>
+    </ul>
+
+    <h4>💡 如果她讲不清差异 / If she can't distinguish — 用具体场景对比:</h4>
+    <blockquote class="ask-en">
+      "Concretely: a customer has an AWS org with 50 accounts and enables BAM. <strong>Without</strong> Delegated Admin, what do they have to do? <strong>With</strong> Delegated Admin enabled, what changes?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "具体一点：一个客户的 AWS org 有 50 个 account，他要 enable BAM。<strong>没有</strong> Delegated Admin 的话，他必须做什么？<strong>开了</strong> Delegated Admin 之后，什么变了？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 3 FOLLOW-UP 2 ===== -->
+<h3 id="flow3-followup2">↪ 追问 2 / Follow-up 2 — 为什么两者一起测？/ Why test these two together?</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Final question — and this is the one I really want your take on. <strong>Anti-entropy</strong> is about eventual state convergence across replicas. <strong>Delegated Admin</strong> is about cross-account permission delegation. Why are these two in the <strong>same test suite</strong>? What <strong>interaction</strong> between them forces you to validate them together?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "最后一题——这是我特别想听你想法的一题。<strong>Anti-entropy</strong> 是关于 replica 之间状态最终收敛。<strong>Delegated Admin</strong> 是关于 cross-account 权限委派。这两个为什么在<strong>同一个 test suite</strong> 里？它们之间有什么<strong>交互</strong>，迫使你必须把它们一起验证？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>关键洞察：Delegated Admin 加了一条新的 cross-account state 同步路径。</strong>当 delegated admin account 写入 / 修改 org-wide audit state 时，这个 state 必须 anti-entropy 收敛到所有 member account 的视图 / Key insight: <strong>Delegated Admin introduces a new cross-account state-sync path.</strong> When the delegated admin account writes org-wide audit state, that state must converge to all member accounts' views via anti-entropy</li>
+      <li><strong>反向路径也要 cover：</strong>member account 自己的 state change，要能被 delegated admin 看到（read path 同样依赖收敛）/ Reverse path: member account's local state changes must also be visible to delegated admin (read path equally depends on convergence)</li>
+      <li><strong>状态迁移测试：</strong>delegated admin 注册 / 撤销时，<strong>之前的 audit state 怎么 reassign</strong>？切换 delegated admin（admin A → admin B）时，半同步状态怎么过渡？/ State migration testing: when admin registers/deregisters, <strong>how is prior audit state reassigned?</strong> When admins switch (A → B), how do partial states transition?</li>
+      <li><strong>Race condition 思考：</strong>delegated admin 在 anti-entropy 收敛过程中如果被 revoke，半同步状态怎么处理？anti-entropy 能不能识别 "orphan state" / Race condition: if delegated admin is revoked mid-convergence, what happens to half-synced state? Can anti-entropy detect "orphan state"?</li>
+      <li><strong>🌟 真理解 system 的核心句：</strong>"Delegated Admin 不是独立功能——它本质上<strong>重定义了 ownership boundary</strong>，所以所有跟 cross-account ownership 相关的 invariant 都必须重新 verify，anti-entropy 就是其中最敏感的一个" / The key sentence of true system understanding: "Delegated Admin isn't a standalone feature — it <strong>redefines ownership boundary</strong>, so every cross-account-ownership invariant must be re-verified; anti-entropy is the most sensitive one"</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"因为它们都在同一个 service" — 答非所问，没讲交互 / "Because they're in the same service" — non-answer, no interaction articulated</li>
+      <li>"test suite 是按 feature 分的" — 把它当组织结构问题，不是技术问题 / "Test suites are grouped by feature" — treats it as an org-structure question, not technical</li>
+      <li>完全答不出关联，只是把两件事的定义各重复一遍 — 说明她只是按 PR 描述写 test，<strong>没整体理解 system</strong> / Can't articulate any connection — just restates both definitions — means she wrote tests by PR description without system-level understanding</li>
+      <li>说 "应该不是必须一起测，可能只是 sprint 分配" — 直接放弃了 — 没思考过这个问题 / "Probably not required to test together, maybe just sprint scheduling" — gives up — never thought about it</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus signals:</h4>
+    <ul>
+      <li>主动讲出 <strong>onboarding / offboarding 是 anti-entropy 必须特殊处理的状态变化</strong> / Spontaneously: onboarding / offboarding are state transitions anti-entropy must special-case</li>
+      <li>提到 <strong>split-brain</strong> 场景：management account 和 delegated admin account 在 partition 期间各自更新了 audit config，anti-entropy 怎么 resolve / Mentions split-brain: management + delegated admin both update audit config during partition — how does anti-entropy resolve?</li>
+      <li><strong>诚实的 senior 信号：</strong>"老实说这是我后来想清楚的，当时只是被 assign 这两个 test 一起做"——真诚 + 后置反思 / <strong>Honest senior signal:</strong> "To be honest I figured this out later — at the time I was just assigned both tests together" — sincerity + retrospective reflection</li>
+    </ul>
+
+    <h4>💡 如果她答不出关联 / If she can't see the connection — 给一个 angle:</h4>
+    <blockquote class="ask-en">
+      "Try this angle — what <strong>state ownership</strong> question does Delegated Admin introduce? And when <strong>ownership moves</strong>, what does anti-entropy have to do?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "换个角度——Delegated Admin 引入了什么<strong>状态 ownership</strong> 问题？当 <strong>ownership 移动</strong>时，anti-entropy 必须做什么？"
+    </blockquote>
+  </div>
+</details>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--   FLOW 4: CIENA · JSON → BINARY STREAMING (SaaS · Bullet ①)             -->
+<!-- ====================================================================== -->
+<h2 id="flow4">Flow 4 · 🔥 Ciena: JSON → 二进制流 / JSON → Binary Streaming <span class="tag tag-time">~13 min</span></h2>
+
+<div class="card" style="border-left: 4px solid #d97706; background:#fffbeb;">
+  <p style="margin:0;"><strong>📍 切换语境 / Switch context</strong>：从 AWS 切到 Ciena · SaaS · Bullet ① — <em>"Enhanced RESTful API endpoints performance by replacing JSON serialization with binary streaming"</em>。这是她履历里<strong>唯一一个具体、可验证、多维度的 perf engineering 决策</strong>，也是验证"真做过 prod streaming"还是"library 拿来用"的金标准。/ This is the only concrete, verifiable, multi-dimensional perf-engineering claim on her resume — and the gold standard for distinguishing prod streaming experience from library use.</p>
+</div>
+
+<!-- ===== FLOW 4 MAIN QUESTION ===== -->
+<h3 id="flow4-main">🎤 主问题 / Main Question — 项目背景 + JSON 为什么是瓶颈 / Project Context &amp; Why JSON Was the Bottleneck</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Let's switch contexts to your Ciena SaaS work. You enhanced RESTful API endpoints by replacing JSON serialization with binary streaming. Walk me through this — which endpoint was it? What was it returning — time-series data, telemetry, configuration? Who consumed it — internal services, customer-facing UI, third-party integrations? And what specifically made JSON the bottleneck — was there an incident, a profiling result, a missed SLO?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "切换一下语境，聊聊你 Ciena SaaS 的工作。你提到把 RESTful API 的 JSON 序列化替换成了二进制流。从头讲讲——是哪个 endpoint？返回的是什么样的数据——time-series、telemetry、还是 config？谁在消费——内部 service、客户面 UI、还是第三方 integration？以及，到底是<strong>什么</strong>让 JSON 成了瓶颈——有 incident、profiling 数据、还是 SLO 没达标触发的？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>能 name 具体 <strong>endpoint</strong> 或者业务功能（不是 "我们有几个 API"）/ Names a concrete endpoint or business function</li>
+      <li>能讲<strong>返回的数据形状</strong>：是 time-series 大批量？telemetry stream？config 一次性 blob？不同形状决定为什么 JSON 是问题 / Articulates data shape — different shapes drive different bottlenecks</li>
+      <li>明确<strong>谁是 consumer</strong>：内部 service / 网页 UI / 客户 SDK / 第三方 — 这直接决定后面 cutover 难度 / Names the consumer — determines later cutover difficulty</li>
+      <li><strong>具体的 bottleneck</strong>：CPU 在 ser/de 顶天？payload size 撑爆 network？memory 在 server 端爆？client 端解析慢？— 这 4 个原因对应完全不同方案 / Specific bottleneck — CPU on ser/de? payload? server memory? client parse?</li>
+      <li>能给出<strong>触发事件</strong>：customer ticket / on-call incident / capacity planning / proactive perf review / Names a trigger event</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"性能不太好所以优化了一下" — 无 symptom 无量化 = cargo cult / Vague "performance was bad" — cargo cult</li>
+      <li>说不出 endpoint 是干什么的 — 简历包装信号 / Can't say what the endpoint did — padded resume signal</li>
+      <li>"JSON 慢" 但说不清慢在 parsing 还是 payload size — 没真 profile 过 / "JSON is slow" but can't say if it's parse or payload</li>
+      <li>不知道 consumer 是谁 — 改协议都不知道谁会受影响 = 没真主导 / Doesn't know who the consumer was — couldn't have driven the change</li>
+    </ul>
+
+    <h4>💡 如果太抽象 / If too abstract:</h4>
+    <blockquote class="ask-en">
+      "Pick one specific request — a client calls this endpoint. What's the typical payload size? How long was the p99 latency in JSON, before you started this work?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "挑一个具体 request——client 调这个 endpoint。典型 payload 多大？JSON 时代的 p99 latency 是多少？"
+    </blockquote>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 1 ===== -->
+<h3 id="flow4-followup1">↪ 追问 1 / Follow-up 1 — 格式选择 + Schema Evolution / Format Choice &amp; Schema Evolution</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "What binary format did you go with — Protobuf? Avro? MessagePack? FlatBuffers? Custom? What was the deciding factor, and what alternatives did you consider? Then: binary formats are usually strict about schema — when a producer adds a new field, what happens to older consumers? Did you ever break a client?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "用了什么二进制格式——Protobuf？Avro？MessagePack？FlatBuffers？还是自研？决定因素是什么，考虑过哪些备选方案？接着——二进制格式对 schema 通常很严格，当 producer 加了新字段，老 consumer 会看到什么？你<strong>break 过 client 吗？</strong>"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>能 <strong>name 具体格式</strong> + 讲出 trade-off：schema evolution 支持 / 多语言 client 支持 / perf benchmark / ecosystem 已有工具链 / Names format + articulates trade-off</li>
+      <li>提到至少<strong>一个被淘汰的备选</strong>及原因（"考虑过 Avro 但 Java client 生态比 Protobuf 弱"）/ Mentions at least one rejected alternative with reason</li>
+      <li>能讲<strong>schema evolution 规则</strong>：Protobuf 加 optional field 老 client 会忽略；改 type / 删 required = breaking change / Articulates evolution rules</li>
+      <li>能讲<strong>一个真实的 schema migration 故事</strong>——加了一个 field 怎么 coordinate client 升级 / Tells a real schema migration story</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>说不出具体格式，只说 "binary protocol" / Can't name a specific format</li>
+      <li>"选 Protobuf 因为大家都用" — 无 trade-off 思考 / "Chose Protobuf because everyone uses it" — no trade-off thinking</li>
+      <li>不知道 schema evolution 规则 — 用过但没设计过 schema = 只是 consumer / Doesn't know evolution rules — has used but never designed schema</li>
+      <li>"我们从来没 break 过 client" — 不可能，任何活的系统都有过 / "Never broke a client" — implausible for any live system</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>能讲<strong>protocol 跟 wire format 的区别</strong>（Protobuf 是 IDL + wire format；HTTP / gRPC 是 protocol）/ Distinguishes protocol from wire format</li>
+      <li>提到<strong>backward + forward compatibility</strong> 都要考虑（不是只想老 client 兼容新 server）/ Mentions both backward and forward compat</li>
+      <li>提到用 schema registry / IDL versioning 这类工程做法 / Mentions schema registry / IDL versioning</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 2 ===== -->
+<h3 id="flow4-followup2">↪ 追问 2 / Follow-up 2 — "Streaming" 戳穿术语 + Memory Bounded / "Streaming" Terminology Probe &amp; Memory Boundedness <span class="tag tag-senior">🌟 戳穿术语</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "You said 'binary <strong>streaming</strong>'. Clarify for me — what does 'streaming' mean here specifically? Is it HTTP chunked transfer encoding? Server-Sent Events? gRPC streaming? Or just sending a binary blob in one shot — which would be binary <em>serialization</em>, not <em>streaming</em>? And follow-up: if it's truly streaming, the whole point is keeping memory bounded — what was the per-request memory ceiling on the server, and how did you enforce it?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "你说的是 binary <strong>streaming</strong>。澄清一下——streaming 在这里具体是什么意思？是 HTTP chunked transfer encoding？SSE？gRPC streaming？还是只是<strong>把一个 binary blob 一次性发出去</strong>——那是 binary <em>serialization</em>，不是 <em>streaming</em>。如果真是 streaming，重点就是<strong>保持内存有界</strong>——server 端 per-request memory ceiling 是多少？怎么 enforce 的？"
+    </blockquote>
+
+    <p style="color:#92400e;">⚡ <strong>为什么这题特别锋利 / Why this is sharp：</strong>"binary" 和 "streaming" 在简历里经常被混用，但<strong>是两件独立的事</strong>。LLM 包装的简历常常合并这两个词当 buzzword 用。真做过 streaming 的人会明确区分。/ "Binary" and "streaming" are two independent concerns. LLM-padded resumes conflate them. Real practitioners distinguish them sharply.</p>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>明确<strong>区分</strong> binary serialization (Protobuf encode) 跟 streaming (transport-level chunked) / Distinguishes serialization from transport-level streaming</li>
+      <li>能讲<strong>具体的 streaming 机制</strong>：HTTP/1.1 chunked / HTTP/2 frames / gRPC stream / SSE / 自研 length-prefix framing / Names a specific streaming mechanism</li>
+      <li>能讲<strong>为什么需要 stream</strong>：response 太大（GB 级）一次塞不进内存 / 客户端要 progressive render / 降低 TTFB / Why streaming was needed</li>
+      <li>能讲<strong>memory ceiling 的具体值</strong>（"每 request 上限 16MB buffer"）+ <strong>怎么 enforce</strong>（generator/iterator pattern, async backpressure, explicit chunk size）/ Concrete memory ceiling + enforcement</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>🔴 把 binary == streaming — 没真做过 / Conflates binary with streaming — hasn't done it</li>
+      <li>说不出 streaming 的具体机制（chunked? frame?）/ Can't name the streaming mechanism</li>
+      <li>"server 端会一次 build 好整个 response 再发" — 那就不是 streaming，是 binary blob / "Server builds entire response then sends" — that's not streaming</li>
+      <li>没考虑过 memory bounding — 那 streaming 的核心收益就丢了 / Didn't bound memory — defeats the purpose of streaming</li>
+      <li>不知道 client 端怎么消费 stream / Doesn't know how client consumes the stream</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>能讲 <strong>backpressure / flow control</strong>：当 client 慢 server 怎么办（不能无限 buffer）/ Articulates backpressure</li>
+      <li>提到 <strong>chunk size tuning</strong>：太小 overhead 高，太大 latency 高 — 怎么 trade-off / Mentions chunk size trade-off</li>
+      <li>知道 streaming 在不同传输层的实现差异（HTTP/1.1 chunked vs HTTP/2 vs gRPC）/ Knows differences across transports</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 3 ===== -->
+<h3 id="flow4-followup3">↪ 追问 3 / Follow-up 3 — 数字 (Before / After / 怎么测) / Numbers (Before/After/Measurement)</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "What were the actual numbers? Payload size before vs after, p50 / p99 latency before vs after, throughput before vs after — give me at least two of those with real numbers. And how did you measure — was this load test in pre-prod, A/B in production, both? What was your comparison methodology?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "实际数字是多少？payload size before/after，p50/p99 latency before/after，throughput before/after —— 至少给我两个真实数字。怎么测的——pre-prod load test？production A/B？两个都做了？对比方法是什么？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>至少给出 <strong>{payload size, p99 latency, throughput}</strong> 中的 2 项具体数字（哪怕是数量级）/ At least 2 of those metrics with concrete numbers</li>
+      <li>能 name <strong>测量方法</strong>：具体 load test 工具（JMeter / Gatling / k6）/ canary deployment / A/B by header / Names measurement methodology</li>
+      <li>能讲<strong>测量时间窗口</strong>（"我们跑了 1 周 baseline，2 周新版"）/ Articulates measurement window</li>
+      <li>能讲<strong>哪些 workload 提升明显、哪些不明显</strong>——不是均匀提升（小 payload 可能反而更慢，因为 protocol overhead）/ Differentiates workloads — not uniform</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>🔴 "显著提升" / "significantly faster" 无数字 / "Significantly faster" with no numbers</li>
+      <li>数字过于圆满（"减半"、"快 2 倍"）= 行业 generic answer / Suspiciously round numbers</li>
+      <li>说不出测量工具或方法 / Can't name measurement tool/method</li>
+      <li>声称 "全场景都更快" — 没真测过 / Claims "faster in all scenarios" — never really measured</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>主动提到 <strong>regression cases</strong>：小 payload 反而慢了 → 实事求是 = 真测过 / Mentions regression cases — small payloads actually got worse</li>
+      <li>能给出 <strong>error rate</strong> 对比（不是只看 latency / throughput）/ Mentions error rate comparison</li>
+      <li>能讲<strong>用 stable A/B traffic split</strong>而不是 "before vs after 整段对比"（A/B 才能排除 weekday / seasonal 影响）/ Uses A/B traffic split, not pre/post comparison</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 4 ===== -->
+<h3 id="flow4-followup4">↪ 追问 4 / Follow-up 4 — 兼容性 / Client Cutover / Backward Compatibility &amp; Cutover</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Existing JSON clients — how did you handle them? Did you support both content types in parallel (content negotiation via Accept header)? Versioned endpoint? Or did you just cut everything over? How long did dual-protocol last, and who decided when to deprecate JSON?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "已有的 JSON 客户端怎么处理的？双协议并存（用 Accept header 做 content negotiation）？versioned endpoint？还是直接全切了？dual-protocol 维持了多久？谁决定 deprecate JSON 的？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>能讲 <strong>cutover 策略</strong>：content negotiation / versioned endpoint / feature flag / Articulates cutover strategy</li>
+      <li>能讲 <strong>dual-protocol 时间窗</strong>（"双协议跑了 3 个月，监控 binary 流量上升后才 deprecate JSON"）/ Articulates dual-protocol window</li>
+      <li>能讲 <strong>谁是 client</strong>：内部 service（升级容易）vs 外部 SDK 用户（要发版协调）/ Identifies client type — internal vs external</li>
+      <li>能讲 <strong>deprecation timeline</strong> 怎么传达给 client（changelog / email / SDK warning log）/ How deprecation was communicated</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"我们直接全切了" — 如果有外部 client 不可能 / "Just switched everything" — impossible with external clients</li>
+      <li>不知道客户端是谁 — 没真 own 过这个 API / Doesn't know who clients were — never really owned the API</li>
+      <li>没有 deprecation 计划 — JSON 永远不下线？/ No deprecation plan — JSON lives forever?</li>
+    </ul>
+
+    <h4>💎 加分项 / Bonus points:</h4>
+    <ul>
+      <li>能讲一个真实的 <strong>client migration 摩擦故事</strong>（某个 client 没及时升级、撞到 deprecation）/ Real migration friction story</li>
+      <li>提到 <strong>SDK 发版协调</strong>跟 backend 的关系 / SDK release coordination</li>
+      <li>用 metric 监控 JSON 流量下降到 0 才 actually delete 老代码 / Used metrics to verify zero JSON traffic before code removal</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 4 FOLLOW-UP 5 ===== -->
+<h3 id="flow4-followup5">↪ 追问 5 / Follow-up 5 — 客户端 disconnect 场景 / Client Disconnect Mid-Stream <span class="tag tag-senior">🌟🌟 真做过 prod streaming 才答得出</span></h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Here's a scenario — a client connection drops at 60% of the stream. Server is mid-way through generating the response, has done some DB work, maybe called a downstream API. Walk me through what happens server-side, as deeply as you can."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "给你一个场景——客户端在 stream 进行到 60% 的时候断开了。server 正在生成 response 的中段，已经做了一些 DB 调用，可能还调了下游 API。给我讲讲 server 端发生什么，尽可能往深讲。"
+    </blockquote>
+
+    <p style="color:#92400e;">⚡ <strong>为什么这题特别锋利 / Why this is sharp：</strong>这是<strong>真伪 streaming 的金标准</strong>——真上过 prod streaming 系统的人一定撞过、处理过 disconnect；只用过 library 的人完全没概念。<strong>对 L5 / SDE II 候选人，这题的回答深度直接决定上下限。</strong>/ Gold standard for streaming authenticity — practitioners have hit this in prod; library users have no concept. For L5 / SDE II, depth here determines upper/lower bound.</p>
+
+    <h4>🎯 多层 drill-down — 跟着她的回答深度走，别强推所有层 / Multi-level drill-down — follow her depth, don't force all levels</h4>
+
+    <div style="background:#fff7ed; padding:12px; border-left:3px solid #d97706; margin:8px 0;">
+      <p style="margin:0 0 8px;"><strong>Level 1 — 她说 "server 检测到 disconnect" →</strong></p>
+      <blockquote class="ask-en">"How does the server detect the disconnect — TCP error, write failure, application-level keepalive? What's the typical detection latency?"</blockquote>
+      <blockquote class="ask-cn">"server 怎么检测到 disconnect 的——TCP error？write 失败？application keepalive？典型检测延迟是多少？"</blockquote>
+    </div>
+
+    <div style="background:#fff7ed; padding:12px; border-left:3px solid #d97706; margin:8px 0;">
+      <p style="margin:0 0 8px;"><strong>Level 2 — 她说 "我们停止处理" →</strong></p>
+      <blockquote class="ask-en">"What about work already in flight — a long DB query, a downstream API call? Do those cancel too, or do they finish and discard the result?"</blockquote>
+      <blockquote class="ask-cn">"那已经在飞的工作呢——一个长 DB query、一个下游 API 调用？这些是 cancel 还是跑完丢掉结果？"</blockquote>
+    </div>
+
+    <div style="background:#fff7ed; padding:12px; border-left:3px solid #d97706; margin:8px 0;">
+      <p style="margin:0 0 8px;"><strong>Level 3 — 她讲到 cancellation tokens / context →</strong></p>
+      <blockquote class="ask-en">"How is the cancellation signal propagated through the call chain — Java CompletableFuture, reactive streams (Project Reactor / RxJava), a custom context object? What happens when a synchronous library you depend on doesn't honor cancellation?"</blockquote>
+      <blockquote class="ask-cn">"cancellation 信号怎么在调用链里传播——Java CompletableFuture？reactive streams（Project Reactor / RxJava）？自定义 context？如果你依赖的某个 sync library 不响应 cancellation 怎么办？"</blockquote>
+    </div>
+
+    <div style="background:#fff7ed; padding:12px; border-left:3px solid #d97706; margin:8px 0;">
+      <p style="margin:0 0 8px;"><strong>Level 4 — 她讲到部分副作用 →</strong></p>
+      <blockquote class="ask-en">"If the request was producing side effects mid-stream — say, marking items as 'processed' as you stream them — how do you avoid corrupted state when the client disconnects halfway? Idempotency? Compensating transactions?"</blockquote>
+      <blockquote class="ask-cn">"如果这个 request 在 mid-stream 产生副作用——比如 stream 边发边把 item 标记为 'processed'——客户端半路断了怎么避免脏数据？幂等？补偿事务？"</blockquote>
+    </div>
+
+    <div style="background:#fff7ed; padding:12px; border-left:3px solid #d97706; margin:8px 0;">
+      <p style="margin:0 0 8px;"><strong>Level 5 — observability →</strong></p>
+      <blockquote class="ask-en">"What metric tells you what fraction of streams complete vs are canceled? At what threshold does a spike in cancellations become an incident?"</blockquote>
+      <blockquote class="ask-cn">"用什么 metric 看 stream 完成率 vs 取消率？cancellation 涨到多少算 incident？"</blockquote>
+    </div>
+
+    <h4>🎯 评估锚点 / Evaluation anchors:</h4>
+    <ul>
+      <li>✅ <strong>Senior+ (L5 bar)</strong>：自发讲到 L1-L3，能用具体的 Java async 术语讲 cancellation propagation，L4 主动提到部分副作用问题 / Spontaneously covers L1-L3 with concrete Java async language, addresses partial side effects at L4</li>
+      <li>⚠️ <strong>边界 SE II</strong>：停在 "TCP 检测到就停了"；副作用问题答 "不应该发生" / Stops at "TCP detects and we stop"; says side effects "shouldn't happen"</li>
+      <li>❌ <strong>低于线</strong>："连接断了就断了，不用 cleanup"；从来没测过 cancellation rate / "Connection drops, no cleanup needed"; never measured cancellation rate</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>"没遇到过这种情况" — 跑过 prod streaming 不可能没遇到 / "Haven't encountered this" — impossible if you've run streaming in prod</li>
+      <li>说不出 cancellation 传播机制（"框架自己处理"）/ Can't articulate cancellation propagation</li>
+      <li>没考虑过部分副作用 — streaming 系统设计盲点 / Didn't consider partial side effects</li>
+    </ul>
+  </div>
+</details>
 
 <hr class="separator">
 
@@ -588,8 +1207,19 @@
       <tr><td>Flow 1: 为什么 expand + 怎么实现 — opt-in region 本质差异 + region onboarding 层次</td><td></td><td></td></tr>
       <tr><td>Flow 1: Partial failure 契约 — 明确选边 + downstream 影响 <strong>(🌟 Senior 指示器)</strong></td><td></td><td></td></tr>
       <tr><td>Flow 1: Rollout 纪律 — wave-based + 具体 safety signal + rollback 路径 <strong>(🌟🌟 AWS 验证)</strong></td><td></td><td></td></tr>
-      <tr style="opacity:0.5;"><td>Flow 2: 待添加 / TBD</td><td></td><td></td></tr>
-      <tr style="opacity:0.5;"><td>Flow 3: 待添加 / TBD</td><td></td><td></td></tr>
+      <tr><td>Flow 2: Expired backup 定义 + 受众 + 输入输出 + 主动声明 dangerous capability</td><td></td><td></td></tr>
+      <tr><td>Flow 2: Guardrails — ticket binding / two-person / time-bounded / 独立 audit log <strong>(🌟 Senior 指示器)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 2: Retention/合规 — metadata vs data / legal hold / GDPR / 承认 "no" 是正确答案 <strong>(🌟🌟 AWS 验证)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 2: &quot;From log line&quot; — log source / schema-versioned codec / 标记 resurrected</td><td></td><td></td></tr>
+      <tr><td>Flow 3: Anti-entropy 定义 — Dynamo 词源 + 具体机制 (Merkle/read repair/hinted handoff) <strong>(🌟🌟 AWS 验证)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 3: Delegated Admin — 跟 cross-account role 的区别 + 边界 + enrollment API <strong>(🌟🌟 AWS 验证)</strong></td><td></td><td></td></tr>
+      <tr><td>Flow 3: 为什么一起测 — 能讲出 ownership boundary 重定义 / cross-account state-sync 路径</td><td></td><td></td></tr>
+      <tr style="background:#fffbeb;"><td><strong>Flow 4: 项目背景 — endpoint / consumer / 具体 bottleneck / 触发事件 (4 项全)</strong></td><td></td><td></td></tr>
+      <tr style="background:#fffbeb;"><td><strong>Flow 4: 格式 + schema evolution — name 格式 + 备选对比 + evolution 规则 + 真实迁移故事</strong></td><td></td><td></td></tr>
+      <tr style="background:#fffbeb;"><td><strong>Flow 4: Streaming 戳穿术语 + memory bounded — 区分 binary vs streaming + 机制名 + ceiling 数字 <strong>(🌟 戳穿术语)</strong></strong></td><td></td><td></td></tr>
+      <tr style="background:#fffbeb;"><td><strong>Flow 4: 数字 — 2+ 项具体数字 + 测量方法 + regression case</strong></td><td></td><td></td></tr>
+      <tr style="background:#fffbeb;"><td><strong>Flow 4: 兼容性 / cutover — 策略 + dual-protocol 时间 + deprecation 计划</strong></td><td></td><td></td></tr>
+      <tr style="background:#fffbeb;"><td><strong>Flow 4: Disconnect 场景 — L1-L3 自发到位 + 副作用问题 <strong>(🌟🌟 真伪 streaming 金标准)</strong></strong></td><td></td><td></td></tr>
       <tr><td>Communication / 技术表达 / 主动提 metric &amp; trade-off 的密度</td><td></td><td></td></tr>
     </tbody>
   </table>
