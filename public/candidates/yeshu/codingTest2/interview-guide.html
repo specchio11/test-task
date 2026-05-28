@@ -307,9 +307,10 @@
   <div class="qp-group">
     <div class="qp-group-title" style="color:var(--accent);">P0 · Follow-ups</div>
     <a class="qp-sub orange" href="#followup1" onclick="jump('followup1');return false;">追问 1 — 存储 layout &amp; 访存代价</a>
-    <a class="qp-sub orange" href="#followup2" onclick="jump('followup2');return false;">追问 2 — Loop reorder 修复</a>
-    <a class="qp-sub orange" href="#followup3" onclick="jump('followup3');return false;">追问 3 — 理想 layout 跨语言讨论</a>
+    <a class="qp-sub orange" href="#followup2" onclick="jump('followup2');return false;">追问 2 — 复杂度 + 规模放大</a>
+    <a class="qp-sub orange" href="#followup3" onclick="jump('followup3');return false;">追问 3 — 浮点误差 + NaN/Inf 行为</a>
     <a class="qp-sub orange" href="#followup4" onclick="jump('followup4');return false;">追问 4 — 规模放大 + GPU 简历验证</a>
+    <a class="qp-sub orange" href="#followup5" onclick="jump('followup5');return false;">追问 5 — 装不进内存 / Out-of-Core</a>
   </div>
 
   <div class="qp-group">
@@ -728,95 +729,125 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
 <div id="followup2">
 <details open>
   <summary>
-    追问 2：Loop reorder 修复 / Fix It with Loop Reorder
+    追问 2：复杂度 + 规模放大 / Complexity &amp; Scale-Up
     <span class="tag tag-time">3-4 min</span>
     <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
   </summary>
   <div class="detail-body">
 
     <h4>🎯 锚点 / Anchor</h4>
-    <p>接 F1 的结论——候选人刚说完 "B 是瓶颈"，现在让他<strong>动手修。</strong>F1 是诊断，F2 是接上的 "diagnose → fix" 闭环。<br>
-    <span class="en-text">Picks up F1's conclusion — candidate just said "B is the bottleneck"; now make them <strong>actually fix it</strong>. F1 = diagnose, F2 = close the "diagnose → fix" loop.</span></p>
+    <p>候选人已经写出 P0 实现并加完输入校验。这一题从"代码层"拉到"工程层"：<strong>精确复杂度 → 真实规模冲击 → 优化方案的优先级排序</strong>。三段递进，<strong>每段都紧逼候选人给具体数字</strong>，不接受"差不多"。<br>
+    <span class="en-text">Candidate has a working P0 with validation. This follow-up zooms out from "code" to "engineering judgment": precise complexity → real-scale impact → ranked optimization options. Three stages, <strong>each demanding concrete numbers</strong> — no hand-waving.</span></p>
 
-    <h4>提问 / Question</h4>
+    <h4>提问 · 三段式（依次问、不要一次抛三个）/ Question (3 stages, ask sequentially)</h4>
+
     <blockquote>
-      <strong>EN:</strong> "OK, so you just told me B's column access is the bottleneck. Now show me the <strong>smallest code change</strong> to your existing function that fixes this. Don't change the function signature, don't change the <code>Matrix</code> type — just rewrite the body. Then walk me through why the new version is faster."
+      <strong>F2a · 复杂度（~1 min）/ Complexity</strong><br>
+      <strong>EN:</strong> "What's the time and space complexity of your <code>multiply</code>? Be precise — give it in terms of m, k, n, not just 'O(n³)'."<br>
+      <strong>中:</strong> "你的 <code>multiply</code> 时间和空间复杂度是多少？要精确——用 m、k、n 表达，不要笼统说 'O(n³)'。"
     </blockquote>
+
     <blockquote>
-      <strong>中:</strong> "好，你刚说 B 的列访问是瓶颈。现在请你给我<strong>最小的代码改动</strong>来修这个问题。不准改函数签名、不准改 <code>Matrix</code> 类型——只重写函数体。然后告诉我为什么新版本更快。"
+      <strong>F2b · 规模冲击（~1 min）/ Scale impact</strong><br>
+      <strong>EN:</strong> "Now I call your function with <code>A</code> and <code>B</code> both 10000×10000, <code>float64</code> elements. (a) How big is each matrix in memory? (b) Roughly how long would your current implementation take? (c) Does it fit in memory?"<br>
+      <strong>中:</strong> "现在我用 10000×10000、<code>float64</code> 元素的 A 和 B 调你的函数。(a) 每个矩阵在内存里多大？(b) 你当前实现大概要跑多久？(c) 内存装得下吗？"
+    </blockquote>
+
+    <blockquote>
+      <strong>F2c · 优化方案 + 优先级（~1.5-2 min）/ Optimization priority</strong><br>
+      <strong>EN:</strong> "Now make it fast. List the options you'd consider, <strong>ranked by what you'd try first</strong>, and explain why that order. Don't just list techniques — tell me the priority."<br>
+      <strong>中:</strong> "现在让它变快。列出你会考虑的方案，<strong>按你会先试什么排序</strong>，并解释为什么是这个顺序。不要只列技术名词——告诉我优先级。"
     </blockquote>
 
     <blockquote class="interviewer-note">
-      <strong>注意 / Note:</strong> 两个约束<strong>必须明说</strong>——“不改签名、不改 Matrix 类型”，是为了把 "换 flat layout" 这条路<strong>临时堆死</strong>，逗候选人在<strong>算法层</strong>（而不是数据结构层）思考。Flat layout 留给开放式 F3。<br>
-      <span class="en-text">Both constraints <strong>must be stated explicitly</strong> — "no signature change, no Matrix type change" — to temporarily kill the "flat layout" escape route, forcing the candidate to think at the <strong>algorithmic level</strong> (not data-structure level). Flat layout is reserved for F3.</span>
+      <strong>注意 / Note:</strong> 三段必须<strong>依次问</strong>，候选人答完 F2a 才能进 F2b、答完 F2b 才能进 F2c。这是为了观察候选人在<strong>每一层是否有数感和判断力</strong>，一次抛三个问题会被一段笼统的 "用 numpy / 上 GPU" 蒙混过去。<br>
+      <span class="en-text">Ask the three stages <strong>sequentially</strong> — only move on after each is answered. This is to observe whether the candidate has <strong>numeric sense and judgment at each layer</strong>; asking all three at once invites a vague "use numpy / go GPU" sweep that hides weakness.</span>
     </blockquote>
 
     <details>
-      <summary>📖 标准答案 / Expected Answer</summary>
+      <summary>📖 标准答案 · F2a 复杂度 / Expected Answer — F2a Complexity</summary>
       <div class="detail-body">
-        <h4>代码（C++）/ Code (C++)</h4>
-<pre><code>Matrix multiply(const Matrix&amp; A, const Matrix&amp; B) {
-    const size_t m = A.size();
-    const size_t k = A.empty() ? 0 : A[0].size();
-    const size_t n = B.empty() ? 0 : B[0].size();
-    if (!B.empty() &amp;&amp; B.size() != k)
-        throw std::invalid_argument("dim mismatch");
-
-    Matrix C(m, std::vector&lt;double&gt;(n, 0.0));   // 必须预先置 0
-    for (size_t i = 0; i &lt; m; ++i) {
-        for (size_t p = 0; p &lt; k; ++p) {
-            const double a = A[i][p];             // hoist 出内层
-            for (size_t j = 0; j &lt; n; ++j) {
-                C[i][j] += a * B[p][j];           // B[p][·] 、 C[i][·] 都是 stride-1
-            }
-        }
-    }
-    return C;
-}</code></pre>
-        <p><strong>与原版的三个区别 / Three differences from original:</strong></p>
-        <ol>
-          <li><strong>循环顺序</strong>：<code>i-j-p</code> → <code>i-p-j</code>（交换后两层）</li>
-          <li><strong>累加方式</strong>：原版用 <code>acc</code> 累加完后赋值给 <code>C[i][j]</code>；新版用 <code>C[i][j] +=</code>——所以 <code>C</code> <strong>必须预先置 0</strong>（原代码的 <code>vector(n, 0.0)</code> 刚好满足）</li>
-          <li><strong>提取不变量</strong>：<code>const double a = A[i][p];</code> 提到最内层外面（编译器一般会做，主动写出体现对热点的控制意识）</li>
-        </ol>
-
-        <h4>为什么这能解决：三层解释 / Why this works — three layers</h4>
-
-        <p><strong>第一层 · 访问 pattern 对比表 / Layer 1 · Access pattern comparison</strong></p>
-        <table>
-          <tr><th>访问</th><th>原版 <code>i-j-p</code>（内层是 p）</th><th>F2 版 <code>i-p-j</code>（内层是 j）</th></tr>
-          <tr><td><code>A[i][p]</code></td><td>i 定、p 增 → <strong>stride-1</strong> ✅</td><td>i、p 都定 → <strong>scalar</strong>（提取到寄存器）✅✅</td></tr>
-          <tr><td><code>B[p][j]</code></td><td>j 定、p 增 → <strong>stride-n</strong> ❌</td><td>p 定、j 增 → <strong>stride-1</strong> ✅</td></tr>
-          <tr><td><code>C[i][j]</code></td><td>i、j 都定 → <strong>scalar</strong>（acc 在寄存器）✅✅</td><td>i 定、j 增 → <strong>stride-1</strong> 写入 ✅</td></tr>
-        </table>
-        <p><strong>关键洞察：</strong>F2 用一次 "降级"（C 从 scalar 降到 stride-1）换了一次 "升级"（B 从灾难性的 stride-n 升到 stride-1）。B 的修复是巨大的赢，C 的降级是轻微的输。净结果：三个访问<strong>全部是 stride-1 或 scalar</strong>，没有一个是 stride-n。<br>
-        <span class="en-text"><strong>Key insight:</strong> F2 trades one "downgrade" (C: scalar → stride-1) for one "upgrade" (B: stride-n → stride-1). B's fix is a huge win, C's downgrade is a tiny loss. Net result: all three accesses are stride-1 or scalar; none is stride-n.</span></p>
-
-        <p><strong>第二层 · 硬件为什么 stride-1 这么快 / Layer 2 · Hardware mechanisms (why stride-1 wins)</strong></p>
-        <ol>
-          <li><strong>Cache line 利用率（最重要）</strong>：CPU 读 <code>B[p][j]</code> 时硬件强制载入一条 64 字节 cache line = 8 个 double。原版下一次跳到 <code>B[p+1][j]</code>，距离 n×8 字节，刚载入的另外 7 个 double <strong>一个都没用上就被淘汰</strong>——87.5% 带宽浪费。F2 版载入后紧接着 7 次迭代刚好用掉 7 个值 → <strong>100% 利用率 → 8× 内存带宽提升</strong>。</li>
-          <li><strong>硬件 prefetcher（隐藏延迟）</strong>：stride-n（n=1024 时 = 8KB 跳跃）超出多数 CPU prefetcher 预测能力，prefetcher <strong>直接放弃</strong>，每次访问都要等 ~100ns DRAM 延迟。stride-1 是 prefetcher 的最理想场景，能<strong>完全隐藏延迟</strong>。</li>
-          <li><strong>TLB 压力</strong>：stride-n 下每个 <code>B[p][j]</code> 在不同 page，很快手爆 L1 dTLB（通常 64 项）→ page walk 又加几十 ns。stride-1 TLB 命中率几乎 100%。</li>
-          <li><strong>Load 流水线</strong>：stride-n 下 load 之间锘锘 cache miss 依赖，LSU 被串行化；stride-1 可以满发多发 load。</li>
-        </ol>
-
-        <p><strong>第三层 · 数学上为什么合法 / Layer 3 · Why this is a valid transformation</strong></p>
-        <p>原版和 F2 版<strong>计算量完全一样</strong>（都是 m×k×n 次乘加），只是<strong>顺序</strong>变了。这本质是矩阵乘法的两种数学公式：</p>
         <ul>
-          <li><strong>原版 = 点积公式</strong>：C<sub>ij</sub> = Σ<sub>p</sub> A<sub>ip</sub>·B<sub>pj</sub>，一次算出 C 的一个元素（外层 固定 (i,j)，内层 走 p）</li>
-          <li><strong>F2 版 = 外积公式</strong>：C = Σ<sub>p</sub> A<sub>:,p</sub> ⊗ B<sub>p,:</sub>，每个 p 贡献一个秩 1 矩阵，累加到 C（外层 走 p，内层 一次更新 C 的所有元素）</li>
+          <li><strong>时间</strong>：<code>O(m × k × n)</code>（三重循环，每次乘加 O(1)）</li>
+          <li><strong>空间</strong>：<code>O(m × n)</code> 输出矩阵 + <code>O(1)</code> 辅助变量（<code>acc</code> 是常数；不计入输入）</li>
         </ul>
-        <p>这就是为什么 F2 需要 <code>C</code> 预先置 0、原版不需要。<strong>BLAS 库全有并不是一个公式一路走到黑——他们在不同维度对 GEMM 拆分重组，就是为了让计算顺序贴合硬件缓存层次。</strong></p>
-        <p class="en-text"><strong>EN:</strong> Original and F2 do <strong>exactly the same arithmetic</strong> (m×k×n multiply-adds) — only the <strong>execution order</strong> changes. This is fundamentally two mathematical formulations of matmul: <strong>dot-product</strong> (one C element at a time) vs <strong>outer-product</strong> (rank-1 update of all C elements per p). That's why F2 requires C pre-zeroed and original doesn't. BLAS libraries exploit exactly this freedom — they recast GEMM in different layouts to match the hardware memory hierarchy.</p>
+        <p><strong>🌟 加分信号 / Bonus signals：</strong></p>
+        <ul>
+          <li>主动用 m / k / n 三个变量，而不是统一写成 n —— 说明知道<strong>非方阵也成立</strong></li>
+          <li>主动说明<strong>输入空间不计入</strong>（标准 convention）</li>
+          <li>主动说明 <code>acc</code> 是 O(1)、不是 O(k)</li>
+        </ul>
+        <p><strong>🟡 反信号 / Red flags：</strong></p>
+        <ul>
+          <li>只能说 "O(n³)"、答不出 m/k/n —— 算法基础偏弱</li>
+          <li>把输入矩阵也算进空间复杂度（理解有歧义）</li>
+        </ul>
+      </div>
+    </details>
 
-        <h4>预期加速比 / Expected speedup</h4>
+    <details>
+      <summary>📖 标准答案 · F2b 规模数字 / Expected Answer — F2b Numbers</summary>
+      <div class="detail-body">
+        <p><strong>(a) 单矩阵大小：</strong>10000² × 8 字节 = <strong>800 MB</strong>，A + B + C 三个约 <strong>2.4 GB</strong>。</p>
+        <p><strong>(b) 当前实现耗时估算：</strong></p>
+        <ul>
+          <li><strong>Python 纯三重循环</strong>：每次 inner iteration 几百 ns（解释器开销）× 10¹² 次 = <strong>几十分钟到几小时</strong></li>
+          <li><strong>对照：C++ 优化 / <code>numpy.matmul</code></strong>：~1-10 秒（差 3-4 个数量级）</li>
+        </ul>
+        <p><strong>(c) 内存是否装得下：</strong></p>
+        <ul>
+          <li><strong>裸 buffer</strong>（C++ / numpy）：~2.4 GB，现代笔记本能装下</li>
+          <li><strong>Python list-of-list</strong>：每个 <code>PyFloatObject</code> 约 24-28 字节而不是 8 字节，整体可能 <strong>6-10 GB</strong>——开始吃紧</li>
+        </ul>
+        <p><strong>🌟 加分信号：</strong></p>
+        <ul>
+          <li>知道 <code>float64</code> = 8 字节（不是"差不多 4 字节"）</li>
+          <li>知道 Python list 的 <code>PyFloatObject</code> overhead（每个数 24 字节起）</li>
+          <li>主动指出"<strong>纯 Python 循环根本不可接受，必须换 numpy 或换语言</strong>"</li>
+        </ul>
+        <p><strong>🟡 反信号：</strong></p>
+        <ul>
+          <li>答 "几秒" / "几毫秒" —— 数感不准</li>
+          <li>不知道 <code>float64</code> 是几字节</li>
+          <li>说 "Python 也能跑" —— 没意识到解释器开销的量级</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 标准答案 · F2c 优化优先级 / Expected Answer — F2c Priority</summary>
+      <div class="detail-body">
+        <h4>候选人应能列出的方案（按 effort × gain）/ Options ranked by effort × gain</h4>
         <table>
-          <tr><th>矩阵规模</th><th>加速比</th><th>原因</th></tr>
-          <tr><td>256×256 (B 列在 L1 里)</td><td>~3-5×</td><td>原版 L1 miss 还不多</td></tr>
-          <tr><td>1024×1024 (B 列在 L2)</td><td>~8-15×</td><td>原版开始 L2 miss</td></tr>
-          <tr><td>4096×4096 (B 列在 DRAM)</td><td>~15-30×</td><td>原版火热跳 DRAM</td></tr>
+          <tr><th>#</th><th>方案 / Option</th><th>Effort</th><th>Gain</th><th>何时合适 / When</th></tr>
+          <tr><td>1</td><td><strong>用 <code>numpy.matmul</code> 或 <code>A @ B</code></strong></td><td>极低（1 行）</td><td>100-1000×</td><td><strong>第一反应</strong>，不重复造轮子</td></tr>
+          <tr><td>2</td><td>检查 <code>dtype</code>：<code>float64</code> → <code>float32</code></td><td>极低</td><td>~2×</td><td>业务允许时立刻拿</td></tr>
+          <tr><td>3</td><td>检查 BLAS 后端 + 设 <code>OMP_NUM_THREADS</code></td><td>低</td><td>多核 (4-16×)</td><td>numpy 默认走 BLAS，但容器里线程数常错</td></tr>
+          <tr><td>4</td><td>必须自己写时：交换循环为 <code>i-p-j</code>（接 F1 cache layout）</td><td>中</td><td>2-10×</td><td>cache 友好</td></tr>
+          <tr><td>5</td><td>多线程（<code>concurrent.futures</code> / <code>multiprocessing</code>）</td><td>中</td><td>核数倍</td><td>自己写时配套；numpy 已做</td></tr>
+          <tr><td>6</td><td>稀疏矩阵 <code>scipy.sparse</code></td><td>中</td><td>视密度</td><td>真稀疏才用</td></tr>
+          <tr><td>7</td><td>GPU（PyTorch / CuPy <code>.cuda()</code>）</td><td>中-高</td><td>10-100×</td><td>数据够大 + 有硬件才划算</td></tr>
+          <tr><td>8</td><td>算法改进（Strassen 等）</td><td>高</td><td>边际</td><td>实践罕用，BLAS 内部都做了</td></tr>
         </table>
-        <p><strong>规模越大、F2 优势越明显</strong>——原版 cache miss 率随 n 上升，F2 几乎不变。</p>
+
+        <h4>期望的优先级排序 / Expected priority order</h4>
+        <ol>
+          <li><strong>先 <code>numpy.matmul</code></strong> —— "我不会自己优化 matmul，工业级 GEMM 是几十人年调优的成果"</li>
+          <li><strong>如果不能用 numpy</strong>（嵌入式 / 无依赖环境）→ dtype / 循环顺序 / 多线程</li>
+          <li><strong>如果数据更大</strong> → GPU（PyTorch / CuPy）</li>
+          <li><strong>如果矩阵稀疏</strong> → 换算法（<code>scipy.sparse</code>）</li>
+        </ol>
+
+        <h4>评分关键信号 / Key signals</h4>
+        <ul>
+          <li><strong>🌟🌟 第一句就提 <code>numpy</code></strong>：工程优先级感强、"不重复造轮子" 意识到位 —— senior 信号</li>
+          <li><strong>🌟 主动提先 profile 看是不是真瓶颈</strong>（Amdahl）：成熟工程师的反应</li>
+          <li><strong>🌟 区分"算法层" vs "工具层"</strong>（前者：循环序、稀疏；后者：numpy、GPU、BLAS）</li>
+          <li><strong>✅ 提到 numpy 但讲不清为什么快</strong>：用过但不深</li>
+          <li><strong>🟡 第一反应是"用多线程"</strong>：错过 numpy + BLAS 已自动多线程的事实</li>
+          <li><strong>🟡 第一反应是"上 GPU"</strong>：跳过了零成本的 numpy 步骤</li>
+          <li><strong>⚠️ 完全不提 numpy</strong>：Python 数值生态严重存疑</li>
+        </ul>
       </div>
     </details>
 
@@ -825,11 +856,11 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
       <div class="detail-body">
         <table>
           <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
-          <tr><td>5 秒内反应 "交换循环为 i-p-j" + 主动 hoist <code>A[i][p]</code> + 能讲清第二层硬件机制（cache line / prefetcher）<br><span class="en-text">Immediately says "swap to i-p-j" + hoists <code>A[i][p]</code> + explains hardware mechanisms (cache line / prefetcher)</span></td><td>🌟🌟 Cache 优化真是熟手，Senior 上沒 / Real cache-optimization expert, Senior tier</td></tr>
-          <tr><td>写出 <code>i-p-j</code> + 能解释“B 现在连续了”（第一层），但说不出 cache line 机制；是否 hoist 随意<br><span class="en-text">Writes <code>i-p-j</code> + explains "B is now contiguous" (Layer 1) but can't articulate cache-line mechanism; hoisting optional</span></td><td>✅ SDE2 达标，知道「怎么」但不太说得清「为什么」 / SDE2 level; knows "how" but vague on "why"</td></tr>
-          <tr><td>思路对（交换循环）但实现出 bug：忘了 <code>C</code> 要预先置 0、或者仍然用 <code>acc</code> 变量导致丢结果<br><span class="en-text">Right idea (swap loops) but buggy impl: forgets C must be pre-zeroed, or still uses local <code>acc</code> and loses results</span></td><td>🟡 概念懂但代码控制力弱，可提醒一次看是否 self-debug / Concept ok but weak code control; give one hint, see if they self-debug</td></tr>
-          <tr><td>选择转置 B 为 B' 再乘（也对但多占 O(kn) 内存 + O(kn) 拷贝）<br><span class="en-text">Picks "transpose B first, then multiply" (also correct but extra O(kn) memory + O(kn) copy)</span></td><td>✅ 思路合理。追问「能不能不转置、只改循环就做到同样效果？」引到 loop interchange / Reasonable; probe with "can we achieve the same without transposing, just by reordering loops?"</td></tr>
-          <tr><td>完全卡住，不知道从何下手<br><span class="en-text">Completely stuck</span></td><td>⚠️ Cache 意识可能是背的不是真懂，跳过 F3、直接走 F4 GPU 换赛道 / Cache awareness may be memorized not understood; skip F3, go straight to F4 GPU on a different axis</td></tr>
+          <tr><td>F2a 精确到 m/k/n + F2b 数量级估算准（百 MB / 几十分钟）+ F2c 第一句 numpy + 列 ≥4 方案 + 知道何时不该上 GPU<br><span class="en-text">F2a precise to m/k/n + F2b accurate magnitudes + F2c numpy-first + lists ≥4 options + knows when GPU isn't worth it</span></td><td>🌟🌟 <strong>数值/性能直觉强 + Python ecosystem 真懂</strong>，超出 mid-level 预期 / Strong perf intuition + deep Python ecosystem knowledge</td></tr>
+          <tr><td>F2a 答对 + F2b 大致估对（百 MB 量级）+ F2c 提到 numpy 但顺序略乱<br><span class="en-text">F2a correct + F2b roughly correct + F2c mentions numpy but order slightly off</span></td><td>🌟 <strong>SDE II + Python 实操水平</strong>，及格 / SDE II level, passing</td></tr>
+          <tr><td>F2a 答对 + F2b 估不准 + F2c 想到 numpy 但讲不清为什么快<br><span class="en-text">F2a correct + F2b imprecise + F2c knows numpy but can't explain why fast</span></td><td>✅ 知道工具但不深 / Knows the tool but not deeply</td></tr>
+          <tr><td>F2a 笼统 O(n³) + F2b 数感差 + F2c 不提 numpy 直接 "多线程 / 改 C++"<br><span class="en-text">F2a vague O(n³) + F2b no number sense + F2c skips numpy, jumps to multithreading / C++</span></td><td>🟡 <strong>Python 数值生态不熟</strong>，与履历不太对 / Weak Python numerical ecosystem awareness</td></tr>
+          <tr><td>F2a 答不出 + F2b 一片空白 + F2c 不知从何下手<br><span class="en-text">F2a stuck + F2b blank + F2c no idea</span></td><td>⚠️ 基础严重不符 mid-level / Fundamentals severely below mid-level</td></tr>
         </table>
       </div>
     </details>
@@ -837,10 +868,12 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
     <blockquote class="interviewer-note">
       <strong>🎯 关键说明 / Key notes：</strong>
       <ul style="margin:6px 0 0 18px;">
-        <li><strong>只需化验 “交换循环 + B 连续” 这个核心点。</strong>hoist <code>A[i][p]</code> 是加分项、不是门槛。</li>
-        <li><strong>最常见 bug：</strong>不预先置 0（但原代码用 <code>vector(n, 0.0)</code> 别名刚好避免）；或者仍用 <code>acc</code> 然后在错误位置赋给 <code>C[i][j]</code>。发现 bug 后指一下：“<code>C[i][j]</code> 现在被多次访问了，你确保初始是 0 吗？”</li>
-        <li><strong>“为什么变快” 卡壳时的 hint：</strong>“Cache line 一次载入 64 字节 = 8 个 double。原版每次只用 1 个就跳走。新版呢？” —— 一步把他从 “知道结果” 逼到 “理解机制”。</li>
-        <li><strong>加分项 · 浮点敦动意识：</strong>如果候选人主动提“严格来说两版本结果会有微小 IEEE 754 舍入差异，因为累加顺序变了”——这是<strong>顶级 Senior 信号</strong>（说明他懂浮点 + 懂数值算法），记在 Notes 里。</li>
+        <li><strong>F2a 卡在 m/k/n 时</strong>的 hint："如果 A 是 2×100、B 是 100×3，时间复杂度是多少？" → 引到三个变量</li>
+        <li><strong>F2b 卡在数字估算时</strong>的 hint："<code>float64</code> 是几字节？10000 × 10000 = 多少个数？" → 一步步推</li>
+        <li><strong>F2c 不提 numpy 时</strong>的 hint："你平时在 Python 里做矩阵运算用什么？" → 几乎必答 numpy</li>
+        <li><strong>🌟 重要的辅助追问（F2c 答完后可补 30 秒）：</strong>"为什么 <code>numpy.matmul</code> 比 Python 三重循环快这么多？给我至少两个不同层面的原因。"<br>期望答：(1) numpy 底层是 C、不走 Python 解释器；(2) 调用 BLAS（OpenBLAS / MKL）—— 多线程 + SIMD + cache blocking 全自动；(3) 连续内存 buffer 而不是 list-of-list（接 F1 锚点）。能讲到 ≥2 条 = 真理解；只能说 "numpy 是 C 写的" = 只用过 API。</li>
+        <li><strong>📌 时间紧时</strong>：F2a 可一句话过，重点放在 F2b 数字感 + F2c 优先级排序</li>
+        <li><strong>📌 不要追问</strong>：Strassen 算法的细节、Coppersmith-Winograd 这类理论上界 —— 偏论文向，不在工程主线</li>
       </ul>
     </blockquote>
   </div>
@@ -851,94 +884,119 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
 <div id="followup3">
 <details open>
   <summary>
-    追问 3：理想 layout 跨语言讨论 / Ideal Layout — Cross-Language Discussion
-    <span class="tag tag-time">3-4 min</span>
-    <span class="tag tag-diff-2">⭐⭐ Medium</span>
+    追问 3：浮点误差 + NaN/Inf 行为 / Floating-Point Error &amp; NaN/Inf Behavior
+    <span class="tag tag-time">2-3 min</span>
+    <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
     <span class="tag tag-py">不写代码 / No code</span>
   </summary>
   <div class="detail-body">
 
     <h4>🎯 锚点 / Anchor</h4>
-    <p>F1 是 access pattern（读 A vs 读 B），F2 是循环顺序（i-j-p vs i-p-j）——两个都是<strong>动作层面</strong>。F3 拉到<strong>数据结构层面</strong>：跳出代码、跳出语言，单纯讨论"做矩阵乘法，最理想的内存 layout 应该是什么样？"再回到不同语言里怎么实现。<strong>F3 不写代码、只说话。</strong><br>
-    <span class="en-text">F1 was about access pattern (reading A vs reading B), F2 about loop order (i-j-p vs i-p-j) — both are <strong>at the action level</strong>. F3 zooms out to the <strong>data-structure level</strong>: stepping outside of code and language, purely discuss "what's the ideal memory layout for matmul?", then come back to how each language implements it. <strong>F3 is verbal only — no code.</strong></span></p>
+    <p>matmul 是浮点重灾区。候选人已经写出代码了——现在问他能不能看出这段代码<strong>遇到非整数输入时会发生什么</strong>。能聊清楚的人 = 真在数值 / 科学计算里跑过代码，不是只刷 LeetCode。两段递进："知道有坑" → "知道坑长什么样"。<br>
+    <span class="en-text">Matmul is a floating-point minefield. Candidate has working code — now ask whether they can see what happens to it <strong>when inputs aren't integers</strong>. People who answer well = have actually shipped numerical / scientific code, not just LeetCode. Two stages: "knows there's a trap" → "knows what the trap looks like".</span></p>
 
-    <h4>提问 / Question</h4>
+    <h4>提问 · 两段式（依次问、不要一次抛两个）/ Question (2 stages, ask sequentially)</h4>
+
     <blockquote>
-      <strong>EN:</strong> "Now I want a verbal discussion — <strong>no code</strong>. Three sub-questions:<br>
-      &nbsp;&nbsp;(1) For matrix multiplication, what's the <strong>ideal memory layout</strong>? Describe it in words.<br>
-      &nbsp;&nbsp;(2) <strong>Why</strong> does this layout make multiply fast? (specific mechanisms, not just 'cache-friendly')<br>
-      &nbsp;&nbsp;(3) In different languages, <strong>what do people actually use</strong> to get this layout? C++ uses what, Python uses what, Rust uses what?"
+      <strong>F3a · 浮点误差 (~1 min) / Floating-point error</strong><br>
+      <strong>EN:</strong> "Your implementation works on integers. Now I pass in <code>float</code> values instead. Does that introduce numerical error? Give me a <strong>concrete</strong> example and tell me how the error gets produced."<br>
+      <strong>中:</strong> "你的实现把整数换成 float 之后跑，会不会引入数值误差？给我一个<strong>具体</strong>的例子，告诉我误差怎么产生的。"
     </blockquote>
+
     <blockquote>
-      <strong>中:</strong> "现在我想要一个口头讨论——<strong>不写代码</strong>。三个子问题：<br>
-      &nbsp;&nbsp;(1) 对于矩阵乘法，<strong>最理想的内存 layout</strong> 应该是什么样？用文字描述。<br>
-      &nbsp;&nbsp;(2) <strong>为什么</strong>这种 layout 让乘法变快？（要具体机制，不是只说"cache-friendly"）<br>
-      &nbsp;&nbsp;(3) 在不同语言里，大家<strong>实际用什么</strong>来得到这种 layout？C++ 用什么、Python 用什么、Rust 用什么？"
+      <strong>F3b · NaN / Inf 行为 (~1 min) / NaN / Inf behavior</strong><br>
+      <strong>EN:</strong> "If <code>A</code> contains a single <code>NaN</code> or <code>Inf</code>, what does your output look like? Is that the behavior you want? How do standard libraries (numpy / BLAS) typically handle this?"<br>
+      <strong>中:</strong> "如果 A 里有一个 NaN 或 Inf，你的输出会变成什么？这是你想要的行为吗？标准库（numpy / BLAS）通常怎么处理？"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>注意 / Note:</strong> 两段必须<strong>依次问</strong>——F3a 是 "误差从哪里来"（表示问题 + 累加顺序），F3b 是 "奇点值怎么传播"（IEEE 754 语义），两个点深度不同。一次抛会被候选人用 "浮点不精确" 一句话蒙过去。这两段都是<strong>口述题，不需要写代码</strong>。<br>
+      <span class="en-text">Ask <strong>sequentially</strong> — F3a is "where does error come from" (representation + accumulation order), F3b is "how do special values propagate" (IEEE 754 semantics); two different depths. Asking both at once invites a vague "floats are imprecise" sweep. Both are <strong>verbal — no code required</strong>.</span>
     </blockquote>
 
     <details>
-      <summary>📖 标准答案 / Expected Answer</summary>
+      <summary>📖 标准答案 · F3a 浮点误差 / Expected Answer — F3a Floating-Point Error</summary>
       <div class="detail-body">
 
-        <h4>(1) 理想 layout / Ideal layout</h4>
-        <p>一个 <strong>单一、连续、按行优先（row-major）展开</strong>的 buffer，再加 <strong>(rows, cols)</strong> 两个元数据描述形状（生产级再加 <strong>leading dimension <code>ld</code></strong> 描述行步长，以支持 sub-matrix slice）。逻辑上是 2D，物理上是 1D 数组——<code>(i, j)</code> 元素位于偏移 <code>i * cols + j</code>（或 <code>i * ld + j</code>）。<br>
-        <span class="en-text">A <strong>single, contiguous, row-major flattened</strong> buffer, plus <strong>(rows, cols)</strong> metadata to describe shape (production-grade adds <strong>leading dimension <code>ld</code></strong> for sub-matrix slicing). Logically 2D, physically a 1D array — element <code>(i, j)</code> sits at offset <code>i * cols + j</code> (or <code>i * ld + j</code>).</span></p>
-        <p>反例：<code>vector&lt;vector&lt;double&gt;&gt;</code> / Python 的 list-of-list——<strong>每一行是一次独立分配</strong>，行与行之间内存地址<strong>不连续</strong>，外层是一个指针数组指向各行。<br>
-        <span class="en-text">Counter-example: <code>vector&lt;vector&lt;double&gt;&gt;</code> / Python list-of-list — <strong>each row is a separate allocation</strong>, rows are <strong>not contiguous</strong> in memory, and the outer layer is just a pointer array pointing to each row.</span></p>
+        <h4>两个独立的误差来源 / Two independent sources of error</h4>
 
-        <h4>(2) 为什么这种 layout 让乘法变快 / Why this layout makes multiply fast</h4>
-        <p>期望候选人讲<strong>具体机制</strong>，不止 "cache-friendly"。覆盖 ≥3 条算合格 / Expect <strong>specific mechanisms</strong>, not just "cache-friendly". ≥3 of the following is a pass：</p>
-        <ol>
-          <li><strong>一次性堆分配</strong> / Single heap allocation：<code>m * n</code> 个 double 走一次 <code>malloc</code>；vs nested 版要 <code>m + 1</code> 次。减少 allocator 开销 + 避免堆碎片。</li>
-          <li><strong>跨行内存连续</strong> / Inter-row contiguity：硬件 prefetcher 能从第 <code>i</code> 行尾部<strong>预取到第 <code>i+1</code> 行头部</strong>；TLB 命中率高、可享用 huge pages。</li>
-          <li><strong>指针 indirection 消失</strong> / No pointer indirection：<code>A(i,j)</code> = <strong>1 次乘加 + 1 次 load</strong>；nested 版 = <strong>1 次 load 行指针 + 1 次 load 数据</strong>，少走 1 跳内存。</li>
-          <li><strong>SIMD load 友好</strong> / SIMD-friendly load：AVX2 一次连续读 4 个 double、AVX-512 读 8 个、NEON 读 2 个；连续 buffer 才能用 aligned load 指令，nested 版跨行边界会断。</li>
-          <li><strong>可控的 alignment / padding</strong> / Controllable alignment：可以让每行起始地址对齐到 cache line（64B）或 SIMD register 宽度，避免 false sharing 和未对齐 load 惩罚；nested 版受 allocator 摆布。</li>
-          <li><strong>直接喂 BLAS / cuBLAS / GPU</strong> / Directly feedable to BLAS：这些库的 API 全部是 <code>(double* ptr, int ld)</code> 形式；连续 buffer 可以零拷贝 <code>cudaMemcpy</code> 到 device，nested 版必须先拍平。</li>
-          <li><strong>跨语言零拷贝</strong> / Zero-copy cross-language：一个连续 buffer 可以通过 Python buffer protocol、Rust slice、CUDA pointer、网络协议<strong>不拷贝</strong>地传递。</li>
-        </ol>
+        <p><strong>来源 1 · 表示误差（representation）：</strong>有些十进制小数在二进制里<strong>无限循环</strong>，一赋值就已经舍入了。典型例子：<code>0.1 + 0.2 == 0.30000000000000004</code> —— 还没乘、还没加、在输入那一刻误差就已经存在。</p>
+        <p><strong>来源 2 · 累加误差（accumulation）：</strong>matmul 的内循环是 <code>acc += A[i][p] * B[p][j]</code>，连续 k 次加法。每次加都可能新增一点舍入，并且加法<strong>不满足结合律</strong>：<code>(a + b) + c ≠ a + (b + c)</code>。不同的累加顺序会产生不同的最终结果，误差随 k 上升而增长（一般是 O(k · ε)，双精度 ε ≈ 2.22e-16）。</p>
 
-        <h4>(3) 各语言怎么实现这种 layout / How each language gets this layout</h4>
-        <table>
-          <tr><th>语言 / Language</th><th>实际用什么 / What people actually use</th><th>备注 / Notes</th></tr>
-          <tr>
-            <td><strong>C++</strong></td>
-            <td><code>std::vector&lt;double&gt;</code> + 手写 <code>at(i,j)</code><br>或 <strong>Eigen</strong>（<code>Eigen::MatrixXd</code>）<br>或 <strong>Armadillo</strong></td>
-            <td>Eigen / Armadillo 默认 <strong>column-major</strong>！（沿 Fortran/BLAS 传统）</td>
-          </tr>
-          <tr>
-            <td><strong>Python</strong></td>
-            <td><strong><code>numpy.ndarray</code></strong>（默认 C-order = row-major）<br>更高层：PyTorch <code>Tensor</code>、JAX array、TF tensor</td>
-            <td>底层就是一个连续 buffer + <code>shape</code> + <code>strides</code>；<code>.flags['C_CONTIGUOUS']</code> 可查；和 list-of-list 完全两回事</td>
-          </tr>
-          <tr>
-            <td><strong>Rust</strong></td>
-            <td><code>Vec&lt;f64&gt;</code> + 手写 indexing<br>或 <strong><code>ndarray</code></strong> crate（row-major 默认）<br>或 <strong><code>nalgebra</code></strong>（column-major 默认）</td>
-            <td>nalgebra 选 column-major 也是为了和 BLAS 接口对齐</td>
-          </tr>
-          <tr>
-            <td><strong>Fortran</strong></td>
-            <td>原生 2D 数组 <code>real :: A(m,n)</code></td>
-            <td>原生就是 <strong>column-major</strong>——这就是为什么 BLAS / LAPACK 接口默认 column-major</td>
-          </tr>
-          <tr>
-            <td><strong>CUDA / GPU</strong></td>
-            <td><code>cudaMalloc(rows*cols*sizeof(float))</code> + 显式 row/col + ld<br>高层：<strong>cuBLAS</strong>（column-major 默认）、<strong>CUTLASS</strong></td>
-            <td>GPU 上 layout 不连续 = warp coalesce 失败 = 性能掉 10×；连续是<strong>硬件要求</strong>不是优化</td>
-          </tr>
-          <tr>
-            <td><strong>Java / JVM</strong></td>
-            <td><code>double[]</code>（一维原生数组）+ 手写 indexing<br>避免 <code>double[][]</code>（=数组 of 数组对象，行间不连续 + 有对象 header）</td>
-            <td>JVM 没有真正的多维原生数组——<code>double[][]</code> 本质就是 nested vector 的坑</td>
-          </tr>
-        </table>
+        <h4>一个具体例子 / A concrete example</h4>
+        <pre><code>A = [[1e16, 1.0, -1e16]]      # 1×3
+B = [[1.0], [1.0], [1.0]]      # 3×1
+# 数学上：C[0][0] = 1e16 + 1.0 + (-1e16) = 1.0
+# float64 实际算（1e16 + 1.0）= 1e16（1.0 被舍掉，因为 1e16 附近的
+# 浮点间隔已经 > 1），再 - 1e16 = 0.0
+# 返回 C[0][0] = 0.0，丢了一个整数！</code></pre>
+        <p>这叫 <strong>catastrophic cancellation</strong>（灾难性抵消）。只要累加项中同时出现<strong>量级差很大</strong>的正负值，就会发生。在应用里完全是真实场景：梯度计算、损失函数汇总、位号叠加。</p>
+        <p class="en-text"><strong>EN:</strong> The two errors are <strong>representation</strong> (some decimals can't be represented exactly in binary, e.g. <code>0.1 + 0.2 = 0.30000000000000004</code>) and <strong>accumulation</strong> (the inner loop is <code>acc += A[i][p] * B[p][j]</code>, and floating-point addition is <strong>not associative</strong>; error grows ~O(k·ε)). Worst-case demo above is <strong>catastrophic cancellation</strong>.</p>
 
-        <h4>加分点 / Bonus signals</h4>
+        <h4>🌟 加分信号 / Bonus signals</h4>
         <ul>
-          <li>主动提 <strong>row-major vs column-major</strong>（C/numpy/Rust ndarray = row-major；Fortran/BLAS/Eigen/nalgebra = column-major）= 🌟 信号</li>
-          <li>主动提 <strong>leading dimension <code>ld</code></strong> + 用途（sub-matrix slice 零拷贝 + alignment padding）= 🌟🌟 BLAS 真懂</li>
-          <li>主动提 <strong>strides</strong>（numpy / ndarray 用 strides 同时表达 row-major / column-major / transposed view / sub-slice，无需拷贝）= 🌟🌟 真懂数据视图模型</li>
-          <li>主动提 <strong>GPU coalesced access</strong>（warp 内 32 个线程必须读连续地址，layout 不连续直接 10× 性能损失）= 🌟🌟 GPU 思维</li>
+          <li>主动区分<strong>表示误差和累加误差是两回事</strong></li>
+          <li>主动说出<strong>加法不满足结合律</strong>（这是“不同实现输出不同”的根源）</li>
+          <li>主动提 <strong>catastrophic cancellation</strong> / 极端量级差场景</li>
+          <li>提到 <strong>误差随 k 增长</strong>（知道误差不是常量、是随问题规模变化的）</li>
+          <li>提到缓解手段：<strong>Kahan summation</strong>、两两两合并（pairwise summation）、高精度累加器（fp32×fp32 → fp64 累加）= 🌟🌟 Senior 信号（这些是 BLAS / cuBLAS / Tensor Core 里真在用的手段）</li>
+        </ul>
+
+        <h4>🟡 红旗 / Red flags</h4>
+        <ul>
+          <li>只能说 "float 不精确"，举不出例子</li>
+          <li>举的例子是 <code>0.1 + 0.2</code> 但不能延展到 matmul 上下文</li>
+          <li>说 "误差是常量、不多"，不知道会随 k 累加</li>
+          <li>说 "重要场景用 <code>decimal</code> 模块就行了" —— 性能感弱（decimal 比 double 慢 100×）</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 标准答案 · F3b NaN / Inf 行为 / Expected Answer — F3b NaN / Inf Behavior</summary>
+      <div class="detail-body">
+
+        <h4>NaN 会发生什么 / What happens with NaN</h4>
+        <p><strong>NaN 传染 / NaN propagates:</strong> <code>NaN * 任何数 = NaN</code>、<code>NaN + 任何数 = NaN</code>。如果 <code>A[i][p] = NaN</code>，那么 <code>A[i][p] * B[p][j]</code> 在所有 <code>j</code> 上都产生 NaN，累加结果 <code>C[i][j]</code> 在所有 <code>j</code> 上都是 NaN。</p>
+        <p><strong>冲击面：一个 NaN 污染整行。</strong>A 中一个元素坏 → C 中<strong>整行</strong>（n 个元素）坏。如果 B 中某列有 NaN→ C 中<strong>整列</strong>（m 个元素）坏。一个 NaN 能坏掉 m+n-1 个输出。</p>
+
+        <h4>Inf 会发生什么 / What happens with Inf</h4>
+        <ul>
+          <li><code>Inf * 非零有限数 = ±Inf</code>（符号看另一个操作数）</li>
+          <li><code>Inf + Inf = Inf</code>、<code>Inf - Inf = NaN</code> ∆ —— <strong>这个狡猜</strong>：一旦 A 中同一行同时出现 +Inf 和 -Inf（乘以同号 B 列），累加会产生 <code>Inf - Inf = NaN</code>，问题从 Inf "升级" 成 NaN</li>
+          <li><code>Inf * 0 = NaN</code> ∆ —— 另一个陷阱：B 中恰巧为 0 的元素遇上 A 中的 Inf，产生 NaN</li>
+        </ul>
+
+        <h4>这是想要的行为吗？/ Is this what you want?</h4>
+        <p><strong>视场景而定</strong>——这才是问题重点。</p>
+        <ul>
+          <li><strong>是 / Yes（金融、科学计算）</strong>：你<strong>希望</strong> NaN 传染。"输入里有脘霉数据" 是个严重错误，不能默默把 NaN 当 0 或 忞略。NaN 传染<strong>保证你能发现</strong>有问题输入——这是 IEEE 754 设计初衷。</li>
+          <li><strong>不是 / No（机器学习 / 推荐系统）</strong>：你可能希望把缺失值<strong>提前清理</strong>（插补平均值、零、mask），而不是让他一口气污染 batch 里另外 999 个样本。</li>
+        </ul>
+
+        <h4>标准库（numpy / BLAS）怎么处理 / How standard libraries handle it</h4>
+        <ul>
+          <li><strong>numpy / BLAS 默认 = 什么也不做</strong>：实现严格遵守 IEEE 754，NaN / Inf 随完全的运算规则传染下去。<code>numpy.matmul</code> 不会报错、不会清理、不会警告。</li>
+          <li><strong>检查工具</strong>：Python 里用 <code>numpy.isnan(A).any()</code> / <code>numpy.isinf(A).any()</code> 主动扫输入；<code>numpy.errstate</code> 能控制 <code>invalid</code>/<code>overflow</code> 警告。</li>
+          <li><strong>硬件层</strong>：CPU / GPU 都有 "<strong>invalid operation</strong>" 浮点异常位，会在 <code>0/0</code>、<code>Inf - Inf</code>、<code>Inf * 0</code>、<code>sqrt(-1)</code> 时默默设位；C 里可以用 <code>feenableexcept(FE_INVALID)</code> 让它从默默变成<strong>招错</strong>（SIGFPE）——debug 数值问题的利器。</li>
+          <li><strong>上层库</strong>：PyTorch / TF 训练时常用 <code>torch.isnan(loss)</code> 检查 + <code>gradient clipping</code> 防止梯度炸成 Inf；pandas 的 <code>NaN</code> 语义不一样（被当 "缺失值" 处理）要区分清楚。</li>
+        </ul>
+
+        <h4>🌟 加分信号 / Bonus signals</h4>
+        <ul>
+          <li>主动说出 <strong>"一个 NaN 污染整行整列"</strong> 的冲击面计算</li>
+          <li>区分 <strong>NaN 传染 vs Inf-Inf=NaN 的转化</strong></li>
+          <li>提到 IEEE 754 设计<strong>初衷</strong>是 "让错误可检测"，不是 bug</li>
+          <li>区分 <strong>默认 silent 传染 vs 控位招 SIGFPE</strong> 两种模式</li>
+          <li>提到 训练时遇过 NaN loss / Inf gradient 的实例 = 🌟🌟 真实战 ML 信号</li>
+        </ul>
+
+        <h4>🟡 红旗 / Red flags</h4>
+        <ul>
+          <li>说 "能跑出结果就行" —— 不知道 NaN 一个能坏 m+n 个输出</li>
+          <li>说 "应该报错 throw exception" —— 不知道这是主流库的<strong>主动设计抩择</strong></li>
+          <li>说 "NaN 和 0 差不多" —— 概念错误，改变数学语义</li>
+          <li>不知道 <code>Inf - Inf = NaN</code> 这类转化</li>
         </ul>
       </div>
     </details>
@@ -948,11 +1006,10 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
       <div class="detail-body">
         <table>
           <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
-          <tr><td>说清 row-major flat + (rows,cols) + 列 <strong>≥5 条</strong>具体机制 + 覆盖 <strong>3+ 语言</strong>正确实现 + 主动提 leading dimension / strides / GPU coalesce 中至少一项<br><span class="en-text">Clearly describes row-major flat + (rows,cols) + lists ≥5 specific mechanisms + correctly maps to 3+ languages + mentions leading dimension / strides / GPU coalesce</span></td><td>🌟🌟 数值计算栈真懂，可跳 F4 基础直接上高阶 / Numerical-stack expert; can skip F4 basics, go straight to advanced</td></tr>
-          <tr><td>说清连续 buffer + (rows,cols) + 3-4 条机制 + 至少能说对 <strong>C++ 和 Python 各用什么</strong>（numpy）<br><span class="en-text">Describes contiguous buffer + (rows,cols) + 3-4 mechanisms + at least correctly names C++ and Python tools (numpy)</span></td><td>🌟 SDE2-Senior 达标 / SDE2-Senior level</td></tr>
-          <tr><td>知道要连续、能讲到 "cache-friendly"，但讲不清具体机制；语言层面只能说 numpy<br><span class="en-text">Knows it should be contiguous and "cache-friendly" but can't articulate mechanisms; only knows numpy</span></td><td>✅ 经验型，及格 / Experience-based, passing</td></tr>
-          <tr><td>知道连续好，但说不出怎么实现 / 误以为 <code>vector&lt;vector&gt;</code> 或 Python list-of-list 就是连续的<br><span class="en-text">Knows contiguous is good but can't say how, or thinks <code>vector&lt;vector&gt;</code> / Python list-of-list is contiguous</span></td><td>🟡 概念有缺口，可补 / Has conceptual gap, can be filled</td></tr>
-          <tr><td>完全说不出 layout 应该是什么样，或者说 "反正交给编译器/库就好了"<br><span class="en-text">Can't describe the layout at all, or says "just let the compiler/library handle it"</span></td><td>⚠️ Senior 不应该没有数据结构层面的直觉 / Senior should have data-structure-level intuition</td></tr>
+          <tr><td>F3a 区分 "表示 vs 累加" + 举出量级差 / catastrophic cancellation 例子 + F3b 讲清传染冲击面（整行污染）+ 知道 numpy/BLAS 默认不处理的设计抩择<br><span class="en-text">F3a separates representation vs accumulation + cites magnitude-gap / catastrophic cancellation + F3b explains row-wide propagation + knows numpy/BLAS deliberately propagate</span></td><td>🌟🌟 <strong>真跑过数值代码</strong>，Senior以上信号 / Has shipped real numerical code; Senior+ signal</td></tr>
+          <tr><td>F3a 能说 "累加不同顺序 → 不同结果" + F3b 能说 "NaN 传染会污染后续计算"，但具体例子讲不太出来<br><span class="en-text">F3a says "different order → different result" + F3b says "NaN poisons later math" but struggles with concrete examples</span></td><td>🌟 SDE2-Senior 达标，概念有 / SDE2-Senior level, has the concepts</td></tr>
+          <tr><td>F3a 只能说 "float 不精确" / 拿 <code>0.1+0.2</code> 举例但不能延展到 matmul + F3b 知道 NaN "会传" 但说不出冲击面<br><span class="en-text">F3a only "float is imprecise" / <code>0.1+0.2</code> but can't extend to matmul + F3b knows NaN "spreads" but can't quantify blast radius</span></td><td>✅ 听说过但不深 / Has heard of it, not deep</td></tr>
+          <tr><td>F3a + F3b 都答不上来，说 "交给 numpy / 库处理"<br><span class="en-text">Both blank, deflects to "library handles it"</span></td><td>⚠️ 与简历数值背景不符 / Mismatch with numerical background on resume</td></tr>
         </table>
       </div>
     </details>
@@ -960,14 +1017,14 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
     <blockquote class="interviewer-note">
       <strong>🎯 关键说明 / Key notes：</strong>
       <ul style="margin:6px 0 0 18px;">
-        <li><strong>反复强调 "不写代码"。</strong>候选人很可能惯性地想动手写——打断他："等等，我现在不要代码，只要你用文字描述。"考察的是<strong>能不能脱离代码讲清概念</strong>。</li>
-        <li><strong>三个子问题分开问、依次问。</strong>不要一口气抛三个，否则候选人会只挑会的答。先问 (1) layout 是什么 → 听完 → 再问 (2) 为什么快 → 听完 → 再问 (3) 跨语言实现。每个子问题留 60-90 秒。</li>
-        <li><strong>只能说 "cache-friendly" 的 hint：</strong>"具体说，一次 <code>malloc</code> 1MB 和 1024 次 <code>malloc</code> 1KB，开销差在哪里？" → 引到 allocator。或者："prefetcher 跨行预取需要什么前提？" → 引到地址连续。</li>
-        <li><strong>跨语言部分卡住的 hint：</strong>问 "你平时用 numpy 吗？numpy 的 ndarray 底层是什么？" 多数人会想起 "连续 buffer + shape + strides"。然后类比到其他语言："那 C++ 里对应什么？Rust 里呢？"</li>
-        <li><strong>主动提 column-major → 🌟 信号。</strong>可追问："为什么 BLAS / Eigen / nalgebra 用 column-major？" 期望答 "Fortran 历史 + 列操作多的算法（QR/SVD）+ 矩阵-向量乘 <code>y = A*x</code> 时列连续更友好"。</li>
-        <li><strong>主动提 strides → 🌟🌟 信号。</strong>可追问："numpy 怎么用 strides 实现转置不拷贝？" 期望答 "swap strides[0] 和 strides[1]，buffer 不变"。</li>
-        <li><strong>主动提 GPU coalesced access → 🌟🌟 信号。</strong>说明候选人有 GPU 实战经验，F4c 可以直接深挖 shared memory tiling / tensor cores 等高阶细节，跳过基础 GPU 引入。</li>
-        <li><strong>📌 Python 候选人不需要特殊处理。</strong>这是纯口述题、跨语言展开本身就让 Python 候选人可以从 numpy 切入；反而 Python 候选人如果对 numpy 的 buffer/strides 模型说不清，是<strong>减分项</strong>——"日常用的工具，底层不知道"。</li>
+        <li><strong>强调 "口述、不写代码"。</strong>候选人可能想动手验证——打断他："不用跑，告诉我你预期发生什么。"</li>
+        <li><strong>F3a 卡在 "举不出例" 时的 hint：</strong>"混三个数：1e16、1、-1e16。加起来数学上是多少？float 里是多少？" —— 一步到 catastrophic cancellation。</li>
+        <li><strong>F3b 卡在 "污染冲击面" 时的 hint：</strong>"如果 <code>A[3][7] = NaN</code>，C 里哪些位置会变成 NaN？" —— 逼他走一遭公式 <code>C[3][j] = Σ A[3][p] * B[p][j]</code>。</li>
+        <li><strong>F3b 卡在 "标准库怎么处理" 时的 hint：</strong>"你跳 numpy，<code>A = np.array([[np.nan, 1], [2, 3]])</code>，<code>A @ A</code> 是什么？会报错还是跑成功？"</li>
+        <li><strong>🌟 重要的辅助追问（F3a 答完后可补 30 秒）：</strong>"应对这种误差的标准手段你知道哪些？" —— 期望听到 Kahan summation / pairwise summation / 高精度累加器。这三个有 ≥1 = 🌟🌟。</li>
+        <li><strong>🌟 重要的辅助追问（F3b 答完后可补 30 秒）：</strong>"你报不报这个错？怎么平衡 ‘默默传染以便检测’ vs ‘控位及时抓问题’？" —— 开放问，能聊出<strong>生产环境 vs 训练环境</strong>的默认选不同 （生产不招 SIGFPE、训练招）= 🌟。</li>
+        <li><strong>📌 时间紧时：</strong>F3a 只问 "举具体例子"、F3b 只问 "NaN 会怎样传染"。则骨架保留、伸展则舍。</li>
+        <li><strong>📌 不要追问：</strong>浮点 subnormal / denormal、各种 rounding mode（RTN/RTZ/RTE）详细、Posit 数体系 —— 偏论文向，不在工程主线。</li>
       </ul>
     </blockquote>
   </div>
@@ -1148,6 +1205,145 @@ def multiply(A: Matrix, B: Matrix) -&gt; Matrix:
         <li><strong>📌 时间分配：</strong>F4a ~1 min（不超时）、F4b ~2 min（重点听优先级排序）、F4c ~2-3 min（深挖钩子轮着问）。F4c 顶级候选人可能不需要钩子、自己一口气讲完——让他讲。</li>
         <li><strong>📌 Python 候选人在 F4 完全没问题。</strong>BLAS 在 Python 里是 numpy（底层 OpenBLAS / MKL）；GPU 在 Python 里是 PyTorch / CuPy / JAX。Python 反而是 GPU 数值计算的主流接入语言。</li>
         <li><strong>📌 F4 是 P0 拓展追问的收尾。</strong>F4 答完无论好坏都建议给 1-2 min 让候选人提问，然后结束 P0 部分。</li>
+      </ul>
+    </blockquote>
+  </div>
+</details>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== FOLLOW-UP 5 ==================== -->
+<div id="followup5">
+<details open>
+  <summary>
+    追问 5：装不进内存怎么办 / Out-of-Core Matmul
+    <span class="tag tag-time">3 min</span>
+    <span class="tag tag-diff-3">⭐⭐⭐ Hard</span>
+  </summary>
+  <div class="detail-body">
+
+    <h4>🎯 锚点 / Anchor</h4>
+    <p>F2b 里候选人刚算过 10000×10000 = 2.4 GB——还能装下。现在<strong>将规模再抩12个量级</strong>：100000×100000，每个矩阵 80 GB。这一下就跨过了"内存能装下"这条红线，工程思路必须换轨道。能讲清 "分块 + memory hierarchy 又多一层" 的人 = 真做过大数据 / 科学计算的工程。<br>
+    <span class="en-text">F2b had the candidate compute 10000×10000 = 2.4 GB — still fits in RAM. Now <strong>scale up another 1000×</strong>: 100000×100000, 80 GB per matrix. This crosses the "fits in RAM" red line and forces the whole engineering approach onto a different track. Candidates who can articulate "block + one more layer of memory hierarchy" have actually shipped large-data / scientific computing work.</span></p>
+
+    <h4>提问 · 两段式（依次问）/ Question (2 stages, ask sequentially)</h4>
+
+    <blockquote>
+      <strong>F5a · 第一反应 (~1 min) / First reaction</strong><br>
+      <strong>EN:</strong> "I give you 100000×100000 <code>A</code> and <code>B</code>, <code>float64</code> — each is 80 GB. Your laptop has 32 GB RAM. <strong>What does your current implementation do</strong>? How does the OS react?"<br>
+      <strong>中:</strong> "我给你 100000×100000 的 A 和 B，<code>float64</code>，每个 80 GB。你的笔记本只有 32 GB RAM。<strong>你的当前实现会发生什么</strong>？操作系统怎么反应？"
+    </blockquote>
+
+    <blockquote>
+      <strong>F5b · 实际方案 (~2 min) / Actual plan</strong><br>
+      <strong>EN:</strong> "Now I want you to <strong>actually compute C</strong>. Give me a plan that works, going from simple to advanced."<br>
+      <strong>中:</strong> "现在让你<strong>真的算出 C</strong>。给我一个能跑的方案，按思路深度递进。"
+    </blockquote>
+
+    <blockquote class="interviewer-note">
+      <strong>注意 / Note:</strong> F5a 是“诊断”（能不能看出 OOM / swap thrashing），F5b 是“出方案”（分块 → memmap → 专用库 → 集群）。必须依次问，一口气抛会被“dask / spark / GPU 集群”一句话蒙过去。<strong>F5 不需要写代码、口述即可。</strong><br>
+      <span class="en-text">F5a = diagnose (do you see OOM / swap thrashing?), F5b = propose (block → memmap → dedicated lib → cluster). Ask sequentially — asking both at once invites a vague "dask / spark / GPU cluster" sweep. <strong>F5 is verbal — no code required.</strong></span>
+    </blockquote>
+
+    <details>
+      <summary>📖 标准答案 · F5a 诊断 / Expected Answer — F5a Diagnosis</summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>两种可能结果之一：</strong>(1) <code>MemoryError</code> / <code>std::bad_alloc</code> —— 在你试图分配 80 GB 给 C 时直接抩；(2) 被 <strong>OOM killer</strong> 杀掉 —— Linux 遇到内存压力时会主动杀掉占内存多的进程，可能<strong>都没来得及抩 Python 异常</strong>进程就没了。</li>
+          <li><strong>中间状态 · swap thrashing：</strong>如果开了 swap，OS 会把不活动的内存页换到磁盘（swap-out）、要用时再换回（swap-in）。你的 matmul 访问模式是走遍所有元素，<strong>OS 反复换出又换进</strong>，磁盘 I/O 跑满、CPU 几乎空转 —— 进程看起来“还活着”但几乎不前进，这叫 <strong>thrashing</strong>。可能要几天才能算完，或者干脆被 OOM killer 杀了之后你才发现。</li>
+          <li><strong>另一个隐藏问题 · Python list-of-list 更惨：</strong>每个 <code>PyFloatObject</code> 是 24-28 字节而不是 8 字节，Python list-of-list 版的 100000×100000 可能需要 <strong>240+ GB</strong>。</li>
+        </ul>
+        <p><strong>🌟 加分信号 / Bonus signals：</strong></p>
+        <ul>
+          <li>主动区分 <strong>MemoryError vs OOM killer</strong>（一个是进程内抩错、一个是被外部杀）</li>
+          <li>主动说出 <strong>swap thrashing</strong> 这个名词、并能描述“看起来还在跑但什么都不发生”的现象</li>
+          <li>补充 <strong>现代 macOS / 服务器默认关 swap 或 swap 很小</strong>—— 所以现代环境更可能是直接 OOM kill</li>
+          <li>主动提 Python list-of-list 的额外 overhead</li>
+        </ul>
+        <p><strong>🟡 红旗 / Red flags：</strong></p>
+        <ul>
+          <li>答 "跑慢一点" —— 没意识到在 RAM 不够时是质变不是量变</li>
+          <li>答 "Python 会自动用虚拟内存" —— 虚拟内存是 OS 干的、不是语言运行时干的；而且 thrashing 不是 "能跑" 是 "近乎冻住"</li>
+          <li>不知道 OOM killer 的存在（生产服务挨过不止一次的人都会知道这个）</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>📖 标准答案 · F5b 方案（按深度递进）/ Expected Answer — F5b Plan (by depth)</summary>
+      <div class="detail-body">
+
+        <h4>层 1 · 分块计算（block matmul / tiling）/ Layer 1 — Block matmul</h4>
+        <p>把 A 切成水平条 <code>A[i:i+B, :]</code>、B 切成竖条 <code>B[:, j:j+B]</code>，每次只把<strong>当前要算的两块输入 + 一块输出</strong>载入内存、算完写回磁盘。多跳一个内循环走 k 维累加。<br>
+        <span class="en-text">Split A into horizontal stripes <code>A[i:i+B, :]</code>, B into vertical stripes <code>B[:, j:j+B]</code>. Each iteration loads only <strong>the two input blocks + the output block currently being computed</strong>, computes, writes back to disk.</span></p>
+        <ul>
+          <li><strong>block size 怎么定：</strong>让 "两块输入 + 一块输出" 总和 &lt; RAM 的一半，留一半给 OS page cache 和临时变量</li>
+          <li><strong>写 C 时按块顺序写</strong>，避免随机 I/O（机械盘是火热权重，SSD 也有顺序 vs 随机差距）</li>
+        </ul>
+
+        <h4>层 2 · <code>numpy.memmap</code> / Layer 2 — Memory-mapped arrays</h4>
+        <p>直接把磁盘上的二进制文件 mmap 成 ndarray。代码看起来还是 <code>A[i:i+B, :]</code>，<strong>OS 自动按需换页</strong>——动你没访问的部分在磁盘上、访问的部分在 RAM 里。语义上和 “手动分块” 等价，但代码简洁很多。<br>
+        <span class="en-text">mmap a disk file as an ndarray. Code still looks like <code>A[i:i+B, :]</code>, but <strong>OS swaps pages on demand</strong> — untouched parts stay on disk, accessed parts come into RAM. Semantically equivalent to manual blocking but much cleaner code.</span></p>
+
+        <h4>层 3 · 专用库 / Layer 3 — Dedicated libraries</h4>
+        <p>处理分块 + 调度 + 容错 + 并行的现成工具：</p>
+        <ul>
+          <li><strong><code>dask.array</code></strong>： numpy-兼容 API，背后是 lazy DAG + 自动分块 + 多线程/多进程执行</li>
+          <li><strong><code>zarr</code> / <code>h5py</code></strong>：专为大数组设计的存储格式，支持压缩、分块 chunk、跨进程读写</li>
+          <li><strong>Spark MLlib</strong>：JVM 生态，适合已经在 Spark 平台上的数据</li>
+        </ul>
+
+        <h4>层 4 · 上工业级 / Layer 4 — Industrial scale</h4>
+        <ul>
+          <li>单机不够 → <strong>Spark / Ray / Dask cluster</strong> 分布到多机</li>
+          <li>CPU 不够 → <strong>multi-GPU / TPU pod</strong></li>
+          <li>BLAS 不够 → <strong>ScaLAPACK</strong>（分布式线性代数库）、<strong>cuBLASMp</strong>（multi-GPU cuBLAS）</li>
+        </ul>
+
+        <h4>🌟 加分信号 / Bonus signals</h4>
+        <ul>
+          <li>主动说出 <strong>block size = (RAM / 2 / 3 块)</strong> 这类具体公式，而不是 "随便取个值"</li>
+          <li>提 <strong>I/O 顺序 vs 随机</strong> 的区别，说明 "写 C 要按块顺序写"</li>
+          <li><strong>🌟🌟 能接回 F1 的 cache blocking</strong> —— “这本质上和 F1 讲的 cache tiling 是同一个原理，只是把 memory hierarchy 又多加了一层：之前是 cache × RAM，现在是 RAM × disk。这个思路还可以再往上套一层： multi-machine × disk array、GPU HBM × host RAM”——这是<strong>顶级系统思维</strong></li>
+          <li>提 <code>numpy.memmap</code> / <code>dask.array</code> / <code>zarr</code> / <code>h5py</code> 中至少两个名字：说明真在这个生态里跑过</li>
+          <li>提 ScaLAPACK / cuBLASMp = 🌟🌟🌟 极高端信号，高性能计算 (HPC) 背景</li>
+        </ul>
+
+        <h4>🟡 红旗 / Red flags</h4>
+        <ul>
+          <li>只能说 "分批处理"、说不出怎么分 (m 还是 n 还是 k? 三个都要分?)</li>
+          <li>答 "丢给 dask" 但不知道 dask 下面发生什么 —— 只是掏名词</li>
+          <li>跳过分块、直接答 "上 Spark / GPU 集群" —— 没意识到分块是所有上层方案的<strong>基础</strong>，上集群只是把块抓到多台机器上</li>
+          <li>不知道 <code>memmap</code> 这种中间方案 —— "要么手写、要么上集群" 的二元思维</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>🎯 评价标准 / Evaluation</summary>
+      <div class="detail-body">
+        <table>
+          <tr><th>候选人反应 / Response</th><th>评价 / Assessment</th></tr>
+          <tr><td>F5a 区分 OOM killer vs MemoryError + 提 swap thrashing + F5b 讲出分块 + memmap + 专用库 + 主动接回 F1 cache blocking 说 "同一个原理多一层 memory hierarchy"<br><span class="en-text">F5a separates OOM killer vs MemoryError + mentions swap thrashing + F5b covers blocking + memmap + dedicated libs + spontaneously connects back to F1 cache blocking as "same principle, one more layer of memory hierarchy"</span></td><td>🌟🌟🌟 <strong>顶级系统思维</strong>，真做过大数据 / HPC / Top-tier systems thinking; has shipped large-data / HPC work</td></tr>
+          <tr><td>F5a 能说出 OOM / swap + F5b 能描述分块思路 + 提到 至少一个 memmap/dask/zarr 名字<br><span class="en-text">F5a says OOM / swap + F5b describes blocking + mentions at least one of memmap/dask/zarr</span></td><td>🌟 Senior 达标，真跑过大数据代码 / Senior level; has shipped data-heavy code</td></tr>
+          <tr><td>F5a 知道会 OOM + F5b 能讲“按块处理”但说不出具体怎么实现 / 名词只能说 “spark”一项<br><span class="en-text">F5a knows OOM + F5b says "process in chunks" but vague on implementation / only knows "Spark"</span></td><td>✅ 概念有，没上手过 / Has the concept, hasn't done it hands-on</td></tr>
+          <tr><td>F5a 答 "会跑慢" + F5b 只能说 "上集群" / "用 numpy"<br><span class="en-text">F5a says "will be slow" + F5b only "use a cluster" / "use numpy"</span></td><td>🟡 没跳出 "内存不够是量变" 的误区 / Stuck in the "insufficient RAM = quantitative" misconception</td></tr>
+          <tr><td>F5a + F5b 都答不上来，说 "这种场景这辈子遇不到"<br><span class="en-text">Both blank, dismisses the scenario as unrealistic</span></td><td>⚠️ 没有大数据实战经验 / No large-data experience</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <blockquote class="interviewer-note">
+      <strong>🎯 关键说明 / Key notes：</strong>
+      <ul style="margin:6px 0 0 18px;">
+        <li><strong>F5a 卡在 "会跑慢" 时的 hint：</strong>"你 32 GB 不够装 80 GB 的东西，报错还是跑慢？看过 dmesg 里的 OOM 日志吗？" — 一步逼到 OOM killer。</li>
+        <li><strong>F5b 卡在 "丢给 dask" 时的 hint：</strong>"dask 下面是怎么干的？不用 dask、你手写怎么实现？" — 逼他讲出分块。</li>
+        <li><strong>🌟 重要的辅助追问（F5b 答完后可补 30 秒）：</strong>"你刚分块的思路之前哪个追问里也讲过——哪里？为什么是一个原理？" 期望听到“接回 F1 cache blocking、只是 memory hierarchy 多一层”。能主动接上 = 🌟🌟。</li>
+        <li><strong>🌟 重要的辅助追问（F5b 答完后可补 30 秒）：</strong>"同样的思路能不能再往上套一层？比如 RAM 不够了，你有 8 台机器、每台 32 GB？" — 考察能不能把同一个思路推广到分布式。</li>
+        <li><strong>📌 时间紧时：</strong>F5a 可一句话过、重点放 F5b。F5b 出了分块 + memmap 两层就可以收。</li>
+        <li><strong>📌 不要追问：</strong>NUMA / RDMA / GPUDirect Storage 这类深度细节——偏 HPC 专领域，不是 mid-Senior 该考的点。</li>
+        <li><strong>📌 与 F2 的区别：</strong>F2b 问“10000 × 10000 怎么办”——那里购能装下、重点是选 numpy 还是 GPU。F5 是“装不下了怎么办”——重点是分块 + memory hierarchy。两者重叠很小。</li>
       </ul>
     </blockquote>
   </div>
