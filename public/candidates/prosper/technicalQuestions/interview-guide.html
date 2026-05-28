@@ -1,32 +1,474 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>interview</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-           background: #f8fafc; color: #1e293b; margin: 0; min-height: 100vh;
-           display: flex; flex-direction: column; align-items: center; justify-content: center;
-           padding: 40px 24px; text-align: center; }
-    .stub { max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0;
-            border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
-    .label { display: inline-block; padding: 4px 12px; border-radius: 999px;
-             background: #ede9fe; color: #6d28d9; font-size: 12px; font-weight: 700;
-             text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
-    h1 { font-size: 26px; color: #0f172a; margin: 0 0 12px; }
-    p { color: #475569; line-height: 1.6; margin: 0 0 24px; }
-    a.back { display: inline-block; padding: 10px 20px; background: #7c3aed;
-             color: #ffffff; text-decoration: none; border-radius: 8px;
-             font-weight: 600; transition: background .15s ease; }
-    a.back:hover { background: #6d28d9; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prosper · Resume-based Technical Q&amp;A</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --card: #eef2f7;
+    --accent: #7c3aed;
+    --accent2: #a78bfa;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --green: #059669;
+    --yellow: #e17a00;
+    --red: #d63031;
+    --blue: #0984e3;
+    --border: #dfe6e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+
+  /* ===== NAV BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .nav-btn {
+    font-size: 18px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== QUICK JUMP PANEL ===== */
+  .quick-panel {
+    position: fixed; right: 0; top: 56px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: #fff; border-left: 1px solid #e2e8f0;
+    padding: 14px 14px 24px;
+    z-index: 90;
+    transition: width .25s ease, opacity .2s ease, padding .25s ease;
+  }
+  .quick-panel.collapsed { width: 0; padding: 0; opacity: 0; overflow: hidden; }
+  .quick-panel h4 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #0f172a; white-space: nowrap;
+  }
+  .quick-panel h4 button { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; line-height: 1; }
+  .quick-panel h4 button:hover { color: #475569; }
+  .qp-link {
+    display: block;
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 500;
+    color: #334155;
+    transition: background .12s;
+    border-left: 3px solid transparent;
+  }
+  .qp-link:hover { background: #f1f5f9; border-left-color: var(--accent); }
+  .qp-group { margin: 6px 0 2px; }
+  .qp-group-title {
+    font-size: 18px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 10px 2px; margin-top: 6px;
+  }
+  .qp-sub {
+    display: block;
+    padding: 3px 10px 3px 22px;
+    margin: 1px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 400;
+    color: #64748b;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub:hover { background: #f1f5f9; color: #334155; }
+  .qp-sub.purple { border-left: 2px solid var(--accent); }
+  .qp-sub-title {
+    display: block;
+    padding: 4px 10px 4px 22px;
+    margin: 3px 0 1px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 18px; font-weight: 600;
+    color: #334155;
+    transition: background .12s, color .12s;
+  }
+  .qp-sub-title:hover { background: #f1f5f9; color: #0f172a; }
+  .qp-sub-title.purple { border-left: 3px solid var(--accent); }
+  .qp-nested {
+    display: block;
+    padding: 2px 10px 2px 38px;
+    margin: 0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px; font-weight: 400;
+    color: #94a3b8;
+    transition: background .12s, color .12s;
+  }
+  .qp-nested:hover { background: #f1f5f9; color: #64748b; }
+  .panel-toggle {
+    position: fixed; right: 16px; top: 64px; z-index: 91;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; font-size: 18px;
+    display: none;
+  }
+  .quick-panel.collapsed ~ .panel-toggle { display: block; }
+  @media (max-width: 1100px) {
+    .container { margin-right: 0; }
+    .quick-panel { box-shadow: -4px 0 24px rgba(0,0,0,.1); }
+    .panel-toggle { display: block !important; }
+  }
+
+  /* ===== MAIN ===== */
+  .container {
+    flex: 1;
+    min-width: 0;
+    margin-right: 280px;
+    padding: 24px 40px 80px;
+    transition: margin-right .25s ease;
+  }
+  .quick-panel.collapsed ~ .container { margin-right: 0; }
+
+  h1 { font-size: 32px; color: var(--accent); margin-bottom: 24px; text-align: center; padding-top: 16px; }
+  h2 {
+    font-size: 26px; color: var(--blue);
+    margin: 40px 0 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  h3 { font-size: 22px; color: var(--green); margin: 24px 0 10px; }
+  h4 { font-size: 18px; color: var(--yellow); margin: 16px 0 8px; }
+
+  p, li { font-size: 18px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; }
+  strong { color: #1a1a2e; }
+
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: #f5f3ff;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+    color: var(--text);
+  }
+  blockquote.interviewer-note {
+    border-left-color: var(--yellow);
+    background: #fef6e8;
+  }
+  blockquote.ask-en {
+    border-left-color: #d97706;
+    background: #fef9ee;
+    color: var(--text);
+  }
+  blockquote.ask-cn {
+    border-left: none;
+    background: none;
+    padding: 8px 0 8px 16px;
+    color: #78350f;
+    font-size: 18px;
+  }
+  .en-text {
+    font-style: normal;
+    color: #475569;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details > summary::before {
+    content: '▸'; display: inline-block; transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > .detail-body { padding: 0 16px 16px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  th { background: var(--card); color: var(--blue); padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f5f3ff; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 18px; margin-right: 4px; }
+  .tag-time { background: #ede9fe; color: #5b21b6; }
+
+  .separator { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .note-area {
+    background: #f6f8fa;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    min-height: 60px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 20px; cursor: pointer;
+    opacity: 0; transition: opacity .3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  }
+  .scroll-top.show { opacity: 1; }
+</style>
 </head>
 <body>
-  <div class="stub">
-    <div class="label">Prosper Amie · Resume-based Technical Q&A</div>
-    <h1>② 简历技术问答</h1>
-    <p>内容待填写 / Content TBD.</p>
-    <a class="back" href="../index.html">← Back to Overview</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-btn" style="background:#334155;color:#f1f5f9;border-color:#475569;text-decoration:none;margin-right:8px;">← Overview</a>
+  <a href="../selfIntro/interview-guide.html" class="nav-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;text-decoration:none;opacity:0.7;">① 自我介绍</a>
+  <a class="nav-btn" style="background:#0d9488;color:#fff;border-color:#0d9488;text-decoration:none;font-weight:700;">② 技术问答</a>
+  <a href="../codingTest/interview-guide.html" class="nav-btn" style="background:#059669;color:#fff;border-color:#059669;text-decoration:none;opacity:0.7;">③ Coding</a>
+  <a href="../codingTest2/interview-guide.html" class="nav-btn" style="background:#ea580c;color:#fff;border-color:#ea580c;text-decoration:none;opacity:0.7;">④ Coding 2</a>
+  <a href="../candidateQuestions/interview-guide.html" class="nav-btn" style="background:#db2777;color:#fff;border-color:#db2777;text-decoration:none;opacity:0.7;">⑤ 候选人提问</a>
+</nav>
+
+<div class="page-layout">
+<!-- ===== QUICK JUMP PANEL ===== -->
+<div class="quick-panel" id="quickPanel">
+  <h4>
+    Quick Jump
+    <button onclick="document.getElementById('quickPanel').classList.add('collapsed')">&times;</button>
+  </h4>
+  <a class="qp-link" href="#intro-script" onclick="jump('intro-script');return false;">🎤 引入词</a>
+  <a class="qp-link" href="#flow" onclick="jump('flow');return false;">⏱️ Flow 概览</a>
+
+  <div class="qp-group">
+    <div class="qp-group-title">Flow 1 — 系统架构 / Architecture</div>
+    <a class="qp-sub-title purple" href="#flow1-main" onclick="jump('flow1-main');return false;">🎤 主问题：项目背景</a>
+    <a class="qp-nested" href="#flow1-followup1" onclick="jump('flow1-followup1');return false;">↪ 追问 1：架构具体是什么</a>
   </div>
+
+  <a class="qp-link" href="#notes" onclick="jump('notes');return false;">📝 Notes</a>
+</div>
+<button class="panel-toggle" onclick="document.getElementById('quickPanel').classList.remove('collapsed')">☰</button>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h1>💬 简历技术问答 / Resume-based Technical Q&amp;A <span class="tag tag-time">~20 min</span></h1>
+
+<div id="intro-script" class="card" style="border-left: 4px solid var(--accent);">
+  <h4>🎤 引导进入技术问答 / Introduce Technical Q&amp;A</h4>
+  <blockquote class="ask-en">
+    "Great, thanks for the intro. I'd like to spend some time digging into your recent work at AWS — I'll pick a couple of bullets from your resume and ask you to walk me through them in detail."
+  </blockquote>
+  <blockquote class="ask-cn">
+    "好的，谢谢你的介绍。接下来我想花一些时间深入了解你在 AWS 最近的工作经历——我会从你简历里挑几个 bullet，请你详细给我讲讲。"
+  </blockquote>
+</div>
+
+<!-- ==================== FLOW OVERVIEW ==================== -->
+<h2 id="flow">⏱️ Flow</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>#</th><th>简历来源 / Resume Bullet</th><th>主题 / Topic</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Flow 1</td>
+        <td>Vancouver Senior SWE · 高层系统架构 / "Led the design and implementation of high-level system architecture..."</td>
+        <td>系统架构深挖 / Architecture deep-dive</td>
+        <td>~10 min</td>
+      </tr>
+      <tr>
+        <td>Flow 2</td>
+        <td style="color:#94a3b8;"><em>TBD</em></td>
+        <td style="color:#94a3b8;"><em>TBD</em></td>
+        <td style="color:#94a3b8;"><em>TBD</em></td>
+      </tr>
+      <tr>
+        <td>Flow 3</td>
+        <td style="color:#94a3b8;"><em>TBD</em></td>
+        <td style="color:#94a3b8;"><em>TBD</em></td>
+        <td style="color:#94a3b8;"><em>TBD</em></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="separator">
+
+<!-- ====================================================================== -->
+<!--          FLOW 1: SYSTEM ARCHITECTURE (Vancouver Senior · Bullet 1)     -->
+<!-- ====================================================================== -->
+<h2 id="flow1">Flow 1 · 🏗️ 系统架构 / System Architecture <span class="tag tag-time">~10 min</span></h2>
+
+<div class="card">
+  <p style="color:var(--text-muted);">📌 简历原文 / Resume excerpt — <strong>AWS Vancouver · Senior Software Engineer (Jan 2024 – Feb 2025):</strong></p>
+  <blockquote class="interviewer-note">
+    <span class="en-text">"Led the design and implementation of high-level system architecture for distributed applications using C++ and Java, ensuring robust backend scalability."</span><br><br>
+    <span style="color:#78350f;">"主导了分布式应用的高层系统架构设计与实现，使用 C++ 和 Java，确保了稳健的后端可扩展性。"</span>
+  </blockquote>
+  <p style="color:var(--text-muted); margin-top:8px;">🎯 <strong>考察意图 / Probing intent：</strong>这条 bullet 充满了 buzzword（Led / high-level architecture / distributed / scalability）但没有任何具体名词。目标是逐层戳穿，验证他在 Senior 级别是否真的主导了架构设计，还是只是参与者。<br>
+  <span class="en-text">This bullet is full of buzzwords (Led / high-level architecture / distributed / scalability) with no concrete specifics. The goal is to probe layer by layer and verify whether he genuinely led the architecture work at Senior level, or was just a participant.</span></p>
+</div>
+
+<!-- ===== FLOW 1 MAIN QUESTION ===== -->
+<h3 id="flow1-main">🎤 主问题 / Main Question — 项目背景 / Project Background</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Looking at your most recent role at AWS in Vancouver, the first bullet says you led the design and implementation of a high-level system architecture for a distributed application using C++ and Java. Could you start by walking me through the background of this project? What was the product or service, what problem was it solving, and what made this work necessary?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "看你最近在 AWS 温哥华的这段经历，第一条 bullet 说你主导了一个用 C++ 和 Java 构建的分布式应用的高层系统架构设计和实现。能先给我介绍一下这个项目的背景吗？这是什么产品或服务？要解决什么问题？为什么需要做这个工作？"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li>具体的<strong>服务名 / product name</strong>（哪个 AWS 服务？internal 还是 customer-facing？）/ A specific service or product name</li>
+      <li>明确的<strong>业务问题</strong>——"为什么需要重新设计架构" / A clear business / engineering problem motivating the work</li>
+      <li>项目的<strong>规模和约束</strong>（QPS、数据量、SLA、团队规模）/ Scope &amp; constraints (QPS, data volume, SLA, team size)</li>
+      <li>他自己的<strong>角色</strong>——"Led" 到底是 DRI、tech lead、还是 IC 之一 / His actual role — DRI vs tech lead vs one IC among many</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>说不出具体服务名 / 只能讲 "a distributed system" / Can't name the service — only "a distributed system"</li>
+      <li>讲不清楚 business problem，全是技术 buzzword / Vague on the business problem, only technical buzzwords</li>
+      <li>"Led" 但说不清队伍人数 / 自己的具体决策权 / "Led" but can't articulate team size or his decision authority</li>
+      <li>全程 "we did X"，从来不说 "I" / Always "we did X", never "I"</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ===== FLOW 1 FOLLOW-UP 1 ===== -->
+<h3 id="flow1-followup1">↪ 追问 1 / Follow-up 1 — 架构具体是什么 / Architecture Specifics</h3>
+
+<details open>
+  <summary>🎤 提问 / Ask</summary>
+  <div class="detail-body">
+    <blockquote class="ask-en">
+      "Now let's go deeper on the architecture itself. You said you designed the high-level architecture — what exactly did you design? Walk me through the major components, how they communicate, and which parts are in C++ vs Java. Feel free to sketch it out if it helps."
+    </blockquote>
+    <blockquote class="ask-cn">
+      "现在我们具体聊聊架构本身。你说你设计了高层架构——具体设计了什么？给我介绍一下主要的组件、它们之间怎么通信、哪些部分用 C++、哪些部分用 Java。如果方便的话可以画一下。"
+    </blockquote>
+
+    <h4>🎯 期望听到的内容 / What you want to hear:</h4>
+    <ul>
+      <li><strong>60 秒内能"画"出 5+ 个组件 + 箭头 + 数据流向</strong>——真正主导过架构的人这一步不会卡 / Can sketch 5+ components + arrows + data flow within 60 seconds</li>
+      <li>C++ 和 Java 的<strong>分工有清晰理由</strong>（如：C++ 写延迟敏感的数据面 data plane，Java 写控制面 control plane / 业务逻辑）/ Clear rationale for the C++/Java split (e.g., C++ for latency-critical data plane, Java for control plane / business logic)</li>
+      <li>明确的<strong>组件间通信方式</strong>（gRPC? Kafka? 共享 protobuf? JNI?）/ Explicit inter-component communication (gRPC, Kafka, shared protobuf, JNI)</li>
+      <li>能讲出 <strong>distributed 维度</strong>：分区策略 / 一致性模型 / failure handling / Distributed dimension: partitioning, consistency model, failure handling</li>
+    </ul>
+
+    <h4>🚩 红旗信号 / Red flags:</h4>
+    <ul>
+      <li>只能讲 "we have a frontend, a backend, a database..."，给不出具体组件名 / Generic "frontend, backend, database" without named components</li>
+      <li>C++ 和 Java 的分工说不清楚理由（"都是历史原因 / 团队习惯"）/ Can't justify the C++/Java split with engineering reasoning</li>
+      <li>"distributed" 但只能描述一个 stateless 服务 + load balancer，没有多节点协调的细节 / "Distributed" but only describes one stateless service + LB, no multi-node coordination</li>
+      <li>说不出任何具体的 design pattern 名词（leader/follower、sharding、Paxos/Raft、gossip 等）/ Can't name any specific architecture patterns</li>
+    </ul>
+
+    <h4>💡 如果他卡壳 / If stuck — 给一个起点 / Anchor the question:</h4>
+    <blockquote class="ask-en">
+      "For example — was this a single service split into multiple processes, or multiple cooperating services? And inside one service, was there a clear data plane / control plane separation?"
+    </blockquote>
+    <blockquote class="ask-cn">
+      "比如说——这是一个单服务拆成多个进程，还是多个协作的服务？在单个服务内部，有没有明确的 data plane / control plane 划分？"
+    </blockquote>
+  </div>
+</details>
+
+<div class="card" style="border-left:4px solid var(--accent2);">
+  <p style="color:var(--text-muted);">📝 <em>更多追问（design decision debate / scalability 数字 / Senior bar 陷阱题等）会在后续添加。/ Additional follow-ups (design-decision debates, scalability numbers, Senior-bar trap questions) to be added next.</em></p>
+</div>
+
+<hr class="separator">
+
+<!-- ==================== NOTES ==================== -->
+<h2 id="notes">📝 Notes</h2>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Criteria</th><th>Rating (1-5)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Flow 1: 项目背景 — 服务名、业务问题、规模清晰度</td><td></td><td></td></tr>
+      <tr><td>Flow 1: 架构 — 组件 / 通信 / C++ Java 分工合理性</td><td></td><td></td></tr>
+      <tr><td>Flow 1: Distributed 深度 — 一致性 / failure handling / 模式名词</td><td></td><td></td></tr>
+      <tr><td>Communication / 技术表达</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note-area">面试官在此记录候选人技术问答的表现 / Interviewer notes on candidate technical Q&amp;A…</div>
+
+</div><!-- end container -->
+</div><!-- end page-layout -->
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+function jump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'DETAILS') el.open = true;
+  const parent = el.closest('details');
+  if (parent) parent.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+});
+</script>
+
 </body>
 </html>
