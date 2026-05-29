@@ -7,6 +7,7 @@ import type { CandidateConfig } from '../data/types';
  */
 export const jorge: CandidateConfig = {
   id: 'jorge',
+  order: 0,
   name: 'Jorge Beltrán Pastor',
   shortName: 'Jorge',
   initials: 'JB',
@@ -67,7 +68,8 @@ export const jorge: CandidateConfig = {
       time: '~10 min',
       keyPoints: '单调递增函数反函数 · 二分查找',
       accent: 's3',
-      href: 'codingTest/interview-guide.html',
+      problem: 'inverse-function',
+      href: 'interview-guide.html',
       introEn:
         "Alright, let's move on to a short coding exercise. I'll describe a problem, and we can work through it together.",
       introZh: '好的，接下来我们做一道编程题。我会描述一个问题，我们可以一起讨论。',

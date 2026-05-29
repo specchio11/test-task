@@ -1,5 +1,5 @@
 import type { AgendaSection, CandidateConfig } from '../data/types';
-import { candidateAsset } from '../data/asset';
+import { sectionAsset } from '../data/asset';
 
 interface Props {
   candidate: CandidateConfig;
@@ -11,7 +11,7 @@ export function SectionLink({ candidate, section }: Props) {
   return (
     <a
       className={`section-link ${section.accent}`}
-      href={candidateAsset(candidate.id, section.href)}
+      href={sectionAsset(candidate, section)}
     >
       <span className="time-badge">{section.time}</span>
       <h3>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { AgendaSection, CandidateConfig } from '../data/types';
-import { candidateAsset } from '../data/asset';
+import { sectionAsset } from '../data/asset';
 
 const SECTION_BG: Record<AgendaSection['accent'], string> = {
   s1: '#0284c7',
@@ -25,7 +25,7 @@ export function AgendaNavbar({ candidate }: Props) {
           <a
             key={s.id}
             className="nav-btn section"
-            href={candidateAsset(candidate.id, s.href)}
+            href={sectionAsset(candidate, s)}
             style={{
               background: color,
               color: '#fff',

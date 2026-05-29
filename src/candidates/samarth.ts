@@ -7,11 +7,12 @@ import type { CandidateConfig } from '../data/types';
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
  * interview material is prepared. The static section pages under
- * `public/candidates/samarth/` are also stubs — overwrite their HTML when
- * the real guides are ready.
+ * `public/candidates/_completed/2-samarth/` are also stubs — overwrite
+ * their HTML when the real guides are ready.
  */
 export const samarth: CandidateConfig = {
   id: 'samarth',
+  order: 2,
   name: 'Samarth Sharma',
   shortName: 'Samarth',
   initials: 'SS',
@@ -67,7 +68,8 @@ export const samarth: CandidateConfig = {
       time: '~15 min',
       keyPoints: '（待填写 · 根据 Samarth 背景选题）',
       accent: 's3',
-      href: 'codingTest/interview-guide.html',
+      problem: 'inverse-function',
+      href: 'interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入编程测试 / Introduce Coding Exercise',
@@ -82,7 +84,8 @@ export const samarth: CandidateConfig = {
       time: '~15 min',
       keyPoints: '（待填写 · 第二轮编程题）',
       accent: 's4',
-      href: 'codingTest2/interview-guide.html',
+      problem: 'task-scheduling-with-deadlines',
+      href: 'interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',

@@ -10,11 +10,13 @@ import type { CandidateConfig } from '../data/types';
  *
  * Content fields below are placeholders (`TBD` / 待填写). Replace them
  * as the interview material is prepared. The static section pages under
- * `public/candidates/yeshu/` for selfIntro / technicalQuestions are
- * still stubs — overwrite their HTML when the real guides are ready.
+ * `public/candidates/_completed/5-yeshu/` for selfIntro /
+ * technicalQuestions are still stubs — overwrite their HTML when the
+ * real guides are ready.
  */
 export const yeshu: CandidateConfig = {
   id: 'yeshu',
+  order: 5,
   name: 'Yeshu Wu',
   shortName: 'Yeshu',
   initials: 'YW',
@@ -23,6 +25,7 @@ export const yeshu: CandidateConfig = {
   brand: '📋 Onsite Interview Guide',
   accent: '#be123c',
   scheduledAt: '2026-05-29T09:30:00',
+  completed: true,
 
   openingEn: '(TBD — opening script)',
   openingZh: '（待填写 · 开场白）',
@@ -69,7 +72,8 @@ export const yeshu: CandidateConfig = {
       time: '~15 min',
       keyPoints: '反函数 / 黑盒单调 f 的反向求解 —— 二分搜索（无上界 → 指数倍增找右边界 → 经典二分定位）',
       accent: 's3',
-      href: 'codingTest/interview-guide.html',
+      problem: 'inverse-function',
+      href: 'interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入编程测试 / Introduce Coding Exercise',
@@ -84,7 +88,8 @@ export const yeshu: CandidateConfig = {
       time: '~15 min',
       keyPoints: '矩阵乘法 —— 三重循环 + 输入校验（空矩阵 / 非方阵 / 维度匹配）+ follow-up（cache 顺序 / 稀疏 / 并行 / 数值稳定性）',
       accent: 's4',
-      href: 'codingTest2/interview-guide.html',
+      problem: 'matrix-multiplication',
+      href: 'interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',

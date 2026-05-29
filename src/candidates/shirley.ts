@@ -11,11 +11,12 @@ import type { CandidateConfig } from '../data/types';
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
  * interview material is prepared. The static section pages under
- * `public/candidates/shirley/` are also stubs — overwrite their HTML when
- * the real guides are ready.
+ * `public/candidates/_completed/3-shirley/` are also stubs — overwrite
+ * their HTML when the real guides are ready.
  */
 export const shirley: CandidateConfig = {
   id: 'shirley',
+  order: 3,
   name: 'Shirley Huang',
   shortName: 'Shirley',
   initials: 'SH',
@@ -71,33 +72,19 @@ export const shirley: CandidateConfig = {
       time: '~15 min',
       keyPoints: '（待填写 · 根据 Shirley 背景选题）',
       accent: 's3',
-      href: 'codingTest/interview-guide.html',
+      problem: 'inverse-function',
+      href: 'interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入编程测试 / Introduce Coding Exercise',
     },
     {
-      id: 's4',
-      num: '④',
-      emoji: '💻',
-      titleZh: '编程测试 2',
-      titleEn: 'Coding Test 2',
-      navLabel: '④ Coding 2',
-      time: '~15 min',
-      keyPoints: '（待填写 · 第二轮编程题）',
-      accent: 's4',
-      href: 'codingTest2/interview-guide.html',
-      introEn: '(TBD)',
-      introZh: '（待填写）',
-      introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',
-    },
-    {
       id: 's5',
-      num: '⑤',
+      num: '④',
       emoji: '❓',
       titleZh: '候选人提问',
       titleEn: 'Candidate Q&A',
-      navLabel: '⑤ 候选人提问',
+      navLabel: '④ 候选人提问',
       time: '~5 min',
       keyPoints: '（待填写）',
       accent: 's5',

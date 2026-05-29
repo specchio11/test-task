@@ -27,14 +27,19 @@ npm run preview      # serve dist/ locally
 ├── index.html                       # Vite React entry
 ├── vite.config.ts                   # base path = /<repo>/ in prod
 ├── public/
-│   └── candidates/
-│       └── <id>/                    # one folder per candidate (static assets)
-│           ├── index.html           # redirect shim → React agenda overview
-│           ├── selfIntro/...
-│           ├── technicalQuestions/...
-│           ├── codingTest/...
-│           ├── candidateQuestions/...
-│           └── printNote/...
+│   ├── candidates/
+│   │   └── <id>/                    # one folder per candidate (static assets)
+│   │       ├── index.html           # redirect shim → React agenda overview
+│   │       ├── selfIntro/...
+│   │       ├── technicalQuestions/...
+│   │       ├── candidateQuestions/...
+│   │       └── printNote/...
+│   └── coding-problems/             # shared problem library (reused across candidates)
+│       └── <problem-id>/            # e.g. inverse-function, matrix-multiplication
+│           ├── interview-guide.html # canonical interviewer guide
+│           ├── starter-template.{py,cpp,cs,ts,java}
+│           ├── interview-algorithm-question.md (optional)
+│           └── problem-display/{conversational,formal}.html (optional)
 └── src/
     ├── main.tsx
     ├── App.tsx                      # HashRouter
@@ -42,9 +47,9 @@ npm run preview      # serve dist/ locally
     │   ├── global.css               # Home + reset
     │   └── agenda.css               # per-candidate agenda overview (verbatim port)
     ├── data/
-    │   ├── types.ts                 # CandidateConfig + AgendaSection
+    │   ├── types.ts                 # CandidateConfig + AgendaSection (with optional `problem` field)
     │   ├── candidates.ts            # registry (import + list all configs here)
-    │   └── asset.ts                 # candidateAsset(id, path) → BASE_URL-safe URL
+    │   └── asset.ts                 # candidateAsset / sectionAsset → BASE_URL-safe URL
     ├── candidates/
     │   └── <id>.ts                  # one config-only file per candidate
     ├── components/                  # AgendaNavbar / QuickPanel / OverviewTable / …
@@ -53,23 +58,36 @@ npm run preview      # serve dist/ locally
 
 ## Adding a new candidate
 
-1. Create the static guide pages under
-   `public/candidates/<new-id>/{selfIntro,technicalQuestions,codingTest,candidateQuestions,printNote}/`
-   (mirror Jorge's layout — sub-page filenames `interview-guide.html`).
-2. Copy `public/candidates/jorge/index.html` to
-   `public/candidates/<new-id>/index.html` and change the hash route at the
-   bottom to `#/candidate/<new-id>`.
-3. Create `src/candidates/<new-id>.ts` exporting a `CandidateConfig`
-   (copy Jorge's file as a template). Two optional fields control the
-   home-page card:
+1. Pick the next available `order` number by looking at
+   `public/candidates/` — folders are named `<order>-<id>/`, so just
+   increment past the highest currently-active one. (Order `0` is
+   reserved for unscheduled candidates.)
+2. Create the static guide pages under
+   `public/candidates/<order>-<new-id>/{selfIntro,technicalQuestions,candidateQuestions,printNote}/`
+   (mirror an existing candidate's layout — sub-page filenames
+   `interview-guide.html`). For coding sections, do **not** create a
+   per-candidate `codingTest/` folder — instead, point the section at a
+   shared problem in `public/coding-problems/<problem-id>/` by setting
+   `problem: '<problem-id>'` on the section config (see step 4). Add a
+   new problem folder there if none of the existing ones fit.
+3. Copy any existing candidate's `index.html` redirect shim to
+   `public/candidates/<order>-<new-id>/index.html` and change the hash
+   route to `#/candidate/<new-id>`. Keep `../../` as the relative depth
+   (one fewer level than a completed candidate under `_completed/`).
+4. Create `src/candidates/<new-id>.ts` exporting a `CandidateConfig`
+   (copy an existing candidate's file as a template). Required:
+   - `id` — URL slug, must match the folder's `<id>` suffix.
+   - `order` — chronological sequence number used for the folder name.
    - `scheduledAt?: string` — ISO 8601 timestamp
      (e.g. `"2026-05-20T10:00:00-07:00"`). Cards with the closest time
      to "now" appear first. Omit → shown as `未排期 / TBD` and sorted
      to the end of the upcoming list.
    - `completed?: boolean` — set `true` after the interview is done.
-     Completed candidates are pinned to the bottom of the list and
-     visually dimmed.
-4. Register the import in [`src/data/candidates.ts`](src/data/candidates.ts).
+     Completed candidates are pinned to the bottom of the list,
+     visually dimmed, and (in the next deploy) their folder should be
+     moved into `public/candidates/_completed/<order>-<id>/` so the
+     top-level listing only shows upcoming interviews.
+5. Register the import in [`src/data/candidates.ts`](src/data/candidates.ts).
 
 That's it — no component changes needed.
 

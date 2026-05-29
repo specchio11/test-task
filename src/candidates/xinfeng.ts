@@ -15,11 +15,12 @@ import type { CandidateConfig } from '../data/types';
  *
  * Content fields are placeholders (`TBD` / 待填写). Replace them as the
  * material is prepared. The static section pages under
- * `public/candidates/xinfeng/` are also stubs — overwrite their HTML
- * when the real guides are ready.
+ * `public/candidates/_completed/1-xinfeng/` are also stubs — overwrite
+ * their HTML when the real guides are ready.
  */
 export const xinfeng: CandidateConfig = {
   id: 'xinfeng',
+  order: 1,
   name: 'Xinfeng Chen',
   shortName: 'Xinfeng',
   initials: 'XC',
@@ -75,7 +76,8 @@ export const xinfeng: CandidateConfig = {
       time: '~15 min',
       keyPoints: '（待填写 · 建议工程类题：LRU / 限流器 / scheduler）',
       accent: 's4',
-      href: 'codingTest/interview-guide.html',
+      problem: 'matrix-multiplication',
+      href: 'interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入编程测试 / Introduce Coding Exercise',

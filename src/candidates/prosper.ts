@@ -13,6 +13,7 @@ import type { CandidateConfig } from '../data/types';
  */
 export const prosper: CandidateConfig = {
   id: 'prosper',
+  order: 4,
   name: 'Prosper Amie',
   shortName: 'Prosper',
   initials: 'PA',
@@ -21,6 +22,7 @@ export const prosper: CandidateConfig = {
   brand: '📋 Onsite Interview Guide',
   accent: '#7c3aed',
   scheduledAt: '2026-05-29T08:30:00',
+  completed: true,
 
   openingEn: '(TBD — opening script)',
   openingZh: '（待填写 · 开场白）',
@@ -67,7 +69,8 @@ export const prosper: CandidateConfig = {
       time: '~15 min',
       keyPoints: '反函数 / Inverse Function — 二分查找 + 边界条件 + 数值精度（C++ / Python / TS / C# 任一）',
       accent: 's3',
-      href: 'codingTest/interview-guide.html',
+      problem: 'inverse-function',
+      href: 'interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入第一轮编程测试 / Introduce First Coding Exercise',
@@ -82,7 +85,8 @@ export const prosper: CandidateConfig = {
       time: '~20 min',
       keyPoints: '矩阵乘法 / Matrix Multiplication — 性能优化（layout / cache / tiling / SIMD / CUDA）',
       accent: 's4',
-      href: 'codingTest2/interview-guide.html',
+      problem: 'matrix-multiplication',
+      href: 'interview-guide.html',
       introEn: '(TBD)',
       introZh: '（待填写）',
       introHeading: '🎤 引导进入第二轮编程测试 / Introduce Second Coding Exercise',

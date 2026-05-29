@@ -3,9 +3,12 @@
  *
  * Adding a new candidate is a 3-step, data-only operation:
  *   1. Drop the candidate's static section HTMLs into
- *      `public/candidates/<id>/...` (mirroring Jorge's layout).
+ *      `public/candidates/<order>-<id>/...` (mirror an existing
+ *      candidate's layout).
  *   2. Create `src/candidates/<id>.ts` exporting a `CandidateConfig`.
  *   3. Register it in `src/data/candidates.ts`.
+ * When the interview is done, flip `completed: true` and move the
+ * folder under `public/candidates/_completed/<order>-<id>/`.
  * No component changes required.
  */
 
@@ -32,11 +35,23 @@ export interface AgendaSection {
   /** Accent theme; controls card colors. */
   accent: SectionAccent;
   /**
-   * Path to the candidate's static section guide, relative to the candidate's
-   * folder under `public/candidates/<id>/`.
-   * e.g. "selfIntro/interview-guide.html"
+   * Path to the section's static guide. By default this is interpreted
+   * as a path relative to the candidate's folder under
+   * `public/candidates/<order>-<id>/` (e.g. "selfIntro/interview-guide.html").
+   *
+   * If `problem` is set, the path is interpreted as relative to
+   * `public/coding-problems/<problem>/` instead (e.g. "interview-guide.html").
+   * See `sectionAsset` for the resolver logic.
    */
   href: string;
+  /**
+   * Optional coding-problem id. When set, the section's assets (guide,
+   * starter templates, problem-display, etc.) are pulled from the shared
+   * problem library at `public/coding-problems/<problem>/` instead of from
+   * the candidate's own folder. Lets multiple candidates share one canonical
+   * version of a problem without duplicating files.
+   */
+  problem?: string;
   /** English script the interviewer reads to introduce the section. */
   introEn: string;
   /** Chinese script the interviewer reads to introduce the section. */
@@ -51,8 +66,21 @@ export interface AgendaSection {
 }
 
 export interface CandidateConfig {
-  /** URL slug + folder name (must match `public/candidates/<id>/`). */
+  /**
+   * URL slug + identifier. Used in routes (`/candidate/<id>`) and as part
+   * of the on-disk folder name. The folder lives at:
+   *   - `public/candidates/<order>-<id>/`            (active)
+   *   - `public/candidates/_completed/<order>-<id>/` (completed)
+   * See `candidateAsset` for the canonical resolver.
+   */
   id: string;
+  /**
+   * Chronological interview order. Earliest scheduled interview = 1,
+   * `0` is reserved for candidates without a scheduled time. The folder
+   * name on disk is `<order>-<id>`, so higher-numbered (newer) candidates
+   * naturally sort to the bottom of the directory listing.
+   */
+  order: number;
   /** Full display name, e.g. "Jorge Beltrán Pastor". */
   name: string;
   /** Short name used in scripts, e.g. "Jorge". */
